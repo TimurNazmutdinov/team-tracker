@@ -13,6 +13,7 @@ import { NotFound } from '../../ui/NotFound';
 import { PageHeader } from '../../ui/PageHeader';
 import { TextArea } from '../../ui/fields';
 import { useCurrentProject } from '../projects/ProjectRoute';
+import { TotalsTable } from '../reports/TotalsTable';
 import { Avatar, PointsBadge, StatusChip, TypeIcon } from '../tasks/IssueBits';
 import { CloseSprintDialog } from './CloseSprintDialog';
 import { SprintFormDialog } from './SprintFormDialog';
@@ -266,43 +267,7 @@ function SprintDetail({
       )}
 
       <h3>Итоги по людям</h3>
-      <table className="totals">
-        <thead>
-          <tr>
-            <th>Исполнитель</th>
-            <th>Задач</th>
-            <th>sp</th>
-            <th>Из них в Done</th>
-          </tr>
-        </thead>
-        <tbody>
-          {summary.rows.map((r) => (
-            <tr key={r.personId ?? 'none'}>
-              <td>
-                <Avatar person={view.people.find((p) => p.id === r.personId)} /> {r.name}
-              </td>
-              <td>{r.count}</td>
-              <td>{r.points}</td>
-              <td>{r.done}</td>
-            </tr>
-          ))}
-          {summary.rows.length === 0 && (
-            <tr>
-              <td colSpan={4} className="muted">
-                В спринте нет задач
-              </td>
-            </tr>
-          )}
-        </tbody>
-        <tfoot>
-          <tr>
-            <th>Итого</th>
-            <th>{summary.total.count}</th>
-            <th>{summary.total.points}</th>
-            <th>{summary.total.done}</th>
-          </tr>
-        </tfoot>
-      </table>
+      <TotalsTable summary={summary} people={view.people} />
 
       <h3>Состав спринта</h3>
       <ul className="plain-list">

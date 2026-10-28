@@ -798,29 +798,51 @@ def screen_reports():
     wf.chip(150, 108, "Спринт 1 ▾", 14, h=30)
     wf.callout(1, 144, 108)
     s1 = SPRINTS["s1"]
-    issues = [i for i, _ in scope("s1") if i["points"]]
-    total = sum(i["points"] for i in issues)
     start = datetime.date.fromisoformat(s1["start"])
     end = datetime.date.fromisoformat(s1["end"])
     days = (end - start).days + 1
-    done_at = {}
-    for x in SEED["history"]:
-        if x["to"] == "Done" and x["at"] <= s1["closedAt"]:
-            done_at[x["issueId"]] = datetime.datetime.fromisoformat(x["at"].replace("Z", "+00:00")).date()
-    rem = []
+
+    def values_at(issue, t, strict_sprint):
+        """Спринт, статус и points задачи на момент t — откат событий истории (как в domain/totals.ts)."""
+        sprint_id, status, points = issue["sprintId"], issue["status"], issue["points"]
+        events = [h for h in SEED["history"] if h["issueId"] == issue["id"]]
+        for h in reversed(sorted(events, key=lambda h: h["at"])):
+            if h["field"] == "sprintId" and (h["at"] >= t if strict_sprint else h["at"] > t):
+                sprint_id = h["from"]
+            if h["at"] > t and h["field"] == "status":
+                status = h["from"]
+            if h["at"] > t and h["field"] == "points":
+                points = None if h["from"] is None else int(h["from"])
+        return sprint_id, status, points
+
+    scopes, rem = [], []
     for d in range(days):
         day = start + datetime.timedelta(days=d)
-        rem.append(total - sum(i["points"] for i in issues if i["id"] in done_at and done_at[i["id"]] <= day))
+        t_end = f"{day.isoformat()}T23:59:59Z"
+        frozen = t_end >= s1["closedAt"]
+        at = s1["closedAt"] if frozen else t_end
+        sc = dn = 0
+        for i in SEED["issues"]:
+            sprint_id, status, points = values_at(i, at, frozen)
+            if sprint_id == "s1":
+                sc += points or 0
+                dn += (points or 0) if status == "Done" else 0
+        scopes.append(sc)
+        rem.append(sc - dn)
+    total = max(scopes)
+    top = max(4, -(-total // 4) * 4)
+    initial = scopes[0]
     # burndown
     gx, gy, gw, gh = 60, 214, 470, 220
-    wf.text(34, 180, "Burndown: остаток points по дням", 16, bold=True)
+    wf.text(34, 180, "Burndown: остаток sp по дням", 16, bold=True)
     wf.callout(2, 14, 174)
-    for v in (0, total / 3, 2 * total / 3, total):
-        yy = gy + gh - gh * v / total
+    for k in range(5):
+        v = top * k // 4
+        yy = gy + gh - gh * v / top
         wf.line(gx, yy, gx + gw, yy, dash=True)
-        wf.text(gx - 8, yy + 4, round(v), 12, "end", fill=t["muted"])
-    ideal = [(gx + gw * d / (days - 1), gy + gh - gh * total * (1 - d / (days - 1)) / total) for d in range(days)]
-    actual = [(gx + gw * d / (days - 1), gy + gh - gh * rem[d] / total) for d in range(days)]
+        wf.text(gx - 8, yy + 4, v, 12, "end", fill=t["muted"])
+    ideal = [(gx + gw * d / (days - 1), gy + gh - gh * initial * (1 - d / (days - 1)) / top) for d in range(days)]
+    actual = [(gx + gw * d / (days - 1), gy + gh - gh * rem[d] / top) for d in range(days)]
     wf.poly(ideal, t["muted"], dash=True, sw=2)
     wf.poly(actual, t["accent"], sw=3)
     for d in range(0, days, 2):
@@ -831,25 +853,30 @@ def screen_reports():
     wf.text(gx + 68, gy + gh + 50, "факт", 12)
     wf.line(gx + 130, gy + gh + 46, gx + 170, gy + gh + 46, t["muted"], dash=True, sw=2)
     wf.text(gx + 178, gy + gh + 50, "идеал", 12)
+    wf.text(gx + 250, gy + gh + 50, "Таблица данных ▸", 12, fill=t["accent"])
     # velocity
     vx, vw = 580, 300
-    wf.text(vx, 180, "Velocity: points в Done по спринтам", 16, bold=True)
+    wf.text(vx, 180, "Velocity: sp в Done по спринтам", 16, bold=True)
     wf.callout(3, vx - 17, 174)
     base = gy + gh
     wf.line(vx, base, vx + vw, base, t["muted"])
     vel = sum(i["points"] or 0 for i, st in scope("s1") if st == "Done")
-    bh = gh * 0.8
+    vtop = max(4, -(-max(vel, 21) // 4) * 4)
+    bh = gh * vel / vtop
     wf.rect(vx + 40, base - bh, 80, bh, fill=t["accent"], r=3)
     wf.text(vx + 80, base - bh - 8, vel, 14, "middle", True)
     wf.text(vx + 80, base + 20, "Спринт 1", 12, "middle")
+    wf.text(vx + 80, base + 36, "из 18 sp", 11, "middle", fill=t["muted"])
+    wf.line(vx, base - bh, vx + vw, base - bh, t["muted"], dash=True, sw=2)
+    wf.text(vx + vw, base - bh - 6, f"средняя {vel}", 11, "end", fill=t["muted"])
     wf.rect(vx + 170, base - 3, 80, 3, fill=t["muted"], r=0)
-    wf.text(vx + 210, base - 12, "идёт", 12, "middle", fill=t["muted"])
+    wf.text(vx + 210, base - 12, "0", 12, "middle", fill=t["muted"])
     wf.text(vx + 210, base + 20, "Спринт 2", 12, "middle")
-    wf.text(vx, base + 50, "Столбцы появляются после закрытия спринта.", 12, fill=t["muted"])
+    wf.text(vx + 210, base + 36, "в процессе", 11, "middle", fill=t["muted"])
     wf.text(34, 546, f"Итоги по людям — {s1['name']}", 16, bold=True)
     wf.callout(4, 14, 540)
     people_table(wf, 20, 560, "s1")
-    wf.text(20, 770, "Линии построены по демо-данным по календарным дням; на экране — те же данные в виде интерактивных графиков.", 12, fill=t["muted"])
+    wf.text(20, 770, "Графики построены по демо-данным (календарные дни); под каждым графиком есть таблица данных.", 12, fill=t["muted"])
     return wf
 
 

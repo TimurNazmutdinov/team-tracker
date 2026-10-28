@@ -42,6 +42,17 @@ export function valuesAt(issue: Issue, events: History[], t: string): Snapshot {
   return snap;
 }
 
+/** Спринт задачи на момент `t` (включительно): откат событий смены спринта после него. */
+export function sprintIdAt(issue: Issue, events: History[], t: string): string | null {
+  let sprintId = issue.sprintId;
+  for (const e of newestFirst(
+    events.filter((h) => h.issueId === issue.id && h.field === 'sprintId' && h.at > t),
+  )) {
+    sprintId = e.from;
+  }
+  return sprintId;
+}
+
 /** Спринт задачи непосредственно перед моментом `t` (события в момент `t` уже не учитываются). */
 export function sprintIdBefore(issue: Issue, events: History[], t: string): string | null {
   let sprintId = issue.sprintId;
@@ -123,4 +134,19 @@ export function summarize(snaps: Snapshot[], people: Person[]): SprintSummary {
       a.name.localeCompare(b.name),
   );
   return { rows: sorted, total, byStatus };
+}
+
+/** Строки по всем людям проекта (в том числе без задач в спринте) и отдельная строка «Не назначено», если она нужна. */
+export function peopleRows(snaps: Snapshot[], people: Person[]): PersonRow[] {
+  const rows = summarize(snaps, people).rows;
+  const missing: PersonRow[] = people
+    .filter((p) => !rows.some((r) => r.personId === p.id))
+    .map((p) => ({ personId: p.id, name: p.name, count: 0, points: 0, done: 0 }));
+  const withZeros = [...rows, ...missing];
+  return withZeros.sort(
+    (a, b) =>
+      Number(a.personId === null) - Number(b.personId === null) ||
+      b.points - a.points ||
+      a.name.localeCompare(b.name),
+  );
 }
