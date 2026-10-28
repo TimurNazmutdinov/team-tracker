@@ -105,12 +105,12 @@ class Svg:
 
 
 def context():
-    s = Svg(900, 420, "Контекст: пользователи, трекер, GitHub, будущий сервер")
+    s = Svg(900, 420, "Контекст: пользователи, трекер, GitHub, сервер")
     people = [
         ("Разработчик", False),
         ("Продакт", False),
         ("Тимлид / scrum-мастер", False),
-        ("Администратор (позже)", True),
+        ("Администратор", False),
     ]
     for i, (name, later) in enumerate(people):
         y = 40 + i * 80
@@ -122,30 +122,32 @@ def context():
     s.box(660, 30, 210, 90, "GitHub", ["репозиторий, pull request", "CI, демо на Pages"], color="amber")
     s.arrow([(240, 50), (660, 50)], label="код, pull request")
     s.arrow([(765, 120), (765, 200), (580, 200)], label="демо на Pages", lpos=(672, 200))
-    s.box(660, 300, 210, 90, "Будущий сервер", ["API + PostgreSQL", "свой сервер или облако"], color="green", dashed=True)
-    s.arrow([(580, 250), (765, 250), (765, 300)], dashed=True, label="позже: HTTPS, JSON", lpos=(672, 250))
+    s.box(660, 300, 210, 90, "Сервер", ["API + PostgreSQL", "вход и роли"], color="green")
+    s.arrow([(580, 250), (765, 250), (765, 300)], label="HTTPS, JSON, cookie", lpos=(672, 250))
     return s
 
 
 def containers():
     s = Svg(900, 560, "Контейнеры: SPA, API, PostgreSQL, CI/CD, демо")
     s.box(30, 40, 220, 110, "Браузер: SPA", ["React + TypeScript", "логика и модуль хранения"])
-    s.box(350, 40, 220, 110, "API (позже)", ["Node.js + Fastify", "проверка данных: Zod"], color="green", dashed=True)
-    s.box(670, 40, 220, 110, "PostgreSQL (позже)", ["Drizzle: схема и миграции", "резервные копии"], color="green", dashed=True)
-    s.arrow([(250, 95), (350, 95)], dashed=True, label="HTTPS, JSON", lpos=(300, 78), size=12)
-    s.arrow([(570, 95), (670, 95)], dashed=True, label="SQL", lpos=(620, 78), size=12)
-    s.box(30, 210, 220, 80, "Сейчас", ["seed.json + хранилище браузера"], color="green", lsize=13)
+    s.box(350, 40, 220, 110, "API", ["Node.js + Fastify", "Zod, права, вход"], color="green")
+    s.box(670, 40, 220, 110, "PostgreSQL", ["Drizzle: схема и миграции", "резервные копии"], color="green")
+    s.arrow([(250, 95), (350, 95)], label="JSON, cookie", lpos=(300, 78), size=12)
+    s.arrow([(570, 95), (670, 95)], label="SQL", lpos=(620, 78), size=12)
+    s.box(30, 210, 220, 80, "Демо", ["seed.json + хранилище браузера"], color="green", lsize=13)
     s.arrow([(140, 150), (140, 210)], label="адаптер SeedLocal", lpos=(225, 180))
+    s.text(300, 235, "Режим выбирает сборка: VITE_STORAGE=api — адаптер Api и вход,", 13, fill="#475569")
+    s.text(300, 255, "без неё — демо на SeedLocal без входа (GitHub Pages).", 13, fill="#475569")
     s.line(30, 345, 870, 345)
     s.text(30, 372, "Разработка и доставка", 15, bold=True, fill="#475569")
     xs = [20, 240, 460, 680]
     s.box(xs[0], 400, 180, 90, "GitHub", ["репозиторий,", "pull request"], color="amber")
     s.box(xs[1], 400, 180, 90, "GitHub Actions", ["lint, typecheck,", "тесты, сборка"], color="amber")
     s.box(xs[2], 400, 180, 90, "Демо", ["GitHub Pages:", "SPA как статика"], color="amber")
-    s.box(xs[3], 400, 180, 90, "Рабочий сервер", ["Docker: веб-сервер,", "Node, PostgreSQL"], color="green", dashed=True, lsize=13)
+    s.box(xs[3], 400, 180, 90, "Рабочая база", ["Docker Compose:", "app + PostgreSQL"], color="green", lsize=13)
     s.arrow([(200, 445), (240, 445)])
     s.arrow([(420, 445), (460, 445)])
-    s.arrow([(330, 490), (330, 525), (770, 525), (770, 490)], dashed=True, label="деплой (позже)", lpos=(550, 525))
+    s.arrow([(330, 490), (330, 525), (770, 525), (770, 490)], dashed=True, label="публикация на внешний сервер (позже)", lpos=(550, 525))
     return s
 
 
@@ -175,9 +177,32 @@ def components():
     s.box(15, 490, 870, 60, "Интерфейс хранения (Storage)", ["типизированные методы, единственный доступ к данным"], strong=True, tsize=16, lsize=13)
     s.arrow([(450, 440), (450, 490)])
     s.box(120, 600, 320, 70, "Адаптер SeedLocal", ["сейчас: seed.json + браузер"], color="green")
-    s.box(460, 600, 320, 70, "Адаптер Api", ["потом: Fastify + PostgreSQL"], color="green", dashed=True)
+    s.box(460, 600, 320, 70, "Адаптер Api", ["рабочая база: Fastify + PostgreSQL"], color="green")
     s.arrow([(280, 550), (280, 600)])
-    s.arrow([(620, 550), (620, 600)], dashed=True)
+    s.arrow([(620, 550), (620, 600)])
+    return s
+
+
+def server():
+    s = Svg(900, 700, "Компоненты сервера и общий код")
+    s.box(15, 20, 870, 70, "Клиент (браузер)", ["адаптер Api: fetch, cookie сессии; экран входа; права скрывают недоступные действия"], color="gray", lsize=13)
+    s.arrow([(450, 90), (450, 130)], label="HTTP, JSON", lpos=(520, 112))
+    s.frame(15, 130, 870, 310, "Сервер: Node.js 22 + Fastify 5  (server/src)")
+    s.box(30, 165, 840, 50, "Маршруты: /api/auth, /users, чтение, /commit", color="blue", tsize=15)
+    for cx in (165, 450, 735):
+        s.arrow([(cx, 215), (cx, 245)])
+    s.box(30, 245, 270, 80, "Вход", ["scrypt, сессии: хэш токена в базе"], tsize=16, lsize=12)
+    s.box(315, 245, 270, 80, "Запись", ["блокировка, права, проверка, транзакция"], tsize=16, lsize=12)
+    s.box(600, 245, 270, 80, "Чтение", ["проекты, задачи, спринты, история"], tsize=16, lsize=12)
+    for cx in (165, 450, 735):
+        s.arrow([(cx, 325), (cx, 365)])
+    s.box(30, 365, 840, 55, "Drizzle ORM: схема таблиц и миграции (server/migrations)", color="blue", tsize=15)
+    s.arrow([(450, 440), (450, 490)], label="SQL", lpos=(480, 470))
+    s.box(250, 490, 400, 70, "PostgreSQL 16", ["или PGlite: тесты и разработка без установки"], color="green", lsize=13)
+    s.frame(15, 590, 870, 95, "Общий код src/domain (используют и клиент, и сервер)")
+    s.box(30, 622, 270, 50, "Схемы Zod и целостность", color="amber", tsize=14)
+    s.box(315, 622, 270, 50, "Права по ролям: permissions", color="amber", tsize=14)
+    s.box(600, 622, 270, 50, "Changes и расчёты", color="amber", tsize=14)
     return s
 
 
@@ -211,6 +236,7 @@ MANUAL = {
     "context": context,
     "containers": containers,
     "components": components,
+    "server": server,
     "status": status,
     "sprint-state": sprint_state,
 }

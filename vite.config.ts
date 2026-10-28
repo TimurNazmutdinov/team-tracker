@@ -17,6 +17,8 @@ export default defineConfig({
       },
     },
   ],
+  // Разработка с сервером: запросы /api уходят на сервер (тот же адрес — без CORS, ADR-010)
+  server: { proxy: { '/api': process.env.VITE_API_PROXY ?? 'http://localhost:3000' } },
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts', 'server/**/*.test.ts'],
