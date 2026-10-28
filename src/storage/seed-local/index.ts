@@ -143,6 +143,11 @@ export class SeedLocalStorage implements TrackerStorage {
     return Promise.resolve(structuredClone(this.data.history.filter((h) => h.issueId === issueId)));
   }
 
+  getProjectHistory(projectId: string) {
+    const ids = new Set(this.data.issues.filter((i) => i.projectId === projectId).map((i) => i.id));
+    return Promise.resolve(structuredClone(this.data.history.filter((h) => ids.has(h.issueId))));
+  }
+
   commit(changes: Changes): Promise<void> {
     try {
       const next = structuredClone(this.data);

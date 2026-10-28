@@ -35,25 +35,25 @@ function errors(r: Result): Record<string, string> {
 }
 
 const input: SprintInput = {
-  name: ' Спринт 3 ',
+  name: ' Спринт 4 ',
   goal: ' Отчёты ',
-  start: '2026-11-09',
-  end: '2026-11-20',
+  start: '2026-11-23',
+  end: '2026-12-04',
 };
 
-/** Набор данных со спринтом 3 в состоянии planned. */
+/** Набор данных: спринт 3 в состоянии planned есть в seed. */
 function withSprint3(): Dataset {
-  return applied(base, createSprint(viewOf(base), input, testCtx('2026-10-28T09:00:00Z')));
+  return base;
 }
 
 describe('createSprint', () => {
   it('создаёт запланированный спринт', () => {
-    const next = withSprint3();
+    const next = applied(base, createSprint(viewOf(base), input, testCtx()));
     expect(next.sprints.at(-1)).toMatchObject({
-      name: 'Спринт 3',
+      name: 'Спринт 4',
       goal: 'Отчёты',
-      start: '2026-11-09',
-      end: '2026-11-20',
+      start: '2026-11-23',
+      end: '2026-12-04',
       state: 'planned',
       closedAt: null,
       projectId: 'p1',
@@ -109,14 +109,14 @@ describe('startSprint', () => {
     expect(errors(startSprint(viewOf(ds), 's2')).form).toContain(
       'Запустить можно только запланированный',
     );
-    const s3 = must(ds.sprints.find((s) => s.name === 'Спринт 3'));
+    const s3 = must(ds.sprints.find((s) => s.id === 's3'));
     expect(errors(startSprint(viewOf(ds), s3.id)).form).toContain('«Спринт 2»');
     expect(errors(startSprint(viewOf(ds), 'nope')).form).toContain('не найден');
   });
 
   it('после закрытия идущего запланированный запускается', () => {
     const ds = withSprint3();
-    const s3 = must(ds.sprints.find((s) => s.name === 'Спринт 3'));
+    const s3 = must(ds.sprints.find((s) => s.id === 's3'));
     const closed = applied(ds, closeSprint(viewOf(ds), 's2', { kind: 'backlog' }, 'u1', testCtx()));
     const started = applied(closed, startSprint(viewOf(closed), s3.id));
     expect(started.sprints.find((s) => s.id === s3.id)?.state).toBe('active');
@@ -156,7 +156,7 @@ describe('closeSprint', () => {
 
   it('в запланированный спринт: closedAt, перенос с подзадачами, события sprintId', () => {
     const ds = withSprint3();
-    const s3 = must(ds.sprints.find((s) => s.name === 'Спринт 3'));
+    const s3 = must(ds.sprints.find((s) => s.id === 's3'));
     const next = applied(
       ds,
       closeSprint(viewOf(ds), 's2', { kind: 'sprint', sprintId: s3.id }, 'u1', ctx()),
@@ -185,7 +185,7 @@ describe('closeSprint', () => {
   });
 
   it('в новый спринт, который создаётся при закрытии', () => {
-    const newSprint = { name: 'Спринт 4', goal: '', start: '2026-11-09', end: '2026-11-20' };
+    const newSprint = { name: 'Спринт 4', goal: '', start: '2026-11-23', end: '2026-12-04' };
     const next = applied(
       base,
       closeSprint(viewOf(base), 's2', { kind: 'new', sprint: newSprint }, 'u1', ctx()),
@@ -210,7 +210,7 @@ describe('closeSprint', () => {
 
   it('ошибки: нет цели переноса, неверная цель, не идущий спринт, плохие поля нового спринта', () => {
     const ds = withSprint3();
-    const s3 = must(ds.sprints.find((s) => s.name === 'Спринт 3'));
+    const s3 = must(ds.sprints.find((s) => s.id === 's3'));
     const view = viewOf(ds);
     expect(
       errors(closeSprint(view, 's2', { kind: 'sprint', sprintId: 's2' }, 'u1', ctx())).target,

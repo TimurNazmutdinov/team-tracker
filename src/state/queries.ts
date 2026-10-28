@@ -51,6 +51,14 @@ export function useComments(issueId: string) {
   return useQuery({ queryKey: ['comments', issueId], queryFn: () => storage.getComments(issueId) });
 }
 
+export function useProjectHistory(projectId: string) {
+  const storage = useStorage();
+  return useQuery({
+    queryKey: ['project-history', projectId],
+    queryFn: () => storage.getProjectHistory(projectId),
+  });
+}
+
 export function useHistory(issueId: string) {
   const storage = useStorage();
   return useQuery({ queryKey: ['history', issueId], queryFn: () => storage.getHistory(issueId) });
@@ -58,13 +66,16 @@ export function useHistory(issueId: string) {
 
 /** Данные проекта целиком для логики; undefined, пока что-то загружается. */
 export function useView(projectId: string): View | undefined {
+  const projects = useProjects();
   const people = usePeople();
   const sprints = useSprints(projectId);
   const issues = useIssues(projectId);
   const links = useLinks(projectId);
-  if (!people.data || !sprints.data || !issues.data || !links.data) return undefined;
+  const project = projects.data?.find((p) => p.id === projectId);
+  if (!project || !people.data || !sprints.data || !issues.data || !links.data) return undefined;
   return {
     projectId,
+    project,
     people: people.data,
     sprints: sprints.data,
     issues: issues.data,

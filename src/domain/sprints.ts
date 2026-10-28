@@ -1,6 +1,7 @@
 import type { Ctx, FieldErrors, Result, View } from './actions';
 import type { Changes } from './changes';
 import type { History, Issue, Sprint } from './schema';
+import { projectAfterSprint } from './settings';
 
 // Спринты (F-08, F-09): создание, правка, запуск и закрытие с переносом незавершённого.
 // Правила: ADR-003 (п. 2, 4, 8, 9), ADR-008. Чистые функции: данные на входе, изменения на выходе.
@@ -54,6 +55,12 @@ function validateSprint(
   return errors;
 }
 
+/** Изменение проекта после создания спринта (счётчик номера, дата-подсказка), если оно есть. */
+function projectChange(view: View, sprint: Sprint): Changes {
+  const project = projectAfterSprint(view, sprint);
+  return JSON.stringify(project) === JSON.stringify(view.project) ? {} : { projects: [project] };
+}
+
 function newSprint(view: View, input: SprintInput, ctx: Ctx): Sprint {
   return {
     id: ctx.newId(),
@@ -70,7 +77,8 @@ function newSprint(view: View, input: SprintInput, ctx: Ctx): Sprint {
 export function createSprint(view: View, input: SprintInput, ctx: Ctx): Result {
   const errors = validateSprint(input, view.sprints);
   if (Object.keys(errors).length > 0) return fail(errors);
-  return { ok: true, changes: { sprints: [newSprint(view, input, ctx)] } };
+  const sprint = newSprint(view, input, ctx);
+  return { ok: true, changes: { sprints: [sprint], ...projectChange(view, sprint) } };
 }
 
 /** Правка названия, цели и дат; закрытый спринт только для чтения. */
@@ -195,7 +203,10 @@ export function closeSprint(
   }
 
   const changes: Changes = { sprints: [{ ...sprint, state: 'closed', closedAt: now }] };
-  if (targetSprint && target.kind === 'new') changes.sprints?.push(targetSprint);
+  if (targetSprint && target.kind === 'new') {
+    changes.sprints?.push(targetSprint);
+    Object.assign(changes, projectChange(view, targetSprint));
+  }
   if (summary.carried.length > 0) {
     const history: History[] = [];
     changes.issues = summary.carried.map((issue) => {

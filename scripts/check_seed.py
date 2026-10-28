@@ -50,6 +50,17 @@ def main():
     sprints = {s["id"]: s for s in seed["sprints"]}
 
     # --- ссылки и справочники
+    for pr in seed["projects"]:
+        w = f"project {pr['id']}"
+        dur, num = pr.get("sprintDurationDays"), pr.get("nextSprintNumber")
+        if not isinstance(dur, int) or not 1 <= dur <= 90:
+            err(f"{w}: sprintDurationDays должен быть целым 1–90")
+        if not isinstance(num, int) or num < 1:
+            err(f"{w}: nextSprintNumber должен быть целым >= 1")
+        if not isinstance(pr.get("sprintPrefix"), str) or not pr["sprintPrefix"]:
+            err(f"{w}: sprintPrefix не может быть пустым")
+        if pr.get("nextSprintStart") is not None and not isinstance(pr["nextSprintStart"], str):
+            err(f"{w}: nextSprintStart — дата или null")
     for s in seed["sprints"]:
         w = f"sprint {s['id']}"
         ref(s["projectId"], "projects", w)

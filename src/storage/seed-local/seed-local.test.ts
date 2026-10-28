@@ -52,7 +52,7 @@ describe('SeedLocalStorage', () => {
     expect(projects.map((p) => p.key)).toEqual(['DEMO']);
     const project = must(await s.getProject('DEMO'));
     expect((await s.getIssues(project.id)).length).toBe(16);
-    expect((await s.getSprints(project.id)).length).toBe(2);
+    expect((await s.getSprints(project.id)).length).toBe(3);
     expect((await s.getPeople()).length).toBe(4);
     expect(await s.getProject('NOPE')).toBeNull();
     expect(must(await s.getIssue(project.id, 9)).title).toBe('Форма смены пароля');
@@ -60,6 +60,9 @@ describe('SeedLocalStorage', () => {
     expect((await s.getLinks(project.id)).length).toBe(2);
     expect((await s.getComments('i2')).length).toBe(1);
     expect((await s.getHistory('i7')).length).toBeGreaterThan(0);
+    const all = await s.getProjectHistory(project.id);
+    expect(all.length).toBe(seed.history.length);
+    expect(all.some((h) => h.issueId === 'i7')).toBe(true);
     expect(kv.map.size).toBe(0);
   });
 
@@ -176,7 +179,7 @@ describe('SeedLocalStorage', () => {
   describe('битые данные', () => {
     it('seed неверной структуры', async () => {
       const broken = structuredClone(seed) as unknown as Dataset;
-      broken.projects = [{ id: 'p1', key: 'demo', name: 'Демо' }];
+      broken.projects = [{ ...must(broken.projects[0]), key: 'demo' }];
       const err = await rejection(SeedLocalStorage.open(broken, kv));
       expect(err.code).toBe('invalid_data');
       expect(err.details.join('\n')).toContain('projects.0.key');

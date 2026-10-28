@@ -1,10 +1,14 @@
 {
-  "version": 1,
+  "version": 2,
   "projects": [
     {
       "id": "p1",
       "key": "DEMO",
-      "name": "Демо-проект"
+      "name": "Демо-проект",
+      "sprintDurationDays": 14,
+      "sprintPrefix": "Спринт",
+      "nextSprintNumber": 4,
+      "nextSprintStart": null
     }
   ],
   "people": [
@@ -48,6 +52,16 @@
       "start": "2026-10-26",
       "end": "2026-11-06",
       "state": "active",
+      "closedAt": null
+    },
+    {
+      "id": "s3",
+      "projectId": "p1",
+      "name": "Спринт 3",
+      "goal": "Отчёты и сводки по людям",
+      "start": "2026-11-09",
+      "end": "2026-11-20",
+      "state": "planned",
       "closedAt": null
     }
   ],

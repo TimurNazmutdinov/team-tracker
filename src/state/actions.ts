@@ -37,13 +37,15 @@ function errorResult(e: unknown): Result {
 }
 
 async function loadView(storage: TrackerStorage, projectId: string): Promise<View> {
-  const [people, sprints, issues, links] = await Promise.all([
+  const [project, people, sprints, issues, links] = await Promise.all([
+    storage.getProjects().then((list) => list.find((p) => p.id === projectId)),
     storage.getPeople(),
     storage.getSprints(projectId),
     storage.getIssues(projectId),
     storage.getLinks(projectId),
   ]);
-  return { projectId, people, sprints, issues, links };
+  if (!project) throw new Error('Проект не найден');
+  return { projectId, project, people, sprints, issues, links };
 }
 
 /** Действия над задачами проекта: логика (domain) → хранилище → обновление кэша запросов. */

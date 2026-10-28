@@ -13,9 +13,12 @@ export function testCtx(now = '2026-10-29T10:00:00Z'): Ctx {
 }
 
 export function viewOf(ds: Dataset, projectId = 'p1'): View {
+  const project = ds.projects.find((p) => p.id === projectId);
+  if (!project) throw new Error('нет проекта');
   const ids = new Set(ds.issues.filter((i) => i.projectId === projectId).map((i) => i.id));
   return {
     projectId,
+    project,
     people: ds.people,
     sprints: ds.sprints.filter((s) => s.projectId === projectId),
     issues: ds.issues.filter((i) => i.projectId === projectId),
