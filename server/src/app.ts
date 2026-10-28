@@ -106,7 +106,12 @@ export function buildApp(options: AppOptions): FastifyInstance {
       setSession(reply, token);
       return account;
     } catch (e) {
-      if (e instanceof HttpError && e.status === 401) fails.set(key, [...recent, now]);
+      if (e instanceof HttpError && e.status === 401) {
+        // Старые записи убираем, чтобы карта не росла бесконечно
+        for (const [email, times] of fails)
+          if (times.every((at) => now - at >= FAIL_WINDOW_MS)) fails.delete(email);
+        fails.set(key, [...recent, now]);
+      }
       throw e;
     }
   });
@@ -155,7 +160,10 @@ export function buildApp(options: AppOptions): FastifyInstance {
     '/api/projects/:id/issues/:number',
     async (req) => {
       await requireUser(req);
-      const issue = await findIssueByNumber(db, req.params.id, Number(req.params.number));
+      const number = Number(req.params.number);
+      const issue = Number.isSafeInteger(number)
+        ? await findIssueByNumber(db, req.params.id, number)
+        : null;
       if (!issue) throw new HttpError(404, 'not_found', 'Задача не найдена');
       return issue;
     },

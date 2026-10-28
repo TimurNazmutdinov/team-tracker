@@ -159,6 +159,7 @@ describe('сервер', () => {
     expect(issues).toHaveLength(seed.issues.length);
     expect((await dev.call('GET', '/api/projects/p1/issues/5')).json.number).toBe(5);
     expect((await dev.call('GET', '/api/projects/p1/issues/999')).status).toBe(404);
+    expect((await dev.call('GET', '/api/projects/p1/issues/abc')).status).toBe(404);
     const withLinks = (await dev.call('GET', '/api/projects/p1/links')).json;
     expect(withLinks).toHaveLength(seed.links.length);
     const hist = (await dev.call('GET', '/api/projects/p1/history')).json;
