@@ -17,6 +17,15 @@ import {
 } from '../domain/actions';
 import type { Changes } from '../domain/changes';
 import type { LinkType } from '../domain/schema';
+import { updateSprintSettings, type SprintSettings } from '../domain/settings';
+import {
+  closeSprint,
+  createSprint,
+  startSprint,
+  updateSprint,
+  type CloseTarget,
+  type SprintInput,
+} from '../domain/sprints';
 import { StorageError, type TrackerStorage } from '../storage';
 import { resolveUser, useUserStore } from './current-user';
 
@@ -78,6 +87,14 @@ export function useActions(projectId: string) {
         run((v, a) => moveIssue(v, id, target, a, browserCtx)),
       addLink: (fromId: string, toId: string, type: LinkType) =>
         run((v) => addLink(v, fromId, toId, type, browserCtx)),
+      createSprint: (input: SprintInput) => run((v) => createSprint(v, input, browserCtx)),
+      updateSprint: (id: string, patch: Partial<SprintInput>) =>
+        run((v) => updateSprint(v, id, patch, browserCtx)),
+      startSprint: (id: string) => run((v) => startSprint(v, id)),
+      closeSprint: (id: string, target: CloseTarget) =>
+        run((v, a) => closeSprint(v, id, target, a, browserCtx)),
+      updateSprintSettings: (input: SprintSettings) =>
+        run((v) => updateSprintSettings(v, input, browserCtx)),
       removeLink: (linkId: string) => run((v) => removeLink(v, linkId)),
       addComment: (issueId: string, text: string) =>
         run((v, a) => addComment(v, issueId, a, text, browserCtx)),
