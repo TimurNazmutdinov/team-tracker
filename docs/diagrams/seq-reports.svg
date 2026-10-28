@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="584" viewBox="0 0 900 584" font-family="Helvetica, Arial, 'Segoe UI', 'DejaVu Sans', sans-serif" role="img" aria-label="seq-reports">
+<title>seq-reports</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker></defs>
+<rect width="900" height="584" fill="#ffffff"/>
+<line x1="163.3" y1="61" x2="163.3" y2="576" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4 5"/>
+<line x1="450.0" y1="61" x2="450.0" y2="576" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4 5"/>
+<line x1="736.7" y1="61" x2="736.7" y2="576" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4 5"/>
+<rect x="68" y="15" width="190" height="46" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="163.0" y="44" text-anchor="middle" font-size="17" font-weight="bold" fill="#1e3a8a"></text>
+<text x="163" y="43.0" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a">Экран отчётов</text>
+<rect x="355" y="15" width="190" height="46" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="450.0" y="44" text-anchor="middle" font-size="17" font-weight="bold" fill="#1e3a8a"></text>
+<text x="450" y="43.0" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a">Логика</text>
+<rect x="642" y="15" width="190" height="46" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="737.0" y="44" text-anchor="middle" font-size="17" font-weight="bold" fill="#1e3a8a"></text>
+<text x="737" y="43.0" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a">Хранилище</text>
+<line x1="163.3" y1="106" x2="448.0" y2="106" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="306.7" y="99" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">burndown(спринт)</text>
+<line x1="450.0" y1="151" x2="734.7" y2="151" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="593.3" y="144" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">загрузить задачи и историю спринта</text>
+<line x1="736.7" y1="196" x2="452.0" y2="196" stroke="#374151" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#arr)"/>
+<text x="593.3" y="189" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">задачи и история</text>
+<path d="M450.0 220 L490.0 220 L490.0 244 L452.0 244" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="500" y="225" text-anchor="start" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">на конец каждого дня считает состав спринта и</text>
+<text x="500" y="242" text-anchor="start" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">остаток points</text>
+<line x1="450.0" y1="297" x2="165.3" y2="297" stroke="#374151" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#arr)"/>
+<text x="306.7" y="290" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">ряды: идеальная и фактическая линия</text>
+<line x1="163.3" y1="342" x2="448.0" y2="342" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="306.7" y="335" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">velocity(проект, последние спринты)</text>
+<line x1="450.0" y1="404" x2="734.7" y2="404" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="593.3" y="380" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">загрузить закрытые спринты с</text>
+<text x="593.3" y="397" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">задачами</text>
+<line x1="736.7" y1="449" x2="452.0" y2="449" stroke="#374151" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#arr)"/>
+<text x="593.3" y="442" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">спринты и задачи</text>
+<path d="M450.0 473 L490.0 473 L490.0 497 L452.0 497" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="500" y="478" text-anchor="start" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">velocity спринта — сумма points задач в Done на</text>
+<text x="500" y="495" text-anchor="start" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">момент закрытия</text>
+<line x1="450.0" y1="550" x2="165.3" y2="550" stroke="#374151" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#arr)"/>
+<text x="306.7" y="543" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">ряд для столбчатого графика</text>
+</svg>

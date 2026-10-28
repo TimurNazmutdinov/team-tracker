@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="692" viewBox="0 0 900 692" font-family="Helvetica, Arial, 'Segoe UI', 'DejaVu Sans', sans-serif" role="img" aria-label="seq-status">
+<title>seq-status</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker></defs>
+<rect width="900" height="692" fill="#ffffff"/>
+<line x1="106.0" y1="61" x2="106.0" y2="684" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4 5"/>
+<line x1="278.0" y1="61" x2="278.0" y2="684" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4 5"/>
+<line x1="450.0" y1="61" x2="450.0" y2="684" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4 5"/>
+<line x1="622.0" y1="61" x2="622.0" y2="684" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4 5"/>
+<line x1="794.0" y1="61" x2="794.0" y2="684" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4 5"/>
+<rect x="28" y="15" width="156" height="46" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="106.0" y="44" text-anchor="middle" font-size="17" font-weight="bold" fill="#1e3a8a"></text>
+<text x="106" y="43.0" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a">Пользователь</text>
+<rect x="200" y="15" width="156" height="46" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="278.0" y="44" text-anchor="middle" font-size="17" font-weight="bold" fill="#1e3a8a"></text>
+<text x="278" y="43.0" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a">Доска</text>
+<rect x="372" y="15" width="156" height="46" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="450.0" y="44" text-anchor="middle" font-size="17" font-weight="bold" fill="#1e3a8a"></text>
+<text x="450" y="43.0" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a">Логика</text>
+<rect x="544" y="15" width="156" height="46" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="622.0" y="44" text-anchor="middle" font-size="17" font-weight="bold" fill="#1e3a8a"></text>
+<text x="622" y="43.0" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a">Хранилище</text>
+<rect x="716" y="15" width="156" height="46" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="794.0" y="44" text-anchor="middle" font-size="17" font-weight="bold" fill="#1e3a8a"></text>
+<text x="794" y="43.0" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a">Источник данных</text>
+<line x1="106.0" y1="140" x2="276.0" y2="140" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="192.0" y="99" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">перетаскивает</text>
+<text x="192.0" y="116" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">карточку в колонку</text>
+<text x="192.0" y="133" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">Review</text>
+<line x1="278.0" y1="202" x2="448.0" y2="202" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="364.0" y="178" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">changeStatus(задача,</text>
+<text x="364.0" y="195" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">Review, автор)</text>
+<path d="M450.0 226 L490.0 226 L490.0 250 L452.0 250" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="500" y="231" text-anchor="start" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">проверяет переход по таблице разрешённых переходов</text>
+<line x1="450.0" y1="333" x2="620.0" y2="333" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="536.0" y="292" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">сохранить задачу и</text>
+<text x="536.0" y="309" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">запись истории одной</text>
+<text x="536.0" y="326" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">операцией</text>
+<line x1="622.0" y1="395" x2="792.0" y2="395" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="708.0" y="371" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">записать задачу и</text>
+<text x="708.0" y="388" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">запись History</text>
+<line x1="794.0" y1="440" x2="624.0" y2="440" stroke="#374151" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#arr)"/>
+<text x="708.0" y="433" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">готово</text>
+<line x1="622.0" y1="485" x2="452.0" y2="485" stroke="#374151" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#arr)"/>
+<text x="536.0" y="478" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">обновлённая задача</text>
+<line x1="450.0" y1="530" x2="280.0" y2="530" stroke="#374151" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#arr)"/>
+<text x="364.0" y="523" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">результат</text>
+<line x1="278.0" y1="592" x2="108.0" y2="592" stroke="#374151" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#arr)"/>
+<text x="192.0" y="568" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">карточка в новой</text>
+<text x="192.0" y="585" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">колонке</text>
+<rect x="375.0" y="616" width="322.0" height="48" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="1.2"/>
+<text x="536" y="636" text-anchor="middle" font-size="13" fill="#1f2937">Если переход запрещён, возвращается</text>
+<text x="536" y="653" text-anchor="middle" font-size="13" fill="#1f2937">понятная ошибка, ничего не записывается</text>
+</svg>
