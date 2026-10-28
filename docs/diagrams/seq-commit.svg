@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="745" viewBox="0 0 900 745" font-family="Helvetica, Arial, 'Segoe UI', 'DejaVu Sans', sans-serif" role="img" aria-label="seq-commit">
+<title>seq-commit</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker></defs>
+<rect width="900" height="745" fill="#ffffff"/>
+<line x1="127.5" y1="61" x2="127.5" y2="737" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4 5"/>
+<line x1="342.5" y1="61" x2="342.5" y2="737" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4 5"/>
+<line x1="557.5" y1="61" x2="557.5" y2="737" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4 5"/>
+<line x1="772.5" y1="61" x2="772.5" y2="737" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4 5"/>
+<rect x="32" y="15" width="190" height="46" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="127.0" y="44" text-anchor="middle" font-size="17" font-weight="bold" fill="#1e3a8a"></text>
+<text x="128" y="43.0" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a">Пользователь</text>
+<rect x="248" y="15" width="190" height="46" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="343.0" y="44" text-anchor="middle" font-size="17" font-weight="bold" fill="#1e3a8a"></text>
+<text x="342" y="43.0" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a">Клиент</text>
+<rect x="462" y="15" width="190" height="46" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="557.0" y="44" text-anchor="middle" font-size="17" font-weight="bold" fill="#1e3a8a"></text>
+<text x="558" y="43.0" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a">Сервер</text>
+<rect x="678" y="15" width="190" height="46" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="773.0" y="44" text-anchor="middle" font-size="17" font-weight="bold" fill="#1e3a8a"></text>
+<text x="772" y="43.0" text-anchor="middle" font-size="14" font-weight="bold" fill="#1e3a8a">PostgreSQL</text>
+<line x1="127.5" y1="140" x2="340.5" y2="140" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="235.0" y="99" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">меняет статус,</text>
+<text x="235.0" y="116" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">перетаскивает карточку,</text>
+<text x="235.0" y="133" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">закрывает спринт</text>
+<path d="M342.5 164 L382.5 164 L382.5 188 L344.5 188" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="392" y="169" text-anchor="start" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">логика domain строит Changes и записи истории</text>
+<line x1="342.5" y1="254" x2="555.5" y2="254" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="450.0" y="230" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">POST /api/commit с cookie</text>
+<text x="450.0" y="247" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">сессии</text>
+<path d="M557.5 278 L597.5 278 L597.5 302 L559.5 302" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="608" y="283" text-anchor="start" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">определяет пользователя и роль по</text>
+<text x="608" y="300" text-anchor="start" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">сессии</text>
+<line x1="557.5" y1="372" x2="770.5" y2="372" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="665.0" y="348" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">начинает транзакцию, берёт</text>
+<text x="665.0" y="365" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">блокировку записи</text>
+<line x1="557.5" y1="417" x2="770.5" y2="417" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="665.0" y="410" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">читает текущие данные</text>
+<path d="M557.5 441 L597.5 441 L597.5 465 L559.5 465" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="608" y="446" text-anchor="start" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">права (violations) и проверка</text>
+<text x="608" y="463" text-anchor="start" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">результата (parseDataset)</text>
+<line x1="557.5" y1="552" x2="344.5" y2="552" stroke="#374151" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#arr)"/>
+<text x="450.0" y="511" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">если права нарушены или</text>
+<text x="450.0" y="528" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">данные неверны: 403 или</text>
+<text x="450.0" y="545" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">422, ничего не записано</text>
+<line x1="557.5" y1="614" x2="770.5" y2="614" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="665.0" y="590" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">иначе записывает изменения</text>
+<text x="665.0" y="607" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">и завершает транзакцию</text>
+<line x1="557.5" y1="659" x2="344.5" y2="659" stroke="#374151" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#arr)"/>
+<text x="450.0" y="652" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">204 без содержимого</text>
+<path d="M342.5 683 L382.5 683 L382.5 707 L344.5 707" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="392" y="688" text-anchor="start" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="5" stroke-linejoin="round">обновляет кэш запросов</text>
+</svg>

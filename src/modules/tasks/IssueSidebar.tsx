@@ -4,6 +4,7 @@ import { canHavePoints } from '../../domain/hierarchy';
 import type { Issue, Priority, Status } from '../../domain/schema';
 import { STATUSES } from '../../domain/schema';
 import { useActions } from '../../state/actions';
+import { usePermissions } from '../../state/current-user';
 import { SelectField, TextField } from '../../ui/fields';
 import { PRIORITY_OPTIONS } from './IssueBits';
 
@@ -23,6 +24,7 @@ export function IssueSidebar({
   readOnly: boolean;
 }) {
   const actions = useActions(view.projectId);
+  const perms = usePermissions();
   const [errors, setErrors] = useState<FieldErrors>({});
   const [points, setPoints] = useState(issue.points === null ? '' : String(issue.points));
   const [labels, setLabels] = useState(issue.labels.join(', '));
@@ -44,7 +46,7 @@ export function IssueSidebar({
         name="status"
         label="Статус"
         value={issue.status}
-        disabled={readOnly}
+        disabled={readOnly || !perms.canChangeStatus(issue)}
         options={STATUSES.map((s) => ({ value: s, label: s }))}
         onChange={(v) => void apply({ status: v as Status })}
         error={errors.status}
@@ -69,7 +71,7 @@ export function IssueSidebar({
         name="priority"
         label="Приоритет"
         value={issue.priority}
-        disabled={readOnly}
+        disabled={readOnly || !perms.can('backlog.rank')}
         options={PRIORITY_OPTIONS.map((p) => ({ value: p, label: p }))}
         onChange={(v) => void apply({ priority: v as Priority })}
         error={errors.priority}
@@ -107,7 +109,7 @@ export function IssueSidebar({
           name="sprintId"
           label="Спринт"
           value={issue.sprintId ?? ''}
-          disabled={readOnly}
+          disabled={readOnly || !perms.can('sprint.items')}
           options={[
             { value: '', label: 'Бэклог' },
             ...sprints.map((s) => ({ value: s.id, label: s.name })),

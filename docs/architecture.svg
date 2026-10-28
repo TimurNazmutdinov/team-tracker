@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1000" height="770" viewBox="0 0 1000 770" font-family="Helvetica, Arial, 'Segoe UI', 'DejaVu Sans', sans-serif" role="img" aria-labelledby="t d">
   <title id="t">Схема архитектуры team-tracker</title>
-  <desc id="d">Пользователи работают в браузере с приложением: экраны, логика, модуль хранения. Хранение читает seed.json и браузер сейчас, API и PostgreSQL потом. Внизу — цепочка разработки: GitHub, CI, демо на GitHub Pages.</desc>
+  <desc id="d">Пользователи работают в браузере с приложением: экраны, логика, модуль хранения. Хранение читает seed.json и браузер (демо) или работает через API с PostgreSQL (рабочая база). Внизу — цепочка разработки: GitHub, CI, демо на GitHub Pages.</desc>
   <defs>
     <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <path d="M0 0 L10 5 L0 10 z" fill="#374151"/>
@@ -11,7 +11,7 @@
   <!-- Пользователи и браузер -->
   <rect x="40" y="30" width="300" height="70" rx="10" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.5"/>
   <text x="190" y="58" text-anchor="middle" font-size="18" font-weight="bold" fill="#1f2937">Пользователи</text>
-  <text x="190" y="82" text-anchor="middle" font-size="15" fill="#1f2937">разработчики, продакты</text>
+  <text x="190" y="82" text-anchor="middle" font-size="15" fill="#1f2937">разработчики, продакты, тимлиды</text>
   <line x1="340" y1="65" x2="400" y2="65" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
   <rect x="400" y="30" width="300" height="70" rx="10" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.5"/>
   <text x="550" y="58" text-anchor="middle" font-size="18" font-weight="bold" fill="#1f2937">Браузер</text>
@@ -44,22 +44,21 @@
 
   <!-- Источники данных -->
   <path d="M730 340 V395 H630 V470" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
-  <path d="M860 340 V470" fill="none" stroke="#374151" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#arr)"/>
+  <path d="M860 340 V470" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
 
   <rect x="500" y="470" width="260" height="80" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
-  <text x="630" y="502" text-anchor="middle" font-size="16" font-weight="bold" fill="#14532d">Сейчас</text>
+  <text x="630" y="502" text-anchor="middle" font-size="16" font-weight="bold" fill="#14532d">Демо</text>
   <text x="630" y="528" text-anchor="middle" font-size="15" fill="#1f2937">seed.json + браузер</text>
 
-  <rect x="780" y="470" width="180" height="80" rx="10" fill="#ffffff" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="8 6"/>
-  <text x="870" y="496" text-anchor="middle" font-size="16" font-weight="bold" fill="#14532d">Потом</text>
-  <text x="870" y="518" text-anchor="middle" font-size="15" fill="#1f2937">API + PostgreSQL,</text>
-  <text x="870" y="538" text-anchor="middle" font-size="15" fill="#1f2937">свой сервер</text>
+  <rect x="780" y="470" width="180" height="80" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="870" y="496" text-anchor="middle" font-size="16" font-weight="bold" fill="#14532d">Рабочая база</text>
+  <text x="870" y="518" text-anchor="middle" font-size="15" fill="#1f2937">Fastify + PostgreSQL,</text>
+  <text x="870" y="538" text-anchor="middle" font-size="15" fill="#1f2937">вход и роли</text>
 
   <!-- Легенда -->
   <line x1="60" y1="490" x2="120" y2="490" stroke="#374151" stroke-width="2"/>
-  <text x="132" y="495" font-size="15" fill="#1f2937">работает сейчас</text>
-  <line x1="60" y1="525" x2="120" y2="525" stroke="#374151" stroke-width="2" stroke-dasharray="8 6"/>
-  <text x="132" y="530" font-size="15" fill="#1f2937">планируется</text>
+  <text x="132" y="495" font-size="15" fill="#1f2937">оба режима работают</text>
+  <text x="60" y="530" font-size="14" fill="#475569">режим выбирает сборка: VITE_STORAGE=api</text>
 
   <!-- Разработка -->
   <line x1="40" y1="590" x2="960" y2="590" stroke="#d1d5db" stroke-width="1.5"/>

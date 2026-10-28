@@ -43,9 +43,9 @@
 <rect x="120" y="600" width="320" height="70" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
 <text x="280.0" y="630" text-anchor="middle" font-size="17" font-weight="bold" fill="#14532d">Адаптер SeedLocal</text>
 <text x="280.0" y="656" text-anchor="middle" font-size="14" fill="#1f2937">сейчас: seed.json + браузер</text>
-<rect x="460" y="600" width="320" height="70" rx="10" fill="#ffffff" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="8 6"/>
+<rect x="460" y="600" width="320" height="70" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
 <text x="620.0" y="630" text-anchor="middle" font-size="17" font-weight="bold" fill="#14532d">Адаптер Api</text>
-<text x="620.0" y="656" text-anchor="middle" font-size="14" fill="#1f2937">потом: Fastify + PostgreSQL</text>
+<text x="620.0" y="656" text-anchor="middle" font-size="14" fill="#1f2937">рабочая база: Fastify + PostgreSQL</text>
 <path d="M280 550 L280 600" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
-<path d="M620 550 L620 600" fill="none" stroke="#374151" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#arr)"/>
+<path d="M620 550 L620 600" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
 </svg>

@@ -1,9 +1,11 @@
 import { create } from 'zustand';
-import type { Person } from '../domain/schema';
+import { can, canChangeStatus, type Action, type Role } from '../domain/permissions';
+import type { Issue, Person } from '../domain/schema';
 import { usePeople } from './queries';
+import { useSession } from './session';
 
-// Демо-режим без входа: действия выполняются от имени выбранного участника (автор в истории,
-// автор задач и комментариев). Выбор запоминается в браузере; позже его заменит вход (ADR-006).
+// Кто выполняет действия. С сервером (ADR-010) — вошедший пользователь; в демо-режиме без входа —
+// участник, выбранный в меню (ADR-006), с правами администратора.
 
 const KEY = 'team-tracker:user';
 
@@ -32,13 +34,41 @@ export const useUserStore = create<UserState>((set) => ({
   },
 }));
 
-/** Выбранный участник; если выбора нет или он устарел, — первый в списке. */
-export function resolveUser(people: Person[], userId: string | null): Person | undefined {
-  return people.find((p) => p.id === userId) ?? people[0];
+/** Автор действий: вошедший пользователь; в демо-режиме — выбранный участник или первый в списке. */
+export function resolveAuthor(
+  people: Person[],
+  accountId: string | null,
+  demoUserId: string | null,
+): Person | undefined {
+  if (accountId !== null) return people.find((p) => p.id === accountId);
+  return people.find((p) => p.id === demoUserId) ?? people[0];
 }
 
 export function useCurrentUser(): Person | undefined {
   const people = usePeople();
+  const accountId = useSession((s) => s.account?.id ?? null);
   const userId = useUserStore((s) => s.userId);
-  return people.data ? resolveUser(people.data, userId) : undefined;
+  return people.data ? resolveAuthor(people.data, accountId, userId) : undefined;
+}
+
+/** Роль вошедшего пользователя; без сервера ограничений нет — как у администратора. */
+export function useRole(): Role {
+  return useSession((s) => s.account?.role ?? 'admin');
+}
+
+export interface Permissions {
+  role: Role;
+  can: (action: Action) => boolean;
+  canChangeStatus: (issue: Pick<Issue, 'assigneeId'>) => boolean;
+}
+
+/** Права текущего пользователя для скрытия недоступных действий; сервер проверяет их сам. */
+export function usePermissions(): Permissions {
+  const role = useRole();
+  const user = useCurrentUser();
+  return {
+    role,
+    can: (action) => can(role, action),
+    canChangeStatus: (issue) => canChangeStatus(role, user?.id ?? '', issue),
+  };
 }

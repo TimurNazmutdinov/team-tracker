@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate } from 'react-router';
 import type { FieldErrors } from '../../domain/actions';
 import type { Project } from '../../domain/schema';
 import { useProjectActions } from '../../state/actions';
+import { usePermissions } from '../../state/current-user';
 import { useNotices } from '../../state/notices';
 import { useIssues, useProjects, useSprints } from '../../state/queries';
 import { Async } from '../../ui/Async';
@@ -95,13 +96,16 @@ function NewProjectForm({ onDone }: { onDone: () => void }) {
 /** Экран «Проекты» (/projects): список проектов и создание нового. */
 export function ProjectsPage() {
   const projects = useProjects();
+  const perms = usePermissions();
   const [creating, setCreating] = useState(false);
   return (
     <>
       <PageHeader title="Проекты">
-        <button type="button" className="primary" onClick={() => setCreating(true)}>
-          + Новый проект
-        </button>
+        {perms.can('project.create') && (
+          <button type="button" className="primary" onClick={() => setCreating(true)}>
+            + Новый проект
+          </button>
+        )}
       </PageHeader>
       <Async query={projects}>
         {(list) => (

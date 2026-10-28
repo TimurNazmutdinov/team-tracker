@@ -41,6 +41,7 @@ import {
   type Status,
 } from '../../domain/schema';
 import { useActions } from '../../state/actions';
+import { usePermissions } from '../../state/current-user';
 import { useBoardPrefs } from '../../state/board-prefs';
 import { useNotices } from '../../state/notices';
 import { useView } from '../../state/queries';
@@ -157,6 +158,7 @@ export function BoardPage() {
   const [filters, setFilters] = useState<BoardFilters>(NO_BOARD_FILTERS);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [activeId, setActiveId] = useState<string | null>(null);
+  const perms = usePermissions();
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor),
@@ -377,7 +379,7 @@ export function BoardPage() {
                     issue={issue}
                     projectKey={project.key}
                     parentKey={issueKey(issue.parentId)}
-                    readOnly={readOnly}
+                    readOnly={readOnly || !perms.canChangeStatus(issue)}
                     onStatus={(id, status) => void changeStatus(id, status)}
                   />
                 )}

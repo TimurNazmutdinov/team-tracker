@@ -24,6 +24,7 @@ import { containerItems, type View } from '../../domain/actions';
 import { epicProgress, type EpicProgress } from '../../domain/progress';
 import type { Issue, Person, Sprint } from '../../domain/schema';
 import { useActions } from '../../state/actions';
+import { usePermissions } from '../../state/current-user';
 import { useCreateDialog } from '../../state/create-dialog';
 import { useNotices } from '../../state/notices';
 import { useView } from '../../state/queries';
@@ -67,7 +68,9 @@ function IssueRow({
   nested = false,
 }: RowProps) {
   const [expanded, setExpanded] = useState(false);
-  const sortable = useSortable({ id: issue.id, disabled: nested });
+  const perms = usePermissions();
+  const canRank = perms.can('backlog.rank');
+  const sortable = useSortable({ id: issue.id, disabled: nested || !canRank });
   const style = {
     transform: CSS.Transform.toString(sortable.transform),
     transition: sortable.transition,
@@ -81,7 +84,7 @@ function IssueRow({
         style={nested ? undefined : style}
         className={`issue-row${nested ? ' nested' : ''}${sortable.isDragging ? ' dragging' : ''}`}
       >
-        {nested ? (
+        {nested || !canRank ? (
           <span className="handle-space" />
         ) : (
           <button
@@ -121,7 +124,7 @@ function IssueRow({
           <PointsBadge points={issue.points} />
         )}
         <Avatar person={assignee} />
-        {nested ? (
+        {nested || !perms.can('sprint.items') ? (
           <span />
         ) : (
           <select

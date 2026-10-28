@@ -5,6 +5,8 @@ import { peopleRows, sprintSnapshots } from '../../domain/totals';
 import { useProjectHistory, useView } from '../../state/queries';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
+import { SERVER_MODE } from '../../app/create-storage';
+import { Accounts } from './Accounts';
 import { useCurrentProject } from '../projects/ProjectRoute';
 import { Avatar, PointsBadge, StatusChip, TypeIcon } from '../tasks/IssueBits';
 
@@ -114,6 +116,7 @@ export function PeoplePage() {
           </ul>
         </section>
       )}
+      {SERVER_MODE && <Accounts />}
     </>
   );
 }

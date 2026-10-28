@@ -8,6 +8,7 @@ import {
 import { canHavePoints } from '../../domain/hierarchy';
 import type { IssueType, Priority } from '../../domain/schema';
 import { useActions } from '../../state/actions';
+import { usePermissions } from '../../state/current-user';
 import { useCreateDialog, type CreatePreset } from '../../state/create-dialog';
 import { useNotices } from '../../state/notices';
 import { useView } from '../../state/queries';
@@ -52,6 +53,7 @@ function CreateForm({
   onClose: () => void;
 }) {
   const actions = useActions(view.projectId);
+  const perms = usePermissions();
   const push = useNotices((s) => s.push);
   const [type, setType] = useState<IssueType>(preset.type ?? 'Task');
   const [title, setTitle] = useState('');
@@ -220,6 +222,7 @@ function CreateForm({
           name="sprintId"
           label="Спринт"
           value={sprintId}
+          disabled={!perms.can('sprint.items')}
           options={[
             { value: '', label: 'Бэклог' },
             ...sprints.map((s) => ({ value: s.id, label: s.name })),

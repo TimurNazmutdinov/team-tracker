@@ -6,23 +6,25 @@
 <text x="140.0" y="80" text-anchor="middle" font-size="17" font-weight="bold" fill="#1e3a8a">Браузер: SPA</text>
 <text x="140.0" y="106" text-anchor="middle" font-size="14" fill="#1f2937">React + TypeScript</text>
 <text x="140.0" y="126" text-anchor="middle" font-size="14" fill="#1f2937">логика и модуль хранения</text>
-<rect x="350" y="40" width="220" height="110" rx="10" fill="#ffffff" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="8 6"/>
-<text x="460.0" y="80" text-anchor="middle" font-size="17" font-weight="bold" fill="#14532d">API (позже)</text>
+<rect x="350" y="40" width="220" height="110" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text x="460.0" y="80" text-anchor="middle" font-size="17" font-weight="bold" fill="#14532d">API</text>
 <text x="460.0" y="106" text-anchor="middle" font-size="14" fill="#1f2937">Node.js + Fastify</text>
-<text x="460.0" y="126" text-anchor="middle" font-size="14" fill="#1f2937">проверка данных: Zod</text>
-<rect x="670" y="40" width="220" height="110" rx="10" fill="#ffffff" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="8 6"/>
-<text x="780.0" y="80" text-anchor="middle" font-size="17" font-weight="bold" fill="#14532d">PostgreSQL (позже)</text>
+<text x="460.0" y="126" text-anchor="middle" font-size="14" fill="#1f2937">Zod, права, вход</text>
+<rect x="670" y="40" width="220" height="110" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text x="780.0" y="80" text-anchor="middle" font-size="17" font-weight="bold" fill="#14532d">PostgreSQL</text>
 <text x="780.0" y="106" text-anchor="middle" font-size="14" fill="#1f2937">Drizzle: схема и миграции</text>
 <text x="780.0" y="126" text-anchor="middle" font-size="14" fill="#1f2937">резервные копии</text>
-<path d="M250 95 L350 95" fill="none" stroke="#374151" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#arr)"/>
-<text x="300" y="83" text-anchor="middle" font-size="12" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="6" stroke-linejoin="round">HTTPS, JSON</text>
-<path d="M570 95 L670 95" fill="none" stroke="#374151" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#arr)"/>
+<path d="M250 95 L350 95" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="300" y="83" text-anchor="middle" font-size="12" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="6" stroke-linejoin="round">JSON, cookie</text>
+<path d="M570 95 L670 95" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
 <text x="620" y="83" text-anchor="middle" font-size="12" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="6" stroke-linejoin="round">SQL</text>
 <rect x="30" y="210" width="220" height="80" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
-<text x="140.0" y="246" text-anchor="middle" font-size="17" font-weight="bold" fill="#14532d">Сейчас</text>
+<text x="140.0" y="246" text-anchor="middle" font-size="17" font-weight="bold" fill="#14532d">Демо</text>
 <text x="140.0" y="271" text-anchor="middle" font-size="13" fill="#1f2937">seed.json + хранилище браузера</text>
 <path d="M140 150 L140 210" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
 <text x="225" y="185" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="6" stroke-linejoin="round">адаптер SeedLocal</text>
+<text x="300" y="235" text-anchor="start" font-size="13" fill="#475569">Режим выбирает сборка: VITE_STORAGE=api — адаптер Api и вход,</text>
+<text x="300" y="255" text-anchor="start" font-size="13" fill="#475569">без неё — демо на SeedLocal без входа (GitHub Pages).</text>
 <line x1="30" y1="345" x2="870" y2="345" stroke="#d1d5db" stroke-width="1.5"/>
 <text x="30" y="372" text-anchor="start" font-size="15" font-weight="bold" fill="#475569">Разработка и доставка</text>
 <rect x="20" y="400" width="180" height="90" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
@@ -37,12 +39,12 @@
 <text x="550.0" y="430" text-anchor="middle" font-size="17" font-weight="bold" fill="#78350f">Демо</text>
 <text x="550.0" y="456" text-anchor="middle" font-size="14" fill="#1f2937">GitHub Pages:</text>
 <text x="550.0" y="476" text-anchor="middle" font-size="14" fill="#1f2937">SPA как статика</text>
-<rect x="680" y="400" width="180" height="90" rx="10" fill="#ffffff" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="8 6"/>
-<text x="770.0" y="432" text-anchor="middle" font-size="17" font-weight="bold" fill="#14532d">Рабочий сервер</text>
-<text x="770.0" y="456" text-anchor="middle" font-size="13" fill="#1f2937">Docker: веб-сервер,</text>
-<text x="770.0" y="476" text-anchor="middle" font-size="13" fill="#1f2937">Node, PostgreSQL</text>
+<rect x="680" y="400" width="180" height="90" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text x="770.0" y="432" text-anchor="middle" font-size="17" font-weight="bold" fill="#14532d">Рабочая база</text>
+<text x="770.0" y="456" text-anchor="middle" font-size="13" fill="#1f2937">Docker Compose:</text>
+<text x="770.0" y="476" text-anchor="middle" font-size="13" fill="#1f2937">app + PostgreSQL</text>
 <path d="M200 445 L240 445" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
 <path d="M420 445 L460 445" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
 <path d="M330 490 L330 525 L770 525 L770 490" fill="none" stroke="#374151" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#arr)"/>
-<text x="550" y="530" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="6" stroke-linejoin="round">деплой (позже)</text>
+<text x="550" y="530" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="6" stroke-linejoin="round">публикация на внешний сервер (позже)</text>
 </svg>

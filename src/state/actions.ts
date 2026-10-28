@@ -27,7 +27,8 @@ import {
   type SprintInput,
 } from '../domain/sprints';
 import { StorageError, type TrackerStorage } from '../storage';
-import { resolveUser, useUserStore } from './current-user';
+import { resolveAuthor, useUserStore } from './current-user';
+import { useSession } from './session';
 
 export const browserCtx: Ctx = {
   now: () => new Date().toISOString().replace(/\.\d+Z$/, 'Z'),
@@ -67,8 +68,13 @@ export function useActions(projectId: string) {
     const run = async (build: (view: View, authorId: string) => Result): Promise<Result> => {
       try {
         const view = await loadView(storage, projectId);
-        const author = resolveUser(view.people, userId);
-        if (!author) return { ok: false, errors: { form: 'В проекте нет участников' } };
+        const author = resolveAuthor(
+          view.people,
+          useSession.getState().account?.id ?? null,
+          userId,
+        );
+        if (!author)
+          return { ok: false, errors: { form: 'Не найден пользователь для записи действий' } };
         const result = build(view, author.id);
         if (result.ok && hasChanges(result.changes)) {
           await storage.commit(result.changes);

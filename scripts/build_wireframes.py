@@ -881,7 +881,7 @@ def screen_reports():
 
 
 def screen_people():
-    wf = WF(560, "Экран «Люди»")
+    wf = WF(770, "Экран «Люди»")
     t = wf.t
     wf.shell(f"team-tracker.app/projects/{KEY}/people", "Люди")
     wf.text(20, 128, "Люди", 24, bold=True)
@@ -912,6 +912,55 @@ def screen_people():
     for i in [i for i in sprint_issues("s2") if i["assigneeId"] == "u3"]:
         issue_row(wf, y, i)
         y += 38
+    # Учётки и роли: только при работе с сервером (ADR-010)
+    y += 34
+    wf.text(34, y, "Учётки и роли", 18, bold=True)
+    wf.callout(3, 14, y - 18)
+    y += 14
+    wf.rect(20, y, 860, 30, fill=t["panel"], stroke=t["line"], r=4)
+    for n, dx in (("Имя", 20), ("Почта", 300), ("Роль", 600)):
+        wf.text(20 + dx, y + 20, n, 13, bold=True)
+    y += 30
+    for name, mail, role in (
+        ("Анна Ковалёва", "anna@example.com", "Администратор"),
+        ("Игорь Смирнов", "igor@example.com", "Разработчик"),
+        ("Мария Орлова", "maria@example.com", "Тимлид / scrum-мастер"),
+    ):
+        wf.rect(20, y, 860, 38, fill=t["bg"], stroke=t["line"], r=4)
+        wf.text(40, y + 24, name, 14)
+        wf.text(320, y + 24, mail, 14, fill=t["muted"])
+        wf.rect(620, y + 5, 240, 28, fill=t["bg"], stroke=t["line"], r=6)
+        wf.text(632, y + 24, role, 14)
+        wf.text(846, y + 24, "▾", 14, "middle", fill=t["muted"])
+        y += 38
+    wf.text(20, y + 22, "Роль меняет только администратор; у остальных роль показана текстом, почты не видны.", 12, fill=t["muted"])
+    return wf
+
+
+def screen_login():
+    wf = WF(470, "Экран входа")
+    t = wf.t
+    wf.rect(0.6, 0.6, W - 1.2, wf.h - 1.2, fill=t["bg"], stroke=t["line"], r=10, sw=1.4)
+    wf.rect(0.6, 0.6, W - 1.2, 34, fill=t["panel"], stroke=t["line"], r=10, sw=1.4)
+    wf.rect(1, 20, W - 2, 15, fill=t["panel"], r=0)
+    for k in range(3):
+        wf.p.append(f'<circle cx="{18 + 18 * k}" cy="17" r="5" fill="{t["line"]}"/>')
+    wf.rect(84, 6, W - 168, 23, fill=t["bg"], stroke=t["line"], r=11.5)
+    wf.text(98, 22, "team-tracker.app/", 12, fill=t["muted"])
+    x = (W - 400) // 2
+    wf.text(x, 100, "team-tracker", 26, bold=True)
+    wf.text(x, 152, "Вход", 15, bold=True, fill=t["accent"])
+    wf.rect(x, 158, 52, 3, fill=t["accent"], r=1)
+    wf.text(x + 90, 152, "Регистрация", 15)
+    wf.line(x, 161, x + 400, 161)
+    wf.callout(1, x - 30, 134)
+    wf.field(x, 190, 400, "Почта *", "anna@example.com")
+    wf.field(x, 252, 400, "Пароль *", "••••••••••")
+    wf.callout(2, x - 30, 196)
+    wf.button(x, 322, 120, 38, "Войти", True)
+    wf.text(x, 392, "Регистрация: имя, почта и пароль не короче 8 символов.", 12, fill=t["muted"])
+    wf.text(x, 410, "Первая созданная учётка становится администратором, остальные — разработчиками.", 12, fill=t["muted"])
+    wf.callout(3, x - 30, 378)
     return wf
 
 
@@ -998,6 +1047,7 @@ SCREENS = {
     "wf-create": screen_create,
     "wf-reports": screen_reports,
     "wf-people": screen_people,
+    "wf-login": screen_login,
     "wf-search": screen_search,
     "wf-settings": screen_settings,
 }

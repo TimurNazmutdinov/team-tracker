@@ -51,7 +51,7 @@ export function TextField(
     name: string;
     value: string;
     onChange: (value: string) => void;
-    type?: 'text' | 'date' | 'number';
+    type?: 'text' | 'date' | 'number' | 'password';
     min?: string | undefined;
     disabled?: boolean | undefined;
     onBlur?: (() => void) | undefined;

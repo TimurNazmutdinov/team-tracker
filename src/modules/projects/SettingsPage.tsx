@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import type { FieldErrors, View } from '../../domain/actions';
 import { nextSprintDefaults, sprintSettingsOf } from '../../domain/settings';
 import { useActions } from '../../state/actions';
+import { usePermissions } from '../../state/current-user';
 import { useNotices } from '../../state/notices';
 import { useView } from '../../state/queries';
 import { ErrorMessage } from '../../ui/ErrorMessage';
@@ -27,6 +28,7 @@ export function SettingsPage() {
 
 function SprintSettingsForm({ view }: { view: View }) {
   const actions = useActions(view.projectId);
+  const canEdit = usePermissions().can('sprint.manage');
   const push = useNotices((s) => s.push);
   const current = sprintSettingsOf(view.project);
   const [duration, setDuration] = useState(String(current.sprintDurationDays));
@@ -80,6 +82,7 @@ function SprintSettingsForm({ view }: { view: View }) {
       <div className="form-row">
         <TextField
           name="sprintDurationDays"
+          disabled={!canEdit}
           label="Длительность по умолчанию, дней"
           type="number"
           min="1"
@@ -90,6 +93,7 @@ function SprintSettingsForm({ view }: { view: View }) {
         />
         <TextField
           name="sprintPrefix"
+          disabled={!canEdit}
           label="Название: префикс"
           value={prefix}
           onChange={setPrefix}
@@ -98,6 +102,7 @@ function SprintSettingsForm({ view }: { view: View }) {
         />
         <TextField
           name="nextSprintNumber"
+          disabled={!canEdit}
           label="Номер следующего спринта"
           type="number"
           min="1"
@@ -108,6 +113,7 @@ function SprintSettingsForm({ view }: { view: View }) {
         />
         <TextField
           name="nextSprintStart"
+          disabled={!canEdit}
           label="Дата старта следующего спринта"
           type="date"
           value={startDate}
@@ -123,9 +129,13 @@ function SprintSettingsForm({ view }: { view: View }) {
         </p>
       )}
       {errors.form && <ErrorMessage message={errors.form} />}
-      <button type="submit" className="primary">
-        Сохранить
-      </button>
+      {canEdit ? (
+        <button type="submit" className="primary">
+          Сохранить
+        </button>
+      ) : (
+        <p className="muted">Настройки спринтов меняют тимлид и администратор.</p>
+      )}
     </form>
   );
 }
