@@ -4,8 +4,11 @@
 
 **Статус: в разработке.** Сейчас готовы только документы и данные для демонстрации (этап 0–1); приложения ещё нет.
 
+![Схема архитектуры](docs/architecture.svg)
+
 ## Документы
 
+- [docs/features.md](docs/features.md) — возможности для пользователей
 - [docs/vision.md](docs/vision.md) — видение, функции MVP и этапы
 - [docs/quality.md](docs/quality.md) — нефункциональные требования
 - [docs/architecture.md](docs/architecture.md) — схемы, слои и варианты стека
