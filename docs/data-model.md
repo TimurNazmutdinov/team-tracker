@@ -4,11 +4,11 @@
 
 - **Project** — проект; `key` (например, `DEMO`) формирует номера задач вида `DEMO-12`.
 - **Person** — участник команды с ролью.
-- **Sprint** — спринт проекта с целью, датами и состоянием `planned | active | closed`.
+- **Sprint** — спринт проекта с целью, плановыми датами, состоянием `planned | active | closed` и фактическим временем закрытия `closedAt`.
 - **Issue** — задача любого типа (Epic, Story, Task, Bug, Sub-task); `parentId` задаёт иерархию, `sprintId = null` означает бэклог, `order` — ручной порядок.
 - **Link** — связь между двумя задачами: `blocks | relates | duplicates`.
 - **Comment** — комментарий к задаче.
-- **History** — запись об изменении поля задачи (кто, что, было → стало, когда).
+- **History** — запись о событии с задачей: создание, смена статуса, исполнителя, points или спринта (кто, что, было → стало, когда).
 
 Итоги по людям и спринтам не хранятся — считаются из задач и истории. Бакеты доски — это группировка по полю, отдельной сущности для них нет.
 
@@ -16,10 +16,28 @@
 
 - Номер задачи уникален в проекте; полный номер — `KEY-число`.
 - `sprintId = null` — задача в бэклоге; `order` задаёт порядок.
-- Иерархия: Epic — без родителя; Story, Task, Bug — внутри Epic или Story; Sub-task — внутри Story, Task или Bug.
-- Story points есть только у Story, Task и Bug; у Sub-task и Epic `points = null`.
+- Иерархия (`parentId`): Epic → Story, Task или Bug → Sub-task. Epic — без родителя; Story, Task и Bug — внутри Epic или без родителя (Task в Story не вкладывается); Sub-task — только внутри Story, Task или Bug.
+- Sub-task всегда в том же спринте, что и родитель, и переносится вместе с ним.
+- Story points (целое ≥ 0) есть только у Story, Task и Bug; у Epic и Sub-task `points = null`.
+- Статус задачи — любой из пяти; допустим любой переход, каждая смена пишется в History. Статус Epic задаётся вручную.
+- `Sprint.closedAt` — дата и время фактического закрытия (UTC); задано только у закрытого спринта. Velocity считается на этот момент.
+- Закрытый спринт — только чтение: после `closedAt` его задачи не меняются (кроме переноса незавершённых в момент закрытия).
 - Связь не ссылается на саму себя и не повторяется.
-- History только добавляется: смены статуса, исполнителя, points и спринта.
+- Одновременно активен не более одного спринта проекта.
+
+### События History
+
+History только добавляется. Поле `field` принимает значения:
+
+| field | from | to | Когда пишется |
+|-------|------|----|---------------|
+| `created` | `null` | начальный статус (`Backlog`) | при создании задачи |
+| `status` | прежний статус | новый статус | при каждой смене статуса |
+| `sprintId` | прежний спринт или `null` | новый спринт или `null` | при первой установке спринта, переносе и возврате в бэклог |
+| `assigneeId` | прежний исполнитель или `null` | новый исполнитель или `null` | при смене исполнителя |
+| `points` | прежние points или `null` | новые points или `null` | при смене оценки |
+
+Если задача сразу создаётся в спринте, пишутся `created` и затем `sprintId` (`null` → спринт). По истории и текущим значениям можно восстановить состояние задачи и состав спринта на любой момент: записи применяются в обратном порядке. На этом строятся burndown и velocity ([ADR-003](adr/003-business-rules.md)).
 
 ## Поля
 
@@ -27,11 +45,11 @@
 |----------|------|
 | Project | id, key, name |
 | Person | id, name, role |
-| Sprint | id, projectId, name, goal, start, end, state (planned\|active\|closed) |
+| Sprint | id, projectId, name, goal, start, end, state (planned\|active\|closed), closedAt (дата и время или null) |
 | Issue | id, projectId, number, type, title, description, acceptance, status, priority (Highest\|High\|Medium\|Low), points, assigneeId, reporterId, parentId, sprintId, labels[], order, dueDate, createdAt, updatedAt |
 | Link | id, fromId, toId, type (blocks\|relates\|duplicates) |
 | Comment | id, issueId, authorId, text, createdAt |
-| History | id, issueId, authorId, field, from, to, at |
+| History | id, issueId, authorId, field (created\|status\|assigneeId\|points\|sprintId), from, to, at |
 
 ## ER-диаграмма
 
@@ -68,6 +86,7 @@ erDiagram
         date start
         date end
         string state "planned|active|closed"
+        datetime closedAt "null пока не закрыт"
     }
     Issue {
         string id
@@ -107,7 +126,7 @@ erDiagram
         string id
         string issueId
         string authorId
-        string field
+        string field "created|status|assigneeId|points|sprintId"
         string from
         string to
         datetime at

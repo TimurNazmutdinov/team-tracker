@@ -71,10 +71,12 @@ class Svg:
         d = ' stroke-dasharray="8 6"' if dashed else ""
         self.parts.append(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{color}" stroke-width="{width}"{d}/>')
 
-    def arrow(self, pts, dashed=False, label=None, lpos=None, head=True, size=13):
+    def arrow(self, pts, dashed=False, label=None, lpos=None, head=True, size=13, both=False):
         d = "M" + " L".join(f"{x} {y}" for x, y in pts)
         dash = ' stroke-dasharray="8 6"' if dashed else ""
         mk = ' marker-end="url(#arr)"' if head else ""
+        if both:
+            mk += ' marker-start="url(#arr)"'
         self.parts.append(f'<path d="{d}" fill="none" stroke="#374151" stroke-width="2"{dash}{mk}/>')
         if label:
             if lpos is None:
@@ -92,7 +94,7 @@ class Svg:
             f'<svg xmlns="http://www.w3.org/2000/svg" width="{self.w}" height="{self.h}" viewBox="0 0 {self.w} {self.h}" '
             f'font-family="{FONT}" role="img" aria-label="{esc(self.title)}">\n'
             f'<title>{esc(self.title)}</title>\n'
-            '<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">'
+            '<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">'
             '<path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker></defs>\n'
             f'<rect width="{self.w}" height="{self.h}" fill="#ffffff"/>\n'
         )
@@ -180,18 +182,17 @@ def components():
 
 
 def status():
-    s = Svg(900, 250, "Статусы задачи и разрешённые переходы")
+    s = Svg(900, 250, "Статусы задачи: допустим любой переход")
     names = ["Backlog", "To Do", "In Progress", "Review", "Done"]
     colors = ["gray", "blue", "blue", "blue", "green"]
     xs = [15 + 185 * i for i in range(5)]
     for x, n, c in zip(xs, names, colors):
         s.box(x, 70, 130, 60, n, color=c, tsize=16)
     for i in range(4):
-        s.arrow([(xs[i] + 130, 90), (xs[i + 1], 90)])
-    for i in range(3):
-        s.arrow([(xs[i + 1], 112), (xs[i] + 130, 112)])
-    s.arrow([(xs[4] + 65, 130), (xs[4] + 65, 190), (xs[2] + 65, 190), (xs[2] + 65, 130)], label="возврат (reopen)", lpos=(630, 190))
-    s.text(15, 30, "Вперёд и назад — только на соседний статус; из Done — только в In Progress", 14, fill="#475569")
+        s.arrow([(xs[i] + 130, 100), (xs[i + 1], 100)], both=True)
+    s.arrow([(xs[0] + 65, 130), (xs[0] + 65, 190), (xs[4] + 65, 190), (xs[4] + 65, 130)], both=True,
+            label="допустим любой переход, в том числе пропуск и возврат", lpos=(450, 190))
+    s.text(15, 30, "Обычный путь слева направо; каждая смена статуса пишется в историю", 14, fill="#475569")
     return s
 
 

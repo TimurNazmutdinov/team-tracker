@@ -59,56 +59,58 @@
 <text x="30" y="258" text-anchor="start" font-size="14" fill="#6b7280">⋮⋮</text>
 <rect x="54" y="244" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
 <text x="63.0" y="257" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">T</text>
-<text x="82" y="258" text-anchor="start" font-size="13" font-weight="bold" fill="#2563eb">DEMO-9</text>
-<text x="155" y="258" text-anchor="start" font-size="14" fill="#1f2937">Форма смены пароля</text>
-<rect x="510.19999999999993" y="242" width="59.199999999999996" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="539.8" y="257.32" text-anchor="middle" font-size="12" font-weight="bold" fill="#b91c1c">▲ High</text>
-<rect x="622.0" y="242" width="89.92" height="22" rx="11.0" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="666.96" y="257.32" text-anchor="middle" font-size="12" fill="#1f2937">In Progress</text>
+<text x="82" y="258" text-anchor="start" font-size="13" font-weight="bold" fill="#2563eb">DEMO-8</text>
+<text x="155" y="258" text-anchor="start" font-size="14" fill="#1f2937">Вёрстка страницы профиля</text>
+<rect x="510.19999999999993" y="242" width="69.76" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="545.0799999999999" y="257.32" text-anchor="middle" font-size="12" fill="#1f2937">■ Medium</text>
+<rect x="622.0" y="242" width="56.32000000000001" height="22" rx="11.0" fill="#fef3c7" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="650.16" y="257.32" text-anchor="middle" font-size="12" fill="#1f2937">Review</text>
 <circle cx="763.9" cy="253" r="12" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
-<text x="763.9" y="257.5" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">3</text>
+<text x="763.9" y="257.5" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">2</text>
 <circle cx="819.8000000000001" cy="253" r="13" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="819.8000000000001" y="257" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">ИС</text>
+<text x="819.8000000000001" y="257" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">МО</text>
 <rect x="20" y="274" width="860" height="34" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
 <text x="30" y="296" text-anchor="start" font-size="14" fill="#6b7280">⋮⋮</text>
 <rect x="54" y="282" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
 <text x="63.0" y="295" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">T</text>
-<text x="82" y="296" text-anchor="start" font-size="13" font-weight="bold" fill="#2563eb">DEMO-10</text>
-<text x="155" y="296" text-anchor="start" font-size="14" fill="#1f2937">Письмо о смене пароля</text>
-<rect x="510.19999999999993" y="280" width="69.76" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="545.0799999999999" y="295.32" text-anchor="middle" font-size="12" fill="#1f2937">■ Medium</text>
-<rect x="622.0" y="280" width="49.6" height="22" rx="11.0" fill="#e0e7ff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="646.8" y="295.32" text-anchor="middle" font-size="12" fill="#1f2937">To Do</text>
+<text x="82" y="296" text-anchor="start" font-size="13" font-weight="bold" fill="#2563eb">DEMO-9</text>
+<text x="155" y="296" text-anchor="start" font-size="14" fill="#1f2937">Форма смены пароля</text>
+<rect x="510.19999999999993" y="280" width="59.199999999999996" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="539.8" y="295.32" text-anchor="middle" font-size="12" font-weight="bold" fill="#b91c1c">▲ High</text>
+<rect x="622.0" y="280" width="89.92" height="22" rx="11.0" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="666.96" y="295.32" text-anchor="middle" font-size="12" fill="#1f2937">In Progress</text>
 <circle cx="763.9" cy="291" r="12" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
-<text x="763.9" y="295.5" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">2</text>
+<text x="763.9" y="295.5" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">3</text>
 <circle cx="819.8000000000001" cy="291" r="13" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="819.8000000000001" y="295" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">МО</text>
+<text x="819.8000000000001" y="295" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">ИС</text>
 <rect x="20" y="312" width="860" height="34" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
 <text x="30" y="334" text-anchor="start" font-size="14" fill="#6b7280">⋮⋮</text>
 <rect x="54" y="320" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
-<text x="63.0" y="333" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">B</text>
-<text x="82" y="334" text-anchor="start" font-size="13" font-weight="bold" fill="#2563eb">DEMO-13</text>
-<text x="155" y="334" text-anchor="start" font-size="14" fill="#1f2937">Валидация e-mail отвергает адреса с «+»</text>
-<rect x="510.19999999999993" y="318" width="88.0" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="554.1999999999999" y="333.32" text-anchor="middle" font-size="12" font-weight="bold" fill="#b91c1c">▲▲ Highest</text>
-<rect x="622.0" y="318" width="56.32000000000001" height="22" rx="11.0" fill="#fef3c7" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="650.16" y="333.32" text-anchor="middle" font-size="12" fill="#1f2937">Review</text>
+<text x="63.0" y="333" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">T</text>
+<text x="82" y="334" text-anchor="start" font-size="13" font-weight="bold" fill="#2563eb">DEMO-10</text>
+<text x="155" y="334" text-anchor="start" font-size="14" fill="#1f2937">Письмо о смене пароля</text>
+<rect x="510.19999999999993" y="318" width="69.76" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="545.0799999999999" y="333.32" text-anchor="middle" font-size="12" fill="#1f2937">■ Medium</text>
+<rect x="622.0" y="318" width="49.6" height="22" rx="11.0" fill="#e0e7ff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="646.8" y="333.32" text-anchor="middle" font-size="12" fill="#1f2937">To Do</text>
 <circle cx="763.9" cy="329" r="12" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
-<text x="763.9" y="333.5" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">1</text>
+<text x="763.9" y="333.5" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">2</text>
 <circle cx="819.8000000000001" cy="329" r="13" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
 <text x="819.8000000000001" y="333" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">МО</text>
 <rect x="20" y="350" width="860" height="34" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
 <text x="30" y="372" text-anchor="start" font-size="14" fill="#6b7280">⋮⋮</text>
 <rect x="54" y="358" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
-<text x="63.0" y="371" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">s</text>
-<text x="82" y="372" text-anchor="start" font-size="13" font-weight="bold" fill="#2563eb">DEMO-14</text>
-<text x="155" y="372" text-anchor="start" font-size="14" fill="#1f2937">Проверка длины и сложности пароля</text>
-<rect x="510.19999999999993" y="356" width="69.76" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="545.0799999999999" y="371.32" text-anchor="middle" font-size="12" fill="#1f2937">■ Medium</text>
-<rect x="622.0" y="356" width="89.92" height="22" rx="11.0" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="666.96" y="371.32" text-anchor="middle" font-size="12" fill="#1f2937">In Progress</text>
+<text x="63.0" y="371" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">B</text>
+<text x="82" y="372" text-anchor="start" font-size="13" font-weight="bold" fill="#2563eb">DEMO-13</text>
+<text x="155" y="372" text-anchor="start" font-size="14" fill="#1f2937">Валидация e-mail отвергает адреса с «+»</text>
+<rect x="510.19999999999993" y="356" width="88.0" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="554.1999999999999" y="371.32" text-anchor="middle" font-size="12" font-weight="bold" fill="#b91c1c">▲▲ Highest</text>
+<rect x="622.0" y="356" width="56.32000000000001" height="22" rx="11.0" fill="#fef3c7" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="650.16" y="371.32" text-anchor="middle" font-size="12" fill="#1f2937">Review</text>
+<circle cx="763.9" cy="367" r="12" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="763.9" y="371.5" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">1</text>
 <circle cx="819.8000000000001" cy="367" r="13" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="819.8000000000001" y="371" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">ИС</text>
+<text x="819.8000000000001" y="371" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">МО</text>
 <rect x="1" y="35" width="898" height="764" rx="0" fill="#000000" fill-opacity="0.45"/>
 <rect x="130" y="108" width="640" height="660" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.6"/>
 <text x="154" y="146" text-anchor="start" font-size="20" font-weight="bold" fill="#1f2937">Создать задачу</text>
@@ -117,9 +119,9 @@
 <rect x="154" y="190" width="190" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
 <text x="164" y="212" text-anchor="start" font-size="14" fill="#1f2937">Task</text>
 <text x="326" y="212.0" text-anchor="middle" font-size="14" fill="#6b7280">▾</text>
-<text x="364" y="184" text-anchor="start" font-size="12" fill="#6b7280">Родитель</text>
+<text x="364" y="184" text-anchor="start" font-size="12" fill="#6b7280">Родитель (Epic)</text>
 <rect x="364" y="190" width="380" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="374" y="212" text-anchor="start" font-size="14" fill="#1f2937">DEMO-5 История заказов</text>
+<text x="374" y="212" text-anchor="start" font-size="14" fill="#1f2937">DEMO-1 Личный кабинет клиента</text>
 <text x="726" y="212.0" text-anchor="middle" font-size="14" fill="#6b7280">▾</text>
 <circle cx="140" cy="184" r="11" fill="#b91c1c"/>
 <text x="140" y="189" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">1</text>

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="900" height="690" viewBox="0 0 900 690" font-family="Helvetica, Arial, 'Segoe UI', 'DejaVu Sans', sans-serif" role="img" aria-label="Компоненты фронтенда">
 <title>Компоненты фронтенда</title>
-<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker></defs>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker></defs>
 <rect width="900" height="690" fill="#ffffff"/>
 <rect x="15" y="20" width="870" height="150" rx="14" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
 <text x="31" y="46" font-size="15" font-weight="bold" fill="#475569">Страницы и модули  (маршруты вида /projects/:key/…)</text>

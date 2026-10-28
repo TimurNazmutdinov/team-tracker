@@ -36,7 +36,8 @@
       "goal": "Вход в систему и профиль клиента",
       "start": "2026-10-12",
       "end": "2026-10-23",
-      "state": "closed"
+      "state": "closed",
+      "closedAt": "2026-10-23T18:00:00Z"
     },
     {
       "id": "s2",
@@ -45,7 +46,8 @@
       "goal": "Смена пароля и начало истории заказов",
       "start": "2026-10-26",
       "end": "2026-11-06",
-      "state": "active"
+      "state": "active",
+      "closedAt": null
     }
   ],
   "issues": [
@@ -70,7 +72,7 @@
       "order": 1,
       "dueDate": "2026-11-30",
       "createdAt": "2026-10-05T10:00:00Z",
-      "updatedAt": "2026-10-26T10:00:00Z"
+      "updatedAt": "2026-10-13T10:00:00Z"
     },
     {
       "id": "i2",
@@ -163,7 +165,7 @@
       "order": 5,
       "dueDate": "2026-11-06",
       "createdAt": "2026-10-19T10:00:00Z",
-      "updatedAt": "2026-10-26T09:00:00Z"
+      "updatedAt": "2026-10-26T08:35:00Z"
     },
     {
       "id": "i6",
@@ -178,7 +180,7 @@
       "points": 3,
       "assigneeId": "u2",
       "reporterId": "u2",
-      "parentId": "i2",
+      "parentId": "i1",
       "sprintId": "s1",
       "labels": [
         "бэкенд"
@@ -201,7 +203,7 @@
       "points": 3,
       "assigneeId": "u2",
       "reporterId": "u2",
-      "parentId": "i2",
+      "parentId": "i1",
       "sprintId": "s1",
       "labels": [
         "бэкенд"
@@ -219,20 +221,20 @@
       "title": "Вёрстка страницы профиля",
       "description": "Адаптивная вёрстка по макету, светлая и тёмная тема.",
       "acceptance": "Страница корректно выглядит на 360 px и на 1440 px.",
-      "status": "Done",
+      "status": "Review",
       "priority": "Medium",
       "points": 2,
       "assigneeId": "u3",
       "reporterId": "u1",
-      "parentId": "i3",
-      "sprintId": "s1",
+      "parentId": "i1",
+      "sprintId": "s2",
       "labels": [
         "фронтенд"
       ],
       "order": 8,
-      "dueDate": "2026-10-21",
+      "dueDate": "2026-11-04",
       "createdAt": "2026-10-08T10:00:00Z",
-      "updatedAt": "2026-10-21T17:00:00Z"
+      "updatedAt": "2026-10-23T18:00:00Z"
     },
     {
       "id": "i9",
@@ -247,7 +249,7 @@
       "points": 3,
       "assigneeId": "u2",
       "reporterId": "u2",
-      "parentId": "i4",
+      "parentId": "i1",
       "sprintId": "s2",
       "labels": [
         "фронтенд",
@@ -271,7 +273,7 @@
       "points": 2,
       "assigneeId": "u3",
       "reporterId": "u2",
-      "parentId": "i4",
+      "parentId": "i1",
       "sprintId": "s2",
       "labels": [
         "бэкенд"
@@ -279,7 +281,7 @@
       "order": 10,
       "dueDate": "2026-11-05",
       "createdAt": "2026-10-19T10:00:00Z",
-      "updatedAt": "2026-10-19T13:00:00Z"
+      "updatedAt": "2026-10-26T08:40:00Z"
     },
     {
       "id": "i11",
@@ -294,7 +296,7 @@
       "points": 3,
       "assigneeId": null,
       "reporterId": "u1",
-      "parentId": "i5",
+      "parentId": "i1",
       "sprintId": null,
       "labels": [
         "заказы",
@@ -318,7 +320,7 @@
       "points": 2,
       "assigneeId": "u2",
       "reporterId": "u4",
-      "parentId": "i2",
+      "parentId": "i1",
       "sprintId": "s1",
       "labels": [
         "авторизация",
@@ -342,7 +344,7 @@
       "points": 1,
       "assigneeId": "u3",
       "reporterId": "u4",
-      "parentId": "i4",
+      "parentId": "i1",
       "sprintId": "s2",
       "labels": [
         "авторизация"
@@ -396,7 +398,7 @@
       "order": 15,
       "dueDate": "2026-11-03",
       "createdAt": "2026-10-20T10:00:00Z",
-      "updatedAt": "2026-10-20T10:00:00Z"
+      "updatedAt": "2026-10-26T08:45:00Z"
     },
     {
       "id": "i16",
@@ -476,42 +478,132 @@
   "history": [
     {
       "id": "h1",
-      "issueId": "i2",
-      "authorId": "u2",
-      "field": "status",
-      "from": "Backlog",
-      "to": "To Do",
-      "at": "2026-10-12T09:00:00Z"
+      "issueId": "i1",
+      "authorId": "u1",
+      "field": "created",
+      "from": null,
+      "to": "Backlog",
+      "at": "2026-10-05T10:00:00Z"
     },
     {
       "id": "h2",
       "issueId": "i2",
-      "authorId": "u2",
-      "field": "status",
-      "from": "To Do",
-      "to": "In Progress",
-      "at": "2026-10-13T10:00:00Z"
+      "authorId": "u1",
+      "field": "created",
+      "from": null,
+      "to": "Backlog",
+      "at": "2026-10-05T10:00:00Z"
     },
     {
       "id": "h3",
-      "issueId": "i2",
-      "authorId": "u2",
-      "field": "status",
-      "from": "In Progress",
-      "to": "Review",
-      "at": "2026-10-20T15:00:00Z"
+      "issueId": "i3",
+      "authorId": "u1",
+      "field": "created",
+      "from": null,
+      "to": "Backlog",
+      "at": "2026-10-05T10:00:00Z"
     },
     {
       "id": "h4",
-      "issueId": "i2",
+      "issueId": "i6",
       "authorId": "u2",
-      "field": "status",
-      "from": "Review",
-      "to": "Done",
-      "at": "2026-10-22T16:00:00Z"
+      "field": "created",
+      "from": null,
+      "to": "Backlog",
+      "at": "2026-10-08T10:00:00Z"
     },
     {
       "id": "h5",
+      "issueId": "i7",
+      "authorId": "u2",
+      "field": "created",
+      "from": null,
+      "to": "Backlog",
+      "at": "2026-10-08T10:00:00Z"
+    },
+    {
+      "id": "h6",
+      "issueId": "i8",
+      "authorId": "u1",
+      "field": "created",
+      "from": null,
+      "to": "Backlog",
+      "at": "2026-10-08T10:00:00Z"
+    },
+    {
+      "id": "h7",
+      "issueId": "i16",
+      "authorId": "u2",
+      "field": "created",
+      "from": null,
+      "to": "Backlog",
+      "at": "2026-10-09T10:00:00Z"
+    },
+    {
+      "id": "h8",
+      "issueId": "i2",
+      "authorId": "u1",
+      "field": "sprintId",
+      "from": null,
+      "to": "s1",
+      "at": "2026-10-12T08:30:00Z"
+    },
+    {
+      "id": "h9",
+      "issueId": "i3",
+      "authorId": "u1",
+      "field": "sprintId",
+      "from": null,
+      "to": "s1",
+      "at": "2026-10-12T08:30:00Z"
+    },
+    {
+      "id": "h10",
+      "issueId": "i6",
+      "authorId": "u1",
+      "field": "sprintId",
+      "from": null,
+      "to": "s1",
+      "at": "2026-10-12T08:30:00Z"
+    },
+    {
+      "id": "h11",
+      "issueId": "i7",
+      "authorId": "u1",
+      "field": "sprintId",
+      "from": null,
+      "to": "s1",
+      "at": "2026-10-12T08:30:00Z"
+    },
+    {
+      "id": "h12",
+      "issueId": "i8",
+      "authorId": "u1",
+      "field": "sprintId",
+      "from": null,
+      "to": "s1",
+      "at": "2026-10-12T08:30:00Z"
+    },
+    {
+      "id": "h13",
+      "issueId": "i16",
+      "authorId": "u1",
+      "field": "sprintId",
+      "from": null,
+      "to": "s1",
+      "at": "2026-10-12T08:30:00Z"
+    },
+    {
+      "id": "h14",
+      "issueId": "i2",
+      "authorId": "u2",
+      "field": "status",
+      "from": "Backlog",
+      "to": "To Do",
+      "at": "2026-10-12T09:00:00Z"
+    },
+    {
+      "id": "h15",
       "issueId": "i3",
       "authorId": "u3",
       "field": "status",
@@ -520,34 +612,16 @@
       "at": "2026-10-12T09:00:00Z"
     },
     {
-      "id": "h6",
-      "issueId": "i3",
-      "authorId": "u3",
+      "id": "h16",
+      "issueId": "i1",
+      "authorId": "u1",
       "field": "status",
-      "from": "To Do",
-      "to": "In Progress",
-      "at": "2026-10-16T10:00:00Z"
+      "from": "Backlog",
+      "to": "To Do",
+      "at": "2026-10-12T09:00:00Z"
     },
     {
-      "id": "h7",
-      "issueId": "i3",
-      "authorId": "u3",
-      "field": "status",
-      "from": "In Progress",
-      "to": "Review",
-      "at": "2026-10-22T11:00:00Z"
-    },
-    {
-      "id": "h8",
-      "issueId": "i3",
-      "authorId": "u3",
-      "field": "status",
-      "from": "Review",
-      "to": "Done",
-      "at": "2026-10-23T12:00:00Z"
-    },
-    {
-      "id": "h9",
+      "id": "h17",
       "issueId": "i6",
       "authorId": "u2",
       "field": "status",
@@ -556,34 +630,7 @@
       "at": "2026-10-12T09:05:00Z"
     },
     {
-      "id": "h10",
-      "issueId": "i6",
-      "authorId": "u2",
-      "field": "status",
-      "from": "To Do",
-      "to": "In Progress",
-      "at": "2026-10-12T11:00:00Z"
-    },
-    {
-      "id": "h11",
-      "issueId": "i6",
-      "authorId": "u2",
-      "field": "status",
-      "from": "In Progress",
-      "to": "Review",
-      "at": "2026-10-14T10:00:00Z"
-    },
-    {
-      "id": "h12",
-      "issueId": "i6",
-      "authorId": "u2",
-      "field": "status",
-      "from": "Review",
-      "to": "Done",
-      "at": "2026-10-14T15:00:00Z"
-    },
-    {
-      "id": "h13",
+      "id": "h18",
       "issueId": "i7",
       "authorId": "u2",
       "field": "status",
@@ -592,34 +639,7 @@
       "at": "2026-10-12T09:10:00Z"
     },
     {
-      "id": "h14",
-      "issueId": "i7",
-      "authorId": "u2",
-      "field": "status",
-      "from": "To Do",
-      "to": "In Progress",
-      "at": "2026-10-15T10:00:00Z"
-    },
-    {
-      "id": "h15",
-      "issueId": "i7",
-      "authorId": "u2",
-      "field": "status",
-      "from": "In Progress",
-      "to": "Review",
-      "at": "2026-10-19T16:00:00Z"
-    },
-    {
-      "id": "h16",
-      "issueId": "i7",
-      "authorId": "u2",
-      "field": "status",
-      "from": "Review",
-      "to": "Done",
-      "at": "2026-10-20T14:00:00Z"
-    },
-    {
-      "id": "h17",
+      "id": "h19",
       "issueId": "i8",
       "authorId": "u3",
       "field": "status",
@@ -628,70 +648,7 @@
       "at": "2026-10-12T09:15:00Z"
     },
     {
-      "id": "h18",
-      "issueId": "i8",
-      "authorId": "u3",
-      "field": "status",
-      "from": "To Do",
-      "to": "In Progress",
-      "at": "2026-10-19T10:00:00Z"
-    },
-    {
-      "id": "h19",
-      "issueId": "i8",
-      "authorId": "u3",
-      "field": "status",
-      "from": "In Progress",
-      "to": "Review",
-      "at": "2026-10-21T12:00:00Z"
-    },
-    {
       "id": "h20",
-      "issueId": "i8",
-      "authorId": "u3",
-      "field": "status",
-      "from": "Review",
-      "to": "Done",
-      "at": "2026-10-21T17:00:00Z"
-    },
-    {
-      "id": "h21",
-      "issueId": "i12",
-      "authorId": "u2",
-      "field": "status",
-      "from": "Backlog",
-      "to": "To Do",
-      "at": "2026-10-15T11:00:00Z"
-    },
-    {
-      "id": "h22",
-      "issueId": "i12",
-      "authorId": "u2",
-      "field": "status",
-      "from": "To Do",
-      "to": "In Progress",
-      "at": "2026-10-20T10:00:00Z"
-    },
-    {
-      "id": "h23",
-      "issueId": "i12",
-      "authorId": "u2",
-      "field": "status",
-      "from": "In Progress",
-      "to": "Review",
-      "at": "2026-10-21T15:00:00Z"
-    },
-    {
-      "id": "h24",
-      "issueId": "i12",
-      "authorId": "u2",
-      "field": "status",
-      "from": "Review",
-      "to": "Done",
-      "at": "2026-10-22T10:00:00Z"
-    },
-    {
-      "id": "h25",
       "issueId": "i16",
       "authorId": "u4",
       "field": "status",
@@ -700,7 +657,151 @@
       "at": "2026-10-12T09:20:00Z"
     },
     {
+      "id": "h21",
+      "issueId": "i6",
+      "authorId": "u2",
+      "field": "status",
+      "from": "To Do",
+      "to": "In Progress",
+      "at": "2026-10-12T11:00:00Z"
+    },
+    {
+      "id": "h22",
+      "issueId": "i2",
+      "authorId": "u2",
+      "field": "status",
+      "from": "To Do",
+      "to": "In Progress",
+      "at": "2026-10-13T10:00:00Z"
+    },
+    {
+      "id": "h23",
+      "issueId": "i1",
+      "authorId": "u1",
+      "field": "status",
+      "from": "To Do",
+      "to": "In Progress",
+      "at": "2026-10-13T10:00:00Z"
+    },
+    {
+      "id": "h24",
+      "issueId": "i6",
+      "authorId": "u2",
+      "field": "status",
+      "from": "In Progress",
+      "to": "Review",
+      "at": "2026-10-14T10:00:00Z"
+    },
+    {
+      "id": "h25",
+      "issueId": "i6",
+      "authorId": "u2",
+      "field": "status",
+      "from": "Review",
+      "to": "Done",
+      "at": "2026-10-14T15:00:00Z"
+    },
+    {
       "id": "h26",
+      "issueId": "i12",
+      "authorId": "u4",
+      "field": "created",
+      "from": null,
+      "to": "Backlog",
+      "at": "2026-10-15T10:00:00Z"
+    },
+    {
+      "id": "h27",
+      "issueId": "i7",
+      "authorId": "u2",
+      "field": "status",
+      "from": "To Do",
+      "to": "In Progress",
+      "at": "2026-10-15T10:00:00Z"
+    },
+    {
+      "id": "h28",
+      "issueId": "i12",
+      "authorId": "u4",
+      "field": "sprintId",
+      "from": null,
+      "to": "s1",
+      "at": "2026-10-15T10:05:00Z"
+    },
+    {
+      "id": "h29",
+      "issueId": "i12",
+      "authorId": "u2",
+      "field": "status",
+      "from": "Backlog",
+      "to": "To Do",
+      "at": "2026-10-15T11:00:00Z"
+    },
+    {
+      "id": "h30",
+      "issueId": "i3",
+      "authorId": "u3",
+      "field": "status",
+      "from": "To Do",
+      "to": "In Progress",
+      "at": "2026-10-16T10:00:00Z"
+    },
+    {
+      "id": "h31",
+      "issueId": "i4",
+      "authorId": "u1",
+      "field": "created",
+      "from": null,
+      "to": "Backlog",
+      "at": "2026-10-19T10:00:00Z"
+    },
+    {
+      "id": "h32",
+      "issueId": "i5",
+      "authorId": "u1",
+      "field": "created",
+      "from": null,
+      "to": "Backlog",
+      "at": "2026-10-19T10:00:00Z"
+    },
+    {
+      "id": "h33",
+      "issueId": "i9",
+      "authorId": "u2",
+      "field": "created",
+      "from": null,
+      "to": "Backlog",
+      "at": "2026-10-19T10:00:00Z"
+    },
+    {
+      "id": "h34",
+      "issueId": "i10",
+      "authorId": "u2",
+      "field": "created",
+      "from": null,
+      "to": "Backlog",
+      "at": "2026-10-19T10:00:00Z"
+    },
+    {
+      "id": "h35",
+      "issueId": "i8",
+      "authorId": "u3",
+      "field": "status",
+      "from": "To Do",
+      "to": "In Progress",
+      "at": "2026-10-19T10:00:00Z"
+    },
+    {
+      "id": "h36",
+      "issueId": "i11",
+      "authorId": "u1",
+      "field": "created",
+      "from": null,
+      "to": "Backlog",
+      "at": "2026-10-19T14:00:00Z"
+    },
+    {
+      "id": "h37",
       "issueId": "i16",
       "authorId": "u4",
       "field": "status",
@@ -709,7 +810,43 @@
       "at": "2026-10-19T14:00:00Z"
     },
     {
-      "id": "h27",
+      "id": "h38",
+      "issueId": "i7",
+      "authorId": "u2",
+      "field": "status",
+      "from": "In Progress",
+      "to": "Review",
+      "at": "2026-10-19T16:00:00Z"
+    },
+    {
+      "id": "h39",
+      "issueId": "i14",
+      "authorId": "u2",
+      "field": "created",
+      "from": null,
+      "to": "Backlog",
+      "at": "2026-10-20T10:00:00Z"
+    },
+    {
+      "id": "h40",
+      "issueId": "i15",
+      "authorId": "u2",
+      "field": "created",
+      "from": null,
+      "to": "Backlog",
+      "at": "2026-10-20T10:00:00Z"
+    },
+    {
+      "id": "h41",
+      "issueId": "i12",
+      "authorId": "u2",
+      "field": "status",
+      "from": "To Do",
+      "to": "In Progress",
+      "at": "2026-10-20T10:00:00Z"
+    },
+    {
+      "id": "h42",
       "issueId": "i16",
       "authorId": "u4",
       "field": "status",
@@ -718,13 +855,274 @@
       "at": "2026-10-20T10:00:00Z"
     },
     {
-      "id": "h28",
+      "id": "h43",
       "issueId": "i16",
       "authorId": "u4",
       "field": "status",
       "from": "Review",
       "to": "Done",
       "at": "2026-10-20T13:00:00Z"
+    },
+    {
+      "id": "h44",
+      "issueId": "i7",
+      "authorId": "u2",
+      "field": "status",
+      "from": "Review",
+      "to": "Done",
+      "at": "2026-10-20T14:00:00Z"
+    },
+    {
+      "id": "h45",
+      "issueId": "i2",
+      "authorId": "u2",
+      "field": "status",
+      "from": "In Progress",
+      "to": "Review",
+      "at": "2026-10-20T15:00:00Z"
+    },
+    {
+      "id": "h46",
+      "issueId": "i8",
+      "authorId": "u3",
+      "field": "status",
+      "from": "In Progress",
+      "to": "Review",
+      "at": "2026-10-21T12:00:00Z"
+    },
+    {
+      "id": "h47",
+      "issueId": "i12",
+      "authorId": "u2",
+      "field": "status",
+      "from": "In Progress",
+      "to": "Review",
+      "at": "2026-10-21T15:00:00Z"
+    },
+    {
+      "id": "h48",
+      "issueId": "i12",
+      "authorId": "u2",
+      "field": "status",
+      "from": "Review",
+      "to": "Done",
+      "at": "2026-10-22T10:00:00Z"
+    },
+    {
+      "id": "h49",
+      "issueId": "i3",
+      "authorId": "u3",
+      "field": "status",
+      "from": "In Progress",
+      "to": "Review",
+      "at": "2026-10-22T11:00:00Z"
+    },
+    {
+      "id": "h50",
+      "issueId": "i2",
+      "authorId": "u2",
+      "field": "status",
+      "from": "Review",
+      "to": "Done",
+      "at": "2026-10-22T16:00:00Z"
+    },
+    {
+      "id": "h51",
+      "issueId": "i3",
+      "authorId": "u3",
+      "field": "status",
+      "from": "Review",
+      "to": "Done",
+      "at": "2026-10-23T12:00:00Z"
+    },
+    {
+      "id": "h52",
+      "issueId": "i8",
+      "authorId": "u1",
+      "field": "sprintId",
+      "from": "s1",
+      "to": "s2",
+      "at": "2026-10-23T18:00:00Z"
+    },
+    {
+      "id": "h53",
+      "issueId": "i4",
+      "authorId": "u1",
+      "field": "sprintId",
+      "from": null,
+      "to": "s2",
+      "at": "2026-10-26T08:30:00Z"
+    },
+    {
+      "id": "h54",
+      "issueId": "i5",
+      "authorId": "u1",
+      "field": "sprintId",
+      "from": null,
+      "to": "s2",
+      "at": "2026-10-26T08:30:00Z"
+    },
+    {
+      "id": "h55",
+      "issueId": "i9",
+      "authorId": "u1",
+      "field": "sprintId",
+      "from": null,
+      "to": "s2",
+      "at": "2026-10-26T08:30:00Z"
+    },
+    {
+      "id": "h56",
+      "issueId": "i10",
+      "authorId": "u1",
+      "field": "sprintId",
+      "from": null,
+      "to": "s2",
+      "at": "2026-10-26T08:30:00Z"
+    },
+    {
+      "id": "h57",
+      "issueId": "i14",
+      "authorId": "u1",
+      "field": "sprintId",
+      "from": null,
+      "to": "s2",
+      "at": "2026-10-26T08:30:00Z"
+    },
+    {
+      "id": "h58",
+      "issueId": "i15",
+      "authorId": "u1",
+      "field": "sprintId",
+      "from": null,
+      "to": "s2",
+      "at": "2026-10-26T08:30:00Z"
+    },
+    {
+      "id": "h59",
+      "issueId": "i4",
+      "authorId": "u2",
+      "field": "status",
+      "from": "Backlog",
+      "to": "To Do",
+      "at": "2026-10-26T08:35:00Z"
+    },
+    {
+      "id": "h60",
+      "issueId": "i5",
+      "authorId": "u3",
+      "field": "status",
+      "from": "Backlog",
+      "to": "To Do",
+      "at": "2026-10-26T08:35:00Z"
+    },
+    {
+      "id": "h61",
+      "issueId": "i9",
+      "authorId": "u2",
+      "field": "status",
+      "from": "Backlog",
+      "to": "To Do",
+      "at": "2026-10-26T08:40:00Z"
+    },
+    {
+      "id": "h62",
+      "issueId": "i10",
+      "authorId": "u3",
+      "field": "status",
+      "from": "Backlog",
+      "to": "To Do",
+      "at": "2026-10-26T08:40:00Z"
+    },
+    {
+      "id": "h63",
+      "issueId": "i14",
+      "authorId": "u2",
+      "field": "status",
+      "from": "Backlog",
+      "to": "To Do",
+      "at": "2026-10-26T08:40:00Z"
+    },
+    {
+      "id": "h64",
+      "issueId": "i15",
+      "authorId": "u2",
+      "field": "status",
+      "from": "Backlog",
+      "to": "To Do",
+      "at": "2026-10-26T08:45:00Z"
+    },
+    {
+      "id": "h65",
+      "issueId": "i13",
+      "authorId": "u4",
+      "field": "created",
+      "from": null,
+      "to": "Backlog",
+      "at": "2026-10-26T10:00:00Z"
+    },
+    {
+      "id": "h66",
+      "issueId": "i13",
+      "authorId": "u4",
+      "field": "sprintId",
+      "from": null,
+      "to": "s2",
+      "at": "2026-10-26T10:05:00Z"
+    },
+    {
+      "id": "h67",
+      "issueId": "i13",
+      "authorId": "u4",
+      "field": "status",
+      "from": "Backlog",
+      "to": "To Do",
+      "at": "2026-10-26T10:10:00Z"
+    },
+    {
+      "id": "h68",
+      "issueId": "i13",
+      "authorId": "u3",
+      "field": "status",
+      "from": "To Do",
+      "to": "In Progress",
+      "at": "2026-10-27T09:00:00Z"
+    },
+    {
+      "id": "h69",
+      "issueId": "i4",
+      "authorId": "u2",
+      "field": "status",
+      "from": "To Do",
+      "to": "In Progress",
+      "at": "2026-10-27T11:00:00Z"
+    },
+    {
+      "id": "h70",
+      "issueId": "i9",
+      "authorId": "u2",
+      "field": "status",
+      "from": "To Do",
+      "to": "In Progress",
+      "at": "2026-10-27T11:00:00Z"
+    },
+    {
+      "id": "h71",
+      "issueId": "i14",
+      "authorId": "u2",
+      "field": "status",
+      "from": "To Do",
+      "to": "In Progress",
+      "at": "2026-10-27T11:00:00Z"
+    },
+    {
+      "id": "h72",
+      "issueId": "i13",
+      "authorId": "u3",
+      "field": "status",
+      "from": "In Progress",
+      "to": "Review",
+      "at": "2026-10-28T09:00:00Z"
     }
   ]
 }

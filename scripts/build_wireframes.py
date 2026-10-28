@@ -228,21 +228,39 @@ def sprint_issues(sid):
     return sorted([i for i in SEED["issues"] if i["sprintId"] == sid], key=lambda i: i["order"])
 
 
+def status_at(iss, t=None):
+    st = "Backlog"
+    for h in SEED["history"]:
+        if h["issueId"] == iss["id"] and h["field"] == "status" and (t is None or h["at"] <= t):
+            st = h["to"]
+    return st
+
+
+def scope(sid):
+    """Задачи спринта и их статус: у закрытого спринта — состав и статусы на момент closedAt (по истории)."""
+    s = SPRINTS[sid]
+    if s["state"] == "closed":
+        ids = list(dict.fromkeys(h["issueId"] for h in SEED["history"] if h["field"] == "sprintId" and h["to"] == sid))
+        items = sorted((BY_ID[x] for x in ids), key=lambda i: i["order"])
+        return [(i, status_at(i, s["closedAt"])) for i in items]
+    return [(i, i["status"]) for i in sprint_issues(sid)]
+
+
 def sums(sid):
     rows = {}
-    for i in sprint_issues(sid):
+    for i, st in scope(sid):
         r = rows.setdefault(i["assigneeId"], dict(n=0, pts=0, done=0))
         r["n"] += 1
         r["pts"] += i["points"] or 0
-        if i["status"] == "Done":
+        if st == "Done":
             r["done"] += i["points"] or 0
     return rows
 
 
 def pts_by_status(sid):
     d = {s: 0 for s in STATUSES}
-    for i in sprint_issues(sid):
-        d[i["status"]] += i["points"] or 0
+    for i, st in scope(sid):
+        d[st] += i["points"] or 0
     return d
 
 
@@ -574,7 +592,7 @@ def screen_issue(num, tab, title):
     links = [l for l in SEED["links"] if i["id"] in (l["fromId"], l["toId"])]
     comments = [c for c in SEED["comments"] if c["issueId"] == i["id"]]
     hist = [x for x in SEED["history"] if x["issueId"] == i["id"]]
-    h = 820 if tab == "comments" else 800
+    h = 820 if tab == "comments" else 800 + 36 * max(0, len(hist) - 4) + 40
     wf = WF(h, title)
     t = wf.t
     wf.shell(f"team-tracker.app/projects/{KEY}/issues/{i['number']}", None)
@@ -662,11 +680,19 @@ def screen_issue(num, tab, title):
             wf.rect(x0, y, lw, 32, fill=t["bg"], stroke=t["line"], r=4)
             wf.text(x0 + 10, y + 21, fdt(x["at"]), 12, fill=t["muted"])
             wf.text(x0 + 140, y + 21, a, 13, bold=True)
-            wf.text(x0 + 290, y + 21, "статус:", 13, fill=t["muted"])
-            xx = x0 + 345
-            xx += wf.status_chip(xx, y + 5, x["from"], 11) + 6
-            wf.text(xx, y + 21, "→", 13)
-            wf.status_chip(xx + 20, y + 5, x["to"], 11)
+            sp = lambda v: SPRINTS[v]["name"] if v else "—"
+            if x["field"] == "created":
+                wf.text(x0 + 290, y + 21, "создана:", 13, fill=t["muted"])
+                wf.status_chip(x0 + 360, y + 5, x["to"], 11)
+            elif x["field"] == "sprintId":
+                wf.text(x0 + 290, y + 21, "спринт:", 13, fill=t["muted"])
+                wf.text(x0 + 350, y + 21, f"{sp(x['from'])} → {sp(x['to'])}", 13)
+            else:
+                wf.text(x0 + 290, y + 21, "статус:", 13, fill=t["muted"])
+                xx = x0 + 345
+                xx += wf.status_chip(xx, y + 5, x["from"], 11) + 6
+                wf.text(xx, y + 21, "→", 13)
+                wf.status_chip(xx + 20, y + 5, x["to"], 11)
             y += 36
         wf.text(x0, y + 18, "Записи только добавляются; править и удалять их нельзя.", 12, fill=t["muted"])
         y += 30
@@ -720,7 +746,7 @@ def screen_create():
     wf.text(mx + mw - 24, my + 38, "Esc", 12, "end", fill=t["muted"])
     f1 = mx + 24
     wf.field(f1, my + 76, 190, "Тип *", "Task", dropdown=True)
-    wf.field(f1 + 210, my + 76, 380, "Родитель", f"{tkey(BY_NUM[5])} {BY_NUM[5]['title']}", dropdown=True)
+    wf.field(f1 + 210, my + 76, 380, "Родитель (Epic)", f"{tkey(BY_NUM[1])} {BY_NUM[1]['title']}", dropdown=True)
     wf.callout(1, f1 - 14, my + 76)
     wf.field(f1, my + 146, mw - 48, "Название *", "", error="Введите название (до 200 символов)")
     wf.callout(2, f1 - 14, my + 146)
@@ -758,14 +784,14 @@ def screen_reports():
     wf.chip(150, 108, "Спринт 1 ▾", 14, h=30)
     wf.callout(1, 144, 108)
     s1 = SPRINTS["s1"]
-    issues = [i for i in sprint_issues("s1") if i["points"]]
+    issues = [i for i, _ in scope("s1") if i["points"]]
     total = sum(i["points"] for i in issues)
     start = datetime.date.fromisoformat(s1["start"])
     end = datetime.date.fromisoformat(s1["end"])
     days = (end - start).days + 1
     done_at = {}
     for x in SEED["history"]:
-        if x["to"] == "Done":
+        if x["to"] == "Done" and x["at"] <= s1["closedAt"]:
             done_at[x["issueId"]] = datetime.datetime.fromisoformat(x["at"].replace("Z", "+00:00")).date()
     rem = []
     for d in range(days):
@@ -797,7 +823,7 @@ def screen_reports():
     wf.callout(3, vx - 17, 174)
     base = gy + gh
     wf.line(vx, base, vx + vw, base, t["muted"])
-    vel = sum(i["points"] or 0 for i in sprint_issues("s1") if i["status"] == "Done")
+    vel = sum(i["points"] or 0 for i, st in scope("s1") if st == "Done")
     bh = gh * 0.8
     wf.rect(vx + 40, base - bh, 80, bh, fill=t["accent"], r=3)
     wf.text(vx + 80, base - bh - 8, vel, 14, "middle", True)

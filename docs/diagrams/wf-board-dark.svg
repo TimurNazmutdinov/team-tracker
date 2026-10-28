@@ -43,7 +43,7 @@
 <text x="434" y="162" text-anchor="end" font-size="12" fill="#9ca3af">3 · 8 pts</text>
 <rect x="456" y="142" width="206" height="30" rx="6" fill="#92400e" stroke="#4b5563" stroke-width="1.2"/>
 <text x="466" y="162" text-anchor="start" font-size="14" font-weight="bold" fill="#f3f4f6">Review</text>
-<text x="652" y="162" text-anchor="end" font-size="12" fill="#9ca3af">1 · 1 pts</text>
+<text x="652" y="162" text-anchor="end" font-size="12" fill="#9ca3af">2 · 3 pts</text>
 <rect x="674" y="142" width="206" height="30" rx="6" fill="#166534" stroke="#4b5563" stroke-width="1.2"/>
 <text x="684" y="162" text-anchor="start" font-size="14" font-weight="bold" fill="#f3f4f6">Done</text>
 <text x="870" y="162" text-anchor="end" font-size="12" fill="#9ca3af">0 · 0 pts</text>
@@ -89,7 +89,7 @@
 <circle cx="58" cy="533" r="11" fill="#1f2937" stroke="#4b5563" stroke-width="1.2"/>
 <text x="58" y="537" text-anchor="middle" font-size="11" font-weight="bold" fill="#f3f4f6">МО</text>
 <text x="78" y="538" text-anchor="start" font-size="14" font-weight="bold" fill="#f3f4f6">Мария Орлова</text>
-<text x="870" y="538" text-anchor="end" font-size="12" fill="#9ca3af">3 задачи · 11 pts</text>
+<text x="870" y="538" text-anchor="end" font-size="12" fill="#9ca3af">4 задачи · 13 pts</text>
 <rect x="20" y="552" width="206" height="202" rx="6" fill="#1f2937" stroke="#4b5563" stroke-width="1.2"/>
 <rect x="28" y="558" width="190" height="90" rx="6" fill="#273244" stroke="#9ca3af" stroke-width="1.2"/>
 <rect x="36" y="565" width="16" height="16" rx="4" fill="#1f2937" stroke="#9ca3af" stroke-width="1.2"/>
@@ -113,14 +113,23 @@
 <rect x="456" y="552" width="206" height="202" rx="6" fill="#1f2937" stroke="#4b5563" stroke-width="1.2"/>
 <rect x="464" y="558" width="190" height="90" rx="6" fill="#273244" stroke="#9ca3af" stroke-width="1.2"/>
 <rect x="472" y="565" width="16" height="16" rx="4" fill="#1f2937" stroke="#9ca3af" stroke-width="1.2"/>
-<text x="480.0" y="576" text-anchor="middle" font-size="12" font-weight="bold" fill="#f3f4f6">B</text>
-<text x="494" y="578" text-anchor="start" font-size="12" font-weight="bold" fill="#60a5fa">DEMO-13</text>
-<text x="472" y="596" text-anchor="start" font-size="12.5" fill="#f3f4f6">Валидация e-mail</text>
-<text x="472" y="611" text-anchor="start" font-size="12.5" fill="#f3f4f6">отвергает адреса с «+»</text>
-<rect x="472" y="621" width="79.0" height="22" rx="11.0" fill="#111827" stroke="#4b5563" stroke-width="1.2"/>
-<text x="511.5" y="635.78" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#fca5a5">▲▲ Highest</text>
+<text x="480.0" y="576" text-anchor="middle" font-size="12" font-weight="bold" fill="#f3f4f6">T</text>
+<text x="494" y="578" text-anchor="start" font-size="12" font-weight="bold" fill="#60a5fa">DEMO-8</text>
+<text x="472" y="596" text-anchor="start" font-size="12.5" fill="#f3f4f6">Вёрстка страницы профиля</text>
+<rect x="472" y="621" width="63.040000000000006" height="22" rx="11.0" fill="#111827" stroke="#4b5563" stroke-width="1.2"/>
+<text x="503.52" y="635.78" text-anchor="middle" font-size="10.5" fill="#f3f4f6">■ Medium</text>
 <circle cx="636" cy="632" r="12" fill="#1f2937" stroke="#9ca3af" stroke-width="1.2"/>
-<text x="636" y="636.5" text-anchor="middle" font-size="12" font-weight="bold" fill="#f3f4f6">1</text>
+<text x="636" y="636.5" text-anchor="middle" font-size="12" font-weight="bold" fill="#f3f4f6">2</text>
+<rect x="464" y="656" width="190" height="90" rx="6" fill="#273244" stroke="#9ca3af" stroke-width="1.2"/>
+<rect x="472" y="663" width="16" height="16" rx="4" fill="#1f2937" stroke="#9ca3af" stroke-width="1.2"/>
+<text x="480.0" y="674" text-anchor="middle" font-size="12" font-weight="bold" fill="#f3f4f6">B</text>
+<text x="494" y="676" text-anchor="start" font-size="12" font-weight="bold" fill="#60a5fa">DEMO-13</text>
+<text x="472" y="694" text-anchor="start" font-size="12.5" fill="#f3f4f6">Валидация e-mail</text>
+<text x="472" y="709" text-anchor="start" font-size="12.5" fill="#f3f4f6">отвергает адреса с «+»</text>
+<rect x="472" y="719" width="79.0" height="22" rx="11.0" fill="#111827" stroke="#4b5563" stroke-width="1.2"/>
+<text x="511.5" y="733.78" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#fca5a5">▲▲ Highest</text>
+<circle cx="636" cy="730" r="12" fill="#1f2937" stroke="#9ca3af" stroke-width="1.2"/>
+<text x="636" y="734.5" text-anchor="middle" font-size="12" font-weight="bold" fill="#f3f4f6">1</text>
 <rect x="674" y="552" width="206" height="202" rx="6" fill="#1f2937" stroke="#4b5563" stroke-width="1.2"/>
 <rect x="20" y="760" width="860" height="30" rx="6" fill="#1f2937" stroke="#4b5563" stroke-width="1.2"/>
 <text x="30" y="780" text-anchor="start" font-size="13" fill="#f3f4f6">▾</text>

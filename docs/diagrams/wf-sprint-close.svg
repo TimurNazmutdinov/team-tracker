@@ -34,7 +34,7 @@
 <rect x="190" y="130" width="520" height="470" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.6"/>
 <text x="214" y="170" text-anchor="start" font-size="20" font-weight="bold" fill="#1f2937">Закрыть «Спринт 2»?</text>
 <text x="214" y="206" text-anchor="start" font-size="14" fill="#1f2937">Выполнено: 0 задач · 0 pts</text>
-<text x="214" y="228" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">Не завершено: 7 задач · 19 pts</text>
+<text x="214" y="228" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">Не завершено: 8 задач · 21 pts</text>
 <circle cx="196" cy="206" r="11" fill="#b91c1c"/>
 <text x="196" y="211" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">1</text>
 <rect x="214" y="245" width="16" height="16" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
@@ -47,9 +47,9 @@
 <text x="310" y="284" text-anchor="start" font-size="13" fill="#1f2937">История заказов</text>
 <rect x="214" y="297" width="16" height="16" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
 <text x="222.0" y="308" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">T</text>
-<text x="240" y="310" text-anchor="start" font-size="12" font-weight="bold" fill="#2563eb">DEMO-9</text>
-<text x="310" y="310" text-anchor="start" font-size="13" fill="#1f2937">Форма смены пароля</text>
-<text x="240" y="334" text-anchor="start" font-size="12" fill="#6b7280">…ещё 4 задачи</text>
+<text x="240" y="310" text-anchor="start" font-size="12" font-weight="bold" fill="#2563eb">DEMO-8</text>
+<text x="310" y="310" text-anchor="start" font-size="13" fill="#1f2937">Вёрстка страницы профиля</text>
+<text x="240" y="334" text-anchor="start" font-size="12" fill="#6b7280">…ещё 5 задач</text>
 <text x="214" y="380" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">Куда перенести незавершённое:</text>
 <circle cx="224" cy="414" r="8" fill="#ffffff" stroke="#2563eb" stroke-width="1.8"/>
 <circle cx="224" cy="414" r="4.5" fill="#2563eb"/>

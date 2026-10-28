@@ -40,7 +40,7 @@ from reportlab.platypus.tableofcontents import TableOfContents
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 OUT = DOCS / "pdf"
-VERSION = "0.1"
+VERSION = "0.2"
 TODAY = datetime.date.today().strftime("%d.%m.%Y")
 
 FONT_DIRS = [

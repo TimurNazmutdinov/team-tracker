@@ -15,7 +15,7 @@
 - [docs/capabilities.md](docs/capabilities.md) — возможности и бизнес-правила по модулям
 - [docs/wireframes.md](docs/wireframes.md) — макеты экранов
 - [docs/data-model.md](docs/data-model.md) — сущности и ER-диаграмма
-- [docs/adr/](docs/adr/) — архитектурные решения ([шаблон](docs/adr/0000-template.md), [ADR-001](docs/adr/001-storage-module.md), [ADR-002: стек](docs/adr/002-stack.md))
+- [docs/adr/](docs/adr/) — архитектурные решения ([шаблон](docs/adr/0000-template.md), [ADR-001](docs/adr/001-storage-module.md), [ADR-002: стек](docs/adr/002-stack.md), [ADR-003: бизнес-правила](docs/adr/003-business-rules.md))
 
 ## PDF
 
@@ -27,4 +27,4 @@
 
 ## Данные
 
-- [data/seed.json](data/seed.json) — демонстрационные данные (проект DEMO)
+- [data/seed.json](data/seed.json) — демонстрационные данные (проект DEMO); проверка правил: `python3 scripts/check_seed.py`
