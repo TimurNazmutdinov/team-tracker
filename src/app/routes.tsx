@@ -4,6 +4,7 @@ import { BoardPage } from '../modules/board/BoardPage';
 import { PeoplePage } from '../modules/people/PeoplePage';
 import { HomePage, ProjectsPage } from '../modules/projects/ProjectsPage';
 import { ProjectRoute } from '../modules/projects/ProjectRoute';
+import { SettingsPage } from '../modules/projects/SettingsPage';
 import { ReportsPage } from '../modules/reports/ReportsPage';
 import { SprintsPage } from '../modules/sprints/SprintsPage';
 import { IssuePage } from '../modules/tasks/IssuePage';
@@ -32,6 +33,7 @@ export const routes: RouteObject[] = [
           { path: 'issues/:number', element: <IssuePage /> },
           { path: 'reports', element: <ReportsPage /> },
           { path: 'people', element: <PeoplePage /> },
+          { path: 'settings', element: <SettingsPage /> },
         ],
       },
       { path: '*', element: <NotFound /> },

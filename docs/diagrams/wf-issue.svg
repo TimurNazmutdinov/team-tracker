@@ -13,13 +13,14 @@
 <text x="20" y="67" text-anchor="start" font-size="17" font-weight="bold" fill="#1f2937">team-tracker</text>
 <rect x="158" y="52" width="59.68000000000001" height="26" rx="13.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
 <text x="187.84" y="69.68" text-anchor="middle" font-size="13" fill="#1f2937">DEMO ▾</text>
-<text x="236" y="67" text-anchor="start" font-size="14" fill="#1f2937">Бэклог</text>
-<text x="305.04" y="67" text-anchor="start" font-size="14" fill="#1f2937">Доска</text>
-<text x="366.24" y="67" text-anchor="start" font-size="14" fill="#1f2937">Спринты</text>
-<text x="443.12" y="67" text-anchor="start" font-size="14" fill="#1f2937">Отчёты</text>
-<text x="512.16" y="67" text-anchor="start" font-size="14" fill="#1f2937">Люди</text>
-<rect x="620" y="50" width="150" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="630" y="70" text-anchor="start" font-size="13" fill="#6b7280">Поиск</text>
+<text x="230" y="67" text-anchor="start" font-size="14" fill="#1f2937">Бэклог</text>
+<text x="295.04" y="67" text-anchor="start" font-size="14" fill="#1f2937">Доска</text>
+<text x="352.24" y="67" text-anchor="start" font-size="14" fill="#1f2937">Спринты</text>
+<text x="425.12" y="67" text-anchor="start" font-size="14" fill="#1f2937">Отчёты</text>
+<text x="490.16" y="67" text-anchor="start" font-size="14" fill="#1f2937">Люди</text>
+<text x="539.52" y="67" text-anchor="start" font-size="14" fill="#1f2937">Настройки</text>
+<rect x="640" y="50" width="130" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="650" y="70" text-anchor="start" font-size="13" fill="#6b7280">Поиск</text>
 <rect x="740" y="55" width="24" height="20" rx="4" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
 <text x="752" y="70" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">/</text>
 <circle cx="844" cy="65" r="15" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>

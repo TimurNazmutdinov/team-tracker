@@ -1,5 +1,6 @@
 import { type Changes } from './changes';
 import { canHavePoints, isValidParent } from './hierarchy';
+import { DEFAULT_SPRINT_SETTINGS } from './settings';
 import {
   ISSUE_TYPES,
   LINK_TYPES,
@@ -31,6 +32,7 @@ export interface Ctx {
 /** Данные проекта, нужные логике. */
 export interface View {
   projectId: string;
+  project: Project;
   people: Person[];
   sprints: Sprint[];
   issues: Issue[];
@@ -474,5 +476,5 @@ export function createProject(
     errors.key = 'Такой ключ уже занят, выберите другой';
   if (name.length === 0 || name.length > 100) errors.name = 'Введите название (до 100 символов)';
   if (Object.keys(errors).length > 0) return fail(errors);
-  return ok({ projects: [{ id: ctx.newId(), key, name }] });
+  return ok({ projects: [{ id: ctx.newId(), key, name, ...DEFAULT_SPRINT_SETTINGS }] });
 }

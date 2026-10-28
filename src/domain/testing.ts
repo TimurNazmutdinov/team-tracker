@@ -5,15 +5,20 @@ import type { Dataset } from './schema';
 // Помощники для тестов логики: контекст с предсказуемыми значениями, применение изменений и
 // проверка, что история воспроизводит состояние задач.
 
+let sequence = 0;
+
+/** Идентификаторы уникальны во всём наборе тестов, чтобы повторные действия не сталкивались. */
 export function testCtx(now = '2026-10-29T10:00:00Z'): Ctx {
-  let n = 0;
-  return { now: () => now, newId: () => `t${++n}` };
+  return { now: () => now, newId: () => `t${++sequence}` };
 }
 
 export function viewOf(ds: Dataset, projectId = 'p1'): View {
+  const project = ds.projects.find((p) => p.id === projectId);
+  if (!project) throw new Error('нет проекта');
   const ids = new Set(ds.issues.filter((i) => i.projectId === projectId).map((i) => i.id));
   return {
     projectId,
+    project,
     people: ds.people,
     sprints: ds.sprints.filter((s) => s.projectId === projectId),
     issues: ds.issues.filter((i) => i.projectId === projectId),

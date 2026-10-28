@@ -27,7 +27,6 @@ import { useActions } from '../../state/actions';
 import { useCreateDialog } from '../../state/create-dialog';
 import { useNotices } from '../../state/notices';
 import { useView } from '../../state/queries';
-import { ErrorMessage } from '../../ui/ErrorMessage';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
 import { useCurrentProject } from '../projects/ProjectRoute';
@@ -347,7 +346,10 @@ export function BacklogPage() {
         списком «Переместить…». Подзадачи показываются внутри родителя и переносятся вместе с ним.
       </p>
       {view && view.issues.length > 0 && !view.sprints.some((s) => s.state !== 'closed') && (
-        <ErrorMessage message="Нет спринтов для планирования: спринты появятся на этапе 6." />
+        <p className="warn">
+          Нет спринтов для планирования. Создайте спринт на экране{' '}
+          <Link to={`/projects/${project.key}/sprints`}>«Спринты»</Link>.
+        </p>
       )}
     </>
   );

@@ -24,6 +24,8 @@ export interface TrackerStorage {
   getLinks(projectId: string): Promise<Link[]>;
   getComments(issueId: string): Promise<Comment[]>;
   getHistory(issueId: string): Promise<History[]>;
+  /** История всех задач проекта (для итогов закрытых спринтов и отчётов). */
+  getProjectHistory(projectId: string): Promise<History[]>;
 
   /** Атомарно применяет изменения: либо всё, либо ничего. */
   commit(changes: Changes): Promise<void>;

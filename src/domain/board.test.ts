@@ -115,7 +115,7 @@ describe('подсчёт и выбор спринта', () => {
   });
 
   it('список спринтов для выбора: идущий, запланированные, закрытые', () => {
-    expect(boardSprints(ds.sprints).map((s) => s.id)).toEqual(['s2', 's1']);
+    expect(boardSprints(ds.sprints).map((s) => s.id)).toEqual(['s2', 's3', 's1']);
   });
 
   it('isGroupField', () => {

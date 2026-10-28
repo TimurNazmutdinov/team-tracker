@@ -31,6 +31,11 @@ export const projectSchema = z.object({
   id,
   key: z.string().regex(/^[A-Z]{2,10}$/, '2–10 заглавных латинских букв'),
   name: z.string().min(1).max(100),
+  /** Настройки спринтов проекта (ADR-008): длительность в днях, название и дата следующего спринта. */
+  sprintDurationDays: z.number().int().min(1).max(90),
+  sprintPrefix: z.string().min(1).max(30),
+  nextSprintNumber: z.number().int().min(1).max(9999),
+  nextSprintStart: z.iso.date().nullable(),
 });
 
 export const personSchema = z.object({
