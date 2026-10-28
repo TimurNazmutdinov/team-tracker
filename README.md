@@ -13,6 +13,7 @@
 - [docs/quality.md](docs/quality.md) — нефункциональные требования
 - [docs/architecture.md](docs/architecture.md) — подробная архитектура, схемы, потоки, развёртывание
 - [docs/capabilities.md](docs/capabilities.md) — возможности и бизнес-правила по модулям
+- [docs/wireframes.md](docs/wireframes.md) — макеты экранов
 - [docs/data-model.md](docs/data-model.md) — сущности и ER-диаграмма
 - [docs/adr/](docs/adr/) — архитектурные решения ([шаблон](docs/adr/0000-template.md), [ADR-001](docs/adr/001-storage-module.md), [ADR-002: стек](docs/adr/002-stack.md))
 
@@ -20,8 +21,9 @@
 
 - [docs/pdf/architecture.pdf](docs/pdf/architecture.pdf) — архитектура
 - [docs/pdf/capabilities.pdf](docs/pdf/capabilities.pdf) — возможности
+- [docs/pdf/wireframes.pdf](docs/pdf/wireframes.pdf) — макеты экранов
 
-Пересборка: `python3 scripts/build_diagrams.py`, `node scripts/svg_to_png.js`, `python3 scripts/build_pdf.py` (нужны reportlab и шрифт DejaVu Sans).
+Пересборка: `python3 scripts/build_diagrams.py`, `python3 scripts/build_wireframes.py`, `node scripts/svg_to_png.js`, `python3 scripts/build_pdf.py` (нужны reportlab и шрифт DejaVu Sans).
 
 ## Данные
 

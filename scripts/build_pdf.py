@@ -60,6 +60,7 @@ FONT_FILES = {
 BOOKS = [
     ("architecture.md", "architecture.pdf"),
     ("capabilities.md", "capabilities.pdf"),
+    ("wireframes.md", "wireframes.pdf"),
 ]
 
 INK = colors.HexColor("#1f2937")
