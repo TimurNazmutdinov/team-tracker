@@ -150,6 +150,17 @@ describe('createIssue', () => {
     ]);
   });
 
+  it('Sub-task под родителем из закрытого спринта создать нельзя', () => {
+    const input = { ...baseInput, type: 'Sub-task' as const, parentId: 'i7', points: null };
+    expect(errors(createIssue(viewOf(ds), input, 'u1', testCtx())).parentId).toContain(
+      'закрытом спринте',
+    );
+    expect(parentCandidates(viewOf(ds), 'Sub-task').some((i) => i.id === 'i7')).toBe(false);
+    expect(
+      errors(updateIssue(viewOf(ds), 'i14', { parentId: 'i7' }, 'u1', testCtx())).parentId,
+    ).toContain('закрытом спринте');
+  });
+
   it('не добавляет в закрытый спринт', () => {
     expect(
       errors(createIssue(viewOf(ds), { ...baseInput, sprintId: 's1' }, 'u1', testCtx())).sprintId,

@@ -142,7 +142,11 @@ function cleanLabels(labels: string[]): string[] {
 export function parentCandidates(view: View, type: IssueType, excludeId?: string): Issue[] {
   return view.issues.filter(
     (i) =>
-      i.id !== excludeId && isValidParent(type, i.type) && validParent(view, type, i.id) === null,
+      i.id !== excludeId &&
+      isValidParent(type, i.type) &&
+      validParent(view, type, i.id) === null &&
+      // подзадача следует за родителем, а в закрытый спринт добавлять нельзя
+      !(type === 'Sub-task' && sprintById(view, i.sprintId)?.state === 'closed'),
   );
 }
 
@@ -173,11 +177,12 @@ export function createIssue(view: View, input: NewIssueInput, authorId: string, 
   const parent = input.parentId === null ? undefined : findIssue(view, input.parentId);
   const sprintId = input.type === 'Sub-task' ? (parent?.sprintId ?? null) : input.sprintId;
   const sprintError = validTargetSprint(view, sprintId);
-  if (
-    sprintError &&
-    !(input.type === 'Sub-task' && parent?.sprintId !== undefined && parent.sprintId === null)
-  ) {
-    errors.sprintId = sprintError;
+  if (sprintError) {
+    if (input.type === 'Sub-task') {
+      errors.parentId = 'Родитель в закрытом спринте: подзадачи добавлять нельзя';
+    } else {
+      errors.sprintId = sprintError;
+    }
   }
   if (Object.keys(errors).length > 0) return fail(errors);
 
@@ -298,6 +303,9 @@ export function updateIssue(
       // Sub-task следует за новым родителем (ADR-003, п. 9)
       if (issue.type === 'Sub-task') {
         newSprintId = findIssue(view, patch.parentId ?? '')?.sprintId ?? null;
+        if (validTargetSprint(view, newSprintId)) {
+          errors.parentId = 'Родитель в закрытом спринте: подзадачу туда переносить нельзя';
+        }
       }
     }
   }
