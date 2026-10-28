@@ -74,7 +74,7 @@ export function EpicProgressView({
   compact?: boolean;
 }) {
   const { total, done, percent, count } = progress;
-  const text = total === 0 ? 'нет оценённых задач' : `${done} из ${total} pts в Done · ${percent}%`;
+  const text = total === 0 ? 'нет оценённых задач' : `${done} из ${total} sp в Done · ${percent}%`;
   return (
     <span className={`epic-progress${compact ? ' compact' : ''}`}>
       {total > 0 && (

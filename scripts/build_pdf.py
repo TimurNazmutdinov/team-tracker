@@ -2,7 +2,7 @@
 """Собирает docs/pdf/architecture.pdf и docs/pdf/capabilities.pdf из Markdown.
 
 Зависимость: reportlab (и Pillow, он ставится вместе с ним). Шрифт — DejaVu Sans.
-Схемы берутся из docs/diagrams/*.png (см. build_diagrams.py и svg_to_png.js):
+Схемы берутся из docs/diagrams/*.png (см. build_diagrams.py и svg_to_png.cjs):
 - блок ```mermaid, за которым идёт `<!-- pdf: diagrams/имя.png -->`, заменяется картинкой;
 - `![...](x.svg)` заменяется docs/diagrams/x.png.
 
@@ -40,7 +40,7 @@ from reportlab.platypus.tableofcontents import TableOfContents
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 OUT = DOCS / "pdf"
-VERSION = "0.4"
+VERSION = "0.5"
 TODAY = datetime.date.today().strftime("%d.%m.%Y")
 
 FONT_DIRS = [

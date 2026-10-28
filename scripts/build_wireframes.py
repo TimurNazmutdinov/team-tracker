@@ -2,7 +2,7 @@
 """Рисует макеты экранов (SVG) в docs/diagrams/wf-*.svg.
 
 Содержимое (задачи, люди, спринты, суммы, burndown) берётся из data/seed.json,
-поэтому макеты совпадают с демо-данными. PNG для PDF делает scripts/svg_to_png.js.
+поэтому макеты совпадают с демо-данными. PNG для PDF делает scripts/svg_to_png.cjs.
 """
 import datetime
 import html
@@ -386,7 +386,7 @@ def screen_backlog():
     wf.chip(150, y + 7, "идёт", 12, fill=t["status"]["In Progress"])
     wf.text(212, y + 22, f"{fd(sp['start'])} – {fd(sp['end'])}", 13, fill=t["muted"])
     wf.text(34, y + 42, "Цель: " + sp["goal"], 13, fill=t["muted"])
-    wf.text(W - 40, y + 22, f"{sum(i['points'] or 0 for i in items)} pts", 14, "end", True)
+    wf.text(W - 40, y + 22, f"{sum(i['points'] or 0 for i in items)} sp", 14, "end", True)
     wf.callout(3, 14, y)
     y += 58
     for i in top:
@@ -443,7 +443,7 @@ def board(theme, title, url, with_callouts=True):
         n = len([i for i in items if i["status"] == c])
         wf.rect(cx[k], y, cw, 30, fill=t["status"][c], stroke=t["line"], r=6)
         wf.text(cx[k] + 10, y + 20, c, 14, bold=True)
-        wf.text(cx[k] + cw - 10, y + 20, f"{n} · {st[c]} pts", 12, "end", fill=t["muted"])
+        wf.text(cx[k] + cw - 10, y + 20, f"{n} · {st[c]} sp", 12, "end", fill=t["muted"])
     if with_callouts:
         wf.callout(2, cx[0] + cw, y)
     y += 36
@@ -454,7 +454,7 @@ def board(theme, title, url, with_callouts=True):
         wf.text(30, y + 20, "▾", 13)
         wf.avatar(58, y + 15, name, 11)
         wf.text(78, y + 20, name, 14, bold=True)
-        wf.text(W - 30, y + 20, f"{plural(len(lane_items), 'задача', 'задачи', 'задач')} · {sum(i['points'] or 0 for i in lane_items)} pts", 12, "end", fill=t["muted"])
+        wf.text(W - 30, y + 20, f"{plural(len(lane_items), 'задача', 'задачи', 'задач')} · {sum(i['points'] or 0 for i in lane_items)} sp", 12, "end", fill=t["muted"])
         if with_callouts and lane_no == 0:
             wf.callout(3, 20, y)
         y += 34
@@ -518,7 +518,7 @@ def screen_sprints():
     wf.callout(3, x0 - 17, 214)
     st = pts_by_status("s2")
     total = sum(st.values())
-    wf.text(x0, 268, f"Прогресс: {st['Done']} из {total} pts в Done", 14, bold=True)
+    wf.text(x0, 268, f"Прогресс: {st['Done']} из {total} sp в Done", 14, bold=True)
     bx, bw = x0, 590
     for c in ("Done", "Review", "In Progress", "To Do"):
         if st[c]:
@@ -551,8 +551,8 @@ def screen_close():
     items = sprint_issues("s2")
     done = [i for i in items if i["status"] == "Done"]
     left = [i for i in items if i["status"] != "Done"]
-    wf.text(mx + 24, my + 76, f"Выполнено: {plural(len(done), 'задача', 'задачи', 'задач')} · {st['Done']} pts", 14)
-    wf.text(mx + 24, my + 98, f"Не завершено: {plural(len(left), 'задача', 'задачи', 'задач')} · {sum(i['points'] or 0 for i in left)} pts", 14, bold=True)
+    wf.text(mx + 24, my + 76, f"Выполнено: {plural(len(done), 'задача', 'задачи', 'задач')} · {st['Done']} sp", 14)
+    wf.text(mx + 24, my + 98, f"Не завершено: {plural(len(left), 'задача', 'задачи', 'задач')} · {sum(i['points'] or 0 for i in left)} sp", 14, bold=True)
     wf.callout(1, mx + 6, my + 76)
     yy = my + 112
     for i in left[:3]:
@@ -569,7 +569,7 @@ def screen_close():
             wf.p.append(f'<circle cx="{mx + 34}" cy="{cy}" r="4.5" fill="{t["accent"]}"/>')
         wf.text(mx + 54, cy + 5, label, 14)
     wf.callout(2, mx + 6, my + 284)
-    wf.text(mx + 24, my + 372, f"Velocity спринта: {st['Done']} pts — сумма points задач в Done на момент закрытия.", 12, fill=t["muted"])
+    wf.text(mx + 24, my + 372, f"Velocity спринта: {st['Done']} sp — сумма points задач в Done на момент закрытия.", 12, fill=t["muted"])
     wf.text(mx + 24, my + 392, "После закрытия спринт доступен только для чтения.", 12, fill=t["muted"])
     wf.callout(3, mx + 6, my + 372)
     wf.button(mx + mw - 270, my + mh - 56, 160, 38, "Закрыть спринт", True)

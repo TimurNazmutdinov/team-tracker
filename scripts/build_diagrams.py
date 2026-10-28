@@ -7,7 +7,7 @@ Graphviz на машине сборки нет, поэтому схемы рис
   блок `sequenceDiagram`, за которым идёт строка `<!-- pdf: diagrams/имя.png -->`,
   превращается в docs/diagrams/имя.svg.
 
-PNG для PDF получают из SVG скриптом scripts/svg_to_png.js (Chromium из Playwright).
+PNG для PDF получают из SVG скриптом scripts/svg_to_png.cjs (Chromium из Playwright).
 """
 import html
 import pathlib

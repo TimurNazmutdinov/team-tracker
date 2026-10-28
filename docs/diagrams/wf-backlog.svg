@@ -49,7 +49,7 @@
 <text x="171.44" y="226.32" text-anchor="middle" font-size="12" fill="#1f2937">идёт</text>
 <text x="212" y="226" text-anchor="start" font-size="13" fill="#6b7280">26.10 – 06.11</text>
 <text x="34" y="246" text-anchor="start" font-size="13" fill="#6b7280">Цель: Смена пароля и начало истории заказов</text>
-<text x="860" y="226" text-anchor="end" font-size="14" font-weight="bold" fill="#1f2937">21 pts</text>
+<text x="860" y="226" text-anchor="end" font-size="14" font-weight="bold" fill="#1f2937">21 sp</text>
 <circle cx="14" cy="204" r="11" fill="#b91c1c"/>
 <text x="14" y="209" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">3</text>
 <rect x="20" y="262" width="860" height="34" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
