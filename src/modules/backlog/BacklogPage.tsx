@@ -21,6 +21,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { containerItems, type View } from '../../domain/actions';
+import { epicProgress, type EpicProgress } from '../../domain/progress';
 import type { Issue, Person, Sprint } from '../../domain/schema';
 import { useActions } from '../../state/actions';
 import { useCreateDialog } from '../../state/create-dialog';
@@ -30,7 +31,14 @@ import { ErrorMessage } from '../../ui/ErrorMessage';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
 import { useCurrentProject } from '../projects/ProjectRoute';
-import { Avatar, PointsBadge, PriorityChip, StatusChip, TypeIcon } from '../tasks/IssueBits';
+import {
+  Avatar,
+  EpicProgressView,
+  PointsBadge,
+  PriorityChip,
+  StatusChip,
+  TypeIcon,
+} from '../tasks/IssueBits';
 
 const BACKLOG = 'backlog';
 const containerId = (sprintId: string | null) => `container:${sprintId ?? BACKLOG}`;
@@ -43,6 +51,7 @@ interface RowProps {
   projectKey: string;
   people: Person[];
   subtasks: Issue[];
+  progress?: EpicProgress | undefined;
   sprints: Sprint[];
   onMove: (issueId: string, sprintId: string | null) => void;
   nested?: boolean;
@@ -53,6 +62,7 @@ function IssueRow({
   projectKey,
   people,
   subtasks,
+  progress,
   sprints,
   onMove,
   nested = false,
@@ -106,7 +116,11 @@ function IssueRow({
         </span>
         <PriorityChip priority={issue.priority} />
         <StatusChip status={issue.status} />
-        <PointsBadge points={issue.points} />
+        {progress ? (
+          <EpicProgressView progress={progress} compact />
+        ) : (
+          <PointsBadge points={issue.points} />
+        )}
         <Avatar person={assignee} />
         {nested ? (
           <span />
@@ -201,6 +215,7 @@ function Section({ title, sprint, view, items, projectKey, onMove }: SectionProp
                 issue={issue}
                 projectKey={projectKey}
                 people={view.people}
+                progress={issue.type === 'Epic' ? epicProgress(view.issues, issue.id) : undefined}
                 subtasks={view.issues
                   .filter((s) => s.type === 'Sub-task' && s.parentId === issue.id)
                   .sort((a, b) => a.order - b.order)}

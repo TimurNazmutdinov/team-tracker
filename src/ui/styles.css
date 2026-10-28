@@ -686,3 +686,30 @@ textarea[aria-invalid='true'] {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---- прогресс эпика ---- */
+.epic-progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.epic-progress .bar {
+  display: inline-block;
+  width: 8rem;
+  height: 0.6rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.epic-progress.compact .bar {
+  width: 4rem;
+}
+
+.epic-progress .bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
