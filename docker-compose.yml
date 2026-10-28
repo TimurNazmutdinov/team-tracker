@@ -1,0 +1,33 @@
+# Локальное развёртывание (ADR-010): docker compose up -d --build → http://localhost:3000
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tracker
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tracker}
+      POSTGRES_DB: tracker
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U tracker -d tracker']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://tracker:${POSTGRES_PASSWORD:-tracker}@db:5432/tracker
+      PORT: 3000
+      # true — только если приложение стоит за HTTPS-прокси
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+    ports:
+      - '${APP_PORT:-3000}:3000'
+
+volumes:
+  pgdata:
