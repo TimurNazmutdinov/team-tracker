@@ -2,9 +2,26 @@
 
 Трекер задач и спринтов для команд разработки: проекты с ключами задач, бэклог, доски, спринты, story points, burndown и velocity.
 
-**Статус: в разработке.** Сейчас готовы только документы и данные для демонстрации (этап 0–1); приложения ещё нет. Стек утверждён: React + TypeScript + Vite, позже Node.js + Fastify + PostgreSQL ([ADR-002](docs/adr/002-stack.md)).
+**Статус: в разработке.** Готовы документы, макеты и каркас приложения (этапы 0–3). Стек утверждён: React + TypeScript + Vite, позже Node.js + Fastify + PostgreSQL ([ADR-002](docs/adr/002-stack.md)).
 
 ![Схема архитектуры](docs/architecture.svg)
+
+## Демо и запуск
+
+**Демо:** https://timurnazmutdinov.github.io/team-tracker/ (публикуется из ветки `main`; данные берутся из `data/seed.json`, изменения хранятся в вашем браузере).
+
+Локальный запуск (нужен Node.js 22):
+
+```bash
+npm install
+npm run dev
+```
+
+Приложение откроется на http://localhost:5173/. Кнопка «Меню → Сбросить данные» возвращает демо-данные к исходным.
+
+Команды: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`, `npm run format:check`; проверка seed — `python3 scripts/check_seed.py`. Все они же выполняются в CI (GitHub Actions) для каждого pull request и push в `main`.
+
+Состояние: каркас (этап 3) — навигация, маршруты всех экранов, модуль хранения и тема по настройке системы; сами экраны — заглушки с данными из хранилища.
 
 ## Документы
 
@@ -24,6 +41,14 @@
 - [docs/pdf/wireframes.pdf](docs/pdf/wireframes.pdf) — макеты экранов
 
 Пересборка: `python3 scripts/build_diagrams.py`, `python3 scripts/build_wireframes.py`, `node scripts/svg_to_png.js`, `python3 scripts/build_pdf.py` (нужны reportlab и шрифт DejaVu Sans).
+
+## Структура
+
+- `src/app` — точка входа, маршруты, подключение хранилища
+- `src/domain` — типы, схемы Zod, правила (чистый TypeScript)
+- `src/storage` — интерфейс `TrackerStorage` и адаптер `seed-local`
+- `src/modules` — экраны по областям, `src/ui` — общие компоненты и стили, `src/state` — запросы и состояние интерфейса
+- `data/seed.json` — демо-данные, `scripts/` — проверка seed, сборка схем и PDF
 
 ## Данные
 

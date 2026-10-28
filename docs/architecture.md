@@ -236,7 +236,7 @@ team-tracker/
   scripts/             проверка seed, сборка PDF и схем
   src/
     app/               точка входа, маршруты, провайдеры
-    modules/           tasks, backlog, sprints, board, reports, people
+    modules/           projects, tasks, backlog, sprints, board, reports, people
     domain/            типы, схемы Zod и логика без UI
     storage/           интерфейс, seed-local, api
     ui/                общие компоненты, темы, горячие клавиши
