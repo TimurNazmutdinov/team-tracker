@@ -1,0 +1,730 @@
+{
+  "projects": [
+    {
+      "id": "p1",
+      "key": "DEMO",
+      "name": "Демо-проект"
+    }
+  ],
+  "people": [
+    {
+      "id": "u1",
+      "name": "Анна Ковалёва",
+      "role": "Владелец продукта"
+    },
+    {
+      "id": "u2",
+      "name": "Игорь Смирнов",
+      "role": "Разработчик"
+    },
+    {
+      "id": "u3",
+      "name": "Мария Орлова",
+      "role": "Разработчик"
+    },
+    {
+      "id": "u4",
+      "name": "Дмитрий Васильев",
+      "role": "Тестировщик"
+    }
+  ],
+  "sprints": [
+    {
+      "id": "s1",
+      "projectId": "p1",
+      "name": "Спринт 1",
+      "goal": "Вход в систему и профиль клиента",
+      "start": "2026-10-12",
+      "end": "2026-10-23",
+      "state": "closed"
+    },
+    {
+      "id": "s2",
+      "projectId": "p1",
+      "name": "Спринт 2",
+      "goal": "Смена пароля и начало истории заказов",
+      "start": "2026-10-26",
+      "end": "2026-11-06",
+      "state": "active"
+    }
+  ],
+  "issues": [
+    {
+      "id": "i1",
+      "projectId": "p1",
+      "number": 1,
+      "type": "Epic",
+      "title": "Личный кабинет клиента",
+      "description": "Единое место, где клиент управляет профилем, паролем и видит свои заказы.",
+      "acceptance": "Клиент может войти, посмотреть и изменить данные профиля, сменить пароль и увидеть историю заказов.",
+      "status": "In Progress",
+      "priority": "High",
+      "points": null,
+      "assigneeId": "u1",
+      "reporterId": "u1",
+      "parentId": null,
+      "sprintId": null,
+      "labels": [
+        "кабинет"
+      ],
+      "order": 1,
+      "dueDate": "2026-11-30",
+      "createdAt": "2026-10-05T10:00:00Z",
+      "updatedAt": "2026-10-26T10:00:00Z"
+    },
+    {
+      "id": "i2",
+      "projectId": "p1",
+      "number": 2,
+      "type": "Story",
+      "title": "Регистрация и вход",
+      "description": "Как клиент, я хочу зарегистрироваться и входить по e-mail и паролю.",
+      "acceptance": "Регистрация по e-mail; вход с верным паролем; понятная ошибка при неверном.",
+      "status": "Done",
+      "priority": "Highest",
+      "points": 5,
+      "assigneeId": "u2",
+      "reporterId": "u1",
+      "parentId": "i1",
+      "sprintId": "s1",
+      "labels": [
+        "авторизация"
+      ],
+      "order": 2,
+      "dueDate": "2026-10-23",
+      "createdAt": "2026-10-05T10:00:00Z",
+      "updatedAt": "2026-10-22T16:00:00Z"
+    },
+    {
+      "id": "i3",
+      "projectId": "p1",
+      "number": 3,
+      "type": "Story",
+      "title": "Просмотр профиля",
+      "description": "Как клиент, я хочу видеть свои данные на странице профиля.",
+      "acceptance": "Страница показывает имя, e-mail и дату регистрации.",
+      "status": "Done",
+      "priority": "High",
+      "points": 3,
+      "assigneeId": "u3",
+      "reporterId": "u1",
+      "parentId": "i1",
+      "sprintId": "s1",
+      "labels": [
+        "профиль"
+      ],
+      "order": 3,
+      "dueDate": "2026-10-23",
+      "createdAt": "2026-10-05T10:00:00Z",
+      "updatedAt": "2026-10-23T12:00:00Z"
+    },
+    {
+      "id": "i4",
+      "projectId": "p1",
+      "number": 4,
+      "type": "Story",
+      "title": "Смена пароля",
+      "description": "Как клиент, я хочу сменить пароль, не обращаясь в поддержку.",
+      "acceptance": "Нужно ввести старый и новый пароль; после смены приходит письмо.",
+      "status": "In Progress",
+      "priority": "High",
+      "points": 5,
+      "assigneeId": "u2",
+      "reporterId": "u1",
+      "parentId": "i1",
+      "sprintId": "s2",
+      "labels": [
+        "авторизация",
+        "безопасность"
+      ],
+      "order": 4,
+      "dueDate": "2026-11-06",
+      "createdAt": "2026-10-19T10:00:00Z",
+      "updatedAt": "2026-10-27T11:00:00Z"
+    },
+    {
+      "id": "i5",
+      "projectId": "p1",
+      "number": 5,
+      "type": "Story",
+      "title": "История заказов",
+      "description": "Как клиент, я хочу видеть список своих прошлых заказов.",
+      "acceptance": "Список с датой, суммой и статусом заказа, новые сверху.",
+      "status": "To Do",
+      "priority": "Medium",
+      "points": 8,
+      "assigneeId": "u3",
+      "reporterId": "u1",
+      "parentId": "i1",
+      "sprintId": "s2",
+      "labels": [
+        "заказы"
+      ],
+      "order": 5,
+      "dueDate": "2026-11-06",
+      "createdAt": "2026-10-19T10:00:00Z",
+      "updatedAt": "2026-10-26T09:00:00Z"
+    },
+    {
+      "id": "i6",
+      "projectId": "p1",
+      "number": 6,
+      "type": "Task",
+      "title": "Спроектировать таблицу пользователей",
+      "description": "Схема хранения учётных записей: поля, индексы, ограничения.",
+      "acceptance": "Схема согласована, описана в документации.",
+      "status": "Done",
+      "priority": "High",
+      "points": 3,
+      "assigneeId": "u2",
+      "reporterId": "u2",
+      "parentId": "i2",
+      "sprintId": "s1",
+      "labels": [
+        "бэкенд"
+      ],
+      "order": 6,
+      "dueDate": "2026-10-14",
+      "createdAt": "2026-10-08T10:00:00Z",
+      "updatedAt": "2026-10-14T15:00:00Z"
+    },
+    {
+      "id": "i7",
+      "projectId": "p1",
+      "number": 7,
+      "type": "Task",
+      "title": "Реализовать обработчик входа",
+      "description": "Проверка пароля и выдача сессии.",
+      "acceptance": "Верный пароль — сессия создана; неверный — ошибка 401.",
+      "status": "Done",
+      "priority": "High",
+      "points": 3,
+      "assigneeId": "u2",
+      "reporterId": "u2",
+      "parentId": "i2",
+      "sprintId": "s1",
+      "labels": [
+        "бэкенд"
+      ],
+      "order": 7,
+      "dueDate": "2026-10-20",
+      "createdAt": "2026-10-08T10:00:00Z",
+      "updatedAt": "2026-10-20T14:00:00Z"
+    },
+    {
+      "id": "i8",
+      "projectId": "p1",
+      "number": 8,
+      "type": "Task",
+      "title": "Вёрстка страницы профиля",
+      "description": "Адаптивная вёрстка по макету, светлая и тёмная тема.",
+      "acceptance": "Страница корректно выглядит на 360 px и на 1440 px.",
+      "status": "Done",
+      "priority": "Medium",
+      "points": 2,
+      "assigneeId": "u3",
+      "reporterId": "u1",
+      "parentId": "i3",
+      "sprintId": "s1",
+      "labels": [
+        "фронтенд"
+      ],
+      "order": 8,
+      "dueDate": "2026-10-21",
+      "createdAt": "2026-10-08T10:00:00Z",
+      "updatedAt": "2026-10-21T17:00:00Z"
+    },
+    {
+      "id": "i9",
+      "projectId": "p1",
+      "number": 9,
+      "type": "Task",
+      "title": "Форма смены пароля",
+      "description": "Форма со старым и новым паролем и подтверждением.",
+      "acceptance": "Форма отправляет запрос; ошибки показываются у полей.",
+      "status": "In Progress",
+      "priority": "High",
+      "points": 3,
+      "assigneeId": "u2",
+      "reporterId": "u2",
+      "parentId": "i4",
+      "sprintId": "s2",
+      "labels": [
+        "фронтенд",
+        "безопасность"
+      ],
+      "order": 9,
+      "dueDate": "2026-11-03",
+      "createdAt": "2026-10-19T10:00:00Z",
+      "updatedAt": "2026-10-27T11:00:00Z"
+    },
+    {
+      "id": "i10",
+      "projectId": "p1",
+      "number": 10,
+      "type": "Task",
+      "title": "Письмо о смене пароля",
+      "description": "Отправка уведомления на e-mail после успешной смены.",
+      "acceptance": "Письмо уходит в течение минуты, текст согласован.",
+      "status": "To Do",
+      "priority": "Medium",
+      "points": 2,
+      "assigneeId": "u3",
+      "reporterId": "u2",
+      "parentId": "i4",
+      "sprintId": "s2",
+      "labels": [
+        "бэкенд"
+      ],
+      "order": 10,
+      "dueDate": "2026-11-05",
+      "createdAt": "2026-10-19T10:00:00Z",
+      "updatedAt": "2026-10-19T13:00:00Z"
+    },
+    {
+      "id": "i11",
+      "projectId": "p1",
+      "number": 11,
+      "type": "Task",
+      "title": "Пагинация списка заказов",
+      "description": "Постраничная выдача, чтобы длинные списки не тормозили.",
+      "acceptance": "Размер страницы 20, переход вперёд и назад.",
+      "status": "Backlog",
+      "priority": "Low",
+      "points": 3,
+      "assigneeId": null,
+      "reporterId": "u1",
+      "parentId": "i5",
+      "sprintId": null,
+      "labels": [
+        "заказы",
+        "бэкенд"
+      ],
+      "order": 11,
+      "dueDate": null,
+      "createdAt": "2026-10-19T14:00:00Z",
+      "updatedAt": "2026-10-19T14:00:00Z"
+    },
+    {
+      "id": "i12",
+      "projectId": "p1",
+      "number": 12,
+      "type": "Bug",
+      "title": "Сессия не сбрасывается после выхода",
+      "description": "После нажатия «Выйти» токен остаётся действительным.",
+      "acceptance": "После выхода повторный запрос с токеном возвращает 401.",
+      "status": "Done",
+      "priority": "High",
+      "points": 2,
+      "assigneeId": "u2",
+      "reporterId": "u4",
+      "parentId": "i2",
+      "sprintId": "s1",
+      "labels": [
+        "авторизация",
+        "безопасность"
+      ],
+      "order": 12,
+      "dueDate": "2026-10-22",
+      "createdAt": "2026-10-15T10:00:00Z",
+      "updatedAt": "2026-10-22T10:00:00Z"
+    },
+    {
+      "id": "i13",
+      "projectId": "p1",
+      "number": 13,
+      "type": "Bug",
+      "title": "Валидация e-mail отвергает адреса с «+»",
+      "description": "Адрес вида name+tag@example.com не проходит проверку.",
+      "acceptance": "Такие адреса принимаются при регистрации и входе.",
+      "status": "Review",
+      "priority": "Highest",
+      "points": 1,
+      "assigneeId": "u3",
+      "reporterId": "u4",
+      "parentId": "i4",
+      "sprintId": "s2",
+      "labels": [
+        "авторизация"
+      ],
+      "order": 13,
+      "dueDate": "2026-10-30",
+      "createdAt": "2026-10-26T10:00:00Z",
+      "updatedAt": "2026-10-28T09:00:00Z"
+    },
+    {
+      "id": "i14",
+      "projectId": "p1",
+      "number": 14,
+      "type": "Sub-task",
+      "title": "Проверка длины и сложности пароля",
+      "description": "Минимум 10 символов, запрет популярных паролей.",
+      "acceptance": "Слабые пароли отклоняются с подсказкой.",
+      "status": "In Progress",
+      "priority": "Medium",
+      "points": 1,
+      "assigneeId": "u2",
+      "reporterId": "u2",
+      "parentId": "i9",
+      "sprintId": "s2",
+      "labels": [
+        "безопасность"
+      ],
+      "order": 14,
+      "dueDate": "2026-11-02",
+      "createdAt": "2026-10-20T10:00:00Z",
+      "updatedAt": "2026-10-27T11:00:00Z"
+    },
+    {
+      "id": "i15",
+      "projectId": "p1",
+      "number": 15,
+      "type": "Sub-task",
+      "title": "Тексты ошибок формы",
+      "description": "Согласовать и внести сообщения об ошибках.",
+      "acceptance": "Тексты на русском, без технического жаргона.",
+      "status": "To Do",
+      "priority": "Low",
+      "points": 1,
+      "assigneeId": "u1",
+      "reporterId": "u2",
+      "parentId": "i9",
+      "sprintId": "s2",
+      "labels": [
+        "фронтенд"
+      ],
+      "order": 15,
+      "dueDate": "2026-11-03",
+      "createdAt": "2026-10-20T10:00:00Z",
+      "updatedAt": "2026-10-20T10:00:00Z"
+    },
+    {
+      "id": "i16",
+      "projectId": "p1",
+      "number": 16,
+      "type": "Sub-task",
+      "title": "Тесты обработчика входа",
+      "description": "Модульные тесты на успешный и неуспешный вход.",
+      "acceptance": "Покрыты сценарии: верный пароль, неверный, пустые поля.",
+      "status": "Done",
+      "priority": "Medium",
+      "points": 1,
+      "assigneeId": "u4",
+      "reporterId": "u2",
+      "parentId": "i7",
+      "sprintId": "s1",
+      "labels": [
+        "тесты"
+      ],
+      "order": 16,
+      "dueDate": "2026-10-20",
+      "createdAt": "2026-10-09T10:00:00Z",
+      "updatedAt": "2026-10-20T13:00:00Z"
+    }
+  ],
+  "links": [
+    {
+      "id": "l1",
+      "fromId": "i9",
+      "toId": "i10",
+      "type": "blocks"
+    },
+    {
+      "id": "l2",
+      "fromId": "i13",
+      "toId": "i4",
+      "type": "blocks"
+    }
+  ],
+  "comments": [
+    {
+      "id": "c1",
+      "issueId": "i2",
+      "authorId": "u1",
+      "text": "Не забудьте про русские тексты ошибок при неверном пароле.",
+      "createdAt": "2026-10-13T12:00:00Z"
+    },
+    {
+      "id": "c2",
+      "issueId": "i7",
+      "authorId": "u4",
+      "text": "Проверил вход вручную: неверный пароль даёт 401, всё как в критериях.",
+      "createdAt": "2026-10-20T12:00:00Z"
+    },
+    {
+      "id": "c3",
+      "issueId": "i12",
+      "authorId": "u4",
+      "text": "Воспроизводится: после выхода старый токен ещё принимается около 10 минут.",
+      "createdAt": "2026-10-15T11:30:00Z"
+    },
+    {
+      "id": "c4",
+      "issueId": "i9",
+      "authorId": "u1",
+      "text": "Подтверждение пароля нужно обязательно, без него не принимаем.",
+      "createdAt": "2026-10-21T10:00:00Z"
+    },
+    {
+      "id": "c5",
+      "issueId": "i13",
+      "authorId": "u3",
+      "text": "Исправил регулярное выражение, прошу посмотреть на ревью.",
+      "createdAt": "2026-10-28T09:00:00Z"
+    }
+  ],
+  "history": [
+    {
+      "id": "h1",
+      "issueId": "i2",
+      "authorId": "u2",
+      "field": "status",
+      "from": "Backlog",
+      "to": "To Do",
+      "at": "2026-10-12T09:00:00Z"
+    },
+    {
+      "id": "h2",
+      "issueId": "i2",
+      "authorId": "u2",
+      "field": "status",
+      "from": "To Do",
+      "to": "In Progress",
+      "at": "2026-10-13T10:00:00Z"
+    },
+    {
+      "id": "h3",
+      "issueId": "i2",
+      "authorId": "u2",
+      "field": "status",
+      "from": "In Progress",
+      "to": "Review",
+      "at": "2026-10-20T15:00:00Z"
+    },
+    {
+      "id": "h4",
+      "issueId": "i2",
+      "authorId": "u2",
+      "field": "status",
+      "from": "Review",
+      "to": "Done",
+      "at": "2026-10-22T16:00:00Z"
+    },
+    {
+      "id": "h5",
+      "issueId": "i3",
+      "authorId": "u3",
+      "field": "status",
+      "from": "Backlog",
+      "to": "To Do",
+      "at": "2026-10-12T09:00:00Z"
+    },
+    {
+      "id": "h6",
+      "issueId": "i3",
+      "authorId": "u3",
+      "field": "status",
+      "from": "To Do",
+      "to": "In Progress",
+      "at": "2026-10-16T10:00:00Z"
+    },
+    {
+      "id": "h7",
+      "issueId": "i3",
+      "authorId": "u3",
+      "field": "status",
+      "from": "In Progress",
+      "to": "Review",
+      "at": "2026-10-22T11:00:00Z"
+    },
+    {
+      "id": "h8",
+      "issueId": "i3",
+      "authorId": "u3",
+      "field": "status",
+      "from": "Review",
+      "to": "Done",
+      "at": "2026-10-23T12:00:00Z"
+    },
+    {
+      "id": "h9",
+      "issueId": "i6",
+      "authorId": "u2",
+      "field": "status",
+      "from": "Backlog",
+      "to": "To Do",
+      "at": "2026-10-12T09:05:00Z"
+    },
+    {
+      "id": "h10",
+      "issueId": "i6",
+      "authorId": "u2",
+      "field": "status",
+      "from": "To Do",
+      "to": "In Progress",
+      "at": "2026-10-12T11:00:00Z"
+    },
+    {
+      "id": "h11",
+      "issueId": "i6",
+      "authorId": "u2",
+      "field": "status",
+      "from": "In Progress",
+      "to": "Review",
+      "at": "2026-10-14T10:00:00Z"
+    },
+    {
+      "id": "h12",
+      "issueId": "i6",
+      "authorId": "u2",
+      "field": "status",
+      "from": "Review",
+      "to": "Done",
+      "at": "2026-10-14T15:00:00Z"
+    },
+    {
+      "id": "h13",
+      "issueId": "i7",
+      "authorId": "u2",
+      "field": "status",
+      "from": "Backlog",
+      "to": "To Do",
+      "at": "2026-10-12T09:10:00Z"
+    },
+    {
+      "id": "h14",
+      "issueId": "i7",
+      "authorId": "u2",
+      "field": "status",
+      "from": "To Do",
+      "to": "In Progress",
+      "at": "2026-10-15T10:00:00Z"
+    },
+    {
+      "id": "h15",
+      "issueId": "i7",
+      "authorId": "u2",
+      "field": "status",
+      "from": "In Progress",
+      "to": "Review",
+      "at": "2026-10-19T16:00:00Z"
+    },
+    {
+      "id": "h16",
+      "issueId": "i7",
+      "authorId": "u2",
+      "field": "status",
+      "from": "Review",
+      "to": "Done",
+      "at": "2026-10-20T14:00:00Z"
+    },
+    {
+      "id": "h17",
+      "issueId": "i8",
+      "authorId": "u3",
+      "field": "status",
+      "from": "Backlog",
+      "to": "To Do",
+      "at": "2026-10-12T09:15:00Z"
+    },
+    {
+      "id": "h18",
+      "issueId": "i8",
+      "authorId": "u3",
+      "field": "status",
+      "from": "To Do",
+      "to": "In Progress",
+      "at": "2026-10-19T10:00:00Z"
+    },
+    {
+      "id": "h19",
+      "issueId": "i8",
+      "authorId": "u3",
+      "field": "status",
+      "from": "In Progress",
+      "to": "Review",
+      "at": "2026-10-21T12:00:00Z"
+    },
+    {
+      "id": "h20",
+      "issueId": "i8",
+      "authorId": "u3",
+      "field": "status",
+      "from": "Review",
+      "to": "Done",
+      "at": "2026-10-21T17:00:00Z"
+    },
+    {
+      "id": "h21",
+      "issueId": "i12",
+      "authorId": "u2",
+      "field": "status",
+      "from": "Backlog",
+      "to": "To Do",
+      "at": "2026-10-15T11:00:00Z"
+    },
+    {
+      "id": "h22",
+      "issueId": "i12",
+      "authorId": "u2",
+      "field": "status",
+      "from": "To Do",
+      "to": "In Progress",
+      "at": "2026-10-20T10:00:00Z"
+    },
+    {
+      "id": "h23",
+      "issueId": "i12",
+      "authorId": "u2",
+      "field": "status",
+      "from": "In Progress",
+      "to": "Review",
+      "at": "2026-10-21T15:00:00Z"
+    },
+    {
+      "id": "h24",
+      "issueId": "i12",
+      "authorId": "u2",
+      "field": "status",
+      "from": "Review",
+      "to": "Done",
+      "at": "2026-10-22T10:00:00Z"
+    },
+    {
+      "id": "h25",
+      "issueId": "i16",
+      "authorId": "u4",
+      "field": "status",
+      "from": "Backlog",
+      "to": "To Do",
+      "at": "2026-10-12T09:20:00Z"
+    },
+    {
+      "id": "h26",
+      "issueId": "i16",
+      "authorId": "u4",
+      "field": "status",
+      "from": "To Do",
+      "to": "In Progress",
+      "at": "2026-10-19T14:00:00Z"
+    },
+    {
+      "id": "h27",
+      "issueId": "i16",
+      "authorId": "u4",
+      "field": "status",
+      "from": "In Progress",
+      "to": "Review",
+      "at": "2026-10-20T10:00:00Z"
+    },
+    {
+      "id": "h28",
+      "issueId": "i16",
+      "authorId": "u4",
+      "field": "status",
+      "from": "Review",
+      "to": "Done",
+      "at": "2026-10-20T13:00:00Z"
+    }
+  ]
+}
