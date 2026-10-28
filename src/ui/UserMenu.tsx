@@ -1,7 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { useStorage } from '../app/storage-context';
-import { resolveUser, useUserStore } from '../state/current-user';
+import { SERVER_MODE } from '../app/create-storage';
+import { authClient } from '../app/auth-client';
+import { ROLE_LABELS } from '../domain/permissions';
+import { resolveAuthor, useUserStore } from '../state/current-user';
+import { useSession } from '../state/session';
 import { useNotices } from '../state/notices';
 import { usePeople } from '../state/queries';
 
@@ -13,7 +17,9 @@ export function UserMenu() {
   const people = usePeople();
   const userId = useUserStore((s) => s.userId);
   const setUser = useUserStore((s) => s.setUser);
-  const current = people.data ? resolveUser(people.data, userId) : undefined;
+  const account = useSession((s) => s.account);
+  const setAccount = useSession((s) => s.set);
+  const current = people.data ? resolveAuthor(people.data, account?.id ?? null, userId) : undefined;
   const [open, setOpen] = useState(false);
   const root = useRef<HTMLDivElement>(null);
   const reset = storage.reset?.bind(storage);
@@ -34,6 +40,12 @@ export function UserMenu() {
       document.removeEventListener('mousedown', onClick);
     };
   }, [open]);
+
+  const onLogout = async () => {
+    setOpen(false);
+    await authClient.logout().catch(() => undefined);
+    setAccount(null);
+  };
 
   const onReset = async () => {
     setOpen(false);
@@ -60,7 +72,14 @@ export function UserMenu() {
       </button>
       {open && (
         <div className="menu" role="menu">
-          {people.data && (
+          {SERVER_MODE && account && (
+            <p className="muted">
+              {account.email}
+              <br />
+              {ROLE_LABELS[account.role]}
+            </p>
+          )}
+          {!SERVER_MODE && people.data && (
             <label className="menu-field">
               Работаю как
               <select value={current?.id ?? ''} onChange={(e) => setUser(e.target.value)}>
@@ -72,7 +91,11 @@ export function UserMenu() {
               </select>
             </label>
           )}
-          {reset ? (
+          {SERVER_MODE ? (
+            <button type="button" role="menuitem" onClick={() => void onLogout()}>
+              Выйти
+            </button>
+          ) : reset ? (
             <button type="button" role="menuitem" onClick={() => void onReset()}>
               Сбросить данные
             </button>

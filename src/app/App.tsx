@@ -4,11 +4,19 @@ import { createBrowserRouter } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
 import type { TrackerStorage } from '../storage';
 import { useNotices } from '../state/notices';
+import { AuthGate } from './AuthGate';
+import { SERVER_MODE } from './create-storage';
 import { routes } from './routes';
 import { StorageProvider } from './storage-context';
 
+// В демо данные меняются только этим же окном, поэтому кэш не устаревает. С сервером их правят и
+// другие люди: данные считаются свежими 15 секунд и перечитываются при возвращении на вкладку.
 const queryClient = new QueryClient({
-  defaultOptions: { queries: { retry: false, staleTime: Infinity, refetchOnWindowFocus: false } },
+  defaultOptions: {
+    queries: SERVER_MODE
+      ? { retry: false, staleTime: 15_000, refetchOnWindowFocus: true }
+      : { retry: false, staleTime: Infinity, refetchOnWindowFocus: false },
+  },
 });
 
 // Базовый путь нужен для GitHub Pages (https://…github.io/team-tracker/), см. ADR-005.
@@ -24,7 +32,13 @@ export function App({ storage }: { storage: TrackerStorage }) {
   return (
     <StorageProvider storage={storage}>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+        {SERVER_MODE ? (
+          <AuthGate>
+            <RouterProvider router={router} />
+          </AuthGate>
+        ) : (
+          <RouterProvider router={router} />
+        )}
       </QueryClientProvider>
     </StorageProvider>
   );

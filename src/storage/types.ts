@@ -37,7 +37,8 @@ export interface TrackerStorage {
   reset?(): Promise<void>;
 }
 
-export type StorageErrorCode = 'invalid_data' | 'conflict' | 'write_failed';
+export type StorageErrorCode =
+  'invalid_data' | 'conflict' | 'write_failed' | 'forbidden' | 'unauthorized' | 'network';
 
 export class StorageError extends Error {
   readonly code: StorageErrorCode;

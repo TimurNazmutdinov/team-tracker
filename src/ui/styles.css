@@ -1099,3 +1099,19 @@ textarea[aria-invalid='true'] {
     grid-template-columns: 1fr;
   }
 }
+
+/* Экран входа (ADR-010) */
+.login {
+  max-width: 24rem;
+  margin: 3rem auto;
+  padding: 0 1rem;
+}
+
+.login form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.accounts {
+  margin-top: 2rem;
+}

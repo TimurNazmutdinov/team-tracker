@@ -5,6 +5,7 @@ import type { View } from '../../domain/actions';
 import { STATUSES, type Sprint, type Status } from '../../domain/schema';
 import { sprintSnapshots, summarize } from '../../domain/totals';
 import { useActions } from '../../state/actions';
+import { usePermissions } from '../../state/current-user';
 import { useNotices } from '../../state/notices';
 import { useProjectHistory, useView } from '../../state/queries';
 import { ErrorMessage } from '../../ui/ErrorMessage';
@@ -32,6 +33,7 @@ export function SprintsPage() {
   const view = useView(project.id);
   const history = useProjectHistory(project.id);
   const [dialog, setDialog] = useState<DialogKind>(null);
+  const canManage = usePermissions().can('sprint.manage');
 
   if (!view || !history.data) {
     return (
@@ -70,9 +72,11 @@ export function SprintsPage() {
             </Link>
           ))}
           {sprints.length === 0 && <p className="muted">Спринтов пока нет</p>}
-          <button type="button" onClick={() => setDialog('create')}>
-            + Новый спринт
-          </button>
+          {canManage && (
+            <button type="button" onClick={() => setDialog('create')}>
+              + Новый спринт
+            </button>
+          )}
         </nav>
         {selected ? (
           <SprintDetail
@@ -128,6 +132,7 @@ function SprintDetail({
   onDialog: (d: DialogKind) => void;
 }) {
   const actions = useActions(view.projectId);
+  const canManage = usePermissions().can('sprint.manage');
   const push = useNotices((s) => s.push);
   const [error, setError] = useState<string | null>(null);
   const [editingGoal, setEditingGoal] = useState(false);
@@ -160,17 +165,17 @@ function SprintDetail({
         <h2>{sprint.name}</h2>
         <span className={`chip state-${sprint.state}`}>{STATE_LABEL[sprint.state]}</span>
         <span className="spacer" />
-        {!readOnly && (
+        {!readOnly && canManage && (
           <button type="button" onClick={() => onDialog('edit')}>
             Изменить
           </button>
         )}
-        {sprint.state === 'planned' && (
+        {canManage && sprint.state === 'planned' && (
           <button type="button" className="primary" onClick={() => void start()}>
             Запустить спринт
           </button>
         )}
-        {sprint.state === 'active' && (
+        {canManage && sprint.state === 'active' && (
           <button type="button" className="primary" onClick={() => onDialog('close')}>
             Закрыть спринт
           </button>
@@ -222,7 +227,7 @@ function SprintDetail({
       ) : (
         <p>
           Цель: {sprint.goal || <span className="muted">не задана</span>}{' '}
-          {!readOnly && (
+          {!readOnly && canManage && (
             <button
               type="button"
               className="plain"
