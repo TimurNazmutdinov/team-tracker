@@ -1,5 +1,5 @@
 // Рендерит docs/architecture.svg и docs/diagrams/*.svg в PNG (Chromium из Playwright).
-// Запуск: node scripts/svg_to_png.js
+// Запуск: node scripts/svg_to_png.cjs
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');

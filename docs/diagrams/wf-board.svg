@@ -39,16 +39,16 @@
 <text x="124" y="109" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">1</text>
 <rect x="20" y="142" width="206" height="30" rx="6" fill="#e0e7ff" stroke="#cbd5e1" stroke-width="1.2"/>
 <text x="30" y="162" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">To Do</text>
-<text x="216" y="162" text-anchor="end" font-size="12" fill="#6b7280">3 · 10 pts</text>
+<text x="216" y="162" text-anchor="end" font-size="12" fill="#6b7280">3 · 10 sp</text>
 <rect x="238" y="142" width="206" height="30" rx="6" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1.2"/>
 <text x="248" y="162" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">In Progress</text>
-<text x="434" y="162" text-anchor="end" font-size="12" fill="#6b7280">3 · 8 pts</text>
+<text x="434" y="162" text-anchor="end" font-size="12" fill="#6b7280">3 · 8 sp</text>
 <rect x="456" y="142" width="206" height="30" rx="6" fill="#fef3c7" stroke="#cbd5e1" stroke-width="1.2"/>
 <text x="466" y="162" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">Review</text>
-<text x="652" y="162" text-anchor="end" font-size="12" fill="#6b7280">2 · 3 pts</text>
+<text x="652" y="162" text-anchor="end" font-size="12" fill="#6b7280">2 · 3 sp</text>
 <rect x="674" y="142" width="206" height="30" rx="6" fill="#dcfce7" stroke="#cbd5e1" stroke-width="1.2"/>
 <text x="684" y="162" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">Done</text>
-<text x="870" y="162" text-anchor="end" font-size="12" fill="#6b7280">0 · 0 pts</text>
+<text x="870" y="162" text-anchor="end" font-size="12" fill="#6b7280">0 · 0 sp</text>
 <circle cx="226" cy="142" r="11" fill="#b91c1c"/>
 <text x="226" y="147" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">2</text>
 <rect x="20" y="178" width="860" height="30" rx="6" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
@@ -56,7 +56,7 @@
 <circle cx="58" cy="193" r="11" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
 <text x="58" y="197" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">ИС</text>
 <text x="78" y="198" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">Игорь Смирнов</text>
-<text x="870" y="198" text-anchor="end" font-size="12" fill="#6b7280">3 задачи · 8 pts</text>
+<text x="870" y="198" text-anchor="end" font-size="12" fill="#6b7280">3 задачи · 8 sp</text>
 <circle cx="20" cy="178" r="11" fill="#b91c1c"/>
 <text x="20" y="183" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">3</text>
 <rect x="20" y="212" width="206" height="300" rx="6" fill="#f3f4f6" fill-opacity="0.55" stroke="#cbd5e1" stroke-width="1.2"/>
@@ -99,7 +99,7 @@
 <circle cx="58" cy="533" r="11" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
 <text x="58" y="537" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">МО</text>
 <text x="78" y="538" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">Мария Орлова</text>
-<text x="870" y="538" text-anchor="end" font-size="12" fill="#6b7280">4 задачи · 13 pts</text>
+<text x="870" y="538" text-anchor="end" font-size="12" fill="#6b7280">4 задачи · 13 sp</text>
 <rect x="20" y="552" width="206" height="202" rx="6" fill="#f3f4f6" fill-opacity="0.55" stroke="#cbd5e1" stroke-width="1.2"/>
 <rect x="28" y="558" width="190" height="90" rx="6" fill="#ffffff" stroke="#6b7280" stroke-width="1.2"/>
 <rect x="36" y="565" width="16" height="16" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
@@ -146,7 +146,7 @@
 <circle cx="58" cy="775" r="11" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
 <text x="58" y="779" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">АК</text>
 <text x="78" y="780" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">Анна Ковалёва</text>
-<text x="870" y="780" text-anchor="end" font-size="12" fill="#6b7280">1 задача · 0 pts</text>
+<text x="870" y="780" text-anchor="end" font-size="12" fill="#6b7280">1 задача · 0 sp</text>
 <rect x="20" y="794" width="206" height="104" rx="6" fill="#f3f4f6" fill-opacity="0.55" stroke="#cbd5e1" stroke-width="1.2"/>
 <rect x="28" y="800" width="190" height="90" rx="6" fill="#ffffff" stroke="#6b7280" stroke-width="1.2"/>
 <rect x="36" y="807" width="16" height="16" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>

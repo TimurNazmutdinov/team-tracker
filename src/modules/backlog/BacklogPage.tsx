@@ -193,7 +193,7 @@ function Section({ title, sprint, view, items, projectKey, onMove }: SectionProp
               {fmt(sprint.start)} – {fmt(sprint.end)}
             </span>
             <span className="spacer" />
-            <strong>{points} pts</strong>
+            <strong>{points} sp</strong>
           </>
         ) : (
           <>
@@ -201,7 +201,7 @@ function Section({ title, sprint, view, items, projectKey, onMove }: SectionProp
               {items.length === 1 ? '1 задача' : `${items.length} задач`}
             </span>
             <span className="spacer" />
-            <strong>{points} pts</strong>
+            <strong>{points} sp</strong>
           </>
         )}
       </header>
