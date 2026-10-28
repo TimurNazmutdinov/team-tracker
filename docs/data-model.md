@@ -2,7 +2,7 @@
 
 ## Сущности
 
-- **Project** — проект; `key` (например, `DEMO`) формирует номера задач вида `DEMO-12`.
+- **Project** — проект; `key` (например, `DEMO`) формирует номера задач вида `DEMO-12`; настройки спринтов: длительность, префикс и следующий номер названия, дата старта следующего спринта.
 - **Person** — участник команды с ролью.
 - **Sprint** — спринт проекта с целью, плановыми датами, состоянием `planned | active | closed` и фактическим временем закрытия `closedAt`.
 - **Issue** — задача любого типа (Epic, Story, Task, Bug, Sub-task); `parentId` задаёт иерархию, `sprintId = null` означает бэклог, `order` — ручной порядок.
@@ -25,6 +25,7 @@
 - Story points (целое ≥ 0) есть только у Story, Task и Bug; у Epic и Sub-task `points = null`.
 - Статус задачи — любой из пяти; допустим любой переход, каждая смена пишется в History. Статус Epic задаётся вручную.
 - `Sprint.closedAt` — дата и время фактического закрытия (UTC); задано только у закрытого спринта. Velocity считается на этот момент.
+- Настройки спринтов проекта подставляются в форму нового спринта: название «префикс номер», длительность в днях (конец = старт + длительность − 1), дата старта; номер растёт, когда создаётся спринт с предложенным названием ([ADR-008](adr/008-sprints.md)).
 - Закрытый спринт — только чтение: после `closedAt` его задачи не меняются (кроме переноса незавершённых в момент закрытия).
 - Прогресс Epic вычисляется из points его потомков Story, Task и Bug (всего, в Done, %), не хранится и не входит в velocity и burndown.
 - Связь не ссылается на саму себя и не повторяется.
@@ -53,7 +54,7 @@ History только добавляется. Поле `field` принимает
 
 | Сущность | Поля |
 |----------|------|
-| Project | id, key, name |
+| Project | id, key, name, sprintDurationDays (1–90), sprintPrefix, nextSprintNumber, nextSprintStart (дата или null) |
 | Person | id, name, role |
 | Sprint | id, projectId, name, goal, start, end, state (planned\|active\|closed), closedAt (дата и время или null) |
 | Issue | id, projectId, number, type, title, description, acceptance, status, priority (Highest\|High\|Medium\|Low), points, assigneeId, reporterId, parentId, sprintId, labels[], order, dueDate, createdAt, updatedAt |
@@ -82,6 +83,10 @@ erDiagram
         string id
         string key
         string name
+        int sprintDurationDays
+        string sprintPrefix
+        int nextSprintNumber
+        date nextSprintStart "null если не задана"
     }
     Person {
         string id

@@ -175,15 +175,15 @@ class WF:
         self.text(20, 67, "team-tracker", 17, bold=True)
         if tabs:
             self.chip(158, 52, f"{KEY} ▾", 13, h=26)
-            x = 236
-            for name in ("Бэклог", "Доска", "Спринты", "Отчёты", "Люди"):
+            x = 230
+            for name in ("Бэклог", "Доска", "Спринты", "Отчёты", "Люди", "Настройки"):
                 w = self.est(name, 14, name == active) + 8
                 self.text(x, 67, name, 14, bold=(name == active), fill=t["accent"] if name == active else t["ink"])
                 if name == active:
                     self.rect(x - 2, 80, w, 4, fill=t["accent"], r=2)
-                x += w + 14
-        self.rect(W - 280, 50, 150, 30, fill=t["bg"], stroke=t["line"], r=6)
-        self.text(W - 270, 70, "Поиск", 13, fill=t["muted"])
+                x += w + 10
+        self.rect(W - 260, 50, 130, 30, fill=t["bg"], stroke=t["line"], r=6)
+        self.text(W - 250, 70, "Поиск", 13, fill=t["muted"])
         self.rect(W - 160, 55, 24, 20, fill=t["panel"], stroke=t["line"], r=4)
         self.text(W - 148, 70, "/", 13, "middle", True)
         self.avatar(W - 56, 65, "Анна Ковалёва", 15)
@@ -266,7 +266,7 @@ def pts_by_status(sid):
 
 def people_table(wf, x, y, sid, w=860):
     t = wf.t
-    cols = [("Исполнитель", 0), ("Задач", w * 0.5), ("Points", w * 0.65), ("Из них в Done", w * 0.8)]
+    cols = [("Исполнитель", 0), ("Задач", w * 0.5), ("sp", w * 0.65), ("Из них в Done", w * 0.8)]
     wf.rect(x, y, w, 30, fill=t["panel"], stroke=t["line"], r=4)
     for name, dx in cols:
         wf.text(x + 12 + dx, y + 20, name, 13, bold=True)
@@ -313,11 +313,18 @@ def screen_map():
     box(20, 20, 200, 64, "Проекты", ["/ и /projects", "один проект — сразу бэклог"], strong=True)
     box(310, 20, 270, 64, "Проект", ["/projects/:key → бэклог"])
     arrow(220, 52, 310, 52)
-    tabs = [("Бэклог", "/backlog"), ("Доска", "/board"), ("Спринты", "/sprints"), ("Отчёты", "/reports"), ("Люди", "/people")]
-    xs = [20 + k * 176 for k in range(5)]
+    tabs = [
+        ("Бэклог", "/backlog"),
+        ("Доска", "/board"),
+        ("Спринты", "/sprints"),
+        ("Отчёты", "/reports"),
+        ("Люди", "/people"),
+        ("Настройки", "/settings"),
+    ]
+    xs = [20 + k * 146 for k in range(6)]
     for x, (n, u) in zip(xs, tabs):
-        box(x, 150, 160, 64, n, ["/projects/:key" + u] if len(u) < 9 else ["…" + u])
-        arrow(445, 84, x + 80, 150)
+        box(x, 150, 134, 64, n, ["…" + u])
+        arrow(445, 84, x + 67, 150)
     box(20, 300, 250, 74, "Спринт", ["/projects/:key/sprints/:id", "цель, состав, итоги"])
     box(325, 300, 250, 74, "Задача", ["/projects/:key/issues/:n", "карточка, связи, история"])
     arrow(100, 214, 145, 300)
@@ -496,12 +503,16 @@ def screen_sprints():
     wf.text(20, 128, "Спринты", 24, bold=True)
     wf.rect(20, 150, 250, 560, fill=t["panel"], stroke=t["line"], r=8)
     y = 164
-    for sid, label, fill in (("s2", "идёт", t["status"]["In Progress"]), ("s1", "закрыт", t["status"]["Done"])):
+    for sid, label, fill in (
+        ("s2", "идёт", t["status"]["In Progress"]),
+        ("s3", "запланирован", t["panel"]),
+        ("s1", "закрыт", t["status"]["Done"]),
+    ):
         s = SPRINTS[sid]
         sel = sid == "s2"
         wf.rect(30, y, 230, 64, fill=t["accent_bg"] if sel else t["bg"], stroke=t["accent"] if sel else t["line"], r=6, sw=1.8 if sel else 1.2)
         wf.text(42, y + 24, s["name"], 15, bold=True)
-        wf.chip(160, y + 8, label, 12, fill=fill)
+        wf.chip(250 - wf.est(label, 12) - 26, y + 8, label, 12, fill=fill)
         wf.text(42, y + 46, f"{fd(s['start'])} – {fd(s['end'])}", 12, fill=t["muted"])
         y += 72
     wf.button(30, y + 4, 230, 34, "+ Новый спринт")
@@ -877,6 +888,36 @@ def screen_people():
     return wf
 
 
+def screen_settings():
+    wf = WF(560, "Экран «Настройки проекта»")
+    t = wf.t
+    wf.shell(f"team-tracker.app/projects/{KEY}/settings", "Настройки")
+    pr = SEED["projects"][0]
+    wf.text(20, 128, "Настройки проекта", 24, bold=True)
+    wf.text(20, 176, "Спринты", 18, bold=True)
+    wf.text(20, 200, "Значения подставляются в форму нового спринта; названия и даты каждого спринта можно изменить на экране «Спринты».", 13, fill=t["muted"])
+    wf.field(20, 236, 400, "Длительность по умолчанию, дней", str(pr["sprintDurationDays"]))
+    wf.text(20, 292, "От 1 до 90; конец = старт + длительность − 1 день", 11, fill=t["muted"])
+    wf.callout(1, 6, 236)
+    wf.field(450, 236, 400, "Название: префикс", pr["sprintPrefix"])
+    wf.text(450, 292, "Например, «Спринт» или «Итерация»", 11, fill=t["muted"])
+    wf.callout(2, 436, 236)
+    wf.field(20, 322, 400, "Номер следующего спринта", str(pr["nextSprintNumber"]))
+    wf.text(20, 378, "Растёт сам, когда создаётся спринт с предложенным названием", 11, fill=t["muted"])
+    wf.callout(3, 6, 322)
+    wf.field(450, 322, 400, "Дата старта следующего спринта", "", placeholder=True)
+    wf.text(450, 378, "Если пусто — на следующий день после конца последнего спринта", 11, fill=t["muted"])
+    wf.callout(4, 436, 322)
+    last = max(s["end"] for s in SEED["sprints"])
+    start = (datetime.date.fromisoformat(last) + datetime.timedelta(days=1))
+    end = start + datetime.timedelta(days=pr["sprintDurationDays"] - 1)
+    wf.rect(20, 410, 830, 44, fill=t["accent_bg"], stroke=t["accent"], r=6)
+    wf.text(36, 438, f"Следующий спринт: «{pr['sprintPrefix']} {pr['nextSprintNumber']}», {start.strftime('%d.%m.%Y')} – {end.strftime('%d.%m.%Y')}", 15, bold=True)
+    wf.callout(5, 14, 410)
+    wf.button(20, 480, 140, 38, "Сохранить", True)
+    return wf
+
+
 def screen_search():
     wf = WF(600, "Поиск и подсказка клавиш")
     t = wf.t
@@ -931,6 +972,7 @@ SCREENS = {
     "wf-reports": screen_reports,
     "wf-people": screen_people,
     "wf-search": screen_search,
+    "wf-settings": screen_settings,
 }
 
 
