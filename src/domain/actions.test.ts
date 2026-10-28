@@ -258,22 +258,47 @@ describe('updateIssue', () => {
     ).toContain('закрытый');
   });
 
-  it('название, срок и метки без записи в историю', () => {
-    const next = applied(
-      ds,
-      updateIssue(
-        viewOf(ds),
-        'i10',
-        { title: ' Новое ', labels: ['а', 'а'], dueDate: null },
-        'u1',
-        testCtx(),
-      ),
-    );
-    expect(issueOf(next, 'i10')).toMatchObject({ title: 'Новое', labels: ['а'], dueDate: null });
-    expect(next.history.length).toBe(ds.history.length);
+  it('каждая правка полей пишет событие в историю', () => {
+    const patch = {
+      title: ' Новое ',
+      description: 'Описание',
+      acceptance: 'Критерии',
+      priority: 'Low' as const,
+      labels: ['а', 'а', 'б'],
+      dueDate: null,
+      parentId: null,
+    };
+    const next = applied(ds, updateIssue(viewOf(ds), 'i10', patch, 'u1', testCtx()));
+    expect(issueOf(next, 'i10')).toMatchObject({
+      title: 'Новое',
+      labels: ['а', 'б'],
+      dueDate: null,
+      parentId: null,
+    });
+    const events = next.history.slice(ds.history.length).map((h) => [h.field, h.from, h.to]);
+    expect(events).toEqual([
+      ['title', 'Письмо о смене пароля', 'Новое'],
+      ['description', 'Отправка уведомления на e-mail после успешной смены.', 'Описание'],
+      ['acceptance', 'Письмо уходит в течение минуты, текст согласован.', 'Критерии'],
+      ['priority', 'Medium', 'Low'],
+      ['labels', 'бэкенд', 'а, б'],
+      ['dueDate', '2026-11-05', null],
+      ['parentId', 'i1', null],
+    ]);
     expect(errors(updateIssue(viewOf(ds), 'i10', { title: '' }, 'u1', testCtx())).title).toContain(
       'название',
     );
+  });
+
+  it('без фактических изменений история не пишется', () => {
+    const r = updateIssue(
+      viewOf(ds),
+      'i10',
+      { title: ' Письмо о смене пароля ', priority: 'Medium', labels: ['бэкенд'] },
+      'u1',
+      testCtx(),
+    );
+    expect(r.ok && r.changes).toEqual({});
   });
 });
 

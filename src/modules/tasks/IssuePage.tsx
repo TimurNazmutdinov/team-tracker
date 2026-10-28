@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import type { FieldErrors, View } from '../../domain/actions';
 import { canHavePoints } from '../../domain/hierarchy';
+import { epicProgress } from '../../domain/progress';
 import type { Issue } from '../../domain/schema';
 import { useActions } from '../../state/actions';
 import { useCreateDialog } from '../../state/create-dialog';
@@ -11,7 +12,7 @@ import { NotFound } from '../../ui/NotFound';
 import { PageHeader } from '../../ui/PageHeader';
 import { TextArea, TextField } from '../../ui/fields';
 import { useCurrentProject } from '../projects/ProjectRoute';
-import { Avatar, StatusChip, TypeIcon } from './IssueBits';
+import { Avatar, EpicProgressView, StatusChip, TypeIcon } from './IssueBits';
 import { IssueActivity } from './IssueActivity';
 import { IssueLinks } from './IssueLinks';
 import { IssueSidebar } from './IssueSidebar';
@@ -70,6 +71,17 @@ function IssueView({ issue, view, projectKey }: { issue: Issue; view: View; proj
         <div className="issue-main">
           <TextBlocks issue={issue} view={view} readOnly={readOnly} />
 
+          {isEpic && (
+            <section aria-labelledby="progress-title">
+              <h2 id="progress-title">Прогресс</h2>
+              <EpicProgressView progress={epicProgress(view.issues, issue.id)} />
+              <p className="muted small">
+                Считается по story points дочерних Story, Task и Bug, не хранится и не входит в
+                velocity и burndown.
+              </p>
+            </section>
+          )}
+
           <section aria-labelledby="children-title">
             <h2 id="children-title">
               {isEpic ? 'Задачи эпика' : `Подзадачи (${children.length})`}
@@ -107,7 +119,7 @@ function IssueView({ issue, view, projectKey }: { issue: Issue; view: View; proj
           </section>
 
           <IssueLinks issue={issue} view={view} projectKey={projectKey} />
-          <IssueActivity issue={issue} view={view} />
+          <IssueActivity issue={issue} view={view} projectKey={projectKey} />
         </div>
         <IssueSidebar
           key={`${issue.id}:${issue.updatedAt}`}

@@ -16,7 +16,10 @@ STATUSES = ["Backlog", "To Do", "In Progress", "Review", "Done"]
 PRIORITIES = {"Highest", "High", "Medium", "Low"}
 SPRINT_STATES = {"planned", "active", "closed"}
 LINK_TYPES = {"blocks", "relates", "duplicates"}
-FIELDS = {"created", "status", "assigneeId", "points", "sprintId"}
+FIELDS = {
+    "created", "status", "assigneeId", "points", "sprintId",
+    "title", "description", "acceptance", "priority", "parentId", "labels", "dueDate",
+}
 ESTIMATED = {"Story", "Task", "Bug"}
 
 errors = []

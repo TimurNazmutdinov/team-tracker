@@ -319,6 +319,20 @@ export function updateIssue(
   }
   if (Object.keys(errors).length > 0) return fail(errors);
 
+  // Остальные поля: каждое изменение тоже пишется в историю (ADR-003, уточнение этапа 4)
+  const record = (field: HistoryField, from: string | null, to: string | null) =>
+    history.push(historyEntry(ctx, issue.id, authorId, field, from, to));
+  if (next.title !== issue.title) record('title', issue.title, next.title);
+  if (next.description !== issue.description)
+    record('description', issue.description, next.description);
+  if (next.acceptance !== issue.acceptance) record('acceptance', issue.acceptance, next.acceptance);
+  if (next.priority !== issue.priority) record('priority', issue.priority, next.priority);
+  if (!same(next.labels, issue.labels)) {
+    record('labels', issue.labels.join(', ') || null, next.labels.join(', ') || null);
+  }
+  if (next.dueDate !== issue.dueDate) record('dueDate', issue.dueDate, next.dueDate);
+  if (next.parentId !== issue.parentId) record('parentId', issue.parentId, next.parentId);
+
   if (newSprintId !== issue.sprintId) {
     history.push(historyEntry(ctx, issue.id, authorId, 'sprintId', issue.sprintId, newSprintId));
     next.sprintId = newSprintId;

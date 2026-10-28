@@ -9,7 +9,20 @@ export const STATUSES = ['Backlog', 'To Do', 'In Progress', 'Review', 'Done'] as
 export const PRIORITIES = ['Highest', 'High', 'Medium', 'Low'] as const;
 export const SPRINT_STATES = ['planned', 'active', 'closed'] as const;
 export const LINK_TYPES = ['blocks', 'relates', 'duplicates'] as const;
-export const HISTORY_FIELDS = ['created', 'status', 'assigneeId', 'points', 'sprintId'] as const;
+export const HISTORY_FIELDS = [
+  'created',
+  'status',
+  'assigneeId',
+  'points',
+  'sprintId',
+  'title',
+  'description',
+  'acceptance',
+  'priority',
+  'parentId',
+  'labels',
+  'dueDate',
+] as const;
 
 const id = z.string().min(1);
 const nullableId = id.nullable();

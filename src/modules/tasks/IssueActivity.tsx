@@ -79,9 +79,21 @@ function Comments({ issue, view }: { issue: Issue; view: View }) {
   );
 }
 
-function HistoryRow({ entry, view }: { entry: History; view: View }) {
+function HistoryRow({
+  entry,
+  view,
+  projectKey,
+}: {
+  entry: History;
+  view: View;
+  projectKey: string;
+}) {
   const author = view.people.find((p) => p.id === entry.authorId);
   const person = (id: string | null) => view.people.find((p) => p.id === id)?.name ?? '—';
+  const issueKey = (id: string | null) => {
+    const found = view.issues.find((i) => i.id === id);
+    return found ? `${projectKey}-${found.number}` : '—';
+  };
   const sprint = (id: string | null) => view.sprints.find((s) => s.id === id)?.name ?? 'Бэклог';
   let what: ReactNode;
   switch (entry.field) {
@@ -109,6 +121,27 @@ function HistoryRow({ entry, view }: { entry: History; view: View }) {
     case 'points':
       what = `story points: ${entry.from ?? '—'} → ${entry.to ?? '—'}`;
       break;
+    case 'title':
+      what = `название: «${entry.from ?? ''}» → «${entry.to ?? ''}»`;
+      break;
+    case 'description':
+      what = 'описание изменено';
+      break;
+    case 'acceptance':
+      what = 'критерии приёмки изменены';
+      break;
+    case 'priority':
+      what = `приоритет: ${entry.from ?? '—'} → ${entry.to ?? '—'}`;
+      break;
+    case 'parentId':
+      what = `родитель: ${issueKey(entry.from)} → ${issueKey(entry.to)}`;
+      break;
+    case 'labels':
+      what = `метки: ${entry.from ?? '—'} → ${entry.to ?? '—'}`;
+      break;
+    case 'dueDate':
+      what = `срок: ${entry.from ?? '—'} → ${entry.to ?? '—'}`;
+      break;
   }
   return (
     <li className="history-row">
@@ -119,7 +152,15 @@ function HistoryRow({ entry, view }: { entry: History; view: View }) {
   );
 }
 
-function HistoryList({ issue, view }: { issue: Issue; view: View }) {
+function HistoryList({
+  issue,
+  view,
+  projectKey,
+}: {
+  issue: Issue;
+  view: View;
+  projectKey: string;
+}) {
   const history = useHistory(issue.id);
   return (
     <Async query={history}>
@@ -130,12 +171,12 @@ function HistoryList({ issue, view }: { issue: Issue; view: View }) {
               .map((h, i) => ({ h, i }))
               .sort((a, b) => a.h.at.localeCompare(b.h.at) || a.i - b.i)
               .map(({ h }) => (
-                <HistoryRow key={h.id} entry={h} view={view} />
+                <HistoryRow key={h.id} entry={h} view={view} projectKey={projectKey} />
               ))}
           </ul>
           <p className="muted small">
-            В истории видны создание задачи и смены статуса, исполнителя, story points и спринта.
-            Записи только добавляются: править и удалять их нельзя.
+            В истории видны создание задачи и каждое изменение её полей. Записи только добавляются:
+            править и удалять их нельзя.
           </p>
         </>
       )}
@@ -144,7 +185,15 @@ function HistoryList({ issue, view }: { issue: Issue; view: View }) {
 }
 
 /** Вкладки «Комментарии» и «История» (F-17, F-19). */
-export function IssueActivity({ issue, view }: { issue: Issue; view: View }) {
+export function IssueActivity({
+  issue,
+  view,
+  projectKey,
+}: {
+  issue: Issue;
+  view: View;
+  projectKey: string;
+}) {
   const [tab, setTab] = useState<'comments' | 'history'>('comments');
   const comments = useComments(issue.id);
   const history = useHistory(issue.id);
@@ -172,7 +221,7 @@ export function IssueActivity({ issue, view }: { issue: Issue; view: View }) {
         {tab === 'comments' ? (
           <Comments issue={issue} view={view} />
         ) : (
-          <HistoryList issue={issue} view={view} />
+          <HistoryList issue={issue} view={view} projectKey={projectKey} />
         )}
       </div>
     </section>
