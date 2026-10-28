@@ -36,3 +36,13 @@ export async function openPglite(dir?: string): Promise<Connection> {
   await migratePglite(db, { migrationsFolder: MIGRATIONS });
   return { db, close: () => client.close() };
 }
+
+export interface DatabaseOptions {
+  databaseUrl: string | undefined;
+  dataDir: string;
+}
+
+/** PostgreSQL, если задан DATABASE_URL, иначе встроенная база в каталоге данных (ADR-011). */
+export function openDatabase(options: DatabaseOptions): Promise<Connection> {
+  return options.databaseUrl ? openPostgres(options.databaseUrl) : openPglite(options.dataDir);
+}

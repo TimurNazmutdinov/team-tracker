@@ -16,7 +16,7 @@ beforeAll(async () => {
   seed = readSeedFile('data/seed.json');
   connection = await openPglite();
   await importDataset(connection.db, seed);
-  app = buildApp({ db: connection.db });
+  app = buildApp({ db: connection.db, allowRegistration: true });
   await app.ready();
 }, 60_000);
 

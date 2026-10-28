@@ -1,4 +1,13 @@
-import { index, integer, jsonb, pgTable, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
+import {
+  boolean,
+  index,
+  integer,
+  jsonb,
+  pgTable,
+  text,
+  timestamp,
+  uniqueIndex,
+} from 'drizzle-orm/pg-core';
 
 // Таблицы повторяют сущности docs/data-model.md. Даты хранятся строками ISO, как в приложении:
 // так значения возвращаются клиенту без преобразований.
@@ -119,6 +128,8 @@ export const users = pgTable('users', {
   email: text('email').notNull().unique(),
   passwordHash: text('password_hash').notNull(),
   accessRole: text('access_role').notNull(),
+  /** Пароль временный (его выдал администратор): до смены работать с данными нельзя. */
+  mustChangePassword: boolean('must_change_password').notNull().default(false),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
