@@ -4,6 +4,11 @@ import { parseDataset } from './dataset';
 import { canHavePoints, isValidParent } from './hierarchy';
 import type { Dataset } from './schema';
 
+function must<T>(value: T | undefined): T {
+  if (value === undefined) throw new Error('нет записи в seed');
+  return value;
+}
+
 function fresh(): Dataset {
   return structuredClone(seed) as unknown as Dataset;
 }
@@ -21,7 +26,7 @@ describe('parseDataset', () => {
 
   it('отклоняет данные неверной структуры', () => {
     const ds = fresh();
-    ds.projects[0]!.key = 'demo';
+    must(ds.projects[0]).key = 'demo';
     expect(errorsOf(ds).join('\n')).toContain('projects.0.key');
     expect(errorsOf({ projects: [] }).length).toBeGreaterThan(0);
     expect(errorsOf(null).length).toBeGreaterThan(0);
@@ -29,31 +34,31 @@ describe('parseDataset', () => {
 
   it('находит ссылку на несуществующую запись', () => {
     const ds = fresh();
-    ds.issues[0]!.assigneeId = 'u999';
+    must(ds.issues[0]).assigneeId = 'u999';
     expect(errorsOf(ds).join('\n')).toContain('u999');
   });
 
   it('правило 6: Task не вкладывается в Story', () => {
     const ds = fresh();
-    ds.issues.find((i) => i.id === 'i9')!.parentId = 'i4';
+    must(ds.issues.find((i) => i.id === 'i9')).parentId = 'i4';
     expect(errorsOf(ds).join('\n')).toContain('недопустимый родитель');
   });
 
   it('правило 6: у Sub-task points нет', () => {
     const ds = fresh();
-    ds.issues.find((i) => i.id === 'i14')!.points = 1;
+    must(ds.issues.find((i) => i.id === 'i14')).points = 1;
     expect(errorsOf(ds).join('\n')).toContain('points не ставятся');
   });
 
   it('правило 9: Sub-task в спринте родителя', () => {
     const ds = fresh();
-    ds.issues.find((i) => i.id === 'i14')!.sprintId = 's1';
+    must(ds.issues.find((i) => i.id === 'i14')).sprintId = 's1';
     expect(errorsOf(ds).join('\n')).toContain('том же спринте');
   });
 
   it('closedAt задан ровно у закрытого спринта', () => {
     const ds = fresh();
-    ds.sprints.find((s) => s.state === 'closed')!.closedAt = null;
+    must(ds.sprints.find((s) => s.state === 'closed')).closedAt = null;
     expect(errorsOf(ds).join('\n')).toContain('closedAt');
   });
 });
