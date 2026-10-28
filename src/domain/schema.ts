@@ -85,6 +85,8 @@ export const historySchema = z.object({
 });
 
 export const datasetSchema = z.object({
+  /** Версия seed.json: при её изменении сохранённые в браузере данные сбрасываются. */
+  version: z.number().int().min(1),
   projects: z.array(projectSchema),
   people: z.array(personSchema),
   sprints: z.array(sprintSchema),

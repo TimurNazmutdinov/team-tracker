@@ -28,6 +28,9 @@ def err(msg):
 
 def main():
     seed = json.loads((ROOT / "data" / "seed.json").read_text(encoding="utf-8"))
+    if not isinstance(seed.get("version"), int) or isinstance(seed.get("version"), bool) or seed["version"] < 1:
+        err("version: ожидается целое число >= 1 (при изменении seed его нужно увеличить)")
+    seed = {k: v for k, v in seed.items() if k != "version"}
     ids = {k: {x["id"] for x in seed[k]} for k in seed}
     for k, v in seed.items():
         if len(ids[k]) != len(v):

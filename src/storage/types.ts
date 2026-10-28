@@ -28,6 +28,9 @@ export interface TrackerStorage {
   /** Атомарно применяет изменения: либо всё, либо ничего. */
   commit(changes: Changes): Promise<void>;
 
+  /** Демо-режим: сообщение о сбросе сохранённых данных при запуске (отдаётся один раз). */
+  takeStartupNotice?(): string | null;
+
   /** Демо-режим: вернуть данные к исходным. Нет у серверных реализаций. */
   reset?(): Promise<void>;
 }

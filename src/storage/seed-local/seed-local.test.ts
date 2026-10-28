@@ -2,7 +2,13 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import seed from '../../../data/seed.json';
 import type { Dataset } from '../../domain/schema';
 import { StorageError } from '../types';
-import { STORAGE_KEY, SeedLocalStorage, clearStoredData, type KeyValueStore } from './index';
+import {
+  OUTDATED_NOTICE,
+  STORAGE_KEY,
+  SeedLocalStorage,
+  clearStoredData,
+  type KeyValueStore,
+} from './index';
 
 class MemoryKv implements KeyValueStore {
   readonly map = new Map<string, string>();
@@ -132,6 +138,41 @@ describe('SeedLocalStorage', () => {
     expect(kv.map.has(STORAGE_KEY)).toBe(false);
   });
 
+  describe('версия seed', () => {
+    async function savedWithChange(): Promise<void> {
+      const s = await SeedLocalStorage.open(seed, kv);
+      const issue = must(await s.getIssue('p1', 9));
+      await s.commit({ issues: [{ ...issue, title: 'Сохранённое название' }] });
+    }
+
+    it('та же версия: сохранённые данные остаются, уведомления нет', async () => {
+      await savedWithChange();
+      const s = await SeedLocalStorage.open(seed, kv);
+      expect(must(await s.getIssue('p1', 9)).title).toBe('Сохранённое название');
+      expect(s.takeStartupNotice()).toBeNull();
+    });
+
+    it('другая версия seed: данные сбрасываются и приходит уведомление (один раз)', async () => {
+      await savedWithChange();
+      const newer = { ...(seed as unknown as Dataset), version: seed.version + 1 };
+      const s = await SeedLocalStorage.open(newer, kv);
+      expect(must(await s.getIssue('p1', 9)).title).toBe('Форма смены пароля');
+      expect(kv.map.has(STORAGE_KEY)).toBe(false);
+      expect(s.takeStartupNotice()).toBe(OUTDATED_NOTICE);
+      expect(s.takeStartupNotice()).toBeNull();
+    });
+
+    it('сохранённые данные без версии считаются устаревшими', async () => {
+      const withoutVersion = Object.fromEntries(
+        Object.entries(seed).filter(([k]) => k !== 'version'),
+      );
+      kv.setItem(STORAGE_KEY, JSON.stringify({ format: 1, data: withoutVersion }));
+      const s = await SeedLocalStorage.open(seed, kv);
+      expect(s.takeStartupNotice()).toBe(OUTDATED_NOTICE);
+      expect(kv.map.has(STORAGE_KEY)).toBe(false);
+    });
+  });
+
   describe('битые данные', () => {
     it('seed неверной структуры', async () => {
       const broken = structuredClone(seed) as unknown as Dataset;
@@ -159,7 +200,10 @@ describe('SeedLocalStorage', () => {
     it('сохранённые данные неизвестного формата или неверной структуры', async () => {
       kv.setItem(STORAGE_KEY, JSON.stringify({ format: 99, data: {} }));
       expect((await rejection(SeedLocalStorage.open(seed, kv))).code).toBe('invalid_data');
-      kv.setItem(STORAGE_KEY, JSON.stringify({ format: 1, data: { projects: 5 } }));
+      kv.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ format: 1, data: { version: seed.version, projects: 5 } }),
+      );
       expect((await rejection(SeedLocalStorage.open(seed, kv))).code).toBe('invalid_data');
     });
 
