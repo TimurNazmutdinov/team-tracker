@@ -15,7 +15,10 @@ for (const f of fs.readdirSync(dir).filter((f) => f.endsWith('.svg'))) {
   const browser = await chromium.launch();
   for (const [src, dst] of jobs) {
     const m = fs.readFileSync(src, 'utf8').match(/<svg[^>]*\swidth="(\d+)"[^>]*\sheight="(\d+)"/);
-    const page = await browser.newPage({ viewport: { width: +m[1], height: +m[2] }, deviceScaleFactor: 2 });
+    const page = await browser.newPage({
+      viewport: { width: +m[1], height: +m[2] },
+      deviceScaleFactor: 2,
+    });
     await page.goto('file://' + src);
     await page.screenshot({ path: dst });
     await page.close();

@@ -186,8 +186,8 @@ class WF:
         self.text(W - 270, 70, "Поиск", 13, fill=t["muted"])
         self.rect(W - 160, 55, 24, 20, fill=t["panel"], stroke=t["line"], r=4)
         self.text(W - 148, 70, "/", 13, "middle", True)
-        self.text(W - 90, 71, "◐", 20, "middle")
-        self.avatar(W - 45, 65, "Анна Ковалёва", 15)
+        self.avatar(W - 56, 65, "Анна Ковалёва", 15)
+        self.text(W - 34, 70, "▾", 13, "middle", fill=t["muted"])
         return 86
 
     def overlay(self):
@@ -310,7 +310,7 @@ def screen_map():
         wf.line(x1, y1, x2, y2, t["ink"], dash=dash, sw=1.8)
         wf.p.append(f'<circle cx="{x2}" cy="{y2}" r="3.5" fill="{t["ink"]}"/>')
 
-    box(20, 20, 200, 64, "Проекты", ["/"], strong=True)
+    box(20, 20, 200, 64, "Проекты", ["/ и /projects", "один проект — сразу бэклог"], strong=True)
     box(310, 20, 270, 64, "Проект", ["/projects/:key → бэклог"])
     arrow(220, 52, 310, 52)
     tabs = [("Бэклог", "/backlog"), ("Доска", "/board"), ("Спринты", "/sprints"), ("Отчёты", "/reports"), ("Люди", "/people")]
@@ -476,6 +476,9 @@ def card(wf, x, y, w, h, i):
     wf.rect(x, y, w, h, fill=t["card"], stroke=t["muted"], r=6)
     wf.icon(x + 8, y + 7, i["type"], 16)
     wf.text(x + 30, y + 20, tkey(i), 12, bold=True, fill=t["accent"])
+    if i["type"] == "Sub-task" and i["parentId"]:
+        label = "↑ " + tkey(BY_ID[i["parentId"]])
+        wf.chip(x + w - wf.est(label, 10.5) - 24, y + 5, label, 10.5, h=19)
     lines = textwrap.wrap(i["title"], 24)[:2]
     if len(textwrap.wrap(i["title"], 24)) > 2:
         lines[1] = lines[1][:-1] + "…"
@@ -875,7 +878,7 @@ def screen_people():
 
 
 def screen_search():
-    wf = WF(560, "Поиск и подсказка клавиш")
+    wf = WF(600, "Поиск и подсказка клавиш")
     t = wf.t
     wf.shell(f"team-tracker.app/projects/{KEY}/board", "Доска")
     wf.overlay()
@@ -898,18 +901,19 @@ def screen_search():
     wf.callout(2, mx + 6, my + 106)
     wf.text(mx + 20, my + 318, "↑↓ выбор · Enter открыть · Esc закрыть", 12, fill=t["muted"])
     kx, kw = 510, 350
-    wf.rect(kx, my, kw, 400, fill=t["bg"], stroke=t["line"], r=10, sw=1.6)
+    wf.rect(kx, my, kw, 440, fill=t["bg"], stroke=t["line"], r=10, sw=1.6)
     wf.text(kx + 20, my + 34, "Горячие клавиши", 17, bold=True)
     wf.callout(3, kx + 8, my + 18)
     keys = [("C", "создать задачу"), ("/", "поиск"), ("?", "эта подсказка"), ("G, B", "бэклог"), ("G, D", "доска"),
-            ("G, S", "спринты"), ("G, R", "отчёты"), ("Ctrl+Enter", "сохранить / отправить"), ("Esc", "закрыть окно")]
+            ("G, S", "спринты"), ("G, R", "отчёты"), ("S, 1–5", "статус выделенной задачи"),
+            ("Ctrl+Enter", "сохранить / отправить"), ("Esc", "закрыть окно")]
     y = my + 60
     for k, d in keys:
         wf.rect(kx + 20, y, 100, 26, fill=t["panel"], stroke=t["line"], r=4)
         wf.text(kx + 70, y + 18, k, 13, "middle", True)
         wf.text(kx + 136, y + 18, d, 14)
         y += 34
-    wf.text(kx + 20, y + 14, "Набор клавиш предварительный.", 12, fill=t["muted"])
+    wf.text(kx + 20, y + 14, "Клавиши не работают в полях ввода.", 12, fill=t["muted"])
     return wf
 
 
