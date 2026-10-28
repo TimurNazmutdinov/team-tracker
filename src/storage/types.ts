@@ -1,3 +1,4 @@
+import type { Changes } from '../domain/changes';
 import type {
   Comment,
   Dataset,
@@ -27,23 +28,11 @@ export interface TrackerStorage {
   /** Атомарно применяет изменения: либо всё, либо ничего. */
   commit(changes: Changes): Promise<void>;
 
+  /** Демо-режим: сообщение о сбросе сохранённых данных при запуске (отдаётся один раз). */
+  takeStartupNotice?(): string | null;
+
   /** Демо-режим: вернуть данные к исходным. Нет у серверных реализаций. */
   reset?(): Promise<void>;
-}
-
-/**
- * Набор изменений для commit. Записи issues, sprints, links, projects и people добавляются или
- * заменяются по id; comments и history только добавляются (запись с существующим id — конфликт).
- */
-export interface Changes {
-  projects?: Project[];
-  people?: Person[];
-  sprints?: Sprint[];
-  issues?: Issue[];
-  links?: Link[];
-  deleteLinkIds?: string[];
-  comments?: Comment[];
-  history?: History[];
 }
 
 export type StorageErrorCode = 'invalid_data' | 'conflict' | 'write_failed';
@@ -60,4 +49,4 @@ export class StorageError extends Error {
   }
 }
 
-export type { Dataset };
+export type { Changes, Dataset };

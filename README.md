@@ -2,7 +2,7 @@
 
 Трекер задач и спринтов для команд разработки: проекты с ключами задач, бэклог, доски, спринты, story points, burndown и velocity.
 
-**Статус: в разработке.** Готовы документы, макеты и каркас приложения (этапы 0–3). Стек утверждён: React + TypeScript + Vite, позже Node.js + Fastify + PostgreSQL ([ADR-002](docs/adr/002-stack.md)).
+**Статус: в разработке.** Готовы документы, макеты, каркас и задачи с бэклогом (этапы 0–4). Стек утверждён: React + TypeScript + Vite, позже Node.js + Fastify + PostgreSQL ([ADR-002](docs/adr/002-stack.md)).
 
 ![Схема архитектуры](docs/architecture.svg)
 
@@ -21,7 +21,7 @@ npm run dev
 
 Команды: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`, `npm run format:check`; проверка seed — `python3 scripts/check_seed.py`. Все они же выполняются в CI (GitHub Actions) для каждого pull request и push в `main`.
 
-Состояние: каркас (этап 3) — навигация, маршруты всех экранов, модуль хранения и тема по настройке системы; сами экраны — заглушки с данными из хранилища.
+Состояние: готовы каркас (этап 3) и задачи с бэклогом (этап 4): проекты, создание и правка задач, иерархия, связи, комментарии, история, порядок перетаскиванием. Доска, спринты, отчёты и люди пока заглушки.
 
 ## Документы
 
@@ -32,7 +32,7 @@ npm run dev
 - [docs/capabilities.md](docs/capabilities.md) — возможности и бизнес-правила по модулям
 - [docs/wireframes.md](docs/wireframes.md) — макеты экранов
 - [docs/data-model.md](docs/data-model.md) — сущности и ER-диаграмма
-- [docs/adr/](docs/adr/) — архитектурные решения ([шаблон](docs/adr/0000-template.md), [ADR-001](docs/adr/001-storage-module.md), [ADR-002: стек](docs/adr/002-stack.md), [ADR-003: бизнес-правила](docs/adr/003-business-rules.md))
+- [docs/adr/](docs/adr/) — архитектурные решения ([шаблон](docs/adr/0000-template.md), [ADR-001](docs/adr/001-storage-module.md), [ADR-002: стек](docs/adr/002-stack.md), [ADR-003: бизнес-правила](docs/adr/003-business-rules.md), [ADR-004: решения по макетам](docs/adr/004-screen-decisions.md), [ADR-005: Pages](docs/adr/005-pages-routing.md), [ADR-006: демо-режим](docs/adr/006-demo-author-and-order.md))
 
 ## PDF
 

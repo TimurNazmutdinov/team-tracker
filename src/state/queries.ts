@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useStorage } from '../app/storage-context';
+import type { View } from '../domain/actions';
 
 // Чтение данных: TanStack Query поверх модуля хранения. Ключи начинаются с имени сущности,
 // чтобы после изменений можно было сбросить кэш целиком (invalidateQueries()).
@@ -38,4 +39,35 @@ export function useSprints(projectId: string) {
 export function usePeople() {
   const storage = useStorage();
   return useQuery({ queryKey: ['people'], queryFn: () => storage.getPeople() });
+}
+
+export function useLinks(projectId: string) {
+  const storage = useStorage();
+  return useQuery({ queryKey: ['links', projectId], queryFn: () => storage.getLinks(projectId) });
+}
+
+export function useComments(issueId: string) {
+  const storage = useStorage();
+  return useQuery({ queryKey: ['comments', issueId], queryFn: () => storage.getComments(issueId) });
+}
+
+export function useHistory(issueId: string) {
+  const storage = useStorage();
+  return useQuery({ queryKey: ['history', issueId], queryFn: () => storage.getHistory(issueId) });
+}
+
+/** Данные проекта целиком для логики; undefined, пока что-то загружается. */
+export function useView(projectId: string): View | undefined {
+  const people = usePeople();
+  const sprints = useSprints(projectId);
+  const issues = useIssues(projectId);
+  const links = useLinks(projectId);
+  if (!people.data || !sprints.data || !issues.data || !links.data) return undefined;
+  return {
+    projectId,
+    people: people.data,
+    sprints: sprints.data,
+    issues: issues.data,
+    links: links.data,
+  };
 }

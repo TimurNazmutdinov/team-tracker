@@ -11,6 +11,13 @@
   --accent-bg: #dbeafe;
   --danger: #b91c1c;
   --danger-bg: #fee2e2;
+  --warn: #b45309;
+  --warn-bg: #fef3c7;
+  --st-backlog: #e5e7eb;
+  --st-todo: #e0e7ff;
+  --st-progress: #dbeafe;
+  --st-review: #fef3c7;
+  --st-done: #dcfce7;
   font-family:
     system-ui,
     -apple-system,
@@ -35,6 +42,13 @@
     --accent-bg: #1e3a8a;
     --danger: #fca5a5;
     --danger-bg: #450a0a;
+    --warn: #fbbf24;
+    --warn-bg: #451a03;
+    --st-backlog: #374151;
+    --st-todo: #3730a3;
+    --st-progress: #1e40af;
+    --st-review: #92400e;
+    --st-done: #166534;
   }
 }
 
@@ -231,4 +245,471 @@ main {
   .app-bar {
     flex-wrap: wrap;
   }
+}
+
+/* ---- кнопки, поля, окна ---- */
+button.primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+button.plain {
+  border: 0;
+  background: none;
+  padding: 0.2rem 0.3rem;
+}
+
+button.edit {
+  margin-bottom: 0.75rem;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  width: 100%;
+}
+
+input[aria-invalid='true'],
+select[aria-invalid='true'],
+textarea[aria-invalid='true'] {
+  border-color: var(--danger);
+  border-width: 2px;
+}
+
+.field {
+  margin-bottom: 0.75rem;
+}
+
+.field label,
+.field .label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 0.15rem;
+}
+
+.field p {
+  margin: 0;
+}
+
+.hint {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.field-error {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: var(--danger);
+}
+
+.warn {
+  background: var(--warn-bg);
+  border: 1px solid var(--warn);
+  border-radius: 6px;
+  padding: 0.4rem 0.75rem;
+}
+
+.small {
+  font-size: 0.85rem;
+}
+
+.pre {
+  white-space: pre-wrap;
+  margin: 0.25rem 0 0.75rem;
+}
+
+.dialog {
+  width: min(42rem, 94vw);
+  max-height: 92vh;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--ink);
+  padding: 1rem 1.25rem;
+}
+
+.dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.dialog-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.dialog-head h2 {
+  margin: 0 0 0.75rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1rem;
+}
+
+.form-grid .wide {
+  grid-column: 1 / -1;
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.muted-on-primary {
+  opacity: 0.85;
+  font-weight: 400;
+}
+
+.new-project {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 12rem 1fr;
+  gap: 1rem;
+  max-width: 40rem;
+}
+
+.empty {
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.menu-field {
+  display: block;
+  padding: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.page-header h1 {
+  flex: 1;
+  margin: 0;
+}
+
+.issue-meta {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+/* ---- значки задач ---- */
+.type-icon,
+.points,
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.type-icon {
+  width: 1.3rem;
+  height: 1.3rem;
+  border: 1px solid var(--muted);
+  border-radius: 4px;
+  background: var(--panel);
+}
+
+.points,
+.avatar {
+  width: 1.7rem;
+  height: 1.7rem;
+  border: 1px solid var(--muted);
+  border-radius: 50%;
+  background: var(--panel);
+}
+
+.points.empty {
+  border-style: dashed;
+}
+
+.chip.hot {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.chip {
+  white-space: nowrap;
+}
+
+.chip.status-backlog {
+  background: var(--st-backlog);
+}
+.chip.status-to-do {
+  background: var(--st-todo);
+}
+.chip.status-in-progress {
+  background: var(--st-progress);
+}
+.chip.status-review {
+  background: var(--st-review);
+}
+.chip.status-done {
+  background: var(--st-done);
+}
+.chip.state-active {
+  background: var(--st-progress);
+}
+
+/* ---- бэклог ---- */
+.backlog-section {
+  margin-bottom: 1.25rem;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.goal {
+  margin: 0.25rem 0.75rem;
+}
+
+.issue-list {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  min-height: 2.5rem;
+}
+
+.issue-list.over {
+  outline: 2px dashed var(--accent);
+  outline-offset: 2px;
+}
+
+.issue-row {
+  display: grid;
+  grid-template-columns: 1.6rem 1.4rem 5rem minmax(0, 1fr) auto auto auto auto 9.5rem;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0.5rem;
+  margin-bottom: 0.3rem;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.issue-row.nested {
+  margin-left: 2.5rem;
+  background: var(--panel);
+}
+
+.issue-row.dragging {
+  opacity: 0.4;
+}
+
+.issue-row.overlay {
+  display: flex;
+  gap: 0.6rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+}
+
+.handle {
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: grab;
+  color: var(--muted);
+  touch-action: none;
+}
+
+.handle-space {
+  display: block;
+}
+
+.issue-key {
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.issue-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.issue-title a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.issue-title a:hover {
+  text-decoration: underline;
+}
+
+.chip.subtasks {
+  margin-left: 0.5rem;
+  cursor: pointer;
+  padding: 0 0.5rem;
+}
+
+.move {
+  width: 100%;
+  font-size: 0.85rem;
+  padding: 0.15rem 0.25rem;
+}
+
+.drop-hint {
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+  padding: 0.6rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* ---- карточка задачи ---- */
+.breadcrumbs {
+  margin-bottom: 0.25rem;
+}
+
+.issue-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 17rem;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.sidebar {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.plain-list {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+}
+
+.link-row,
+.history-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0.3rem 0.5rem;
+  margin-bottom: 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.link-row .issue-title {
+  flex: 1;
+}
+
+.link-form {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.link-form .field {
+  flex: 1;
+  min-width: 10rem;
+  margin: 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 1rem;
+  border-bottom: 1px solid var(--line);
+  margin: 1rem 0;
+}
+
+.tabs button {
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  background: none;
+}
+
+.tabs button[aria-selected='true'] {
+  color: var(--accent);
+  font-weight: 700;
+  border-bottom-color: var(--accent);
+}
+
+.comment {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.comment p {
+  margin: 0;
+}
+
+@media (max-width: 52rem) {
+  .issue-layout {
+    grid-template-columns: 1fr;
+  }
+  .issue-row {
+    grid-template-columns: 1.6rem 1.4rem 5rem minmax(0, 1fr) auto;
+  }
+  .form-grid,
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- прогресс эпика ---- */
+.epic-progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.epic-progress .bar {
+  display: inline-block;
+  width: 8rem;
+  height: 0.6rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.epic-progress.compact .bar {
+  width: 4rem;
+}
+
+.epic-progress .bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
 }
