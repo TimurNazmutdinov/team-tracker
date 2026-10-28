@@ -6,3 +6,6 @@ coverage
 .DS_Store
 Thumbs.db
 backups
+local-data
+local-data.lock
+local-data.before-restore-*

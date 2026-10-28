@@ -1,29 +1,54 @@
 import { buildApp } from './app';
-import { openPglite, openPostgres } from './db';
+import { loadEnv, readConfig } from './config';
+import { openDatabase } from './db';
+import { acquireLock } from './lock';
+import { countAccounts } from './auth';
 
-// Запуск: DATABASE_URL — PostgreSQL; без него — встроенная база PGlite в каталоге PGLITE_DIR
-// (по умолчанию .data/pglite), чтобы локальная разработка не требовала установки базы.
+// Запуск сервера: интерфейс и API на одном адресе. Настройки — .env и переменные окружения
+// (config.ts). Без DATABASE_URL работает встроенная база PGlite в DATA_DIR (ADR-011).
 
-const url = process.env.DATABASE_URL;
-const connection = url
-  ? await openPostgres(url)
-  : await openPglite(process.env.PGLITE_DIR ?? '.data/pglite');
+loadEnv();
+const config = readConfig();
 
+// Встроенную базу нельзя открывать двумя процессами сразу
+let release = () => {};
+if (!config.databaseUrl) {
+  try {
+    release = acquireLock(config.dataDir);
+  } catch (e) {
+    console.error(e instanceof Error ? e.message : String(e));
+    process.exit(1);
+  }
+}
+
+const connection = await openDatabase(config);
 const app = buildApp({
   db: connection.db,
-  staticDir: process.env.STATIC_DIR ?? 'dist',
-  secureCookies: process.env.COOKIE_SECURE === 'true',
+  staticDir: config.staticDir,
+  allowRegistration: config.allowRegistration,
+  secureCookies: config.secureCookies,
   logger: true,
 });
 
-const port = Number(process.env.PORT ?? 3000);
-await app.listen({ port, host: process.env.HOST ?? '0.0.0.0' });
-
-for (const signal of ['SIGINT', 'SIGTERM'] as const) {
-  process.on(signal, () => {
-    void app
-      .close()
-      .then(() => connection.close())
-      .then(() => process.exit(0));
-  });
+await app.listen({ port: config.port, host: config.host });
+console.log(
+  `Трекер запущен: http://${config.host === '0.0.0.0' ? 'localhost' : config.host}:${config.port}` +
+    (config.host === '0.0.0.0' ? ' (доступен по локальной сети)' : ''),
+);
+if ((await countAccounts(connection.db)) === 0) {
+  console.log('Учётных записей нет. Создайте администратора: npm run admin:create');
 }
+
+let closing = false;
+const shutdown = () => {
+  if (closing) return;
+  closing = true;
+  void app
+    .close()
+    .then(() => connection.close())
+    .finally(() => {
+      release();
+      process.exit(0);
+    });
+};
+for (const signal of ['SIGINT', 'SIGTERM', 'SIGBREAK'] as const) process.on(signal, shutdown);

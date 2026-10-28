@@ -12,7 +12,6 @@
 <text x="250" y="100" text-anchor="start" font-size="26" font-weight="bold" fill="#1f2937">team-tracker</text>
 <text x="250" y="152" text-anchor="start" font-size="15" font-weight="bold" fill="#2563eb">Вход</text>
 <rect x="250" y="158" width="52" height="3" rx="1" fill="#2563eb"/>
-<text x="340" y="152" text-anchor="start" font-size="15" fill="#1f2937">Регистрация</text>
 <line x1="250" y1="161" x2="650" y2="161" stroke="#cbd5e1" stroke-width="1.2"/>
 <circle cx="220" cy="134" r="11" fill="#b91c1c"/>
 <text x="220" y="139" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">1</text>
@@ -26,8 +25,8 @@
 <text x="220" y="201" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">2</text>
 <rect x="250" y="322" width="120" height="38" rx="6" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
 <text x="310.0" y="346.04" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">Войти</text>
-<text x="250" y="392" text-anchor="start" font-size="12" fill="#6b7280">Регистрация: имя, почта и пароль не короче 8 символов.</text>
-<text x="250" y="410" text-anchor="start" font-size="12" fill="#6b7280">Первая созданная учётка становится администратором, остальные — разработчиками.</text>
+<text x="250" y="392" text-anchor="start" font-size="12" fill="#6b7280">Учётки создаёт администратор. Нет доступа — обратитесь к нему.</text>
+<text x="250" y="410" text-anchor="start" font-size="12" fill="#6b7280">Вкладка «Регистрация» появляется, только если регистрация разрешена.</text>
 <circle cx="220" cy="378" r="11" fill="#b91c1c"/>
 <text x="220" y="383" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">3</text>
 </svg>

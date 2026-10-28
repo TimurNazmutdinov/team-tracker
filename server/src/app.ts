@@ -17,6 +17,8 @@ export interface AppOptions {
   db: Db;
   /** Каталог собранного приложения (dist); если он есть, сервер отдаёт его же. */
   staticDir?: string;
+  /** Открыта ли самостоятельная регистрация; по умолчанию закрыта (ADR-011). */
+  allowRegistration?: boolean;
   /** Ставить cookie только по HTTPS (включать за HTTPS-прокси). */
   secureCookies?: boolean;
   logger?: boolean;
@@ -25,6 +27,9 @@ export interface AppOptions {
 const credentials = z.object({ email: z.string(), password: z.string() });
 const registration = credentials.extend({ name: z.string() });
 const roleBody = z.object({ role: z.enum(ROLES) });
+const newAccountBody = registration.extend({ role: z.enum(ROLES).optional() });
+const passwordBody = z.object({ password: z.string() });
+const changePasswordBody = z.object({ current: z.string(), next: z.string() });
 
 /** Простая защита от перебора пароля: не больше MAX_FAILS неудач на почту за окно. */
 const MAX_FAILS = 10;
@@ -64,9 +69,19 @@ export function buildApp(options: AppOptions): FastifyInstance {
       maxAge: auth.SESSION_DAYS * 24 * 3600,
     });
 
-  async function requireUser(req: FastifyRequest): Promise<auth.Account> {
+  /**
+   * Пользователь по cookie. Пока пароль временный (его выдал администратор), доступна только
+   * смена пароля: `allowTemporaryPassword`.
+   */
+  async function requireUser(
+    req: FastifyRequest,
+    allowTemporaryPassword = false,
+  ): Promise<auth.Account> {
     const account = await auth.accountByToken(db, req.cookies[COOKIE]);
     if (!account) throw new HttpError(401, 'unauthorized', 'Войдите в систему');
+    if (account.mustChangePassword && !allowTemporaryPassword) {
+      throw new HttpError(403, 'password_change_required', 'Смените временный пароль');
+    }
     return account;
   }
 
@@ -85,7 +100,20 @@ export function buildApp(options: AppOptions): FastifyInstance {
 
   // ---------------------------------------------------------------- вход
 
+  // Публичные настройки для экрана входа
+  app.get('/api/config', async () => ({
+    registration: options.allowRegistration ?? false,
+    needsAdmin: (await auth.countAccounts(db)) === 0,
+  }));
+
   app.post('/api/auth/register', async (req, reply) => {
+    if (!(options.allowRegistration ?? false)) {
+      throw new HttpError(
+        403,
+        'registration_closed',
+        'Регистрация закрыта: учётки создаёт администратор',
+      );
+    }
     const body = parse(registration, req.body);
     const { account, token } = await auth.register(db, body);
     setSession(reply, token);
@@ -106,7 +134,12 @@ export function buildApp(options: AppOptions): FastifyInstance {
       setSession(reply, token);
       return account;
     } catch (e) {
-      if (e instanceof HttpError && e.status === 401) fails.set(key, [...recent, now]);
+      if (e instanceof HttpError && e.status === 401) {
+        // Старые записи убираем, чтобы карта не росла бесконечно
+        for (const [email, times] of fails)
+          if (times.every((at) => now - at >= FAIL_WINDOW_MS)) fails.delete(email);
+        fails.set(key, [...recent, now]);
+      }
       throw e;
     }
   });
@@ -118,7 +151,14 @@ export function buildApp(options: AppOptions): FastifyInstance {
     return reply.status(204).send();
   });
 
-  app.get('/api/auth/me', async (req) => requireUser(req));
+  app.get('/api/auth/me', async (req) => requireUser(req, true));
+
+  app.post('/api/auth/password', async (req, reply) => {
+    const me = await requireUser(req, true);
+    const body = parse(changePasswordBody, req.body);
+    setSession(reply, await auth.changePassword(db, me.id, body.current, body.next));
+    return reply.status(204).send();
+  });
 
   // ---------------------------------------------------------------- учётки (администратор)
 
@@ -127,6 +167,30 @@ export function buildApp(options: AppOptions): FastifyInstance {
     const accounts = await auth.listAccounts(db);
     // Почты видит только администратор
     return accounts.map((a) => ({ ...a, email: can(me.role, 'users.manage') ? a.email : null }));
+  });
+
+  // Администратор создаёт участника с временным паролем; при первом входе его нужно сменить
+  app.post('/api/users', async (req, reply) => {
+    const me = await requireUser(req);
+    if (!can(me.role, 'users.manage')) {
+      throw new HttpError(403, 'forbidden', 'Создавать учётки может только администратор');
+    }
+    const body = parse(newAccountBody, req.body);
+    const account = await auth.createAccount(db, {
+      ...body,
+      role: body.role ?? 'developer',
+      mustChangePassword: true,
+    });
+    return reply.status(201).send(account);
+  });
+
+  app.post<{ Params: { id: string } }>('/api/users/:id/password', async (req, reply) => {
+    const me = await requireUser(req);
+    if (!can(me.role, 'users.manage')) {
+      throw new HttpError(403, 'forbidden', 'Выдавать пароли может только администратор');
+    }
+    await auth.resetPassword(db, req.params.id, parse(passwordBody, req.body).password);
+    return reply.status(204).send();
   });
 
   app.patch<{ Params: { id: string } }>('/api/users/:id', async (req, reply) => {
@@ -155,7 +219,10 @@ export function buildApp(options: AppOptions): FastifyInstance {
     '/api/projects/:id/issues/:number',
     async (req) => {
       await requireUser(req);
-      const issue = await findIssueByNumber(db, req.params.id, Number(req.params.number));
+      const number = Number(req.params.number);
+      const issue = Number.isSafeInteger(number)
+        ? await findIssueByNumber(db, req.params.id, number)
+        : null;
       if (!issue) throw new HttpError(404, 'not_found', 'Задача не найдена');
       return issue;
     },

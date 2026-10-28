@@ -951,15 +951,14 @@ def screen_login():
     wf.text(x, 100, "team-tracker", 26, bold=True)
     wf.text(x, 152, "Вход", 15, bold=True, fill=t["accent"])
     wf.rect(x, 158, 52, 3, fill=t["accent"], r=1)
-    wf.text(x + 90, 152, "Регистрация", 15)
     wf.line(x, 161, x + 400, 161)
     wf.callout(1, x - 30, 134)
     wf.field(x, 190, 400, "Почта *", "anna@example.com")
     wf.field(x, 252, 400, "Пароль *", "••••••••••")
     wf.callout(2, x - 30, 196)
     wf.button(x, 322, 120, 38, "Войти", True)
-    wf.text(x, 392, "Регистрация: имя, почта и пароль не короче 8 символов.", 12, fill=t["muted"])
-    wf.text(x, 410, "Первая созданная учётка становится администратором, остальные — разработчиками.", 12, fill=t["muted"])
+    wf.text(x, 392, "Учётки создаёт администратор. Нет доступа — обратитесь к нему.", 12, fill=t["muted"])
+    wf.text(x, 410, "Вкладка «Регистрация» появляется, только если регистрация разрешена.", 12, fill=t["muted"])
     wf.callout(3, x - 30, 378)
     return wf
 

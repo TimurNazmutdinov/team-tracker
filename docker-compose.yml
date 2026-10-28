@@ -1,11 +1,14 @@
-# Локальное развёртывание (ADR-010): docker compose up -d --build → http://localhost:3000
+# Развёртывание с PostgreSQL (ADR-010). Перед запуском задайте POSTGRES_PASSWORD в файле .env
+# (буквы и цифры, без спецсимволов), затем: docker compose up -d --build → http://localhost:3000
+# Первый администратор: docker compose run --rm app npm run admin:create
+# Запуск без Docker и без PostgreSQL — в README («Запуск на своём компьютере»), ADR-011.
 services:
   db:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
       POSTGRES_USER: tracker
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tracker}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Задайте POSTGRES_PASSWORD в файле .env}
       POSTGRES_DB: tracker
     volumes:
       - pgdata:/var/lib/postgresql/data
@@ -22,8 +25,11 @@ services:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgres://tracker:${POSTGRES_PASSWORD:-tracker}@db:5432/tracker
+      DATABASE_URL: postgres://tracker:${POSTGRES_PASSWORD:?Задайте POSTGRES_PASSWORD в файле .env}@db:5432/tracker
       PORT: 3000
+      # внутри контейнера слушаем все адреса; наружу порт открывает ports ниже
+      HOST: 0.0.0.0
+      ALLOW_REGISTRATION: ${ALLOW_REGISTRATION:-false}
       # true — только если приложение стоит за HTTPS-прокси
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
     ports:

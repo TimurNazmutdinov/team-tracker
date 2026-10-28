@@ -1,10 +1,13 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { StorageError } from '../../storage';
-import { authClient } from '../../app/auth-client';
+import { authClient, type PublicConfig } from '../../app/auth-client';
 import { useSession } from '../../state/session';
 import { TextField } from '../../ui/fields';
 
-/** Экран входа и регистрации (ADR-010). Регистрация простая, тестовая: почта, имя, пароль. */
+/**
+ * Экран входа (ADR-010). Регистрация показывается, только если сервер её разрешает
+ * (ALLOW_REGISTRATION=true); по умолчанию учётки создаёт администратор (ADR-011).
+ */
 export function LoginPage() {
   const setAccount = useSession((s) => s.set);
   const [mode, setMode] = useState<'login' | 'register'>('login');
@@ -13,6 +16,12 @@ export function LoginPage() {
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+  const [config, setConfig] = useState<PublicConfig | null>(null);
+
+  useEffect(() => {
+    authClient.config().then(setConfig, () => setConfig(null));
+  }, []);
+  const registration = config?.registration ?? false;
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -47,15 +56,22 @@ export function LoginPage() {
         >
           Вход
         </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={mode === 'register'}
-          onClick={() => setMode('register')}
-        >
-          Регистрация
-        </button>
+        {registration && (
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === 'register'}
+            onClick={() => setMode('register')}
+          >
+            Регистрация
+          </button>
+        )}
       </div>
+      {config?.needsAdmin && (
+        <p className="warn" role="status">
+          Администратор ещё не создан. Выполните в папке трекера: <code>npm run admin:create</code>
+        </p>
+      )}
       <form onSubmit={(e) => void submit(e)} noValidate>
         {mode === 'register' && (
           <TextField label="Имя" name="name" value={name} onChange={setName} required />
@@ -80,10 +96,8 @@ export function LoginPage() {
         <button type="submit" className="primary" disabled={busy}>
           {mode === 'login' ? 'Войти' : 'Создать учётку'}
         </button>
-        {mode === 'register' && (
-          <p className="muted">
-            Первая созданная учётка становится администратором, остальные — разработчиками.
-          </p>
+        {!registration && (
+          <p className="muted">Учётки создаёт администратор. Нет доступа — обратитесь к нему.</p>
         )}
       </form>
     </main>

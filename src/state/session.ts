@@ -9,6 +9,8 @@ export interface Account {
   name: string;
   email: string;
   role: Role;
+  /** Пароль временный: до его смены доступна только смена пароля (ADR-011). */
+  mustChangePassword: boolean;
 }
 
 export type SessionStatus = 'unknown' | 'signedOut' | 'signedIn';
