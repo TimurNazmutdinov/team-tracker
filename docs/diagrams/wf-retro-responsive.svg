@@ -1,108 +1,62 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="760" viewBox="0 0 900 760" font-family="Helvetica, Arial, 'Segoe UI', 'DejaVu Sans', sans-serif" role="img" aria-label="Поведение экранов на ноутбуке 1366 px">
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="480" viewBox="0 0 900 480" font-family="Helvetica, Arial, 'Segoe UI', 'DejaVu Sans', sans-serif" role="img" aria-label="Поведение экранов на ноутбуке 1366 px">
 <title>Поведение экранов на ноутбуке 1366 px</title>
 <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker></defs>
-<rect width="900" height="760" fill="#ffffff"/>
-<text x="20" y="106" text-anchor="start" font-size="12.5" fill="#6b7280">Ширина окна 1366 px. Поля по 16 px; цифры — ширина в пикселях. Минимальная ширина центра — 720 px.</text>
-<text x="20" y="134" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">А. Доска — по умолчанию</text>
-<text x="880" y="134" text-anchor="end" font-size="11.5" fill="#6b7280">ширина центра ≈ как сейчас</text>
+<rect width="900" height="480" fill="#ffffff"/>
+<text x="20" y="106" text-anchor="start" font-size="12.5" fill="#6b7280">Ширина окна 1366 px. Поля по 16 px; цифры — ширина в пикселях.</text>
+<text x="20" y="134" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">А. Доска — три плашки сверху, доска на всю ширину</text>
+<text x="880" y="134" text-anchor="end" font-size="11.5" fill="#6b7280">прошлое и будущее открываются отдельными вкладками</text>
 <rect x="20" y="142" width="860.0" height="62" rx="6" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.6"/>
-<rect x="30.07320644216691" y="150" width="110.80527086383601" height="46" rx="4" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.3"/>
-<text x="85.47584187408492" y="172.0" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1f2937">Прошлое</text>
-<text x="85.47584187408492" y="186.0" text-anchor="middle" font-size="10" fill="#6b7280">176: 3 ярлыка + «…</text>
-<rect x="148.43338213762812" y="150" width="530.1024890190337" height="46" rx="4" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1.3"/>
-<text x="413.484626647145" y="172.0" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1f2937">Центр: активный спринт</text>
-<text x="413.484626647145" y="186.0" text-anchor="middle" font-size="10" fill="#6b7280">842: 4 колонки ≈ 200</text>
-<rect x="686.090775988287" y="150" width="176.28111273792092" height="46" rx="4" fill="#dcfce7" stroke="#cbd5e1" stroke-width="1.3"/>
-<text x="774.2313323572474" y="172.0" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1f2937">Бэклог</text>
-<text x="774.2313323572474" y="186.0" text-anchor="middle" font-size="10" fill="#6b7280">280: сжатый список</text>
+<rect x="30.07320644216691" y="150" width="839.8535871156661" height="46" rx="4" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1.3"/>
+<text x="449.99999999999994" y="172.0" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1f2937">Доска активного спринта</text>
+<text x="449.99999999999994" y="186.0" text-anchor="middle" font-size="10" fill="#6b7280">1334: 4 колонки ≈ 320 — шире, чем раньше</text>
 <circle cx="14" cy="142" r="11" fill="#b91c1c"/>
 <text x="14" y="147" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">1</text>
-<text x="20" y="230" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">Б. Доска — развёрнут прошлый спринт</text>
-<text x="880" y="230" text-anchor="end" font-size="11.5" fill="#6b7280">бэклог сам сворачивается в полоску 44 px</text>
-<rect x="20" y="238" width="860.0" height="62" rx="6" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.6"/>
-<rect x="30.07320644216691" y="246" width="219.0922401171303" height="46" rx="4" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.3"/>
-<text x="139.61932650073206" y="268.0" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1f2937">Прошлое</text>
-<text x="139.61932650073206" y="282.0" text-anchor="middle" font-size="10" fill="#6b7280">ярлык 44 + список 260 + «ещё»</text>
-<rect x="256.7203513909224" y="246" width="570.3953147877013" height="46" rx="4" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1.3"/>
-<text x="541.9180087847731" y="268.0" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1f2937">Центр</text>
-<text x="541.9180087847731" y="282.0" text-anchor="middle" font-size="10" fill="#6b7280">906</text>
-<rect x="834.670571010249" y="246" width="27.701317715959004" height="46" rx="4" fill="#dcfce7" stroke="#cbd5e1" stroke-width="1.3"/>
-<circle cx="14" cy="238" r="11" fill="#b91c1c"/>
-<text x="14" y="243" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">2</text>
-<text x="20" y="326" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">В. Доска — развёрнут бэклог</text>
-<text x="880" y="326" text-anchor="end" font-size="11.5" fill="#6b7280">прошлое остаётся ярлыками</text>
-<rect x="20" y="334" width="860.0" height="62" rx="6" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.6"/>
-<rect x="30.07320644216691" y="342" width="110.80527086383601" height="46" rx="4" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.3"/>
-<text x="85.47584187408492" y="364.0" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1f2937">Прошлое</text>
-<text x="85.47584187408492" y="378.0" text-anchor="middle" font-size="10" fill="#6b7280">176: ярлыки</text>
-<rect x="148.43338213762812" y="342" width="467.1449487554905" height="46" rx="4" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1.3"/>
-<text x="382.00585651537335" y="364.0" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1f2937">Центр</text>
-<text x="382.00585651537335" y="378.0" text-anchor="middle" font-size="10" fill="#6b7280">742 (≥ 720)</text>
-<rect x="623.1332357247438" y="342" width="239.23865300146412" height="46" rx="4" fill="#dcfce7" stroke="#cbd5e1" stroke-width="1.3"/>
-<text x="742.7525622254759" y="364.0" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1f2937">Бэклог: развёрнут</text>
-<text x="742.7525622254759" y="378.0" text-anchor="middle" font-size="10" fill="#6b7280">380 + фильтры</text>
-<circle cx="14" cy="334" r="11" fill="#b91c1c"/>
-<text x="14" y="339" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">3</text>
-<text x="20" y="422" text-anchor="start" font-size="13" font-weight="bold" fill="#dc2626">Г. Раскрыть обе стороны сразу — не разрешается</text>
-<text x="880" y="422" text-anchor="end" font-size="11.5" fill="#6b7280">вторая сторона раскрывается, первая сворачивается</text>
-<rect x="20" y="430" width="860.0" height="62" rx="6" fill="#f3f4f6" stroke="#dc2626" stroke-width="1.6" stroke-dasharray="6 4"/>
-<rect x="30.07320644216691" y="438" width="219.0922401171303" height="46" rx="4" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.3" stroke-dasharray="6 4"/>
-<text x="139.61932650073206" y="460.0" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1f2937">Прошлое</text>
-<text x="139.61932650073206" y="474.0" text-anchor="middle" font-size="10" fill="#6b7280">развёрнуто</text>
-<rect x="256.7203513909224" y="438" width="358.85797950219614" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3" stroke-dasharray="6 4"/>
-<text x="436.1493411420205" y="460.0" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1f2937">Центр: 570 &lt; 720</text>
-<text x="436.1493411420205" y="474.0" text-anchor="middle" font-size="10" fill="#6b7280">слишком узко</text>
-<rect x="623.1332357247438" y="438" width="239.23865300146412" height="46" rx="4" fill="#dcfce7" stroke="#cbd5e1" stroke-width="1.3" stroke-dasharray="6 4"/>
-<text x="742.7525622254759" y="460.0" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#1f2937">Бэклог</text>
-<text x="742.7525622254759" y="474.0" text-anchor="middle" font-size="10" fill="#6b7280">развёрнут</text>
-<circle cx="14" cy="430" r="11" fill="#b91c1c"/>
-<text x="14" y="435" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">4</text>
-<text x="20" y="528" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">Д. Вкладка «Бэклог» — 1366 px: все поля подробной строки помещаются</text>
-<rect x="20" y="536" width="860.0" height="62" rx="6" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.6"/>
-<rect x="30.07320644216691" y="544" width="15.109809663250365" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
-<rect x="52.73792093704246" y="544" width="60.43923865300146" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
-<text x="82.9575402635432" y="566.0" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1f2937">Тип · к…</text>
-<text x="82.9575402635432" y="580.0" text-anchor="middle" font-size="10" fill="#6b7280">96</text>
-<rect x="120.73206442166911" y="544" width="207.75988286969252" height="46" rx="4" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1.3"/>
-<text x="224.61200585651537" y="566.0" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1f2937">Название</text>
-<text x="224.61200585651537" y="580.0" text-anchor="middle" font-size="10" fill="#6b7280">330</text>
-<rect x="336.0468521229868" y="544" width="75.54904831625183" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
-<text x="373.82137628111275" y="566.0" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1f2937">Эпик</text>
-<text x="373.82137628111275" y="580.0" text-anchor="middle" font-size="10" fill="#6b7280">120</text>
-<rect x="419.1508052708638" y="544" width="94.43631039531478" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
-<text x="466.3689604685212" y="566.0" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1f2937">Метки</text>
-<text x="466.3689604685212" y="580.0" text-anchor="middle" font-size="10" fill="#6b7280">150</text>
-<rect x="521.1420204978037" y="544" width="70.51244509516837" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
-<text x="556.398243045388" y="566.0" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1f2937">Приоритет</text>
-<text x="556.398243045388" y="580.0" text-anchor="middle" font-size="10" fill="#6b7280">112</text>
-<rect x="599.2093704245973" y="544" width="47.84773060029282" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
-<text x="623.1332357247437" y="566.0" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1f2937">Points</text>
-<text x="623.1332357247437" y="580.0" text-anchor="middle" font-size="10" fill="#6b7280">76</text>
-<rect x="654.6120058565153" y="544" width="94.43631039531478" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
-<text x="701.8301610541728" y="566.0" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1f2937">Исполнитель</text>
-<text x="701.8301610541728" y="580.0" text-anchor="middle" font-size="10" fill="#6b7280">150</text>
-<circle cx="14" cy="536" r="11" fill="#b91c1c"/>
-<text x="14" y="541" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">5</text>
-<text x="20" y="624" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">Е. Вкладка «Бэклог» — окно уже 1100 px (для сравнения): метки уходят в «+N», эпик сокращается, фильтры — в «Фильтры (2) ▾»</text>
-<rect x="20" y="632" width="692.5329428989751" height="62" rx="6" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.6"/>
-<rect x="30.07320644216691" y="640" width="15.109809663250365" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
-<rect x="52.73792093704246" y="640" width="60.43923865300146" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
-<text x="82.9575402635432" y="662.0" text-anchor="middle" font-size="10" font-weight="bold" fill="#1f2937">Тип · кл…</text>
-<text x="82.9575402635432" y="676.0" text-anchor="middle" font-size="10" fill="#6b7280">96</text>
-<rect x="120.73206442166911" y="640" width="226.64714494875548" height="46" rx="4" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1.3"/>
-<text x="234.05563689604685" y="662.0" text-anchor="middle" font-size="10" font-weight="bold" fill="#1f2937">Название</text>
-<text x="234.05563689604685" y="676.0" text-anchor="middle" font-size="10" fill="#6b7280">360</text>
-<rect x="354.9341142020498" y="640" width="50.36603221083455" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
-<text x="380.11713030746705" y="662.0" text-anchor="middle" font-size="10" font-weight="bold" fill="#1f2937">Эпик</text>
-<text x="380.11713030746705" y="676.0" text-anchor="middle" font-size="10" fill="#6b7280">80</text>
-<rect x="412.8550512445095" y="640" width="25.183016105417273" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
-<rect x="445.592972181552" y="640" width="62.95754026354319" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
-<text x="477.07174231332357" y="662.0" text-anchor="middle" font-size="10" font-weight="bold" fill="#1f2937">Приор.</text>
-<text x="477.07174231332357" y="676.0" text-anchor="middle" font-size="10" fill="#6b7280">100</text>
-<rect x="516.1054172767203" y="640" width="37.774524158125914" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
-<rect x="561.4348462664715" y="640" width="81.84480234260614" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
-<text x="602.3572474377745" y="662.0" text-anchor="middle" font-size="10" font-weight="bold" fill="#1f2937">Исполн.</text>
-<text x="602.3572474377745" y="676.0" text-anchor="middle" font-size="10" fill="#6b7280">130</text>
-<circle cx="14" cy="632" r="11" fill="#b91c1c"/>
-<text x="14" y="637" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">6</text>
+<text x="20" y="240" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">Б. Вкладка «Планирование» — 1366 px: все поля подробной строки помещаются</text>
+<rect x="20" y="248" width="860.0" height="62" rx="6" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.6"/>
+<rect x="30.07320644216691" y="256" width="15.109809663250365" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<rect x="52.73792093704246" y="256" width="60.43923865300146" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text x="82.9575402635432" y="278.0" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1f2937">Тип · к…</text>
+<text x="82.9575402635432" y="292.0" text-anchor="middle" font-size="10" fill="#6b7280">96</text>
+<rect x="120.73206442166911" y="256" width="207.75988286969252" height="46" rx="4" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1.3"/>
+<text x="224.61200585651537" y="278.0" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1f2937">Название</text>
+<text x="224.61200585651537" y="292.0" text-anchor="middle" font-size="10" fill="#6b7280">330</text>
+<rect x="336.0468521229868" y="256" width="75.54904831625183" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text x="373.82137628111275" y="278.0" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1f2937">Эпик</text>
+<text x="373.82137628111275" y="292.0" text-anchor="middle" font-size="10" fill="#6b7280">120</text>
+<rect x="419.1508052708638" y="256" width="94.43631039531478" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text x="466.3689604685212" y="278.0" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1f2937">Метки</text>
+<text x="466.3689604685212" y="292.0" text-anchor="middle" font-size="10" fill="#6b7280">150</text>
+<rect x="521.1420204978037" y="256" width="70.51244509516837" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text x="556.398243045388" y="278.0" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1f2937">Приоритет</text>
+<text x="556.398243045388" y="292.0" text-anchor="middle" font-size="10" fill="#6b7280">112</text>
+<rect x="599.2093704245973" y="256" width="47.84773060029282" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text x="623.1332357247437" y="278.0" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1f2937">Points</text>
+<text x="623.1332357247437" y="292.0" text-anchor="middle" font-size="10" fill="#6b7280">76</text>
+<rect x="654.6120058565153" y="256" width="94.43631039531478" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text x="701.8301610541728" y="278.0" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#1f2937">Исполнитель</text>
+<text x="701.8301610541728" y="292.0" text-anchor="middle" font-size="10" fill="#6b7280">150</text>
+<circle cx="14" cy="248" r="11" fill="#b91c1c"/>
+<text x="14" y="253" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">2</text>
+<text x="20" y="336" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">В. Вкладка «Планирование» — окно 1100 px: метки в «+N», эпик короче</text>
+<rect x="20" y="344" width="692.5329428989751" height="62" rx="6" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.6"/>
+<rect x="30.07320644216691" y="352" width="15.109809663250365" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<rect x="52.73792093704246" y="352" width="60.43923865300146" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text x="82.9575402635432" y="374.0" text-anchor="middle" font-size="10" font-weight="bold" fill="#1f2937">Тип · кл…</text>
+<text x="82.9575402635432" y="388.0" text-anchor="middle" font-size="10" fill="#6b7280">96</text>
+<rect x="120.73206442166911" y="352" width="226.64714494875548" height="46" rx="4" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1.3"/>
+<text x="234.05563689604685" y="374.0" text-anchor="middle" font-size="10" font-weight="bold" fill="#1f2937">Название</text>
+<text x="234.05563689604685" y="388.0" text-anchor="middle" font-size="10" fill="#6b7280">360</text>
+<rect x="354.9341142020498" y="352" width="50.36603221083455" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text x="380.11713030746705" y="374.0" text-anchor="middle" font-size="10" font-weight="bold" fill="#1f2937">Эпик</text>
+<text x="380.11713030746705" y="388.0" text-anchor="middle" font-size="10" fill="#6b7280">80</text>
+<rect x="412.8550512445095" y="352" width="25.183016105417273" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<rect x="445.592972181552" y="352" width="62.95754026354319" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text x="477.07174231332357" y="374.0" text-anchor="middle" font-size="10" font-weight="bold" fill="#1f2937">Приор.</text>
+<text x="477.07174231332357" y="388.0" text-anchor="middle" font-size="10" fill="#6b7280">100</text>
+<rect x="516.1054172767203" y="352" width="37.774524158125914" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<rect x="561.4348462664715" y="352" width="81.84480234260614" height="46" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.3"/>
+<text x="602.3572474377745" y="374.0" text-anchor="middle" font-size="10" font-weight="bold" fill="#1f2937">Исполн.</text>
+<text x="602.3572474377745" y="388.0" text-anchor="middle" font-size="10" fill="#6b7280">130</text>
+<circle cx="14" cy="344" r="11" fill="#b91c1c"/>
+<text x="14" y="349" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">3</text>
 </svg>

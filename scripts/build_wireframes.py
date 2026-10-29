@@ -1310,14 +1310,13 @@ def retro_toolbar(wf, y, x0=20, short=False):
         wf.chip(x, y + 6, "Приоритет ▾", 13, h=28)
 
 
-def zone_headers(wf, y, left_x, center_x0, center_x1, right_x):
-    """Три подписи над зонами: прошлое и будущее — ссылки на отдельные вкладки (↗), центр — просто подпись."""
+def nav_pills(wf, y):
+    """Три плашки над доской: прошлое и будущее — кнопки-ссылки на отдельные вкладки (↗), текущий спринт — выбранная."""
     t = wf.t
-    wf.chip(left_x, y + 4, "Прошлые спринты ↗", 12.5, h=28, fill=t["accent_bg"], bold=True)
-    wf.text((center_x0 + center_x1) / 2, y + 23, "Текущий спринт · Спринт 3", 14, "middle", True)
-    label = "Планирование будущих спринтов ↗"
-    wf.chip(W - 20 - (wf.est(label, 12.5, True) + 16), y + 4, label, 12.5, h=28, fill=t["accent_bg"], bold=True)
-
+    x = 20
+    x += wf.chip(x, y, "Прошлые спринты ↗", 13, h=32, fill=t["bg"], bold=True, ink=t["accent"]) + 8
+    x += wf.chip(x, y, "Текущий спринт", 13, h=32, fill=t["accent_bg"], bold=True) + 8
+    wf.chip(x, y, "Планирование будущих спринтов ↗", 13, h=32, fill=t["bg"], bold=True, ink=t["accent"])
 
 
 def past_tab(wf, x, y0, h, n, sprint, dates, tasks, w=52):
@@ -1345,160 +1344,42 @@ def side_group(wf, x, y, w, title, sub, state_chip=None, used=None, cap=None):
 
 
 def screen_retro_board():
-    H = 424
-    y0 = 176
-    wf = WF(y0 + H + 56, "Доска: прошлое, текущее и будущее — обычное состояние")
+    wf = WF(560, "Доска: кнопки-ссылки на прошлое и будущее")
     t = wf.t
     wf.shell(f"team-tracker.app/projects/{KEY}/board", "Доска")
-    zone_headers(wf, 96, 20, 138, 654, 666)
-    wf.callout(1, 14, 98)
-    retro_toolbar(wf, 132, x0=138)
-
-    # --- слева: прошлое (сжатые колонки, старые слева → новые ближе к текущему спринту)
-    past_tab(wf, 20, y0, H, 1, "Спринт 1", "12.10–23.10", S1)
-    past_tab(wf, 78, y0, H, 2, "Спринт 2", "26.10–06.11", S2)
-    wf.callout(2, 84, y0 + 4)
-
-    # --- по центру: доска активного спринта (как сейчас)
+    nav_pills(wf, 96)
+    wf.callout(1, 14, 96)
+    wf.callout(2, 178, 96)
+    wf.callout(3, 322, 96)
+    retro_toolbar(wf, 136, x0=20)
+    wf.callout(4, 14, 138)
     cols = ["To Do", "In Progress", "Review", "Done"]
-    cw, gap, cx0 = 124, 8, 138
-    cx = [cx0 + n * (cw + gap) for n in range(4)]
+    gap, cx0 = 12, 20
+    cw = (W - 40 - 3 * gap) / 4
+    y0 = 184
     for n, c in enumerate(cols):
+        x = cx0 + n * (cw + gap)
         items = S3[c]
-        wf.rect(cx[n], y0, cw, 36, fill=t["status"][c], stroke=t["line"], r=6)
-        wf.text(cx[n] + 8, y0 + 15, c, 12, bold=True)
-        wf.text(cx[n] + 8, y0 + 29, f"{len(items)} · {SUM(items)} sp", 10.5, fill=t["muted"])
-    wf.callout(3, cx0 + 4, y0 - 4)
-    y = y0 + 42
-    for who, ini in (("Игорь Смирнов", "И"), ("Мария Орлова", "М")):
-        mine = [i for c in cols for i in S3[c] if i["who"] == who]
-        wf.rect(cx0, y, 4 * cw + 3 * gap, 24, fill=t["panel"], stroke=t["line"], r=5)
-        wf.text(cx0 + 8, y + 16, "▾", 11)
-        wf.avatar(cx0 + 30, y + 12, who, 9)
-        wf.text(cx0 + 46, y + 16, who, 12, bold=True)
-        wf.text(cx0 + 4 * cw + 3 * gap - 8, y + 16, f"{plural(len(mine), 'задача', 'задачи', 'задач')} · {SUM(mine)} sp", 11, "end", fill=t["muted"])
-        y += 28
-        for n, c in enumerate(cols):
-            wf.rect(cx[n], y, cw, 96, fill=t["panel"], stroke=t["line"], r=6, opacity=0.55)
-            for r, i in enumerate([i for i in S3[c] if i["who"] == who][:1]):
-                compact_card(wf, cx[n] + 8, y + 7, cw - 16, 82, i)
-        y += 102
-    wf.text(cx0 + 2 * (cw + gap), y + 30, "Центр — доска активного спринта без изменений:", 11.5, "middle", fill=t["muted"])
-    wf.text(cx0 + 2 * (cw + gap), y + 48, "колонки статусов, группировка, фильтры.", 11.5, "middle", fill=t["muted"])
-
-    # --- справа: будущее — сжатый бэклог (планируемые спринты группами, затем общий бэклог)
-    rx, rw = 666, 214
-    wf.rect(rx, y0, rw, H, fill=t["bg"], stroke=t["line"], r=8)
-    wf.text(rx + 10, y0 + 20, f"{len(S4) + len(S5) + len(BACKLOG)} задач · {SUM(S4) + SUM(S5) + SUM(BACKLOG)} sp", 11, fill=t["muted"])
-    wf.text(rx + rw - 12, y0 + 20, "▸", 14, "middle", fill=t["muted"])
-    wf.callout(4, rx + rw - 8, 98)
-    yy = y0 + 30
-    yy += side_group(wf, rx + 6, yy, rw - 12, "Спринт 4", f"{SUM(S4)} / {CAP_TXT} sp", "запл.", SUM(S4), CAP)
-    for i in S4:
-        stack_row(wf, rx + 6, yy, rw - 12, i, handle=True)
-        yy += 42
-    wf.callout(5, rx + 6, y0 + 30)
-    yy += 4
-    yy += side_group(wf, rx + 6, yy, rw - 12, "▸ Спринт 5", f"{SUM(S5)} sp · {len(S5)} задачи", None)
-    yy += 4
-    yy += side_group(wf, rx + 6, yy, rw - 12, "Общий бэклог", f"{len(BACKLOG)} задач", None)
-    for i in BACKLOG[:2]:
-        stack_row(wf, rx + 6, yy, rw - 12, i, handle=True)
-        yy += 42
-    wf.text(rx + rw / 2, yy + 12, "ещё 7 ▾", 12, "middle", fill=t["accent"])
-    wf.callout(6, rx + 6, yy - 86)
-    wf.text(20, y0 + H + 26, "Слева — прошлое (только чтение), в центре — настоящее, справа — будущее. ↗ — открывается отдельная вкладка. Макет, не готовый экран.", 12, fill=t["muted"])
-    return wf
-
-
-def screen_retro_board_open():
-    H = 424
-    y0 = 176
-    wf = WF(y0 + H + 56, "Доска: развёрнутая колонка прошлого спринта и развёрнутый бэклог")
-    t = wf.t
-    wf.shell(f"team-tracker.app/projects/{KEY}/board", "Доска")
-    zone_headers(wf, 96, 20, 292, 640, 640)
-    retro_toolbar(wf, 132, x0=292, short=True)
-
-    # --- слева: Спринт 1 сжат, Спринт 2 развёрнут в список выполненных задач
-    past_tab(wf, 20, y0, H, 1, "Спринт 1", "12.10–23.10", S1)
-    px, pw = 78, 206
-    wf.rect(px, y0, pw, H, fill=t["bg"], stroke=t["accent"], r=8, sw=1.8)
-    wf.text(px + 10, y0 + 20, "Выполнено в спринте 2", 13, bold=True)
-    wf.text(px + pw - 12, y0 + 20, "◂", 14, "middle", fill=t["muted"])
-    wf.text(px + 10, y0 + 38, f"26.10–06.11 · {len(S2)} задач · {SUM(S2)} sp", 11, fill=t["muted"])
-    wf.text(px + 10, y0 + 54, f"Velocity {VEL[2]} sp · закрыт 06.11", 11, fill=t["muted"])
-    yy = y0 + 64
-    for i in S2:
-        stack_row(wf, px + 6, yy, pw - 12, i, avatar=True, prio=False)
-        yy += 42
-    wf.text(px + 10, yy + 14, "Только чтение: перетаскивать нельзя.", 11, fill=t["muted"])
-    wf.text(px + 10, yy + 30, "Клик по ключу — карточка задачи.", 11, fill=t["muted"])
-    wf.callout(1, px + 2, y0 - 2)
-
-    # --- по центру: доска зажата, карточки в узком виде
-    cols = ["To Do", "In Progress", "Review", "Done"]
-    cw, gap, cx0 = 80, 6, 292
-    cx = [cx0 + n * (cw + gap) for n in range(4)]
-    for n, c in enumerate(cols):
-        wf.rect(cx[n], y0, cw, 36, fill=t["status"][c], stroke=t["line"], r=6, sw=2.2 if n == 0 else 1.2)
-        wf.text(cx[n] + 6, y0 + 15, c if n != 1 else "In Prog.", 11, bold=True)
-        wf.text(cx[n] + 6, y0 + 29, f"{len(S3[c])} · {SUM(S3[c])} sp", 10, fill=t["muted"])
-    wf.callout(2, cx0 + 2, y0 - 4)
-    y = y0 + 42
+        wf.rect(x, y0, cw, 40, fill=t["status"][c], stroke=t["line"], r=6)
+        wf.text(x + 10, y0 + 17, c, 13, bold=True)
+        wf.text(x + 10, y0 + 32, f"{len(items)} · {SUM(items)} sp", 11, fill=t["muted"])
+    y = y0 + 46
     for who in ("Игорь Смирнов", "Мария Орлова"):
-        wf.rect(cx0, y, 4 * cw + 3 * gap, 24, fill=t["panel"], stroke=t["line"], r=5)
-        wf.avatar(cx0 + 14, y + 12, who, 9)
-        wf.text(cx0 + 30, y + 16, who.split()[0], 11, bold=True)
-        y += 28
+        mine = [i for c in cols for i in S3[c] if i["who"] == who]
+        wf.rect(cx0, y, W - 40, 26, fill=t["panel"], stroke=t["line"], r=5)
+        wf.text(cx0 + 8, y + 17, "▾", 11)
+        wf.avatar(cx0 + 30, y + 13, who, 9)
+        wf.text(cx0 + 46, y + 18, who, 12.5, bold=True)
+        wf.text(W - 28, y + 18, f"{plural(len(mine), 'задача', 'задачи', 'задач')} · {SUM(mine)} sp", 11.5, "end", fill=t["muted"])
+        y += 30
         for n, c in enumerate(cols):
-            over = n == 0
-            wf.rect(cx[n], y, cw, 70, fill=t["accent_bg"] if over else t["panel"], stroke=t["accent"] if over else t["line"], r=6, dash=over, sw=1.8 if over else 1.2, opacity=0.7)
+            x = cx0 + n * (cw + gap)
+            wf.rect(x, y, cw, 100, fill=t["panel"], stroke=t["line"], r=6, opacity=0.55)
             for i in [i for i in S3[c] if i["who"] == who][:1]:
-                mini_card(wf, cx[n] + 6, y + 6, cw - 12, 58, i)
-        y += 76
-    wf.text(cx0 + 4, y + 18, "Центр зажат: карточка в узком виде (ключ, points,", 10.5, fill=t["muted"])
-    wf.text(cx0 + 4, y + 32, "исполнитель), название — в подсказке при наведении.", 10.5, fill=t["muted"])
-
-    # --- справа: бэклог развёрнут (шире, с фильтрами), задача перетаскивается на доску
-    rx, rw = 640, 240
-    wf.rect(rx, y0, rw, H, fill=t["bg"], stroke=t["accent"], r=8, sw=1.8)
-    wf.text(rx + 10, y0 + 20, "Спринты и общий бэклог", 14, bold=True)
-    wf.text(rx + rw - 12, y0 + 20, "▸", 14, "middle", fill=t["muted"])
-    wf.chip(rx + 8, y0 + 30, "Эпик ▾", 11, h=22)
-    wf.chip(rx + 62, y0 + 30, "Исполнитель ▾", 11, h=22)
-    wf.chip(rx + 156, y0 + 30, "Метка ▾", 11, h=22)
-    wf.callout(3, rx + rw - 6, y0 - 2)
-    yy = y0 + 60
-    yy += side_group(wf, rx + 6, yy, rw - 12, "Спринт 4", f"{SUM(S4)} / {CAP_TXT} sp", "запл.", SUM(S4), CAP)
-    for n, i in enumerate(S4):
-        stack_row(wf, rx + 6, yy, rw - 12, i, handle=True, dim=(n == 0))
-        yy += 42
-    yy += 4
-    yy += side_group(wf, rx + 6, yy, rw - 12, "▸ Спринт 5", f"{SUM(S5)} sp · {len(S5)} задачи")
-    yy += 4
-    yy += side_group(wf, rx + 6, yy, rw - 12, "Общий бэклог", f"{len(BACKLOG)} задач")
-    for i in BACKLOG[:1]:
-        stack_row(wf, rx + 6, yy, rw - 12, i, handle=True)
-        yy += 42
-    wf.text(rx + rw / 2, yy + 10, "ещё 8 ▾", 12, "middle", fill=t["accent"])
-    # пакетный перенос: выделить несколько задач и отправить в любой будущий спринт
-    wf.rect(rx + 6, y0 + H - 34, rw - 12, 28, fill=t["accent_bg"], stroke=t["accent"], r=6)
-    wf.text(rx + 14, y0 + H - 15, "☑ Выбрано 2", 12, bold=True)
-    wf.chip(rx + 106, y0 + H - 31, "В спринт 5 ▾", 11.5, h=22, fill=t["bg"])
-
-    # перетаскиваемая карточка: из правой панели в колонку To Do активного спринта
-    gx, gy = 478, y0 + 78
-    wf.p.append(f'<g transform="rotate(-3 {gx + 70} {gy + 40})">')
-    wf.rect(gx + 4, gy + 5, 130, 72, fill="#000000", r=6, opacity=0.18)
-    compact_card(wf, gx, gy, 130, 72, S4[0])
-    wf.p.append("</g>")
-    # из строки в панели — к карточке под курсором, затем — на колонку To Do
-    wf.p.append(f'<path d="M {rx + 4} {y0 + 142} C {rx - 6} {y0 + 120}, {gx + 150} {gy + 70}, {gx + 130} {gy + 40}" fill="none" stroke="{t["accent"]}" stroke-width="2.2" stroke-dasharray="6 4" marker-end="url(#arr)"/>')
-    wf.p.append(f'<path d="M {gx - 2} {gy + 8} C {gx - 60} {gy - 30}, {cx[0] + 60} {y0 + 20}, {cx[0] + 60} {y0 + 40}" fill="none" stroke="{t["accent"]}" stroke-width="2.2" stroke-dasharray="6 4" marker-end="url(#arr)"/>')
-    wf.callout(4, gx - 8, gy - 6)
-    wf.text(cx[0] + 12, y0 + H + 22, "Отпустите на колонку — задача попадёт в Спринт 3 и получит этот статус (To Do).", 12, fill=t["accent"])
-    wf.callout(5, cx[0] - 8, y0 + H + 17)
+                compact_card(wf, x + 8, y + 8, cw - 16, 84, i)
+        y += 106
+    wf.text(20, y + 20, "Доска остаётся доской активного спринта, как сейчас: колонки статусов, группировка, фильтры. ↗ — открывается отдельная вкладка.", 12, fill=t["muted"])
+    wf.text(20, y + 38, "Макет, не готовый экран.", 12, fill=t["muted"])
     return wf
 
 
@@ -1686,7 +1567,7 @@ def seg(wf, x, y, w, h, title, sub, fill, stroke=None, dash=False, bold=True, ts
 
 def screen_retro_responsive():
     """Схема ширин на ноутбуке 1366 px: что сколько занимает и что сворачивается при нехватке места."""
-    wf = WF(760, "Поведение экранов на ноутбуке 1366 px")
+    wf = WF(480, "Поведение экранов на ноутбуке 1366 px")
     t = wf.t
     sc = 860 / 1366
     pad = 16 * sc
@@ -1705,35 +1586,15 @@ def screen_retro_responsive():
 
     bgp, bgc, bgf, bgo = t["panel"], t["accent_bg"], t["status"]["Done"], t["bg"]
     y = 98
-    wf.text(20, y + 8, "Ширина окна 1366 px. Поля по 16 px; цифры — ширина в пикселях. Минимальная ширина центра — 720 px.", 12.5, fill=t["muted"])
+    wf.text(20, y + 8, "Ширина окна 1366 px. Поля по 16 px; цифры — ширина в пикселях.", 12.5, fill=t["muted"])
     y += 22
-    row(y, "А. Доска — по умолчанию", [
-        (176, "Прошлое", "176: 3 ярлыка + «ещё»", bgp, False),
-        (842, "Центр: активный спринт", "842: 4 колонки ≈ 200", bgc, False),
-        (280, "Бэклог", "280: сжатый список", bgf, False)], note="ширина центра ≈ как сейчас")
+    row(y, "А. Доска — три плашки сверху, доска на всю ширину", [
+        (1334, "Доска активного спринта", "1334: 4 колонки ≈ 320 — шире, чем раньше", bgc, False)], note="прошлое и будущее открываются отдельными вкладками")
     wf.callout(1, 14, y + 22)
-    y += 96
-    row(y, "Б. Доска — развёрнут прошлый спринт", [
-        (348, "Прошлое", "ярлык 44 + список 260 + «ещё»", bgp, False),
-        (906, "Центр", "906", bgc, False),
-        (44, "◂", "", bgf, False)], note="бэклог сам сворачивается в полоску 44 px")
-    wf.callout(2, 14, y + 22)
-    y += 96
-    row(y, "В. Доска — развёрнут бэклог", [
-        (176, "Прошлое", "176: ярлыки", bgp, False),
-        (742, "Центр", "742 (≥ 720)", bgc, False),
-        (380, "Бэклог: развёрнут", "380 + фильтры", bgf, False)], note="прошлое остаётся ярлыками")
-    wf.callout(3, 14, y + 22)
-    y += 96
-    row(y, "Г. Раскрыть обе стороны сразу — не разрешается", [
-        (348, "Прошлое", "развёрнуто", bgp, True),
-        (570, "Центр: 570 < 720", "слишком узко", bgo, True),
-        (380, "Бэклог", "развёрнут", bgf, True)], bad=True, note="вторая сторона раскрывается, первая сворачивается")
-    wf.callout(4, 14, y + 22)
     y += 106
 
     # --- вкладка «Бэклог»
-    wf.text(20, y + 14, "Д. Вкладка «Бэклог» — 1366 px: все поля подробной строки помещаются", 13, bold=True)
+    wf.text(20, y + 14, "Б. Вкладка «Планирование» — 1366 px: все поля подробной строки помещаются", 13, bold=True)
     wf.rect(20, y + 22, 1366 * sc, 62, fill=t["panel"], stroke=t["muted"], r=6, sw=1.6)
     cols = [("⋮⋮", 24, bgo), ("Тип · ключ", 96, bgo), ("Название", 330, bgc), ("Эпик", 120, bgo), ("Метки", 150, bgo), ("Приоритет", 112, bgo), ("Points", 76, bgo), ("Исполнитель", 150, bgo)]
     x = 20 + pad
@@ -1741,9 +1602,9 @@ def screen_retro_responsive():
         ww = px * sc
         seg(wf, x, y + 30, ww, 46, name, f"{px}", fill, tsize=10.5)
         x += ww + 12 * sc
-    wf.callout(5, 14, y + 22)
+    wf.callout(2, 14, y + 22)
     y += 96
-    wf.text(20, y + 14, "Е. Вкладка «Бэклог» — окно уже 1100 px (для сравнения): метки уходят в «+N», эпик сокращается, фильтры — в «Фильтры (2) ▾»", 13, bold=True)
+    wf.text(20, y + 14, "В. Вкладка «Планирование» — окно 1100 px: метки в «+N», эпик короче", 13, bold=True)
     wf.rect(20, y + 22, 1100 * sc, 62, fill=t["panel"], stroke=t["muted"], r=6, sw=1.6)
     cols = [("⋮⋮", 24, bgo), ("Тип · ключ", 96, bgo), ("Название", 360, bgc), ("Эпик", 80, bgo), ("+N", 40, bgo), ("Приор.", 100, bgo), ("Pts", 60, bgo), ("Исполн.", 130, bgo)]
     x = 20 + pad
@@ -1751,38 +1612,33 @@ def screen_retro_responsive():
         ww = px * sc
         seg(wf, x, y + 30, ww, 46, name, f"{px}", fill, tsize=10)
         x += ww + 12 * sc
-    wf.callout(6, 14, y + 22)
+    wf.callout(3, 14, y + 22)
     return wf
 
 
 def screen_issue_views():
     """Единый стиль задачи: карточка доски, строки боковых частей и подробная строка бэклога — одни и те же поля."""
-    wf = WF(430, "Единый вид задачи: карточка, сжатая строка, подробная строка")
+    wf = WF(390, "Единый вид задачи: карточка, сжатая строка, подробная строка")
     t = wf.t
     i = S3["In Progress"][0]
-    wf.text(20, 28, "Одна и та же задача DEMO-19 в четырёх видах. Сжатый вид везде содержит: тип · ключ · название · points · приоритет · исполнитель.", 12.5, fill=t["muted"])
+    wf.text(20, 28, "Одна и та же задача DEMO-19 в трёх видах. Сжатый вид содержит: тип · ключ · название · points · приоритет · исполнитель.", 12.5, fill=t["muted"])
     wf.text(20, 58, "1. Карточка на доске", 13, bold=True)
     compact_card(wf, 20, 68, 210, 92, i)
     wf.callout(1, 14, 66)
-    wf.text(250, 58, "2. Строка слева (выполнено): без приоритета", 13, bold=True)
-    stack_row(wf, 250, 68, 290, i, avatar=True, prio=False)
-    wf.text(250, 126, "ключ · название · points · исполнитель", 11.5, fill=t["muted"])
+    wf.text(250, 58, "2. Строка во вкладке «Прошлые спринты»", 13, bold=True)
+    stack_row(wf, 250, 68, 290, i, avatar=True)
+    wf.text(250, 126, "ключ · название · приоритет · points · исполнитель", 11.5, fill=t["muted"])
     wf.callout(2, 244, 66)
-    wf.text(560, 58, "3. Строка справа (бэклог): без исполнителя", 13, bold=True)
-    stack_row(wf, 560, 68, 320, i, handle=True)
-    wf.text(560, 126, "ручка · ключ · название · приоритет · points", 11.5, fill=t["muted"])
-    wf.callout(3, 554, 66)
-    wf.text(20, 196, "4. Подробная строка в «Бэклоге»: все поля, points, приоритет и исполнитель правятся прямо в строке", 13, bold=True)
+    wf.text(20, 196, "3. Подробная строка во вкладке «Планирование»: все поля, points, приоритет и исполнитель правятся прямо в строке", 13, bold=True)
     detail_row(wf, 208, i, status=True)
-    wf.callout(4, 14, 206)
+    wf.callout(3, 14, 206)
     labels = [(20, "ручка"), (66, "тип"), (84, "ключ"), (146, "название"), (346, "эпик"), (420, "метки"), (548, "приоритет ▾"), (660, "points ✎"), (726, "исполнитель ▾")]
     for x, label in labels:
         wf.text(x, 262, label, 10.5, fill=t["muted"])
-    wf.rect(20, 280, 860, 130, fill=t["panel"], stroke=t["line"], r=6)
+    wf.rect(20, 280, 860, 94, fill=t["panel"], stroke=t["line"], r=6)
     rows = [
         ("Правило единства", "Порядок и значки одинаковы: тип, ключ синим, название, приоритет, points в кружке, аватар."),
         ("Что добавляет подробный вид", "Эпик, метки, точка статуса и поля правки. Всё это нужно при планировании и не нужно для беглого взгляда."),
-        ("Что убирает узкий вид", "Название сокращается до ширины, а в самой узкой карточке (центр зажат) остаются ключ, points и исполнитель."),
     ]
     for n, (a, b) in enumerate(rows):
         wf.text(34, 304 + n * 36, a, 12.5, bold=True)
@@ -1886,7 +1742,6 @@ SCREENS = {
     "wf-backups": screen_backups,
     "wf-palette": screen_palette,
     "wf-retro-board": screen_retro_board,
-    "wf-retro-board-open": screen_retro_board_open,
     "wf-backlog-new": screen_backlog_new,
     "wf-retro-responsive": screen_retro_responsive,
     "wf-issue-views": screen_issue_views,
