@@ -172,7 +172,17 @@ class WF:
         self.rect(84, 6, W - 168, 23, fill=t["bg"], stroke=t["line"], r=11.5)
         self.text(98, 22, url, 12, fill=t["muted"])
         self.line(1, 86, W - 1, 86)
-        self.text(20, 67, "team-tracker", 17, bold=True)
+        # логотип (ADR-013): знак и надпись «Team Tracker»; на макетах — цвета «Стандартной» гаммы
+        ring, check = ("#2B4ACB", "#F08C00") if t["name"] == "light" else ("#7B93FF", "#F08C00")
+        self.p.append(
+            f'<g transform="translate(18 47) scale(0.4375)">'
+            f'<path d="M52.78 20 A24 24 0 1 1 35.34 8.23" fill="none" stroke="{ring}" stroke-width="7" stroke-linecap="round"/>'
+            f'<polygon points="45.24,9.62 36.31,1.30 34.37,15.16" fill="{ring}" stroke="{ring}" stroke-width="2" stroke-linejoin="round"/>'
+            f'<polyline points="23,33 29.5,39.5 41,27" fill="none" stroke="{check}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>'
+            f"</g>"
+        )
+        self.text(52, 66, "Team", 15, bold=True, fill=ring)
+        self.text(94, 66, "Tracker", 15, bold=True, fill=check)
         if tabs:
             self.chip(158, 52, f"{KEY} ▾", 13, h=26)
             x = 230
@@ -1053,6 +1063,63 @@ def screen_backups():
     return wf
 
 
+def screen_palette():
+    wf = WF(560, "Блок «Цветовая гамма» в профиле пользователя")
+    t = wf.t
+    wf.shell(f"team-tracker.app/projects/{KEY}/backlog", "Бэклог")
+    wf.text(20, 128, "Цветовая гамма", 24, bold=True)
+    wf.text(20, 152, "Настройка профиля: действует на любом компьютере, где вы входите под своей учёткой.", 13, fill=t["muted"])
+
+    def preview(x, y, title, sub, light, dark, selected):
+        # карточка гаммы: светлая и тёмная версии рядом
+        wf.rect(x, y, 262, 190, fill=t["bg"], stroke=t["accent"] if selected else t["line"], r=8, sw=2.4 if selected else 1.2)
+        wf.text(x + 14, y + 26, title, 15, bold=True)
+        wf.text(x + 14, y + 44, sub, 12, fill=t["muted"])
+        for k, (name, c) in enumerate((("светлая", light), ("тёмная", dark))):
+            bx = x + 12 + k * 124
+            wf.rect(bx, y + 58, 114, 96, fill=c["bg"], stroke=t["line"], r=6)
+            wf.rect(bx + 8, y + 66, 98, 40, fill=c["panel"], r=4)
+            wf.text(bx + 16, y + 90, "Текст", 11, bold=True, fill=c["ink"])
+            wf.rect(bx + 56, y + 76, 44, 20, fill=c["accent"], r=4)
+            wf.text(bx + 78, y + 90, "Кнопка", 10, "middle", True, c["accent_ink"])
+            for j, sw in enumerate(c["extra"]):
+                wf.rect(bx + 8 + j * 32, y + 116, 28, 12, fill=sw, r=3)
+            wf.text(bx + 8, y + 146, name, 11, fill=c["ink"])
+        wf.text(x + 14, y + 178, "Светлая или тёмная — по настройке системы", 10, fill=t["muted"])
+
+    beige_l = dict(bg="#ECECE2", panel="#F7F6F0", ink="#484039", accent="#6E5A47", accent_ink="#FFFFFF", extra=("#C5BFAF", "#B7A286", "#ABAFA3"))
+    beige_d = dict(bg="#2A241F", panel="#362F28", ink="#EEEEE5", accent="#D2B991", accent_ink="#2A241F", extra=("#C5BFAF", "#B7A286", "#ABAFA3"))
+    blue_l = dict(bg="#FFFFFF", panel="#F3F4F6", ink="#1F2937", accent="#1D4ED8", accent_ink="#FFFFFF", extra=("#DBEAFE", "#93C5FD", "#F08C00"))
+    blue_d = dict(bg="#111827", panel="#1F2937", ink="#F3F4F6", accent="#93C5FD", accent_ink="#111827", extra=("#1E3A8A", "#7B93FF", "#F08C00"))
+    preview(20, 190, "Бежевая (по умолчанию)", "тёплые бежево-коричневые тона", beige_l, beige_d, True)
+    wf.callout(2, 12, 206)
+    preview(292, 190, "Стандартная", "синяя гамма, как раньше", blue_l, blue_d, False)
+
+    # меню профиля с блоком выбора
+    mx, my = 596, 96
+    wf.rect(mx, my, 290, 260, fill=t["bg"], stroke=t["line"], r=8, sw=1.6)
+    wf.text(mx + 16, my + 26, "Анна Ковалёва", 14, bold=True)
+    wf.text(mx + 16, my + 44, "anna@example.com · Администратор", 12, fill=t["muted"])
+    wf.line(mx + 10, my + 56, mx + 280, my + 56)
+    wf.text(mx + 16, my + 80, "Цветовая гамма", 12, fill=t["muted"])
+    wf.callout(1, mx - 10, my + 76)
+    for i, (name, sw, on) in enumerate((("Бежевая", ("#6E5A47", "#C5BFAF", "#B7A286"), True), ("Стандартная", ("#1D4ED8", "#93C5FD", "#F08C00"), False))):
+        yy = my + 92 + i * 38
+        wf.rect(mx + 10, yy, 270, 32, fill=t["accent_bg"] if on else t["bg"], stroke=t["accent"] if on else t["line"], r=6)
+        wf.p.append(f'<circle cx="{mx + 28}" cy="{yy + 16}" r="7" fill="{t["bg"]}" stroke="{t["accent"]}" stroke-width="2"/>')
+        if on:
+            wf.p.append(f'<circle cx="{mx + 28}" cy="{yy + 16}" r="3.5" fill="{t["accent"]}"/>')
+        wf.text(mx + 44, yy + 21, name, 14, bold=on)
+        for j, c in enumerate(sw):
+            wf.p.append(f'<circle cx="{mx + 220 + j * 18}" cy="{yy + 16}" r="6" fill="{c}" stroke="{t["line"]}" stroke-width="0.8"/>')
+    wf.text(mx + 16, my + 184, "Применяется сразу, без перезагрузки.", 12, fill=t["muted"])
+    wf.callout(3, mx - 10, my + 180)
+    wf.line(mx + 10, my + 198, mx + 280, my + 198)
+    wf.text(mx + 16, my + 224, "Выйти", 14)
+    wf.text(mx + 16, my + 246, "(в демо: «Сбросить данные»)", 11, fill=t["muted"])
+    return wf
+
+
 def screen_search():
     wf = WF(600, "Поиск и подсказка клавиш")
     t = wf.t
@@ -1110,6 +1177,7 @@ SCREENS = {
     "wf-search": screen_search,
     "wf-settings": screen_settings,
     "wf-backups": screen_backups,
+    "wf-palette": screen_palette,
 }
 
 

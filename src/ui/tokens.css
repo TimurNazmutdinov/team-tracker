@@ -1,0 +1,150 @@
+/*
+ * Цветовые гаммы приложения (ADR-013) — единственное место, где заданы цвета.
+ * Две гаммы: «Бежевая» (по умолчанию) и «Стандартная» (синяя); у каждой светлая и тёмная версия,
+ * которая выбирается по системе (prefers-color-scheme). Гамма выбирается атрибутом
+ * data-palette на <html>; без атрибута действует бежевая.
+ *
+ * Контраст проверяет тест src/ui/tokens.test.ts: текст и кнопки ≥ 4.5:1 (WCAG AA), границы полей
+ * (--control-line) и знак логотипа ≥ 3:1. --accent — цвет текста ссылок и кнопок, он темнее
+ * фирменного #95816C бежевой гаммы (3.1:1), который остаётся только в логотипе (--logo-check).
+ * --line — тонкие разделители, не граница управляющих элементов.
+ */
+
+/* Бежевая, светлая — по умолчанию */
+:root,
+:root[data-palette='beige'] {
+  color-scheme: light;
+  --bg: #ecece2;
+  --panel: #f7f6f0;
+  --line: #c5bfaf;
+  --control-line: #8a7f70;
+  --ink: #484039;
+  --muted: #675d52;
+  --accent: #6e5a47;
+  --accent-ink: #ffffff;
+  --accent-bg: #e4dccb;
+  --danger: #9b2c2c;
+  --danger-bg: #f6e1dc;
+  --warn: #7a4f00;
+  --warn-bg: #f1e3bf;
+  --st-backlog: #dad5c6;
+  --st-todo: #e6e1cf;
+  --st-progress: #d5deda;
+  --st-review: #ebd7a8;
+  --st-done: #d3ddc8;
+  --extra-1: #c5bfaf;
+  --extra-2: #b7a286;
+  --extra-3: #abafa3;
+  --logo-ring: #484039;
+  --logo-check: #95816c;
+  --backdrop: rgba(40, 32, 24, 0.5);
+  --shadow: rgba(40, 32, 24, 0.28);
+}
+
+/* Бежевая, тёмная */
+@media (prefers-color-scheme: dark) {
+  :root,
+  :root[data-palette='beige'] {
+    color-scheme: dark;
+    --bg: #2a241f;
+    --panel: #362f28;
+    --line: #4e463d;
+    --control-line: #8c8070;
+    --ink: #eeeee5;
+    --muted: #bdb5a5;
+    --accent: #d2b991;
+    --accent-ink: #2a241f;
+    --accent-bg: #4a3f31;
+    --danger: #f2a99b;
+    --danger-bg: #4a2420;
+    --warn: #e7b65c;
+    --warn-bg: #4a3716;
+    --st-backlog: #4a423a;
+    --st-todo: #55483a;
+    --st-progress: #3f4f57;
+    --st-review: #6a5430;
+    --st-done: #44563c;
+    --extra-1: #c5bfaf;
+    --extra-2: #b7a286;
+    --extra-3: #abafa3;
+    --logo-ring: #eeeee5;
+    --logo-check: #c5bfaf;
+    --backdrop: rgba(0, 0, 0, 0.6);
+    --shadow: rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Стандартная (синяя), светлая */
+:root[data-palette='blue'] {
+  color-scheme: light;
+  --bg: #ffffff;
+  --panel: #f3f4f6;
+  --line: #cbd5e1;
+  --control-line: #7a8699;
+  --ink: #1f2937;
+  --muted: #5b6472;
+  --accent: #1d4ed8;
+  --accent-ink: #ffffff;
+  --accent-bg: #dbeafe;
+  --danger: #b91c1c;
+  --danger-bg: #fee2e2;
+  --warn: #b45309;
+  --warn-bg: #fef3c7;
+  --st-backlog: #e5e7eb;
+  --st-todo: #e0e7ff;
+  --st-progress: #dbeafe;
+  --st-review: #fef3c7;
+  --st-done: #dcfce7;
+  --extra-1: #93c5fd;
+  --extra-2: #f08c00;
+  --extra-3: #7b93ff;
+  --logo-ring: #2b4acb;
+  --logo-check: #f08c00;
+  --backdrop: rgba(0, 0, 0, 0.5);
+  --shadow: rgba(0, 0, 0, 0.3);
+}
+
+/* Стандартная (синяя), тёмная */
+@media (prefers-color-scheme: dark) {
+  :root[data-palette='blue'] {
+    color-scheme: dark;
+    --bg: #111827;
+    --panel: #1f2937;
+    --line: #4b5563;
+    --control-line: #7a8699;
+    --ink: #f3f4f6;
+    --muted: #aeb6c2;
+    --accent: #93c5fd;
+    --accent-ink: #111827;
+    --accent-bg: #1e3a8a;
+    --danger: #fca5a5;
+    --danger-bg: #450a0a;
+    --warn: #fbbf24;
+    --warn-bg: #451a03;
+    --st-backlog: #374151;
+    --st-todo: #3730a3;
+    --st-progress: #1e40af;
+    --st-review: #92400e;
+    --st-done: #166534;
+    --extra-1: #1e3a8a;
+    --extra-2: #f08c00;
+    --extra-3: #7b93ff;
+    --logo-ring: #7b93ff;
+    --logo-check: #f08c00;
+    --backdrop: rgba(0, 0, 0, 0.6);
+    --shadow: rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Образцы гамм в выборе «Цветовая гамма»: показывают гамму независимо от текущей */
+[data-swatch='beige'] {
+  --swatch-1: #6e5a47;
+  --swatch-2: #c5bfaf;
+  --swatch-3: #b7a286;
+}
+
+[data-swatch='blue'] {
+  --swatch-1: #1d4ed8;
+  --swatch-2: #93c5fd;
+  --swatch-3: #f08c00;
+}

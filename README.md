@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="Logo/beige/logo-dark.svg">
+    <img src="Logo/beige/logo-light.svg" alt="Team Tracker" height="56">
+  </picture>
+</p>
+
 # team-tracker
 
 Трекер задач и спринтов для команд разработки: проекты с ключами задач, бэклог, доски, спринты, story points, burndown и velocity.
@@ -134,13 +141,15 @@ docker compose run --rm app npm run admin:create
 - [docs/capabilities.md](docs/capabilities.md) — возможности и бизнес-правила по модулям
 - [docs/wireframes.md](docs/wireframes.md) — макеты экранов
 - [docs/data-model.md](docs/data-model.md) — сущности и ER-диаграмма
-- [docs/adr/](docs/adr/) — архитектурные решения ([шаблон](docs/adr/0000-template.md), [ADR-001](docs/adr/001-storage-module.md), [ADR-002: стек](docs/adr/002-stack.md), [ADR-003: бизнес-правила](docs/adr/003-business-rules.md), [ADR-004: решения по макетам](docs/adr/004-screen-decisions.md), [ADR-005: Pages](docs/adr/005-pages-routing.md), [ADR-006: демо-режим](docs/adr/006-demo-author-and-order.md), [ADR-007: доска](docs/adr/007-board.md), [ADR-008: спринты](docs/adr/008-sprints.md), [ADR-009: отчёты](docs/adr/009-reports.md), [ADR-010: сервер, вход и роли](docs/adr/010-server-auth-roles.md), [ADR-011: локальное развёртывание на PGlite](docs/adr/011-local-pglite.md))
+- [docs/adr/](docs/adr/) — архитектурные решения ([шаблон](docs/adr/0000-template.md), [ADR-001](docs/adr/001-storage-module.md), [ADR-002: стек](docs/adr/002-stack.md), [ADR-003: бизнес-правила](docs/adr/003-business-rules.md), [ADR-004: решения по макетам](docs/adr/004-screen-decisions.md), [ADR-005: Pages](docs/adr/005-pages-routing.md), [ADR-006: демо-режим](docs/adr/006-demo-author-and-order.md), [ADR-007: доска](docs/adr/007-board.md), [ADR-008: спринты](docs/adr/008-sprints.md), [ADR-009: отчёты](docs/adr/009-reports.md), [ADR-010: сервер, вход и роли](docs/adr/010-server-auth-roles.md), [ADR-011: локальное развёртывание на PGlite](docs/adr/011-local-pglite.md), [ADR-012: резервные копии](docs/adr/012-backups.md), [ADR-013: логотип и цветовые гаммы](docs/adr/013-logo-and-palettes.md))
 
 ## PDF
 
 - [docs/pdf/architecture.pdf](docs/pdf/architecture.pdf) — архитектура
 - [docs/pdf/capabilities.pdf](docs/pdf/capabilities.pdf) — возможности
 - [docs/pdf/wireframes.pdf](docs/pdf/wireframes.pdf) — макеты экранов
+
+Пересборка логотипа: `python3 scripts/build_logo.py`, `node scripts/build_logo_png.cjs`.
 
 Пересборка: `python3 scripts/build_diagrams.py`, `python3 scripts/build_wireframes.py`, `node scripts/svg_to_png.cjs`, `python3 scripts/build_pdf.py` (нужны reportlab и шрифт DejaVu Sans).
 
@@ -150,7 +159,8 @@ docker compose run --rm app npm run admin:create
 - `src/domain` — типы, схемы Zod, правила (чистый TypeScript)
 - `src/storage` — интерфейс `TrackerStorage` и адаптеры `seed-local` (демо) и `api` (сервер)
 - `server` — API на Fastify: вход, права, запись, копии, миграции Drizzle; `start.cmd`, `Dockerfile`, `docker-compose.yml`, `.env.example`
-- `src/modules` — экраны по областям, `src/ui` — общие компоненты и стили, `src/state` — запросы и состояние интерфейса
+- `src/modules` — экраны по областям, `src/ui` — общие компоненты, логотип и стили (`tokens.css` — все цвета двух гамм), `src/state` — запросы и состояние интерфейса
+- `Logo/` — логотип (`blue/` и `beige/`: SVG и PNG), [Logo/README.md](Logo/README.md) — какой файл где использовать и коды цветов
 - `data/seed.json` — демо-данные, `scripts/` — проверка seed, сборка схем и PDF
 
 ## Данные

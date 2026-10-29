@@ -22,6 +22,13 @@
       "when": 1793244794114,
       "tag": "0002_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793247211437,
+      "tag": "0003_palette",
+      "breakpoints": true
     }
   ]
 }

@@ -14,7 +14,7 @@ import readXlsxFile from 'read-excel-file/node';
 import type { FastifyInstance } from 'fastify';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { buildApp } from './app';
-import { createAccount, login } from './auth';
+import { createAccount, login, setPalette } from './auth';
 import { checkBackupDir, listFolders } from './backups/folders';
 import { applyRestore, currentCounts, loadBundle } from './backups/restore';
 import { SAFETY_PREFIX, bundleDate, bundleName, planRotation } from './backups/rotation';
@@ -152,6 +152,9 @@ describe('экспорт, проверка и восстановление', () 
       role: 'developer',
       mustChangePassword: true,
     });
+    // у одной учётки выбрана «Стандартная» гамма: она должна пережить копию и восстановление
+    const dev = (await takeSnapshot(source.db)).accounts.find((x) => x.email === 'dev@example.com');
+    await setPalette(source.db, dev?.id ?? '', 'blue');
     original = await takeSnapshot(source.db);
     service = new BackupService({
       connection: source,
@@ -314,10 +317,12 @@ describe('экспорт, проверка и восстановление', () 
       expect(normalized(restored.data)).toEqual(expected);
 
       expect(
-        restored.accounts.map((a) => [a.email, a.accessRole, a.mustChangePassword]).sort(),
+        restored.accounts
+          .map((a) => [a.email, a.accessRole, a.mustChangePassword, a.palette])
+          .sort(),
       ).toEqual([
-        ['admin@example.com', 'admin', true],
-        ['dev@example.com', 'developer', true],
+        ['admin@example.com', 'admin', true, 'beige'],
+        ['dev@example.com', 'developer', true, 'blue'],
       ]);
       const temp = result.temporaryPasswords.find((t) => t.email === 'admin@example.com');
       const entered = await login(target.db, {
@@ -329,6 +334,18 @@ describe('экспорт, проверка и восстановление', () 
       await target.close();
     }
   }, 120_000);
+
+  it('копия без поля гаммы (до ADR-013) восстанавливается с бежевой по умолчанию', async () => {
+    const d = join(root, 'old-format');
+    mkdirSync(d, { recursive: true });
+    const raw = JSON.parse(readFileSync(join(folder, JSON_FILE), 'utf8')) as {
+      accounts: Record<string, unknown>[];
+    };
+    for (const a of raw.accounts) delete a.palette;
+    writeFileSync(join(d, JSON_FILE), JSON.stringify(raw));
+    const loaded = await loadBundle(d, 'json');
+    expect(loaded.ok && loaded.snapshot.accounts.map((a) => a.palette)).toEqual(['beige', 'beige']);
+  });
 
   it('автовыбор: json, а если он повреждён, — Excel с пометкой; оба повреждены — отказ', async () => {
     const copy = join(root, 'broken-json');

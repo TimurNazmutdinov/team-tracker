@@ -168,6 +168,7 @@ export async function applyRestore(db: Db, snapshot: Snapshot): Promise<RestoreR
           passwordHash: a.passwordHash,
           accessRole: a.accessRole,
           mustChangePassword: a.mustChangePassword,
+          palette: a.palette,
           ...(a.createdAt ? { createdAt: new Date(a.createdAt) } : {}),
         };
       }
@@ -179,6 +180,7 @@ export async function applyRestore(db: Db, snapshot: Snapshot): Promise<RestoreR
         passwordHash: await hashPassword(password),
         accessRole: a.accessRole,
         mustChangePassword: true,
+        palette: a.palette,
       };
     }),
   );

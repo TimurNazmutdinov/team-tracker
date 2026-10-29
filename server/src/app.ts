@@ -4,6 +4,7 @@ import cookie from '@fastify/cookie';
 import fastifyStatic from '@fastify/static';
 import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest } from 'fastify';
 import { z } from 'zod';
+import { PALETTES } from '../../src/domain/palettes';
 import { ROLES, can } from '../../src/domain/permissions';
 import * as auth from './auth';
 import { changesSchema } from './changes-schema';
@@ -34,6 +35,7 @@ export interface AppOptions {
 const credentials = z.object({ email: z.string(), password: z.string() });
 const registration = credentials.extend({ name: z.string() });
 const roleBody = z.object({ role: z.enum(ROLES) });
+const preferencesBody = z.object({ palette: z.enum(PALETTES) });
 const newAccountBody = registration.extend({ role: z.enum(ROLES).optional() });
 const passwordBody = z.object({ password: z.string() });
 const changePasswordBody = z.object({ current: z.string(), next: z.string() });
@@ -159,6 +161,14 @@ export function buildApp(options: AppOptions): FastifyInstance {
   });
 
   app.get('/api/auth/me', async (req) => requireUser(req, true));
+
+  // Настройки профиля (цветовая гамма): доступны и до смены временного пароля
+  app.patch('/api/auth/preferences', async (req) => {
+    const me = await requireUser(req, true);
+    const { palette } = parse(preferencesBody, req.body);
+    await auth.setPalette(db, me.id, palette);
+    return { ...me, palette };
+  });
 
   app.post('/api/auth/password', async (req, reply) => {
     const me = await requireUser(req, true);

@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { StorageError } from '../../storage';
 import { authClient, type PublicConfig } from '../../app/auth-client';
 import { useSession } from '../../state/session';
+import { Logo } from '../../ui/Logo';
 import { TextField } from '../../ui/fields';
 
 /**
@@ -46,7 +47,10 @@ export function LoginPage() {
 
   return (
     <main className="login" id="main">
-      <h1>team-tracker</h1>
+      <h1 className="login-logo">
+        <Logo size={44} />
+        <span className="visually-hidden"> — вход</span>
+      </h1>
       <div role="tablist" className="tabs" aria-label="Вход или регистрация">
         <button
           type="button"

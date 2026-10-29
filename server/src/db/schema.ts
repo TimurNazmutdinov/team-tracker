@@ -130,6 +130,8 @@ export const users = pgTable('users', {
   accessRole: text('access_role').notNull(),
   /** Пароль временный (его выдал администратор): до смены работать с данными нельзя. */
   mustChangePassword: boolean('must_change_password').notNull().default(false),
+  /** Цветовая гамма интерфейса (ADR-013): хранится в профиле, видна с любого компьютера. */
+  palette: text('palette').notNull().default('beige'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 

@@ -1,4 +1,5 @@
 import { Link, NavLink, useParams } from 'react-router';
+import { Logo } from './Logo';
 import { UserMenu } from './UserMenu';
 
 const TABS = [
@@ -16,7 +17,7 @@ export function AppBar() {
   return (
     <header className="app-bar">
       <Link to="/" className="logo">
-        team-tracker
+        <Logo />
       </Link>
       {key && (
         <>

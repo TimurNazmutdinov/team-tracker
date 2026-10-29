@@ -1,23 +1,5 @@
-/* Тема — по настройке системы (ADR-004, п. 4): светлая по умолчанию, тёмная через prefers-color-scheme. */
+/* Цвета — только через переменные из tokens.css (ADR-013). */
 :root {
-  color-scheme: light dark;
-  --bg: #ffffff;
-  --panel: #f3f4f6;
-  --line: #cbd5e1;
-  --ink: #1f2937;
-  --muted: #5b6472;
-  --accent: #1d4ed8;
-  --accent-ink: #ffffff;
-  --accent-bg: #dbeafe;
-  --danger: #b91c1c;
-  --danger-bg: #fee2e2;
-  --warn: #b45309;
-  --warn-bg: #fef3c7;
-  --st-backlog: #e5e7eb;
-  --st-todo: #e0e7ff;
-  --st-progress: #dbeafe;
-  --st-review: #fef3c7;
-  --st-done: #dcfce7;
   font-family:
     system-ui,
     -apple-system,
@@ -28,28 +10,6 @@
     sans-serif;
   font-size: 16px;
   line-height: 1.5;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #111827;
-    --panel: #1f2937;
-    --line: #4b5563;
-    --ink: #f3f4f6;
-    --muted: #aeb6c2;
-    --accent: #93c5fd;
-    --accent-ink: #111827;
-    --accent-bg: #1e3a8a;
-    --danger: #fca5a5;
-    --danger-bg: #450a0a;
-    --warn: #fbbf24;
-    --warn-bg: #451a03;
-    --st-backlog: #374151;
-    --st-todo: #3730a3;
-    --st-progress: #1e40af;
-    --st-review: #92400e;
-    --st-done: #166534;
-  }
 }
 
 * {
@@ -75,7 +35,7 @@ button {
   font: inherit;
   color: inherit;
   background: var(--bg);
-  border: 1px solid var(--line);
+  border: 1px solid var(--control-line);
   border-radius: 6px;
   padding: 0.3rem 0.75rem;
   cursor: pointer;
@@ -122,6 +82,109 @@ kbd {
   font-size: 1.1rem;
   color: var(--ink);
   text-decoration: none;
+}
+
+/* Логотип (ADR-013): знак и надпись; «Team» цветом круга, «Tracker» цветом галочки */
+.logo-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.logo-text {
+  font-family: 'Source Sans 3', 'Myriad Pro', 'Segoe UI', Arial, sans-serif;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.logo-team {
+  color: var(--logo-ring);
+}
+
+.logo-tracker {
+  color: var(--logo-check);
+}
+
+.login-logo {
+  margin: 0 0 1rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Выбор цветовой гаммы в меню профиля */
+.palette-field {
+  border: 0;
+  margin: 0.5rem 0;
+  padding: 0;
+}
+
+.palette-field legend {
+  color: var(--muted);
+  font-size: 0.85rem;
+  padding: 0;
+}
+
+.palette-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  margin-top: 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.palette-option input[type='radio'] {
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  accent-color: var(--accent);
+}
+
+.palette-option.selected {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+}
+
+.palette-option:focus-within {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.palette-option .swatches {
+  margin-left: auto;
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.palette-option .swatches i {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  border: 1px solid var(--control-line);
+}
+
+.palette-option .swatches i:nth-child(1) {
+  background: var(--swatch-1);
+}
+
+.palette-option .swatches i:nth-child(2) {
+  background: var(--swatch-2);
+}
+
+.palette-option .swatches i:nth-child(3) {
+  background: var(--swatch-3);
 }
 
 .app-bar nav {
@@ -271,7 +334,7 @@ textarea {
   font: inherit;
   color: inherit;
   background: var(--bg);
-  border: 1px solid var(--line);
+  border: 1px solid var(--control-line);
   border-radius: 6px;
   padding: 0.35rem 0.5rem;
   width: 100%;
@@ -339,7 +402,7 @@ textarea[aria-invalid='true'] {
 }
 
 .dialog::backdrop {
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--backdrop);
 }
 
 .dialog-head {
@@ -533,7 +596,7 @@ textarea[aria-invalid='true'] {
 .issue-row.overlay {
   display: flex;
   gap: 0.6rem;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 18px var(--shadow);
 }
 
 .handle {
@@ -812,7 +875,7 @@ textarea[aria-invalid='true'] {
 }
 
 .board-card.overlay {
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 18px var(--shadow);
 }
 
 .board-card header,
