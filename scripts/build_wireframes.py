@@ -172,7 +172,17 @@ class WF:
         self.rect(84, 6, W - 168, 23, fill=t["bg"], stroke=t["line"], r=11.5)
         self.text(98, 22, url, 12, fill=t["muted"])
         self.line(1, 86, W - 1, 86)
-        self.text(20, 67, "team-tracker", 17, bold=True)
+        # логотип (ADR-013): знак и надпись «Team Tracker»; на макетах — цвета «Стандартной» гаммы
+        ring, check = ("#2B4ACB", "#F08C00") if t["name"] == "light" else ("#7B93FF", "#F08C00")
+        self.p.append(
+            f'<g transform="translate(18 47) scale(0.4375)">'
+            f'<path d="M52.78 20 A24 24 0 1 1 35.34 8.23" fill="none" stroke="{ring}" stroke-width="7" stroke-linecap="round"/>'
+            f'<polygon points="45.24,9.62 36.31,1.30 34.37,15.16" fill="{ring}" stroke="{ring}" stroke-width="2" stroke-linejoin="round"/>'
+            f'<polyline points="23,33 29.5,39.5 41,27" fill="none" stroke="{check}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>'
+            f"</g>"
+        )
+        self.text(52, 66, "Team", 15, bold=True, fill=ring)
+        self.text(94, 66, "Tracker", 15, bold=True, fill=check)
         if tabs:
             self.chip(158, 52, f"{KEY} ▾", 13, h=26)
             x = 230
