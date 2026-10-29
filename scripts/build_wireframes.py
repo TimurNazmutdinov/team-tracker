@@ -1117,6 +1117,251 @@ def screen_about():
     return wf
 
 
+
+# ---------------------------------------------------------------- проекты и портфель (часть 3)
+
+def proj_card(wf, x, y, w, h, key, num, typ, title, prio, pts, who, tag=True):
+    """Карточка на доске нескольких проектов: те же поля плюс метка проекта."""
+    t = wf.t
+    wf.rect(x, y, w, h, fill=t["card"], stroke=t["muted"], r=6)
+    wf.icon(x + 6, y + 6, typ, 15)
+    wf.text(x + 26, y + 18, f"{key}-{num}", 11, bold=True, fill=t["accent"])
+    if tag:
+        cw = wf.chip(x + w - wf.est(key, 10, True) - 22, y + 4, key, 10, h=18, fill=t["accent_bg"], bold=True)
+    lines = textwrap.wrap(title, max(int((w - 12) / 6.1), 6))[:2]
+    for n, line in enumerate(lines):
+        wf.text(x + 6, y + 38 + n * 13, line, 11)
+    hot = prio in ("Highest", "High")
+    wf.text(x + 14, y + h - 9, PRIO_MARK[prio], 11, "middle", hot, t["warn"] if hot else t["muted"])
+    if pts is not None:
+        wf.points(x + w - 44, y + h - 14, pts)
+    if who:
+        wf.avatar(x + w - 16, y + h - 14, who, 10)
+
+
+def project_filter_popover(wf, x, y, w=300):
+    """Окно выбора проектов: наборы «Мои / Все / Выбрать» и список проектов с владельцами."""
+    t = wf.t
+    wf.rect(x + 3, y + 4, w, 262, fill="#000000", r=8, opacity=0.14)
+    wf.rect(x, y, w, 262, fill=t["bg"], stroke=t["accent"], r=8, sw=1.6)
+    wf.text(x + 14, y + 24, "Проекты", 14, bold=True)
+    for n, (label, on) in enumerate((("Мои проекты", False), ("Все проекты", False), ("Выбрать", True))):
+        cx = x + 16 + n * 96
+        wf.p.append(f'<circle cx="{cx}" cy="{y + 48}" r="6" fill="{t["accent"] if on else t["bg"]}" stroke="{t["accent"]}" stroke-width="1.6"/>')
+        wf.text(cx + 11, y + 52, label, 11.5)
+    wf.line(x + 10, y + 64, x + w - 10, y + 64)
+    rows = (("DEMO", "Демо-проект", "АК", True, True), ("SHOP", "Интернет-магазин", "ИС", True, True), ("CRM", "Клиентская база", "МО", False, False), ("API", "Публичный API", "АК", False, False))
+    for n, (k_, name, who, mine, on) in enumerate(rows):
+        yy = y + 78 + n * 32
+        wf.rect(x + 14, yy, 14, 14, fill=t["accent"] if on else t["bg"], stroke=t["accent"], r=3, sw=1.4)
+        if on:
+            wf.text(x + 21, yy + 11, "✓", 11, "middle", True, t["accent_ink"])
+        wf.text(x + 38, yy + 12, k_, 12.5, bold=True)
+        wf.text(x + 84, yy + 12, wf.fit(name, 120, 12), 12)
+        if mine:
+            wf.chip(x + w - 76, yy - 3, "мой", 10, h=18, fill=t["accent_bg"])
+        wf.avatar(x + w - 22, yy + 7, {"АК": "Анна Ковалёва", "ИС": "Игорь Смирнов", "МО": "Мария Орлова"}[who], 9)
+    wf.line(x + 10, y + 212, x + w - 10, y + 212)
+    wf.text(x + 14, y + 234, "Выбор запоминается для вас и виден в адресе", 11, fill=t["muted"])
+    wf.text(x + 14, y + 250, "страницы: ?projects=DEMO,SHOP", 11, fill=t["muted"])
+
+
+def screen_board_projects():
+    wf = WF(780, "Доска нескольких проектов: фильтр по проектам и дорожки-проекты")
+    t = wf.t
+    wf.shell(f"team-tracker.app/projects/{KEY}/board?projects=DEMO,SHOP", "Доска")
+    nav_pills(wf, 96)
+    # панель: фильтр проектов + остальные
+    fx = 20
+    wf.rect(fx, 134, 188, 30, fill=t["accent_bg"], stroke=t["accent"], r=15, sw=1.6)
+    wf.text(fx + 14, 154, "Проекты: Мои (2) ▾", 13, bold=True)
+    wf.callout(1, 14, 134)
+    wf.chip(222, 136, "Группировка: по проектам", 12.5, h=28, fill=t["panel"], ink=t["muted"])
+    wf.chip(426, 136, "Тип ▾", 12.5, h=28)
+    wf.chip(480, 136, "Приоритет ▾", 12.5, h=28)
+    wf.callout(2, 216, 134)
+    cols = ["To Do", "In Progress", "Review", "Done"]
+    gap, cx0, y0 = 12, 20, 182
+    cw = (W - 40 - 3 * gap) / 4
+    for n, c in enumerate(cols):
+        x = cx0 + n * (cw + gap)
+        wf.rect(x, y0, cw, 34, fill=t["status"][c], stroke=t["line"], r=6)
+        wf.text(x + 10, y0 + 22, c, 13, bold=True)
+    lanes = [
+        ("DEMO", "Демо-проект", "Спринт 3", "09.11 – 20.11", "2 задачи · 8 sp",
+         {"To Do": [(22, "Story", "Детали заказа", "High", 3, "Игорь Смирнов")], "In Progress": [(19, "Task", "Фильтр заказов по дате", "High", 5, "Игорь Смирнов")], "Review": [], "Done": []}),
+        ("SHOP", "Интернет-магазин", "Спринт 5", "02.11 – 13.11", "3 задачи · 9 sp",
+         {"To Do": [(41, "Bug", "Ошибка округления в корзине", "Highest", 2, "Мария Орлова")], "In Progress": [], "Review": [(37, "Story", "Промокоды", "Medium", 5, "Анна Ковалёва")], "Done": [(33, "Task", "Баннер на главной", "Low", 2, "Игорь Смирнов")]}),
+    ]
+    y = y0 + 42
+    for key_, name, sp, dates, stat, cards in lanes:
+        wf.rect(cx0, y, W - 40, 30, fill=t["panel"], stroke=t["line"], r=5)
+        wf.text(cx0 + 10, y + 20, "▾", 12)
+        wf.chip(cx0 + 28, y + 4, key_, 11.5, h=22, fill=t["accent_bg"], bold=True)
+        wf.text(cx0 + 74, y + 20, name, 13, bold=True)
+        wf.text(cx0 + 220, y + 20, f"{sp} · {dates}", 12.5, fill=t["muted"])
+        wf.text(W - 28, y + 20, stat, 12, "end", fill=t["muted"])
+        y += 36
+        for n, c in enumerate(cols):
+            x = cx0 + n * (cw + gap)
+            wf.rect(x, y, cw, 112, fill=t["panel"], stroke=t["line"], r=6, opacity=0.55)
+            for card in cards[c][:1]:
+                proj_card(wf, x + 8, y + 8, cw - 16, 96, key_, *card)
+        y += 120
+    wf.text(20, y + 14, "Колонки статусов общие; у каждой дорожки — свой активный спринт со своими датами.", 12, fill=t["muted"])
+    wf.text(20, y + 32, "Перетаскивать карточку можно только по колонкам своего проекта. Макет, не готовый экран.", 12, fill=t["muted"])
+    # открытое окно выбора проектов
+    project_filter_popover(wf, 20, 170)
+    wf.callout(3, 336, y0 + 56)
+    wf.callout(4, 330, y0 + 100)
+    wf.callout(5, 14, 180)
+    wf.h = max(wf.h, y + 54)
+    return wf
+
+
+def portfolio_card(wf, x, y, w, d):
+    t = wf.t
+    h = 424
+    risk = d["risk"]
+    wf.rect(x, y, w, h, fill=t["panel"], stroke=t["warn"] if risk else t["line"], r=8, sw=1.8 if risk else 1.2)
+    wf.chip(x + 14, y + 12, d["key"], 12.5, h=24, fill=t["accent_bg"], bold=True)
+    wf.text(x + 72, y + 30, d["name"], 15, bold=True)
+    wf.avatar(x + w - 24, y + 24, d["owner"], 12)
+    if risk:
+        wf.text(x + w - 46, y + 29, f"⚠ {risk}", 12, "end", True, t["warn"])
+    # спринт
+    wf.text(x + 14, y + 58, f"{d['sprint']} · {d['dates']}", 12.5, bold=True)
+    wf.text(x + w - 14, y + 58, d["left"], 12.5, "end", fill=t["muted"])
+    wf.text(x + 14, y + 76, wf.fit("Цель: " + d["goal"], w - 28, 12), 12, fill=t["muted"])
+    # выполнено
+    pct = d["done"] / d["scope"]
+    wf.text(x + 14, y + 102, f"Выполнено {d['done']} из {d['scope']} sp · {round(pct * 100)} %", 12.5)
+    wf.rect(x + 14, y + 110, 200, 8, fill=t["bg"], stroke=t["muted"], r=4)
+    wf.rect(x + 14, y + 110, 200 * pct, 8, fill=t["accent"], r=4, sw=0)
+    # мини-burndown
+    bx, by, bw, bh = x + w - 150, y + 90, 136, 48
+    wf.rect(bx, by, bw, bh, fill=t["bg"], stroke=t["line"], r=4)
+    n = len(d["burn"])
+    ideal = [(bx + 6 + i * (bw - 12) / (n - 1), by + 6 + i * (bh - 12) / (n - 1)) for i in range(n)]
+    top = max(d["burn"])
+    real = [(bx + 6 + i * (bw - 12) / (n - 1), by + 6 + (bh - 12) * (1 - v / top)) for i, v in enumerate(d["burn"])]
+    wf.poly(ideal, t["muted"], dash=True, sw=1.4)
+    wf.poly(real, t["accent"], sw=2)
+    wf.text(bx + bw / 2, by + bh + 13, "burndown", 10, "middle", fill=t["muted"])
+    # задачи по статусам: сегменты
+    sx = x + 14
+    total = sum(d["status"].values()) or 1
+    segw = w - 28
+    cx = sx
+    for st_, cnt in d["status"].items():
+        ww = segw * cnt / total
+        if ww > 0:
+            wf.rect(cx, y + 158, ww, 14, fill=t["status"][st_], stroke=t["line"], r=2, sw=1)
+            cx += ww
+    wf.text(sx, y + 190, "  ·  ".join(f"{k_} {v}" for k_, v in d["status"].items()), 11.5, fill=t["muted"])
+    # заполнение ёмкости
+    over = d["fill"] > d["cap"]
+    wf.text(x + 14, y + 216, f"Заполнение {d['fill']} / {d['cap']} sp · {round(d['fill'] / d['cap'] * 100)} %", 12.5)
+    wf.rect(x + 14, y + 224, 200, 8, fill=t["bg"], stroke=t["muted"], r=4)
+    wf.rect(x + 14, y + 224, min(200, 200 * d["fill"] / d["cap"] / 1.25), 8, fill=t["warn"] if over else t["accent"], r=4, sw=0)
+    if over:
+        wf.text(x + 226, y + 232, f"⚠ перегруз на {d['fill'] - d['cap']} sp", 12, bold=True, fill=t["warn"])
+    # просрочено и заблокировано
+    yy = y + 256
+    wf.chip(x + 14, yy, f"Просрочено: {d['overdue']}", 12, h=24, fill=t["bg"], bold=bool(d["overdue"]), ink=t["warn"] if d["overdue"] else None)
+    wf.chip(x + 140, yy, f"Заблокировано: {d['blocked']}", 12, h=24, fill=t["bg"], bold=bool(d["blocked"]), ink=t["warn"] if d["blocked"] else None)
+    for i, line in enumerate(d["lines"][:2]):
+        wf.text(x + 14, yy + 42 + i * 16, wf.fit(line, w - 28, 11.5), 11.5, fill=t["muted"])
+    # эпики
+    ey = y + 348
+    for i, (title, pc) in enumerate(d["epics"][:2]):
+        wf.text(x + 14, ey + i * 20 + 10, wf.fit(title, 150, 11.5), 11.5)
+        wf.rect(x + 170, ey + i * 20 + 2, 110, 8, fill=t["bg"], stroke=t["muted"], r=4)
+        wf.rect(x + 170, ey + i * 20 + 2, 110 * pc / 100, 8, fill=t["accent"], r=4, sw=0)
+        wf.text(x + 290, ey + i * 20 + 10, f"{pc} %", 11.5, fill=t["muted"])
+    wf.text(x + w - 14, y + h - 14, "Доска →   Планирование →", 12.5, "end", fill=t["accent"], bold=True)
+
+
+def screen_portfolio():
+    wf = WF(1120, "Экран «Портфель»: проекты продакта одним охватом")
+    t = wf.t
+    wf.shell("team-tracker.app/portfolio", "Портфель")
+    wf.text(20, 130, "Портфель", 24, bold=True)
+    wf.text(190, 130, "активные спринты ваших проектов", 13, fill=t["muted"])
+    wf.rect(20, 148, 188, 30, fill=t["accent_bg"], stroke=t["accent"], r=15, sw=1.6)
+    wf.text(34, 168, "Проекты: Мои (4) ▾", 13, bold=True)
+    wf.callout(1, 14, 148)
+    wf.chip(222, 150, "Сортировка: по риску ▾", 12.5, h=28)
+    wf.chip(396, 150, "☐ Только с риском", 12.5, h=28)
+    wf.callout(2, 216, 148)
+    data = [
+        dict(key="DEMO", name="Демо-проект", owner="Анна Ковалёва", risk="перегруз", sprint="Спринт 3", dates="09.11 – 20.11", left="осталось 8 дн.", goal="заказы: просмотр, фильтр, экспорт", done=13, scope=21, burn=[21, 21, 19, 17, 17, 15, 13, 11], status={"To Do": 2, "In Progress": 1, "Review": 1, "Done": 1}, fill=21, cap=17, overdue=2, blocked=1, lines=["DEMO-19 срок 05.11 · DEMO-20 срок 06.11", "DEMO-22 заблокирована задачей DEMO-19"], epics=[("Личный кабинет клиента", 40), ("Заказы", 25)]),
+        dict(key="SHOP", name="Интернет-магазин", owner="Игорь Смирнов", risk="", sprint="Спринт 5", dates="02.11 – 13.11", left="осталось 4 дн.", goal="корзина и промокоды", done=14, scope=20, burn=[20, 19, 16, 14, 11, 9, 7, 6], status={"To Do": 1, "In Progress": 2, "Review": 1, "Done": 4}, fill=20, cap=22, overdue=0, blocked=0, lines=["Просроченных и заблокированных задач нет"], epics=[("Оплата", 70), ("Каталог", 55)]),
+        dict(key="CRM", name="Клиентская база", owner="Мария Орлова", risk="блокировки", sprint="Спринт 2", dates="26.10 – 06.11", left="спринт закончился 2 дн. назад", goal="импорт контактов", done=8, scope=19, burn=[19, 19, 18, 18, 17, 15, 13, 11], status={"To Do": 3, "In Progress": 2, "Review": 0, "Done": 2}, fill=19, cap=20, overdue=1, blocked=3, lines=["CRM-12 срок 03.11", "CRM-15, CRM-16, CRM-18 ждут CRM-9"], epics=[("Импорт", 35), ("Поиск дублей", 10)]),
+        dict(key="API", name="Публичный API", owner="Анна Ковалёва", risk="", sprint="Спринт 7", dates="09.11 – 20.11", left="осталось 8 дн.", goal="версия 2: ключи доступа", done=5, scope=16, burn=[16, 16, 15, 14, 13, 12, 11, 11], status={"To Do": 3, "In Progress": 2, "Review": 1, "Done": 2}, fill=16, cap=18, overdue=0, blocked=0, lines=["Просроченных и заблокированных задач нет"], epics=[("Версия 2", 31)]),
+    ]
+    for n, d in enumerate(data):
+        portfolio_card(wf, 20 + (n % 2) * 440, 196 + (n // 2) * 438, 420, d)
+    wf.callout(3, 14, 206)
+    wf.callout(4, 14 + 440, 206)
+    wf.callout(5, 20 + 380, 196 + 70)
+    wf.callout(6, 20 + 396, 196 + 300)
+    wf.text(20, 1098, "Клик по проекту — на его доску или планирование. Риск: перегруз, просрочки, блокировки. Макет, не готовый экран.", 12, fill=t["muted"])
+    return wf
+
+
+def screen_members():
+    wf = WF(700, "Настройки проекта: владелец и участники")
+    t = wf.t
+    wf.shell(f"team-tracker.app/projects/{KEY}/settings", "Настройки")
+    wf.text(20, 130, "Настройки проекта", 24, bold=True)
+    wf.text(20, 176, "Участники проекта", 18, bold=True)
+    wf.text(220, 176, "владелец и администратор", 12, fill=t["muted"])
+    wf.text(20, 206, "Владелец продукта", 12, fill=t["muted"])
+    wf.rect(20, 212, 300, 34, fill=t["bg"], stroke=t["line"], r=6)
+    wf.avatar(40, 229, "Анна Ковалёва", 10)
+    wf.text(58, 234, "Анна Ковалёва", 14)
+    wf.text(300, 234, "▾", 14, "middle", fill=t["muted"])
+    wf.text(336, 234, "меняет только администратор", 12, fill=t["muted"])
+    wf.callout(1, 12, 226)
+    wf.rect(20, 268, 860, 30, fill=t["panel"], stroke=t["line"], r=4)
+    for name, dx in (("Участник", 14), ("Роль в проекте", 340), ("", 640)):
+        wf.text(20 + dx, 288, name, 13, bold=True)
+    rows = [("Игорь Смирнов", "Разработчик"), ("Мария Орлова", "Разработчик"), ("Дмитрий Васильев", "Тимлид")]
+    y = 298
+    for who, role in rows:
+        wf.rect(20, y, 860, 38, fill=t["bg"], stroke=t["line"], r=4)
+        wf.avatar(40, y + 19, who, 10)
+        wf.text(58, y + 24, who, 14)
+        wf.rect(350, y + 5, 200, 28, fill=t["bg"], stroke=t["line"], r=6)
+        wf.text(362, y + 24, role, 13)
+        wf.text(536, y + 24, "▾", 13, "middle", fill=t["muted"])
+        wf.button(760, y + 5, 108, 28, "Убрать", size=13)
+        y += 38
+    wf.callout(2, 12, 312)
+    y += 14
+    wf.rect(20, y, 860, 46, fill=t["panel"], stroke=t["line"], r=6, dash=True)
+    wf.rect(34, y + 8, 290, 30, fill=t["bg"], stroke=t["line"], r=6)
+    wf.text(46, y + 28, "Выберите человека", 13, fill=t["muted"])
+    wf.text(310, y + 28, "▾", 13, "middle", fill=t["muted"])
+    wf.rect(340, y + 8, 210, 30, fill=t["bg"], stroke=t["line"], r=6)
+    wf.text(352, y + 28, "Разработчик", 13)
+    wf.text(536, y + 28, "▾", 13, "middle", fill=t["muted"])
+    wf.button(760, y + 8, 108, 30, "+ Добавить", True, size=13)
+    wf.callout(3, 12, y + 22)
+    y += 76
+    notes = [
+        "«Мои проекты» — те, где вы владелец или участник; администратор может выбрать «Все проекты».",
+        "Продакт меняет состав и порядок задач, приоритеты и спринты только в своих проектах (владелец или участник).",
+        "Тимлид, администратор и разработчик (статусы своих задач) работают, как раньше.",
+        "Владельца и участников меняют администратор и владелец проекта. Макет, не готовый экран.",
+    ]
+    for n, line in enumerate(notes):
+        wf.text(30, y + n * 20, line, 12.5, fill=t["muted"])
+    wf.callout(4, 10, y - 5)
+    return wf
+
+
 def screen_palette():
     wf = WF(560, "Блок «Цветовая гамма» в профиле пользователя")
     t = wf.t
@@ -1791,6 +2036,9 @@ SCREENS = {
     "wf-backups": screen_backups,
     "wf-palette": screen_palette,
     "wf-about": screen_about,
+    "wf-board-projects": screen_board_projects,
+    "wf-portfolio": screen_portfolio,
+    "wf-members": screen_members,
     "wf-retro-board": screen_retro_board,
     "wf-board-beige": lambda: screen_retro_board(BEIGE),
     "wf-backlog-new": screen_backlog_new,
