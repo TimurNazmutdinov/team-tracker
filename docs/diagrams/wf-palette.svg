@@ -35,8 +35,8 @@
 <rect x="20" y="190" width="262" height="190" rx="8" fill="#ffffff" stroke="#2563eb" stroke-width="2.4"/>
 <text x="34" y="216" text-anchor="start" font-size="15" font-weight="bold" fill="#1f2937">Бежевая (по умолчанию)</text>
 <text x="34" y="234" text-anchor="start" font-size="12" fill="#6b7280">тёплые бежево-коричневые тона</text>
-<rect x="32" y="248" width="114" height="96" rx="6" fill="#ECECE2" stroke="#cbd5e1" stroke-width="1.2"/>
-<rect x="40" y="256" width="98" height="40" rx="4" fill="#F7F6F0"/>
+<rect x="32" y="248" width="114" height="96" rx="6" fill="#F7F6F0" stroke="#cbd5e1" stroke-width="1.2"/>
+<rect x="40" y="256" width="98" height="40" rx="4" fill="#ECECE2"/>
 <text x="48" y="280" text-anchor="start" font-size="11" font-weight="bold" fill="#484039">Текст</text>
 <rect x="88" y="266" width="44" height="20" rx="4" fill="#6E5A47"/>
 <text x="110" y="280" text-anchor="middle" font-size="10" font-weight="bold" fill="#FFFFFF">Кнопка</text>

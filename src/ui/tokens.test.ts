@@ -87,8 +87,8 @@ describe('токены цветовых гамм', () => {
 
   it('бежевая гамма использует цвета из задания', () => {
     const l = palettes.beige.light;
-    expect(l['--bg']).toBe('#ecece2');
-    expect(l['--panel']).toBe('#f7f6f0');
+    expect(l['--bg']).toBe('#f7f6f0');
+    expect(l['--panel']).toBe('#ecece2');
     expect(l['--ink']).toBe('#484039');
     expect([l['--extra-1'], l['--extra-2'], l['--extra-3']]).toEqual([
       '#c5bfaf',

@@ -1089,7 +1089,7 @@ def screen_palette():
             wf.text(bx + 8, y + 146, name, 11, fill=c["ink"])
         wf.text(x + 14, y + 178, "Светлая или тёмная — по настройке системы", 10, fill=t["muted"])
 
-    beige_l = dict(bg="#ECECE2", panel="#F7F6F0", ink="#484039", accent="#6E5A47", accent_ink="#FFFFFF", extra=("#C5BFAF", "#B7A286", "#ABAFA3"))
+    beige_l = dict(bg="#F7F6F0", panel="#ECECE2", ink="#484039", accent="#6E5A47", accent_ink="#FFFFFF", extra=("#C5BFAF", "#B7A286", "#ABAFA3"))
     beige_d = dict(bg="#2A241F", panel="#362F28", ink="#EEEEE5", accent="#D2B991", accent_ink="#2A241F", extra=("#C5BFAF", "#B7A286", "#ABAFA3"))
     blue_l = dict(bg="#FFFFFF", panel="#F3F4F6", ink="#1F2937", accent="#1D4ED8", accent_ink="#FFFFFF", extra=("#DBEAFE", "#93C5FD", "#F08C00"))
     blue_d = dict(bg="#111827", panel="#1F2937", ink="#F3F4F6", accent="#93C5FD", accent_ink="#111827", extra=("#1E3A8A", "#7B93FF", "#F08C00"))
