@@ -1127,3 +1127,60 @@ code {
   border-radius: 4px;
   user-select: all;
 }
+
+/* Резервные копии (ADR-012) */
+.backup-warning {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border-bottom: 2px solid var(--danger);
+  padding: 0.6rem 1rem;
+}
+
+.backup-warning a {
+  color: inherit;
+  font-weight: 700;
+}
+
+.backups {
+  margin-top: 2.5rem;
+}
+
+.backup-state {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+}
+
+.backup-dir-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.backup-dir-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.chip-error {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.row-error td {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.folder-list {
+  list-style: none;
+  padding: 0;
+  max-height: 16rem;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.folder-list li {
+  padding: 0.15rem 0.5rem;
+}

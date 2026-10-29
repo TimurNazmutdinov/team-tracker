@@ -11,8 +11,11 @@ FROM node:22-alpine
 WORKDIR /app
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
+ENV BACKUP_DIR=/backups
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
+# pg_dump для копии базы в комплекте резервной копии; папка копий принадлежит пользователю node
+RUN apk add --no-cache postgresql-client && mkdir /backups && chown node:node /backups
 COPY server ./server
 COPY src/domain ./src/domain
 COPY data ./data

@@ -31,3 +31,11 @@ export function newToken(): string {
 export function tokenHash(token: string): string {
   return createHash('sha256').update(token).digest('hex');
 }
+
+// Без похожих символов (0/O, 1/l/I), чтобы пароль можно было продиктовать
+const ALPHABET = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';
+
+/** Случайный временный пароль из 12 символов. */
+export function temporaryPassword(): string {
+  return Array.from(randomBytes(12), (b) => ALPHABET[b % ALPHABET.length]).join('');
+}

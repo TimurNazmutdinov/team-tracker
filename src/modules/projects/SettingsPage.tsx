@@ -1,7 +1,9 @@
 import { useState, type FormEvent } from 'react';
 import type { FieldErrors, View } from '../../domain/actions';
 import { nextSprintDefaults, sprintSettingsOf } from '../../domain/settings';
+import { SERVER_MODE } from '../../app/create-storage';
 import { useActions } from '../../state/actions';
+import { BackupsPanel } from '../backups/BackupsPanel';
 import { usePermissions } from '../../state/current-user';
 import { useNotices } from '../../state/notices';
 import { useView } from '../../state/queries';
@@ -18,10 +20,12 @@ const fmtFull = (d: string) => `${d.slice(8, 10)}.${d.slice(5, 7)}.${d.slice(0, 
 export function SettingsPage() {
   const project = useCurrentProject();
   const view = useView(project.id);
+  const canBackup = usePermissions().can('backups.manage');
   return (
     <>
       <PageHeader title="Настройки проекта" />
       {view ? <SprintSettingsForm view={view} /> : <Loading />}
+      {SERVER_MODE && canBackup && <BackupsPanel />}
     </>
   );
 }
