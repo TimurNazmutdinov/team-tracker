@@ -5,7 +5,9 @@ import { acquireLock } from './lock';
 import { countAccounts } from './auth';
 import { BackupService } from './backups/service';
 import { BACKUP_DIR_KEY, getSetting } from './settings';
-import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { aboutInfo, publicSettings, readVersion } from './about';
+import { LogStore } from './logs';
 
 // Запуск сервера: интерфейс и API на одном адресе. Настройки — .env и переменные окружения
 // (config.ts). Без DATABASE_URL работает встроенная база PGlite в DATA_DIR (ADR-011).
@@ -27,11 +29,8 @@ if (!config.databaseUrl) {
 const connection = await openDatabase(config);
 // Папка копий: выбранная в настройках важнее BACKUP_DIR из .env
 const backupDir = (await getSetting(connection.db, BACKUP_DIR_KEY)) ?? config.backupDir;
-const appVersion = (
-  JSON.parse(readFileSync(new URL('../../package.json', import.meta.url), 'utf8')) as {
-    version: string;
-  }
-).version;
+const appVersion = readVersion();
+const logs = new LogStore(join(config.dataDir, 'logs'));
 const backups = new BackupService({
   connection,
   dir: backupDir,
@@ -40,7 +39,10 @@ const backups = new BackupService({
   keepMonthly: config.backupKeepMonthly,
   time: config.backupTime,
   auto: config.backupAuto,
-  onLog: (line) => console.log(`[копия] ${line}`),
+  onLog: (line) => {
+    console.log(`[копия] ${line}`);
+    if (line.includes('| ОШИБКА |')) logs.write('server', { message: `копия не создана: ${line}` });
+  },
 });
 
 const app = buildApp({
@@ -50,6 +52,9 @@ const app = buildApp({
   staticDir: config.staticDir,
   allowRegistration: config.allowRegistration,
   secureCookies: config.secureCookies,
+  logs,
+  about: aboutInfo(config, appVersion),
+  settings: publicSettings(config),
   logger: true,
 });
 
@@ -62,6 +67,18 @@ console.log(
 if ((await countAccounts(connection.db)) === 0) {
   console.log('Учётных записей нет. Создайте администратора: npm run admin:create');
 }
+
+// Необработанные ошибки пишутся в журнал; после неперехваченного исключения процесс завершается
+process.on('unhandledRejection', (reason) => {
+  const e = reason instanceof Error ? reason : new Error(String(reason));
+  logs.write('server', { message: `unhandledRejection: ${e.message}`, stack: e.stack });
+  console.error(e);
+});
+process.on('uncaughtException', (e) => {
+  logs.write('server', { message: `uncaughtException: ${e.message}`, stack: e.stack });
+  console.error(e);
+  process.exit(1);
+});
 
 let closing = false;
 const shutdown = () => {

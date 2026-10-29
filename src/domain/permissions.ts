@@ -26,7 +26,8 @@ export type Action =
   | 'sprint.manage' // создавать, запускать, закрывать спринты, настройки спринтов
   | 'project.create' // создавать проекты и управлять людьми
   | 'users.manage' // менять роли учёток
-  | 'backups.manage'; // резервные копии: состояние, копия сейчас, Excel
+  | 'backups.manage' // резервные копии: состояние, копия сейчас, Excel
+  | 'system.diagnose'; // журнал ошибок и диагностика (ADR-015)
 
 const MATRIX: Record<Action, readonly Role[]> = {
   'status.own': ROLES,
@@ -37,6 +38,7 @@ const MATRIX: Record<Action, readonly Role[]> = {
   'project.create': ['admin'],
   'users.manage': ['admin'],
   'backups.manage': ['admin'],
+  'system.diagnose': ['admin'],
 };
 
 export function can(role: Role, action: Action): boolean {

@@ -12,6 +12,8 @@ import type { Db } from './db';
 import { HttpError } from './errors';
 import { checkBackupDir, listFolders } from './backups/folders';
 import type { BackupService } from './backups/service';
+import { buildDiagnostics, type AboutInfo } from './about';
+import type { LogStore } from './logs';
 import { commit, findIssueByNumber, readers } from './repo';
 import { BACKUP_DIR_KEY, setSetting } from './settings';
 
@@ -27,6 +29,12 @@ export interface AppOptions {
   dataDir?: string;
   /** Открыта ли самостоятельная регистрация; по умолчанию закрыта (ADR-011). */
   allowRegistration?: boolean;
+  /** Журналы ошибок в DATA_DIR/logs; без них журнал и диагностика недоступны. */
+  logs?: LogStore;
+  /** Сведения о программе для экрана «О программе» и диагностики. */
+  about?: AboutInfo;
+  /** Настройки без секретов для архива диагностики. */
+  settings?: Record<string, string | number | boolean>;
   /** Ставить cookie только по HTTPS (включать за HTTPS-прокси). */
   secureCookies?: boolean;
   logger?: boolean;
@@ -64,6 +72,13 @@ export function buildApp(options: AppOptions): FastifyInstance {
         .send({ error: { code: 'bad_request', message: 'Некорректный запрос', details: [] } });
     }
     app.log.error(error);
+    const path = `${_req.method} ${_req.url.split('?')[0] ?? ''}`;
+    const err = error instanceof Error ? error : new Error(String(error));
+    options.logs?.write('server', {
+      message: `${path}: ${err.message}`,
+      stack: err.stack,
+      where: path,
+    });
     return reply
       .status(500)
       .send({ error: { code: 'server_error', message: 'Ошибка сервера', details: [] } });
@@ -280,6 +295,62 @@ export function buildApp(options: AppOptions): FastifyInstance {
       return backups.status();
     });
   }
+
+  // ---------------------------------------------------------------- о программе и журнал ошибок (ADR-015)
+
+  app.get('/api/about', async (req) => {
+    await requireUser(req);
+    return options.about ?? null;
+  });
+
+  // Ошибки клиента: принимаются и до входа, но ограничены по размеру и частоте
+  const clientErrorBody = z.object({
+    message: z.string().max(2000),
+    stack: z.string().max(6000).optional(),
+    where: z.string().max(300).optional(),
+  });
+  const clientErrorTimes: number[] = [];
+  app.post('/api/client-errors', async (req, reply) => {
+    const body = parse(clientErrorBody, req.body);
+    const now = Date.now();
+    while (clientErrorTimes.length > 0 && now - (clientErrorTimes[0] ?? 0) > 60_000) {
+      clientErrorTimes.shift();
+    }
+    if (clientErrorTimes.length >= 60) return reply.status(429).send();
+    clientErrorTimes.push(now);
+    options.logs?.write('client', body);
+    return reply.status(204).send();
+  });
+
+  const diagnoseOnly = async (req: FastifyRequest) => {
+    const me = await requireUser(req);
+    if (!can(me.role, 'system.diagnose')) {
+      throw new HttpError(403, 'forbidden', 'Журнал и диагностика доступны только администратору');
+    }
+    return me;
+  };
+
+  app.get<{ Querystring: { limit?: string } }>('/api/admin/log', async (req) => {
+    await diagnoseOnly(req);
+    const limit = Math.min(Math.max(Number(req.query.limit) || 50, 1), 200);
+    return options.logs?.recent(limit) ?? [];
+  });
+
+  app.get('/api/admin/diagnostics', async (req, reply) => {
+    await diagnoseOnly(req);
+    if (!options.about) throw new HttpError(404, 'not_found', 'Диагностика недоступна');
+    const zip = buildDiagnostics({
+      about: options.about,
+      settings: options.settings ?? {},
+      backups: options.backups?.status() ?? null,
+      logs: options.logs ?? null,
+    });
+    const day = new Date().toISOString().slice(0, 10);
+    return reply
+      .header('content-type', 'application/zip')
+      .header('content-disposition', `attachment; filename="diagnostics-${day}.zip"`)
+      .send(Buffer.from(zip));
+  });
 
   // ---------------------------------------------------------------- данные
 
