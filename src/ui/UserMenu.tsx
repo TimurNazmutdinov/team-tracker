@@ -1,5 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router';
 import { useStorage } from '../app/storage-context';
 import { SERVER_MODE } from '../app/create-storage';
 import { authClient } from '../app/auth-client';
@@ -140,6 +141,9 @@ export function UserMenu() {
             </label>
           )}
           <PaletteField />
+          <Link to="/about" role="menuitem" onClick={() => setOpen(false)}>
+            О программе
+          </Link>
           {SERVER_MODE ? (
             <button type="button" role="menuitem" onClick={() => void onLogout()}>
               Выйти

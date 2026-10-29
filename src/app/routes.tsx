@@ -1,4 +1,5 @@
 import { Navigate, type RouteObject } from 'react-router';
+import { AboutPage } from '../modules/about/AboutPage';
 import { BacklogPage } from '../modules/backlog/BacklogPage';
 import { BoardPage } from '../modules/board/BoardPage';
 import { HistoryPage } from '../modules/board/HistoryPage';
@@ -22,6 +23,7 @@ export const routes: RouteObject[] = [
     children: [
       { index: true, element: <HomePage /> },
       { path: 'projects', element: <ProjectsPage /> },
+      { path: 'about', element: <AboutPage /> },
       {
         path: 'projects/:key',
         element: <ProjectRoute />,

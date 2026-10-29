@@ -32,9 +32,9 @@ export function StatusChip({ status }: { status: Status }) {
 }
 
 export function PointsBadge({ points }: { points: number | null }) {
-  if (points === null) return <span className="points empty" aria-label="Без оценки" />;
+  if (points === null) return <span className="points empty" role="img" aria-label="Без оценки" />;
   return (
-    <span className="points" title="Story points" aria-label={`Story points: ${points}`}>
+    <span className="points" role="img" title="Story points" aria-label={`Story points: ${points}`}>
       {points}
     </span>
   );
