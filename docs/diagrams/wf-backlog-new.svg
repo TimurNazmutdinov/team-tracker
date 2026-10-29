@@ -388,11 +388,8 @@
 <text x="758" y="1019" text-anchor="start" font-size="12" fill="#1f2937">Анна К.</text>
 <text x="862" y="1019" text-anchor="middle" font-size="11" fill="#6b7280">▾</text>
 <text x="450" y="1048" text-anchor="middle" font-size="12.5" fill="#2563eb">ещё 4 ▾</text>
-<rect x="20" y="1068" width="860" height="52" rx="6" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="34" y="1090" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">▸ Выполненные спринты</text>
-<text x="220" y="1090" text-anchor="start" font-size="12" fill="#6b7280">2 · только чтение · как слева на доске</text>
-<text x="34" y="1109" text-anchor="start" font-size="11.5" fill="#6b7280">Спринт 2 · 26.10–06.11 · 6 задач · 18 sp · V 18</text>
-<text x="434" y="1109" text-anchor="start" font-size="11.5" fill="#6b7280">Спринт 1 · 12.10–23.10 · 5 задач · 16 sp · V 16</text>
+<text x="20" y="1086" text-anchor="start" font-size="14" font-weight="bold" fill="#2563eb">Выполненные спринты ↗</text>
+<text x="220" y="1086" text-anchor="start" font-size="12" fill="#6b7280">открывается отдельная вкладка «Прошлые спринты»</text>
 <circle cx="14" cy="1068" r="11" fill="#b91c1c"/>
 <text x="14" y="1073" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">6</text>
 <rect x="729" y="694" width="146" height="112" rx="6" fill="#000000" fill-opacity="0.15"/>

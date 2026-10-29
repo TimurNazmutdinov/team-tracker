@@ -1315,7 +1315,7 @@ def nav_pills(wf, y):
     t = wf.t
     x = 20
     x += wf.chip(x, y, "Прошлые спринты ↗", 13, h=32, fill=t["bg"], bold=True, ink=t["accent"]) + 8
-    x += wf.chip(x, y, "Текущий спринт", 13, h=32, fill=t["accent_bg"], bold=True) + 8
+    x += wf.chip(x, y, "Текущий спринт · Спринт 3 · 09.11 – 20.11", 13, h=32, fill=t["accent_bg"], bold=True) + 8
     wf.chip(x, y, "Планирование будущих спринтов ↗", 13, h=32, fill=t["bg"], bold=True, ink=t["accent"])
 
 
@@ -1350,7 +1350,7 @@ def screen_retro_board():
     nav_pills(wf, 96)
     wf.callout(1, 14, 96)
     wf.callout(2, 178, 96)
-    wf.callout(3, 322, 96)
+    wf.callout(3, 500, 96)
     retro_toolbar(wf, 136, x0=20)
     wf.callout(4, 14, 138)
     cols = ["To Do", "In Progress", "Review", "Done"]
@@ -1531,14 +1531,11 @@ def screen_backlog_new():
     wf.text(450, y + 14, "ещё 4 ▾", 12.5, "middle", fill=t["accent"])
     y += 34
 
-    # --- свёрнутый раздел выполненных спринтов (внизу)
-    wf.rect(20, y, 860, 52, fill=t["panel"], stroke=t["line"], r=6)
-    wf.text(34, y + 22, "▸ Выполненные спринты", 14, bold=True)
-    wf.text(220, y + 22, "2 · только чтение · как слева на доске", 12, fill=t["muted"])
-    wf.text(34, y + 41, f"Спринт 2 · 26.10–06.11 · {len(S2)} задач · {SUM(S2)} sp · V {VEL[2]}", 11.5, fill=t["muted"])
-    wf.text(434, y + 41, f"Спринт 1 · 12.10–23.10 · {len(S1)} задач · {SUM(S1)} sp · V {VEL[1]}", 11.5, fill=t["muted"])
+    # --- ссылка на историю (внизу)
+    wf.text(20, y + 18, "Выполненные спринты ↗", 14, bold=True, fill=t["accent"])
+    wf.text(220, y + 18, "открывается отдельная вкладка «Прошлые спринты»", 12, fill=t["muted"])
     wf.callout(6, 14, y)
-    y += 60
+    y += 40
 
     # --- быстрое редактирование: открытый список исполнителей у задачи без исполнителя (DEMO-25)
     px, py = 20 + 706, row25 + 32
