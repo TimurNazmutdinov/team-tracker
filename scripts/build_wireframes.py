@@ -207,6 +207,8 @@ class WF:
         return (
             f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{self.h}" viewBox="0 0 {W} {self.h}" '
             f'font-family="{FONT}" role="img" aria-label="{esc(self.title)}">\n<title>{esc(self.title)}</title>\n'
+            '<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">'
+            '<path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker></defs>\n'
             f'<rect width="{W}" height="{self.h}" fill="#ffffff"/>\n' + "\n".join(self.p) + "\n</svg>\n"
         )
 
@@ -1120,6 +1122,564 @@ def screen_palette():
     return wf
 
 
+# ---------------------------------------------------------------- эскиз: доска «прошлое / текущее / будущее»
+# Данные примера условные: демо-проект «через два спринта» (Спринты 1 и 2 закрыты, идёт Спринт 3).
+
+NAMES = {"И": "Игорь Смирнов", "М": "Мария Орлова", "А": "Анна Ковалёва", "Д": "Дмитрий Васильев", None: None}
+EPICS = {1: "Кабинет", 31: "Заказы"}
+
+
+def T(n, typ, title, sp, prio, who=None, epic=1, labels=(), status=None):
+    return dict(number=n, type=typ, title=title, points=sp, priority=prio, who=NAMES[who], epic=EPICS[epic], labels=list(labels), status=status)
+
+
+S1 = [
+    T(2, "Story", "Регистрация и вход", 5, "Highest", "И", 1, ["авторизация"]),
+    T(3, "Story", "Просмотр профиля", 3, "High", "М", 1, ["профиль"]),
+    T(6, "Task", "Спроектировать таблицу пользователей", 3, "High", "И", 1, ["бэкенд"]),
+    T(7, "Task", "Реализовать обработчик входа", 3, "High", "И", 1, ["бэкенд"]),
+    T(12, "Bug", "Сессия не сбрасывается после выхода", 2, "High", "И", 1, ["авторизация"]),
+]
+S2 = [
+    T(4, "Story", "Смена пароля", 5, "High", "И", 1, ["авторизация"]),
+    T(9, "Task", "Форма смены пароля", 3, "High", "И", 1, ["фронтенд"]),
+    T(8, "Task", "Вёрстка страницы профиля", 2, "Medium", "М", 1, ["фронтенд"]),
+    T(10, "Task", "Письмо о смене пароля", 2, "Medium", "М", 1, ["бэкенд"]),
+    T(13, "Bug", "Валидация e-mail отвергает адреса с «+»", 1, "Highest", "М", 1, ["авторизация"]),
+    T(17, "Story", "Вход по ссылке из письма", 5, "Medium", "М", 1, ["авторизация"]),
+]
+S3 = {
+    "To Do": [T(22, "Story", "Детали заказа", 3, "High", "И", 31, ["заказы"]), T(5, "Story", "История заказов", 8, "Medium", "М", 31, ["заказы"])],
+    "In Progress": [T(19, "Task", "Фильтр заказов по дате", 5, "High", "И", 31, ["заказы", "фронтенд"])],
+    "Review": [T(20, "Task", "Экспорт заказов в CSV", 3, "Medium", "М", 31, ["заказы"])],
+    "Done": [T(21, "Task", "Вёрстка списка заказов", 2, "Medium", "М", 31, ["фронтенд"])],
+}
+S4 = [
+    T(23, "Story", "Уведомление об отправке заказа", 5, "High", "И", 31, ["заказы"]),
+    T(24, "Story", "Повтор заказа в один клик", 5, "Medium", "М", 31, ["заказы"]),
+    T(25, "Story", "Адреса доставки", 5, "Medium", None, 31, ["заказы"]),
+    T(26, "Bug", "Округление суммы заказа", 2, "Highest", "И", 31, ["бэкенд"]),
+]
+S5 = [T(27, "Story", "Избранные товары", 3, "Medium", None, 31), T(28, "Task", "Сравнение заказов", 2, "Low", None, 31)]
+BACKLOG = [
+    T(30, "Story", "Двухфакторная аутентификация", 8, "High", None, 1, ["авторизация", "безопасность"]),
+    T(11, "Task", "Пагинация списка заказов", 3, "Low", None, 31, ["заказы", "бэкенд"]),
+    T(29, "Task", "Ускорить загрузку списка заказов", None, "Medium", None, 31, ["заказы"]),
+    T(32, "Story", "Сохранение корзины", 5, "Medium", None, 31, ["заказы"]),
+    T(36, "Task", "Журнал входов в систему", 3, "Medium", "А", 1, ["безопасность"]),
+    T(37, "Task", "Экспорт данных профиля", 5, "Medium", None, 1, ["профиль"]),
+    T(33, "Task", "Тёмная тема для писем", 2, "Low", None, 1, ["фронтенд"]),
+    T(34, "Story", "Локализация интерфейса", None, "Low", None, 1),
+    T(35, "Story", "Бонусные баллы", 13, "Low", None, 31, ["заказы"]),
+]
+S3_ALL = [i for c in ("To Do", "In Progress", "Review", "Done") for i in S3[c]]
+SUM = lambda L: sum(i["points"] or 0 for i in L)
+VEL = {1: SUM(S1), 2: SUM(S2)}  # velocity закрытых спринтов
+CAP = round(sum(VEL.values()) / len(VEL), 1)  # среднее по закрытым (их пока два)
+CAP_TXT = f"{CAP:g}".replace(".", ",")
+PRIO_MARK = {"Highest": "▲▲", "High": "▲", "Medium": "■", "Low": "▼"}
+
+
+def k(i):
+    return f"{KEY}-{i['number']}"
+
+
+def vtext(wf, x, y, s, size=12, bold=False, fill=None):
+    """Текст, повёрнутый на 90° (читается снизу вверх); (x, y) — начало строки."""
+    fill = fill or wf.t["ink"]
+    b = ' font-weight="bold"' if bold else ""
+    wf.p.append(f'<text transform="rotate(-90 {x} {y})" x="{x}" y="{y}" font-size="{size}"{b} fill="{fill}">{esc(s)}</text>')
+
+
+def prio_mark(wf, x, y, prio, size=11):
+    hot = prio in ("Highest", "High")
+    wf.text(x, y, PRIO_MARK[prio], size, "middle", hot, wf.t["warn"] if hot else wf.t["muted"])
+
+
+def compact_row(wf, x, y, w, i, handle=False, avatar=True, h=28, dim=False):
+    """Сжатая строка задачи (боковые части, бэклог на доске): тип, ключ, название, приоритет, points, исполнитель."""
+    t = wf.t
+    wf.rect(x, y, w, h, fill=t["bg"], stroke=t["accent"] if dim else t["line"], r=4, dash=dim)
+    cx = x + 6
+    if handle:
+        wf.text(cx, y + h / 2 + 4, "⋮⋮", 11, fill=t["muted"])
+        cx += 14
+    wf.icon(cx, y + (h - 16) / 2, i["type"], 16)
+    wf.text(cx + 21, y + h / 2 + 4, k(i), 11, bold=True, fill=t["accent"])
+    right = x + w - 6
+    if avatar:
+        if i["who"]:
+            wf.avatar(right - 9, y + h / 2, i["who"], 9)
+        else:
+            wf.text(right - 9, y + h / 2 + 4, "—", 11, "middle", fill=t["muted"])
+        right -= 22
+    if i["points"] is not None:
+        wf.points(right - 10, y + h / 2, i["points"])
+    else:
+        wf.text(right - 10, y + h / 2 + 4, "?", 11, "middle", True, t["warn"])
+    right -= 30
+    prio_mark(wf, right - 4, y + h / 2 + 4, i["priority"])
+    right -= 24
+    tx = cx + 21 + 58
+    if right - tx > 20:
+        wf.text(tx, y + h / 2 + 4, wf.fit(i["title"], right - tx, 11), 11)
+
+
+def stack_row(wf, x, y, w, i, handle=False, avatar=False, prio=True, dim=False, h=40):
+    """Сжатая строка в две линии для узких боковых частей: сверху тип, ключ, приоритет, points, исполнитель;
+    снизу название целиком."""
+    t = wf.t
+    wf.rect(x, y, w, h, fill=t["bg"], stroke=t["accent"] if dim else t["line"], r=4, dash=dim)
+    cx = x + 6
+    if handle:
+        wf.text(cx, y + 17, "⋮⋮", 11, fill=t["muted"])
+        cx += 14
+    wf.icon(cx, y + 5, i["type"], 16)
+    wf.text(cx + 21, y + 17, k(i), 11, bold=True, fill=t["accent"])
+    right = x + w - 8
+    if avatar:
+        if i["who"]:
+            wf.avatar(right - 8, y + 14, i["who"], 8.5)
+        right -= 22
+    if i["points"] is not None:
+        wf.points(right - 9, y + 14, i["points"])
+    else:
+        wf.text(right - 9, y + 18, "?", 11, "middle", True, t["warn"])
+    right -= 24
+    if prio:
+        prio_mark(wf, right - 8, y + 18, i["priority"])
+    wf.text(x + 8, y + 33, wf.fit(i["title"], w - 16, 11), 11)
+
+
+def compact_card(wf, x, y, w, h, i):
+    """Карточка на доске: те же поля, что в сжатой строке (тип, ключ, название, приоритет, points, исполнитель)."""
+    t = wf.t
+    wf.rect(x, y, w, h, fill=t["card"], stroke=t["muted"], r=6)
+    wf.icon(x + 6, y + 6, i["type"], 15)
+    wf.text(x + 26, y + 18, k(i), 11, bold=True, fill=t["accent"])
+    lines = textwrap.wrap(i["title"], max(int((w - 12) / 6.1), 6))[:2]
+    for n, s in enumerate(lines):
+        wf.text(x + 6, y + 34 + n * 13, s, 11)
+    wf.text(x + 14, y + h - 9, PRIO_MARK[i["priority"]], 11, "middle", i["priority"] in ("Highest", "High"), t["warn"] if i["priority"] in ("Highest", "High") else t["muted"])
+    if i["points"] is not None:
+        wf.points(x + w - 44, y + h - 14, i["points"])
+    if i["who"]:
+        wf.avatar(x + w - 16, y + h - 14, i["who"], 10)
+
+
+def mini_card(wf, x, y, w, h, i):
+    """Предельно узкая карточка (центр зажат боковыми частями): ключ, points, исполнитель; название — во всплывающей подсказке."""
+    t = wf.t
+    wf.rect(x, y, w, h, fill=t["card"], stroke=t["muted"], r=5)
+    wf.icon(x + 4, y + 5, i["type"], 13)
+    wf.text(x + 20, y + 15, f"{i['number']}", 10.5, bold=True, fill=t["accent"])
+    if i["points"] is not None:
+        wf.points(x + 14, y + h - 12, i["points"])
+    if i["who"]:
+        wf.avatar(x + w - 14, y + h - 12, i["who"], 9)
+
+
+def cap_bar(wf, x, y, w, used, cap, h=8):
+    """Индикатор заполнения: points в спринте против ёмкости. Состояние — цветом, значком и словами."""
+    t = wf.t
+    wf.rect(x, y, w, h, fill=t["panel"], stroke=t["line"], r=h / 2, sw=1)
+    ratio = used / cap
+    if ratio > 1:
+        fill, state = "#dc2626", "перегруз"
+    elif ratio > 0.9:
+        fill, state = "#d97706", "почти полон"
+    else:
+        fill, state = "#16a34a", "есть запас"
+    # шкала до 125 % ёмкости, метка ёмкости — вертикальная черта
+    scale = 1.25
+    fw = min(ratio, scale) / scale * w
+    wf.rect(x, y, fw, h, fill=fill, r=h / 2, sw=0)
+    cx = x + w / scale
+    wf.line(cx, y - 3, cx, y + h + 3, color=t["ink"], sw=1.6)
+    return state, fill
+
+
+def retro_toolbar(wf, y, x0=20, short=False):
+    """Фильтры доски активного спринта (относятся только к центру)."""
+    t = wf.t
+    x = x0
+    x += wf.chip(x, y + 6, "Спринт 3 ▾", 13, h=28) + 8
+    x += wf.chip(x, y + 6, "Группировка ▾" if short else "Группировать: Исполнитель ▾", 13, h=28, fill=t["accent_bg"]) + 8
+    if not short:
+        x += wf.chip(x, y + 6, "Тип ▾", 13, h=28) + 8
+        wf.chip(x, y + 6, "Приоритет ▾", 13, h=28)
+
+
+def nav_pills(wf, y):
+    """Три плашки над доской: прошлое и будущее — кнопки-ссылки на отдельные вкладки (↗), текущий спринт — выбранная."""
+    t = wf.t
+    x = 20
+    x += wf.chip(x, y, "Прошлые спринты ↗", 13, h=32, fill=t["bg"], bold=True, ink=t["accent"]) + 8
+    x += wf.chip(x, y, "Текущий спринт · Спринт 3 · 09.11 – 20.11", 13, h=32, fill=t["accent_bg"], bold=True) + 8
+    wf.chip(x, y, "Планирование будущих спринтов ↗", 13, h=32, fill=t["bg"], bold=True, ink=t["accent"])
+
+
+def past_tab(wf, x, y0, h, n, sprint, dates, tasks, w=52):
+    """Сжатая колонка закрытого спринта: название, даты, число задач и points, velocity — вертикально."""
+    t = wf.t
+    wf.rect(x, y0, w, h, fill=t["panel"], stroke=t["line"], r=8)
+    wf.text(x + w / 2, y0 + 20, "▸", 14, "middle", fill=t["muted"])
+    bottom = y0 + h - 12
+    vtext(wf, x + 17, bottom, f"Выполнено в спринте {n}", 12, True)
+    vtext(wf, x + 31, bottom, dates, 11, False, t["muted"])
+    vtext(wf, x + 45, bottom, f"{len(tasks)} задач · {SUM(tasks)} sp · V {VEL[n]}", 11, False, t["muted"])
+
+
+def side_group(wf, x, y, w, title, sub, state_chip=None, used=None, cap=None):
+    """Заголовок группы в правой панели: название, состояние, заполнение спринта."""
+    t = wf.t
+    wf.rect(x, y, w, 40 if used is not None else 26, fill=t["panel"], stroke=t["line"], r=5)
+    wf.text(x + 8, y + 17, title, 12, bold=True)
+    if state_chip:
+        wf.chip(x + 8 + wf.est(title, 12, True) + 6, y + 4, state_chip, 10, h=16)
+    wf.text(x + w - 8, y + 17, sub, 11, "end", fill=t["muted"])
+    if used is not None:
+        cap_bar(wf, x + 8, y + 28, w - 16, used, cap, h=6)
+    return 44 if used is not None else 30
+
+
+def screen_retro_board():
+    wf = WF(560, "Доска: кнопки-ссылки на прошлое и будущее")
+    t = wf.t
+    wf.shell(f"team-tracker.app/projects/{KEY}/board", "Доска")
+    nav_pills(wf, 96)
+    wf.callout(1, 14, 96)
+    wf.callout(2, 178, 96)
+    wf.callout(3, 524, 96)
+    retro_toolbar(wf, 136, x0=20)
+    wf.callout(4, 14, 138)
+    cols = ["To Do", "In Progress", "Review", "Done"]
+    gap, cx0 = 12, 20
+    cw = (W - 40 - 3 * gap) / 4
+    y0 = 184
+    for n, c in enumerate(cols):
+        x = cx0 + n * (cw + gap)
+        items = S3[c]
+        wf.rect(x, y0, cw, 40, fill=t["status"][c], stroke=t["line"], r=6)
+        wf.text(x + 10, y0 + 17, c, 13, bold=True)
+        wf.text(x + 10, y0 + 32, f"{len(items)} · {SUM(items)} sp", 11, fill=t["muted"])
+    y = y0 + 46
+    for who in ("Игорь Смирнов", "Мария Орлова"):
+        mine = [i for c in cols for i in S3[c] if i["who"] == who]
+        wf.rect(cx0, y, W - 40, 26, fill=t["panel"], stroke=t["line"], r=5)
+        wf.text(cx0 + 8, y + 17, "▾", 11)
+        wf.avatar(cx0 + 30, y + 13, who, 9)
+        wf.text(cx0 + 46, y + 18, who, 12.5, bold=True)
+        wf.text(W - 28, y + 18, f"{plural(len(mine), 'задача', 'задачи', 'задач')} · {SUM(mine)} sp", 11.5, "end", fill=t["muted"])
+        y += 30
+        for n, c in enumerate(cols):
+            x = cx0 + n * (cw + gap)
+            wf.rect(x, y, cw, 100, fill=t["panel"], stroke=t["line"], r=6, opacity=0.55)
+            for i in [i for i in S3[c] if i["who"] == who][:1]:
+                compact_card(wf, x + 8, y + 8, cw - 16, 84, i)
+        y += 106
+    wf.text(20, y + 20, "Доска остаётся доской активного спринта, как сейчас: колонки статусов, группировка, фильтры. ↗ — открывается отдельная вкладка.", 12, fill=t["muted"])
+    wf.text(20, y + 38, "Макет, не готовый экран.", 12, fill=t["muted"])
+    return wf
+
+
+STATUS_OF = {22: "To Do", 5: "To Do", 19: "In Progress", 20: "Review", 21: "Done"}
+
+
+def detail_row(wf, y, i, x0=20, w=860, h=36, status=False, hot=False):
+    """Подробная строка бэклога: тип, ключ, название, эпик, метки, приоритет, points, исполнитель.
+    Points, приоритет и исполнитель правятся прямо в строке (поля со стрелкой ▾)."""
+    t = wf.t
+    wf.rect(x0, y, w, h, fill=t["bg"], stroke=t["accent"] if hot else t["line"], r=4)
+    wf.text(x0 + 8, y + 23, "⋮⋮", 13, fill=t["muted"])
+    ix = x0 + 30
+    if status:
+        wf.p.append(f'<circle cx="{ix + 4}" cy="{y + 18}" r="4.5" fill="{t["status"][STATUS_OF[i["number"]]]}" stroke="{t["muted"]}" stroke-width="1"/>')
+        ix += 14
+    wf.icon(ix, y + 9, i["type"], 18)
+    wf.text(ix + 25, y + 23, k(i), 12, bold=True, fill=t["accent"])
+    wf.text(x0 + 126, y + 23, wf.fit(i["title"], 190, 13), 13)
+    wf.chip(x0 + 326, y + 7, wf.fit(i["epic"], 60, 11), 11, h=22)
+    lx = x0 + 400
+    shown = 0
+    for lab in i["labels"][:2]:
+        cw = wf.est(lab, 10.5) + 18
+        if lx + cw > x0 + 520:
+            break
+        lx += wf.chip(lx, y + 8, lab, 10.5, h=20, fill=t["bg"]) + 4
+        shown += 1
+    if len(i["labels"]) > shown:
+        wf.text(lx + 2, y + 23, f"+{len(i['labels']) - shown}", 11, fill=t["muted"])
+    # приоритет — поле с выпадающим списком
+    mark = PRIO_MARK[i["priority"]]
+    hotp = i["priority"] in ("Highest", "High")
+    wf.chip(x0 + 528, y + 7, f"{mark} {i['priority']} ▾", 11.5, h=22, stroke=True, bold=hotp, ink=t["warn"] if hotp else None, fill=t["bg"])
+    # points — поле ввода
+    if i["points"] is None:
+        wf.rect(x0 + 640, y + 6, 54, 24, fill=t["bg"], stroke=t["warn"], r=12, dash=True, sw=1.4)
+        wf.text(x0 + 667, y + 23, "—", 13, "middle", fill=t["warn"])
+    else:
+        wf.rect(x0 + 640, y + 6, 54, 24, fill=t["bg"], stroke=t["muted"], r=12, sw=1.4)
+        wf.text(x0 + 662, y + 23, i["points"], 13, "middle", True)
+        wf.text(x0 + 682, y + 22, "✎", 10, "middle", fill=t["muted"])
+    # исполнитель — поле с выпадающим списком
+    wf.rect(x0 + 706, y + 6, 146, 24, fill=t["bg"], stroke=t["line"] if i["who"] else t["muted"], r=6, dash=not i["who"])
+    if i["who"]:
+        wf.avatar(x0 + 722, y + 18, i["who"], 9)
+        a, b = i["who"].split()
+        wf.text(x0 + 738, y + 23, f"{a} {b[0]}.", 12)
+    else:
+        wf.text(x0 + 718, y + 23, "Не назначен", 12, fill=t["muted"])
+    wf.text(x0 + 842, y + 23, "▾", 11, "middle", fill=t["muted"])
+
+
+def sprint_block(wf, y, title, state, state_fill, dates, goal, tasks, cap, note, callout=None, open_=True):
+    """Заголовок спринта в бэклоге: состояние, даты, цель, индикатор заполнения (points против ёмкости)."""
+    t = wf.t
+    used = SUM(tasks)
+    h = 64 if goal else 52
+    wf.rect(20, y, 860, h, fill=t["panel"], stroke=t["line"], r=6)
+    wf.text(34, y + 22, ("▾ " if open_ else "▸ ") + title, 15, bold=True)
+    cw = wf.chip(34 + wf.est(("▾ " if open_ else "▸ ") + title, 15, True) + 10, y + 7, state, 11.5, fill=state_fill, h=22)
+    wf.text(34 + wf.est(("▾ " if open_ else "▸ ") + title, 15, True) + 20 + cw, y + 22, dates, 12.5, fill=t["muted"])
+    if goal:
+        wf.text(34, y + 42, "Цель: " + goal, 12, fill=t["muted"])
+    # индикатор заполнения: шкала до 125 % ёмкости, чёрта — ёмкость
+    bx, by, bw = 540, y + 14, 200
+    verdict, color = cap_bar(wf, bx, by, bw, used, cap)
+    pct = round(used / cap * 100)
+    wf.text(bx + bw + 12, y + 20, f"{used} / {CAP_TXT} sp · {pct} %", 12.5, bold=True)
+    over = used - cap
+    if used > cap:
+        wf.text(bx, y + 40, f"⚠ Перегруз на {over:g} sp: убрать задачи или перенести".replace(".", ","), 12, bold=True, fill="#dc2626")
+    elif used / cap > 0.9:
+        wf.text(bx, y + 40, "● Почти полон: запас меньше 10 %", 12, bold=True, fill="#b45309")
+    else:
+        wf.text(bx, y + 40, f"✓ Есть запас: {cap - used:g} sp".replace(".", ","), 12, bold=True, fill="#15803d")
+    if note:
+        wf.text(bx, y + 56 if goal else y + 50, note, 10.5, fill=t["muted"])
+    if callout:
+        wf.callout(callout, 14, y)
+    return h
+
+
+def screen_backlog_new():
+    wf = WF(1160, "Вкладка «Планирование будущих спринтов»")
+    t = wf.t
+    wf.shell(f"team-tracker.app/projects/{KEY}/backlog", "Бэклог")
+    wf.text(20, 126, "Планирование будущих спринтов", 24, bold=True)
+    wf.button(W - 200, 106, 180, 32, "+ Создать задачу", True)
+    # фильтры
+    wf.rect(20, 148, 210, 30, fill=t["bg"], stroke=t["line"], r=6)
+    wf.text(30, 168, "Номер или название", 12.5, fill=t["muted"])
+    x = 242
+    for name in ("Эпик ▾", "Исполнитель ▾", "Метка ▾", "Тип ▾"):
+        x += wf.chip(x, 151, name, 12.5, h=26) + 6
+    wf.text(x + 6, 169, "☐ Без оценки", 12.5)
+    wf.text(x + 108, 169, "☐ Без исполнителя", 12.5)
+    wf.text(W - 20, 169, "28 задач", 12.5, "end", fill=t["muted"])
+    wf.callout(1, 14, 148)
+    # заголовки колонок
+    wf.rect(20, 186, 860, 30, fill=t["accent_bg"], stroke=t["accent"], r=6)
+    wf.text(32, 206, "☑ Выбрано 2 задачи · 8 sp", 12.5, bold=True)
+    wf.chip(230, 190, "Перенести в спринт ▾", 12, h=22, fill=t["bg"])
+    wf.text(400, 206, "Одна или несколько задач сразу — в Спринт 4, Спринт 5 или в общий бэклог.", 12, fill=t["muted"])
+    wf.callout(8, 14, 186)
+    y = 224
+    for label, dx in (("Задача", 30), ("Название", 126), ("Эпик", 326), ("Метки", 400), ("Приоритет", 528), ("Points", 640), ("Исполнитель", 706)):
+        wf.text(20 + dx, y + 12, label, 11, fill=t["muted"])
+    wf.line(20, y + 18, 880, y + 18)
+    y += 26
+
+    # --- активный спринт (сверху)
+    h = sprint_block(wf, y, "Спринт 3", "идёт", t["status"]["In Progress"], "09.11 – 20.11", "заказы: просмотр, фильтр, экспорт",
+                     S3_ALL, CAP, f"Ёмкость {CAP_TXT} sp = среднее velocity (16 и 18)", callout=2)
+    y += h + 4
+    for i in S3_ALL:
+        detail_row(wf, y, i, status=True, hot=(i["number"] == 19))
+        y += 38
+    wf.callout(3, 20, y - 38 * 3 + 10)
+    y += 6
+
+    # --- планируемые спринты
+    h = sprint_block(wf, y, "Спринт 4", "запланирован", t["panel"], "23.11 – 04.12", None, S4, CAP, None, callout=4)
+    y += h + 4
+    row25 = 0
+    for n, i in enumerate(S4):
+        if i["number"] == 25:
+            row25 = y
+        detail_row(wf, y, i, hot=(i["number"] == 25))
+        y += 38
+        if n == 1:  # вставка перетаскиваемой задачи: линия-указатель между строками
+            wf.rect(20, y - 3, 860, 4, fill=t["accent"], r=2, sw=0)
+            wf.p.append(f'<circle cx="20" cy="{y - 1}" r="5" fill="{t["accent"]}"/>')
+            wf.text(W - 40, y + 8, "↓ отпустите здесь: DEMO-11 встанет третьей", 11, "end", fill=t["accent"])
+            y += 12
+    y += 4
+    h = sprint_block(wf, y, "Спринт 5", "запланирован", t["panel"], "07.12 – 18.12", None, S5, CAP, None, open_=False)
+    y += h + 10
+
+    # --- общий бэклог
+    wf.rect(20, y, 860, 40, fill=t["panel"], stroke=t["line"], r=6)
+    wf.text(34, y + 25, "▾ Общий бэклог", 15, bold=True)
+    wf.text(190, y + 25, f"{len(BACKLOG)} задач · {SUM(BACKLOG)} sp · без оценки: 2", 12.5, fill=t["muted"])
+    wf.callout(5, 14, y)
+    y += 44
+    for i in BACKLOG[:5]:
+        detail_row(wf, y, i)
+        y += 38
+    wf.text(450, y + 14, "ещё 4 ▾", 12.5, "middle", fill=t["accent"])
+    y += 34
+
+    # --- ссылка на историю (внизу)
+    wf.text(20, y + 18, "Выполненные спринты ↗", 14, bold=True, fill=t["accent"])
+    wf.text(220, y + 18, "открывается отдельная вкладка «Прошлые спринты»", 12, fill=t["muted"])
+    wf.callout(6, 14, y)
+    y += 40
+
+    # --- быстрое редактирование: открытый список исполнителей у задачи без исполнителя (DEMO-25)
+    px, py = 20 + 706, row25 + 32
+    people = ["Игорь Смирнов", "Мария Орлова", "Анна Ковалёва"]
+    wf.rect(px + 3, py + 4, 146, 3 * 26 + 34, fill="#000000", r=6, opacity=0.15)
+    wf.rect(px, py, 146, 3 * 26 + 30, fill=t["bg"], stroke=t["accent"], r=6, sw=1.6)
+    wf.text(px + 10, py + 19, "Не назначен", 12, fill=t["muted"])
+    for n, name in enumerate(people):
+        yy = py + 26 + n * 26
+        if n == 1:
+            wf.rect(px + 3, yy - 3, 140, 24, fill=t["accent_bg"], r=4, sw=0)
+        wf.avatar(px + 18, yy + 9, name, 9)
+        wf.text(px + 34, yy + 14, name, 12, bold=(n == 1))
+    wf.callout(7, px - 8, py - 2)
+    return wf
+
+
+def seg(wf, x, y, w, h, title, sub, fill, stroke=None, dash=False, bold=True, tsize=11.5):
+    t = wf.t
+    wf.rect(x, y, w, h, fill=fill, stroke=stroke or t["line"], r=4, dash=dash, sw=1.3)
+    if w > 40:
+        wf.text(x + w / 2, y + h / 2 - 1, wf.fit(title, w - 6, tsize, bold), tsize, "middle", bold)
+        if sub:
+            wf.text(x + w / 2, y + h / 2 + 13, wf.fit(sub, w - 6, 10), 10, "middle", fill=t["muted"])
+
+
+def screen_retro_responsive():
+    """Схема ширин на ноутбуке 1366 px: что сколько занимает и что сворачивается при нехватке места."""
+    wf = WF(480, "Поведение экранов на ноутбуке 1366 px")
+    t = wf.t
+    sc = 860 / 1366
+    pad = 16 * sc
+
+    def row(y, title, parts, total=1366, note=None, bad=False):
+        wf.text(20, y + 14, title, 13, bold=True, fill="#dc2626" if bad else None)
+        if note:
+            wf.text(W - 20, y + 14, note, 11.5, "end", fill=t["muted"])
+        w = total * sc
+        wf.rect(20, y + 22, w, 62, fill=t["panel"], stroke="#dc2626" if bad else t["muted"], r=6, dash=bad, sw=1.6)
+        x = 20 + pad
+        for px, ttl, sub, fill, dash in parts:
+            ww = px * sc
+            seg(wf, x, y + 30, ww, 46, ttl, sub, fill, dash=dash)
+            x += ww + 6 * sc * 2
+
+    bgp, bgc, bgf, bgo = t["panel"], t["accent_bg"], t["status"]["Done"], t["bg"]
+    y = 98
+    wf.text(20, y + 8, "Ширина окна 1366 px. Поля по 16 px; цифры — ширина в пикселях.", 12.5, fill=t["muted"])
+    y += 22
+    row(y, "А. Доска — три плашки сверху, доска на всю ширину", [
+        (1334, "Доска активного спринта", "1334: 4 колонки ≈ 320 — шире, чем раньше", bgc, False)], note="прошлое и будущее открываются отдельными вкладками")
+    wf.callout(1, 14, y + 22)
+    y += 106
+
+    # --- вкладка «Бэклог»
+    wf.text(20, y + 14, "Б. Вкладка «Планирование» — 1366 px: все поля подробной строки помещаются", 13, bold=True)
+    wf.rect(20, y + 22, 1366 * sc, 62, fill=t["panel"], stroke=t["muted"], r=6, sw=1.6)
+    cols = [("⋮⋮", 24, bgo), ("Тип · ключ", 96, bgo), ("Название", 330, bgc), ("Эпик", 120, bgo), ("Метки", 150, bgo), ("Приоритет", 112, bgo), ("Points", 76, bgo), ("Исполнитель", 150, bgo)]
+    x = 20 + pad
+    for name, px, fill in cols:
+        ww = px * sc
+        seg(wf, x, y + 30, ww, 46, name, f"{px}", fill, tsize=10.5)
+        x += ww + 12 * sc
+    wf.callout(2, 14, y + 22)
+    y += 96
+    wf.text(20, y + 14, "В. Вкладка «Планирование» — окно 1100 px: метки в «+N», эпик короче", 13, bold=True)
+    wf.rect(20, y + 22, 1100 * sc, 62, fill=t["panel"], stroke=t["muted"], r=6, sw=1.6)
+    cols = [("⋮⋮", 24, bgo), ("Тип · ключ", 96, bgo), ("Название", 360, bgc), ("Эпик", 80, bgo), ("+N", 40, bgo), ("Приор.", 100, bgo), ("Pts", 60, bgo), ("Исполн.", 130, bgo)]
+    x = 20 + pad
+    for name, px, fill in cols:
+        ww = px * sc
+        seg(wf, x, y + 30, ww, 46, name, f"{px}", fill, tsize=10)
+        x += ww + 12 * sc
+    wf.callout(3, 14, y + 22)
+    return wf
+
+
+def screen_issue_views():
+    """Единый стиль задачи: карточка доски, строки боковых частей и подробная строка бэклога — одни и те же поля."""
+    wf = WF(390, "Единый вид задачи: карточка, сжатая строка, подробная строка")
+    t = wf.t
+    i = S3["In Progress"][0]
+    wf.text(20, 28, "Одна и та же задача DEMO-19 в трёх видах. Сжатый вид содержит: тип · ключ · название · points · приоритет · исполнитель.", 12.5, fill=t["muted"])
+    wf.text(20, 58, "1. Карточка на доске", 13, bold=True)
+    compact_card(wf, 20, 68, 210, 92, i)
+    wf.callout(1, 14, 66)
+    wf.text(250, 58, "2. Строка во вкладке «Прошлые спринты»", 13, bold=True)
+    stack_row(wf, 250, 68, 290, i, avatar=True)
+    wf.text(250, 126, "ключ · название · приоритет · points · исполнитель", 11.5, fill=t["muted"])
+    wf.callout(2, 244, 66)
+    wf.text(20, 196, "3. Подробная строка во вкладке «Планирование»: все поля, points, приоритет и исполнитель правятся прямо в строке", 13, bold=True)
+    detail_row(wf, 208, i, status=True)
+    wf.callout(3, 14, 206)
+    labels = [(20, "ручка"), (66, "тип"), (84, "ключ"), (146, "название"), (346, "эпик"), (420, "метки"), (548, "приоритет ▾"), (660, "points ✎"), (726, "исполнитель ▾")]
+    for x, label in labels:
+        wf.text(x, 262, label, 10.5, fill=t["muted"])
+    wf.rect(20, 280, 860, 94, fill=t["panel"], stroke=t["line"], r=6)
+    rows = [
+        ("Правило единства", "Порядок и значки одинаковы: тип, ключ синим, название, приоритет, points в кружке, аватар."),
+        ("Что добавляет подробный вид", "Эпик, метки, точка статуса и поля правки. Всё это нужно при планировании и не нужно для беглого взгляда."),
+    ]
+    for n, (a, b) in enumerate(rows):
+        wf.text(34, 304 + n * 36, a, 12.5, bold=True)
+        wf.text(34, 320 + n * 36, wf.fit(b, 830, 12), 12, fill=t["muted"])
+    return wf
+
+
+def screen_history():
+    wf = WF(700, "Вкладка «Прошлые спринты» — вся история")
+    t = wf.t
+    wf.shell(f"team-tracker.app/projects/{KEY}/history", "Спринты")
+    wf.text(20, 126, "Прошлые спринты", 24, bold=True)
+    wf.text(250, 126, "История закрытых спринтов: только чтение.", 13, fill=t["muted"])
+    wf.rect(20, 148, 210, 30, fill=t["bg"], stroke=t["line"], r=6)
+    wf.text(30, 168, "Номер или название", 12.5, fill=t["muted"])
+    x = 242
+    for name in ("Эпик ▾", "Исполнитель ▾", "Тип ▾"):
+        x += wf.chip(x, 151, name, 12.5, h=26) + 6
+    wf.text(W - 20, 169, "2 спринта · 11 задач · 34 sp", 12.5, "end", fill=t["muted"])
+    wf.callout(1, 14, 148)
+    y = 192
+    for n, tasks, dates, closed, open_ in ((2, S2, "26.10 – 06.11", "06.11", True), (1, S1, "12.10 – 23.10", "23.10", False)):
+        h = 56
+        wf.rect(20, y, 860, h, fill=t["panel"], stroke=t["line"], r=6)
+        label = ("▾ " if open_ else "▸ ") + f"Спринт {n}"
+        wf.text(34, y + 24, label, 15, bold=True)
+        wf.chip(34 + wf.est(label, 15, True) + 10, y + 9, "закрыт", 11.5, h=22)
+        wf.text(34 + wf.est(label, 15, True) + 90, y + 25, dates, 12.5, fill=t["muted"])
+        wf.text(34, y + 44, f"{len(tasks)} задач · {SUM(tasks)} sp · velocity {VEL[n]} sp · закрыт {closed}", 12, fill=t["muted"])
+        wf.text(W - 34, y + 24, "Открыть отчёт спринта ↗", 12, "end", fill=t["accent"])
+        y += h + 4
+        if open_:
+            for i in tasks:
+                compact_row(wf, 20, y, 860, i, h=30)
+                y += 32
+            wf.text(20, y + 14, "Только чтение: перетаскивать и править нельзя. Клик по ключу — карточка задачи.", 11.5, fill=t["muted"])
+            y += 26
+    wf.callout(2, 14, 192)
+    wf.callout(3, 14, 192 + 62)
+    wf.text(450, y + 20, "ещё спринты загружаются порциями по 5 ▾", 12.5, "middle", fill=t["accent"])
+    wf.callout(4, 14, y + 6)
+    return wf
+
+
 def screen_search():
     wf = WF(600, "Поиск и подсказка клавиш")
     t = wf.t
@@ -1178,6 +1738,11 @@ SCREENS = {
     "wf-settings": screen_settings,
     "wf-backups": screen_backups,
     "wf-palette": screen_palette,
+    "wf-retro-board": screen_retro_board,
+    "wf-backlog-new": screen_backlog_new,
+    "wf-retro-responsive": screen_retro_responsive,
+    "wf-issue-views": screen_issue_views,
+    "wf-history": screen_history,
 }
 
 

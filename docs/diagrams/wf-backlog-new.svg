@@ -1,0 +1,410 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1160" viewBox="0 0 900 1160" font-family="Helvetica, Arial, 'Segoe UI', 'DejaVu Sans', sans-serif" role="img" aria-label="Вкладка «Планирование будущих спринтов»">
+<title>Вкладка «Планирование будущих спринтов»</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker></defs>
+<rect width="900" height="1160" fill="#ffffff"/>
+<rect x="0.6" y="0.6" width="898.8" height="1158.8" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="0.6" y="0.6" width="898.8" height="34" rx="10" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="1" y="20" width="898" height="15" rx="0" fill="#f3f4f6"/>
+<circle cx="18" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="36" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="54" cy="17" r="5" fill="#cbd5e1"/>
+<rect x="84" y="6" width="732" height="23" rx="11.5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="98" y="22" text-anchor="start" font-size="12" fill="#6b7280">team-tracker.app/projects/DEMO/backlog</text>
+<line x1="1" y1="86" x2="899" y2="86" stroke="#cbd5e1" stroke-width="1.2"/>
+<g transform="translate(18 47) scale(0.4375)"><path d="M52.78 20 A24 24 0 1 1 35.34 8.23" fill="none" stroke="#2B4ACB" stroke-width="7" stroke-linecap="round"/><polygon points="45.24,9.62 36.31,1.30 34.37,15.16" fill="#2B4ACB" stroke="#2B4ACB" stroke-width="2" stroke-linejoin="round"/><polyline points="23,33 29.5,39.5 41,27" fill="none" stroke="#F08C00" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="52" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#2B4ACB">Team</text>
+<text x="94" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#F08C00">Tracker</text>
+<rect x="158" y="52" width="59.68000000000001" height="26" rx="13.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="187.84" y="69.68" text-anchor="middle" font-size="13" fill="#1f2937">DEMO ▾</text>
+<text x="230" y="67" text-anchor="start" font-size="14" font-weight="bold" fill="#2563eb">Бэклог</text>
+<rect x="228" y="80" width="58.4" height="4" rx="2" fill="#2563eb"/>
+<text x="298.4" y="67" text-anchor="start" font-size="14" fill="#1f2937">Доска</text>
+<text x="355.59999999999997" y="67" text-anchor="start" font-size="14" fill="#1f2937">Спринты</text>
+<text x="428.47999999999996" y="67" text-anchor="start" font-size="14" fill="#1f2937">Отчёты</text>
+<text x="493.52" y="67" text-anchor="start" font-size="14" fill="#1f2937">Люди</text>
+<text x="542.88" y="67" text-anchor="start" font-size="14" fill="#1f2937">Настройки</text>
+<rect x="640" y="50" width="130" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="650" y="70" text-anchor="start" font-size="13" fill="#6b7280">Поиск</text>
+<rect x="740" y="55" width="24" height="20" rx="4" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="752" y="70" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">/</text>
+<circle cx="844" cy="65" r="15" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="844" y="69" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">АК</text>
+<text x="866" y="70" text-anchor="middle" font-size="13" fill="#6b7280">▾</text>
+<text x="20" y="126" text-anchor="start" font-size="24" font-weight="bold" fill="#1f2937">Планирование будущих спринтов</text>
+<rect x="700" y="106" width="180" height="32" rx="6" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="790.0" y="127.04" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">+ Создать задачу</text>
+<rect x="20" y="148" width="210" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="30" y="168" text-anchor="start" font-size="12.5" fill="#6b7280">Номер или название</text>
+<rect x="242" y="151" width="58.00000000000001" height="26" rx="13.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="271.0" y="168.5" text-anchor="middle" font-size="12.5" fill="#1f2937">Эпик ▾</text>
+<rect x="306.0" y="151" width="107.00000000000001" height="26" rx="13.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="359.5" y="168.5" text-anchor="middle" font-size="12.5" fill="#1f2937">Исполнитель ▾</text>
+<rect x="419.0" y="151" width="65.0" height="26" rx="13.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="451.5" y="168.5" text-anchor="middle" font-size="12.5" fill="#1f2937">Метка ▾</text>
+<rect x="490.0" y="151" width="51.0" height="26" rx="13.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="515.5" y="168.5" text-anchor="middle" font-size="12.5" fill="#1f2937">Тип ▾</text>
+<text x="553.0" y="169" text-anchor="start" font-size="12.5" fill="#1f2937">☐ Без оценки</text>
+<text x="655.0" y="169" text-anchor="start" font-size="12.5" fill="#1f2937">☐ Без исполнителя</text>
+<text x="880" y="169" text-anchor="end" font-size="12.5" fill="#6b7280">28 задач</text>
+<circle cx="14" cy="148" r="11" fill="#b91c1c"/>
+<text x="14" y="153" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">1</text>
+<rect x="20" y="186" width="860" height="30" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="1.2"/>
+<text x="32" y="206" text-anchor="start" font-size="12.5" font-weight="bold" fill="#1f2937">☑ Выбрано 2 задачи · 8 sp</text>
+<rect x="230" y="190" width="150.4" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="305.2" y="205.32" text-anchor="middle" font-size="12" fill="#1f2937">Перенести в спринт ▾</text>
+<text x="400" y="206" text-anchor="start" font-size="12" fill="#6b7280">Одна или несколько задач сразу — в Спринт 4, Спринт 5 или в общий бэклог.</text>
+<circle cx="14" cy="186" r="11" fill="#b91c1c"/>
+<text x="14" y="191" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">8</text>
+<text x="50" y="236" text-anchor="start" font-size="11" fill="#6b7280">Задача</text>
+<text x="146" y="236" text-anchor="start" font-size="11" fill="#6b7280">Название</text>
+<text x="346" y="236" text-anchor="start" font-size="11" fill="#6b7280">Эпик</text>
+<text x="420" y="236" text-anchor="start" font-size="11" fill="#6b7280">Метки</text>
+<text x="548" y="236" text-anchor="start" font-size="11" fill="#6b7280">Приоритет</text>
+<text x="660" y="236" text-anchor="start" font-size="11" fill="#6b7280">Points</text>
+<text x="726" y="236" text-anchor="start" font-size="11" fill="#6b7280">Исполнитель</text>
+<line x1="20" y1="242" x2="880" y2="242" stroke="#cbd5e1" stroke-width="1.2"/>
+<rect x="20" y="250" width="860" height="64" rx="6" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="34" y="272" text-anchor="start" font-size="15" font-weight="bold" fill="#1f2937">▾ Спринт 3</text>
+<rect x="134.0" y="257" width="41.760000000000005" height="22" rx="11.0" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="154.88" y="272.14" text-anchor="middle" font-size="11.5" fill="#1f2937">идёт</text>
+<text x="185.76" y="272" text-anchor="start" font-size="12.5" fill="#6b7280">09.11 – 20.11</text>
+<text x="34" y="292" text-anchor="start" font-size="12" fill="#6b7280">Цель: заказы: просмотр, фильтр, экспорт</text>
+<rect x="540" y="264" width="200" height="8" rx="4.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1"/>
+<rect x="540" y="264" width="197.64705882352942" height="8" rx="4.0" fill="#dc2626"/>
+<line x1="700.0" y1="261" x2="700.0" y2="275" stroke="#1f2937" stroke-width="1.6"/>
+<text x="752" y="270" text-anchor="start" font-size="12.5" font-weight="bold" fill="#1f2937">21 / 17 sp · 124 %</text>
+<text x="540" y="290" text-anchor="start" font-size="12" font-weight="bold" fill="#dc2626">⚠ Перегруз на 4 sp: убрать задачи или перенести</text>
+<text x="540" y="306" text-anchor="start" font-size="10.5" fill="#6b7280">Ёмкость 17 sp = среднее velocity (16 и 18)</text>
+<circle cx="14" cy="250" r="11" fill="#b91c1c"/>
+<text x="14" y="255" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">2</text>
+<rect x="20" y="318" width="860" height="36" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="28" y="341" text-anchor="start" font-size="13" fill="#6b7280">⋮⋮</text>
+<circle cx="54" cy="336" r="4.5" fill="#e0e7ff" stroke="#6b7280" stroke-width="1"/>
+<rect x="64" y="327" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="73.0" y="340" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">S</text>
+<text x="89" y="341" text-anchor="start" font-size="12" font-weight="bold" fill="#2563eb">DEMO-22</text>
+<text x="146" y="341" text-anchor="start" font-size="13" fill="#1f2937">Детали заказа</text>
+<rect x="346" y="325" width="52.96" height="22" rx="11.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="372.48" y="339.96" text-anchor="middle" font-size="11" fill="#1f2937">Заказы</text>
+<rect x="420" y="326" width="51.28" height="20" rx="10.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="445.64" y="339.78" text-anchor="middle" font-size="10.5" fill="#1f2937">заказы</text>
+<rect x="548" y="325" width="71.19999999999999" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="583.6" y="340.14" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#b91c1c">▲ High ▾</text>
+<rect x="660" y="324" width="54" height="24" rx="12" fill="#ffffff" stroke="#6b7280" stroke-width="1.4"/>
+<text x="682" y="341" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">3</text>
+<text x="702" y="340" text-anchor="middle" font-size="10" fill="#6b7280">✎</text>
+<rect x="726" y="324" width="146" height="24" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<circle cx="742" cy="336" r="9" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="742" y="340" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">ИС</text>
+<text x="758" y="341" text-anchor="start" font-size="12" fill="#1f2937">Игорь С.</text>
+<text x="862" y="341" text-anchor="middle" font-size="11" fill="#6b7280">▾</text>
+<rect x="20" y="356" width="860" height="36" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="28" y="379" text-anchor="start" font-size="13" fill="#6b7280">⋮⋮</text>
+<circle cx="54" cy="374" r="4.5" fill="#e0e7ff" stroke="#6b7280" stroke-width="1"/>
+<rect x="64" y="365" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="73.0" y="378" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">S</text>
+<text x="89" y="379" text-anchor="start" font-size="12" font-weight="bold" fill="#2563eb">DEMO-5</text>
+<text x="146" y="379" text-anchor="start" font-size="13" fill="#1f2937">История заказов</text>
+<rect x="346" y="363" width="52.96" height="22" rx="11.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="372.48" y="377.96" text-anchor="middle" font-size="11" fill="#1f2937">Заказы</text>
+<rect x="420" y="364" width="51.28" height="20" rx="10.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="445.64" y="377.78" text-anchor="middle" font-size="10.5" fill="#1f2937">заказы</text>
+<rect x="548" y="363" width="80.4" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="588.2" y="378.14" text-anchor="middle" font-size="11.5" fill="#1f2937">■ Medium ▾</text>
+<rect x="660" y="362" width="54" height="24" rx="12" fill="#ffffff" stroke="#6b7280" stroke-width="1.4"/>
+<text x="682" y="379" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">8</text>
+<text x="702" y="378" text-anchor="middle" font-size="10" fill="#6b7280">✎</text>
+<rect x="726" y="362" width="146" height="24" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<circle cx="742" cy="374" r="9" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="742" y="378" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">МО</text>
+<text x="758" y="379" text-anchor="start" font-size="12" fill="#1f2937">Мария О.</text>
+<text x="862" y="379" text-anchor="middle" font-size="11" fill="#6b7280">▾</text>
+<rect x="20" y="394" width="860" height="36" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<text x="28" y="417" text-anchor="start" font-size="13" fill="#6b7280">⋮⋮</text>
+<circle cx="54" cy="412" r="4.5" fill="#dbeafe" stroke="#6b7280" stroke-width="1"/>
+<rect x="64" y="403" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="73.0" y="416" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">T</text>
+<text x="89" y="417" text-anchor="start" font-size="12" font-weight="bold" fill="#2563eb">DEMO-19</text>
+<text x="146" y="417" text-anchor="start" font-size="13" fill="#1f2937">Фильтр заказов по дате</text>
+<rect x="346" y="401" width="52.96" height="22" rx="11.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="372.48" y="415.96" text-anchor="middle" font-size="11" fill="#1f2937">Заказы</text>
+<rect x="420" y="402" width="51.28" height="20" rx="10.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="445.64" y="415.78" text-anchor="middle" font-size="10.5" fill="#1f2937">заказы</text>
+<text x="477.28" y="417" text-anchor="start" font-size="11" fill="#6b7280">+1</text>
+<rect x="548" y="401" width="71.19999999999999" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="583.6" y="416.14" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#b91c1c">▲ High ▾</text>
+<rect x="660" y="400" width="54" height="24" rx="12" fill="#ffffff" stroke="#6b7280" stroke-width="1.4"/>
+<text x="682" y="417" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">5</text>
+<text x="702" y="416" text-anchor="middle" font-size="10" fill="#6b7280">✎</text>
+<rect x="726" y="400" width="146" height="24" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<circle cx="742" cy="412" r="9" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="742" y="416" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">ИС</text>
+<text x="758" y="417" text-anchor="start" font-size="12" fill="#1f2937">Игорь С.</text>
+<text x="862" y="417" text-anchor="middle" font-size="11" fill="#6b7280">▾</text>
+<rect x="20" y="432" width="860" height="36" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="28" y="455" text-anchor="start" font-size="13" fill="#6b7280">⋮⋮</text>
+<circle cx="54" cy="450" r="4.5" fill="#fef3c7" stroke="#6b7280" stroke-width="1"/>
+<rect x="64" y="441" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="73.0" y="454" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">T</text>
+<text x="89" y="455" text-anchor="start" font-size="12" font-weight="bold" fill="#2563eb">DEMO-20</text>
+<text x="146" y="455" text-anchor="start" font-size="13" fill="#1f2937">Экспорт заказов в CSV</text>
+<rect x="346" y="439" width="52.96" height="22" rx="11.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="372.48" y="453.96" text-anchor="middle" font-size="11" fill="#1f2937">Заказы</text>
+<rect x="420" y="440" width="51.28" height="20" rx="10.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="445.64" y="453.78" text-anchor="middle" font-size="10.5" fill="#1f2937">заказы</text>
+<rect x="548" y="439" width="80.4" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="588.2" y="454.14" text-anchor="middle" font-size="11.5" fill="#1f2937">■ Medium ▾</text>
+<rect x="660" y="438" width="54" height="24" rx="12" fill="#ffffff" stroke="#6b7280" stroke-width="1.4"/>
+<text x="682" y="455" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">3</text>
+<text x="702" y="454" text-anchor="middle" font-size="10" fill="#6b7280">✎</text>
+<rect x="726" y="438" width="146" height="24" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<circle cx="742" cy="450" r="9" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="742" y="454" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">МО</text>
+<text x="758" y="455" text-anchor="start" font-size="12" fill="#1f2937">Мария О.</text>
+<text x="862" y="455" text-anchor="middle" font-size="11" fill="#6b7280">▾</text>
+<rect x="20" y="470" width="860" height="36" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="28" y="493" text-anchor="start" font-size="13" fill="#6b7280">⋮⋮</text>
+<circle cx="54" cy="488" r="4.5" fill="#dcfce7" stroke="#6b7280" stroke-width="1"/>
+<rect x="64" y="479" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="73.0" y="492" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">T</text>
+<text x="89" y="493" text-anchor="start" font-size="12" font-weight="bold" fill="#2563eb">DEMO-21</text>
+<text x="146" y="493" text-anchor="start" font-size="13" fill="#1f2937">Вёрстка списка заказов</text>
+<rect x="346" y="477" width="52.96" height="22" rx="11.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="372.48" y="491.96" text-anchor="middle" font-size="11" fill="#1f2937">Заказы</text>
+<rect x="420" y="478" width="63.040000000000006" height="20" rx="10.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="451.52" y="491.78" text-anchor="middle" font-size="10.5" fill="#1f2937">фронтенд</text>
+<rect x="548" y="477" width="80.4" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="588.2" y="492.14" text-anchor="middle" font-size="11.5" fill="#1f2937">■ Medium ▾</text>
+<rect x="660" y="476" width="54" height="24" rx="12" fill="#ffffff" stroke="#6b7280" stroke-width="1.4"/>
+<text x="682" y="493" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">2</text>
+<text x="702" y="492" text-anchor="middle" font-size="10" fill="#6b7280">✎</text>
+<rect x="726" y="476" width="146" height="24" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<circle cx="742" cy="488" r="9" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="742" y="492" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">МО</text>
+<text x="758" y="493" text-anchor="start" font-size="12" fill="#1f2937">Мария О.</text>
+<text x="862" y="493" text-anchor="middle" font-size="11" fill="#6b7280">▾</text>
+<circle cx="20" cy="404" r="11" fill="#b91c1c"/>
+<text x="20" y="409" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">3</text>
+<rect x="20" y="514" width="860" height="52" rx="6" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="34" y="536" text-anchor="start" font-size="15" font-weight="bold" fill="#1f2937">▾ Спринт 4</text>
+<rect x="134.0" y="521" width="93.28" height="22" rx="11.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="180.64" y="536.14" text-anchor="middle" font-size="11.5" fill="#1f2937">запланирован</text>
+<text x="237.28" y="536" text-anchor="start" font-size="12.5" fill="#6b7280">23.11 – 04.12</text>
+<rect x="540" y="528" width="200" height="8" rx="4.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1"/>
+<rect x="540" y="528" width="160.0" height="8" rx="4.0" fill="#d97706"/>
+<line x1="700.0" y1="525" x2="700.0" y2="539" stroke="#1f2937" stroke-width="1.6"/>
+<text x="752" y="534" text-anchor="start" font-size="12.5" font-weight="bold" fill="#1f2937">17 / 17 sp · 100 %</text>
+<text x="540" y="554" text-anchor="start" font-size="12" font-weight="bold" fill="#b45309">● Почти полон: запас меньше 10 %</text>
+<circle cx="14" cy="514" r="11" fill="#b91c1c"/>
+<text x="14" y="519" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">4</text>
+<rect x="20" y="570" width="860" height="36" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="28" y="593" text-anchor="start" font-size="13" fill="#6b7280">⋮⋮</text>
+<rect x="50" y="579" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="59.0" y="592" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">S</text>
+<text x="75" y="593" text-anchor="start" font-size="12" font-weight="bold" fill="#2563eb">DEMO-23</text>
+<text x="146" y="593" text-anchor="start" font-size="13" fill="#1f2937">Уведомление об отправке з…</text>
+<rect x="346" y="577" width="52.96" height="22" rx="11.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="372.48" y="591.96" text-anchor="middle" font-size="11" fill="#1f2937">Заказы</text>
+<rect x="420" y="578" width="51.28" height="20" rx="10.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="445.64" y="591.78" text-anchor="middle" font-size="10.5" fill="#1f2937">заказы</text>
+<rect x="548" y="577" width="71.19999999999999" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="583.6" y="592.14" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#b91c1c">▲ High ▾</text>
+<rect x="660" y="576" width="54" height="24" rx="12" fill="#ffffff" stroke="#6b7280" stroke-width="1.4"/>
+<text x="682" y="593" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">5</text>
+<text x="702" y="592" text-anchor="middle" font-size="10" fill="#6b7280">✎</text>
+<rect x="726" y="576" width="146" height="24" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<circle cx="742" cy="588" r="9" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="742" y="592" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">ИС</text>
+<text x="758" y="593" text-anchor="start" font-size="12" fill="#1f2937">Игорь С.</text>
+<text x="862" y="593" text-anchor="middle" font-size="11" fill="#6b7280">▾</text>
+<rect x="20" y="608" width="860" height="36" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="28" y="631" text-anchor="start" font-size="13" fill="#6b7280">⋮⋮</text>
+<rect x="50" y="617" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="59.0" y="630" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">S</text>
+<text x="75" y="631" text-anchor="start" font-size="12" font-weight="bold" fill="#2563eb">DEMO-24</text>
+<text x="146" y="631" text-anchor="start" font-size="13" fill="#1f2937">Повтор заказа в один клик</text>
+<rect x="346" y="615" width="52.96" height="22" rx="11.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="372.48" y="629.96" text-anchor="middle" font-size="11" fill="#1f2937">Заказы</text>
+<rect x="420" y="616" width="51.28" height="20" rx="10.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="445.64" y="629.78" text-anchor="middle" font-size="10.5" fill="#1f2937">заказы</text>
+<rect x="548" y="615" width="80.4" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="588.2" y="630.14" text-anchor="middle" font-size="11.5" fill="#1f2937">■ Medium ▾</text>
+<rect x="660" y="614" width="54" height="24" rx="12" fill="#ffffff" stroke="#6b7280" stroke-width="1.4"/>
+<text x="682" y="631" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">5</text>
+<text x="702" y="630" text-anchor="middle" font-size="10" fill="#6b7280">✎</text>
+<rect x="726" y="614" width="146" height="24" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<circle cx="742" cy="626" r="9" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="742" y="630" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">МО</text>
+<text x="758" y="631" text-anchor="start" font-size="12" fill="#1f2937">Мария О.</text>
+<text x="862" y="631" text-anchor="middle" font-size="11" fill="#6b7280">▾</text>
+<rect x="20" y="643" width="860" height="4" rx="2" fill="#2563eb"/>
+<circle cx="20" cy="645" r="5" fill="#2563eb"/>
+<text x="860" y="654" text-anchor="end" font-size="11" fill="#2563eb">↓ отпустите здесь: DEMO-11 встанет третьей</text>
+<rect x="20" y="658" width="860" height="36" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<text x="28" y="681" text-anchor="start" font-size="13" fill="#6b7280">⋮⋮</text>
+<rect x="50" y="667" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="59.0" y="680" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">S</text>
+<text x="75" y="681" text-anchor="start" font-size="12" font-weight="bold" fill="#2563eb">DEMO-25</text>
+<text x="146" y="681" text-anchor="start" font-size="13" fill="#1f2937">Адреса доставки</text>
+<rect x="346" y="665" width="52.96" height="22" rx="11.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="372.48" y="679.96" text-anchor="middle" font-size="11" fill="#1f2937">Заказы</text>
+<rect x="420" y="666" width="51.28" height="20" rx="10.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="445.64" y="679.78" text-anchor="middle" font-size="10.5" fill="#1f2937">заказы</text>
+<rect x="548" y="665" width="80.4" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="588.2" y="680.14" text-anchor="middle" font-size="11.5" fill="#1f2937">■ Medium ▾</text>
+<rect x="660" y="664" width="54" height="24" rx="12" fill="#ffffff" stroke="#6b7280" stroke-width="1.4"/>
+<text x="682" y="681" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">5</text>
+<text x="702" y="680" text-anchor="middle" font-size="10" fill="#6b7280">✎</text>
+<rect x="726" y="664" width="146" height="24" rx="6" fill="#ffffff" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="738" y="681" text-anchor="start" font-size="12" fill="#6b7280">Не назначен</text>
+<text x="862" y="681" text-anchor="middle" font-size="11" fill="#6b7280">▾</text>
+<rect x="20" y="696" width="860" height="36" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="28" y="719" text-anchor="start" font-size="13" fill="#6b7280">⋮⋮</text>
+<rect x="50" y="705" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="59.0" y="718" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">B</text>
+<text x="75" y="719" text-anchor="start" font-size="12" font-weight="bold" fill="#2563eb">DEMO-26</text>
+<text x="146" y="719" text-anchor="start" font-size="13" fill="#1f2937">Округление суммы заказа</text>
+<rect x="346" y="703" width="52.96" height="22" rx="11.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="372.48" y="717.96" text-anchor="middle" font-size="11" fill="#1f2937">Заказы</text>
+<rect x="420" y="704" width="51.28" height="20" rx="10.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="445.64" y="717.78" text-anchor="middle" font-size="10.5" fill="#1f2937">бэкенд</text>
+<rect x="548" y="703" width="98.8" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="597.4" y="718.14" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#b91c1c">▲▲ Highest ▾</text>
+<rect x="660" y="702" width="54" height="24" rx="12" fill="#ffffff" stroke="#6b7280" stroke-width="1.4"/>
+<text x="682" y="719" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">2</text>
+<text x="702" y="718" text-anchor="middle" font-size="10" fill="#6b7280">✎</text>
+<rect x="726" y="702" width="146" height="24" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<circle cx="742" cy="714" r="9" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="742" y="718" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">ИС</text>
+<text x="758" y="719" text-anchor="start" font-size="12" fill="#1f2937">Игорь С.</text>
+<text x="862" y="719" text-anchor="middle" font-size="11" fill="#6b7280">▾</text>
+<rect x="20" y="738" width="860" height="52" rx="6" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="34" y="760" text-anchor="start" font-size="15" font-weight="bold" fill="#1f2937">▸ Спринт 5</text>
+<rect x="134.0" y="745" width="93.28" height="22" rx="11.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="180.64" y="760.14" text-anchor="middle" font-size="11.5" fill="#1f2937">запланирован</text>
+<text x="237.28" y="760" text-anchor="start" font-size="12.5" fill="#6b7280">07.12 – 18.12</text>
+<rect x="540" y="752" width="200" height="8" rx="4.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1"/>
+<rect x="540" y="752" width="47.05882352941176" height="8" rx="4.0" fill="#16a34a"/>
+<line x1="700.0" y1="749" x2="700.0" y2="763" stroke="#1f2937" stroke-width="1.6"/>
+<text x="752" y="758" text-anchor="start" font-size="12.5" font-weight="bold" fill="#1f2937">5 / 17 sp · 29 %</text>
+<text x="540" y="778" text-anchor="start" font-size="12" font-weight="bold" fill="#15803d">✓ Есть запас: 12 sp</text>
+<rect x="20" y="800" width="860" height="40" rx="6" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="34" y="825" text-anchor="start" font-size="15" font-weight="bold" fill="#1f2937">▾ Общий бэклог</text>
+<text x="190" y="825" text-anchor="start" font-size="12.5" fill="#6b7280">9 задач · 39 sp · без оценки: 2</text>
+<circle cx="14" cy="800" r="11" fill="#b91c1c"/>
+<text x="14" y="805" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">5</text>
+<rect x="20" y="844" width="860" height="36" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="28" y="867" text-anchor="start" font-size="13" fill="#6b7280">⋮⋮</text>
+<rect x="50" y="853" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="59.0" y="866" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">S</text>
+<text x="75" y="867" text-anchor="start" font-size="12" font-weight="bold" fill="#2563eb">DEMO-30</text>
+<text x="146" y="867" text-anchor="start" font-size="13" fill="#1f2937">Двухфакторная аутентифика…</text>
+<rect x="346" y="851" width="59.120000000000005" height="22" rx="11.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="375.56" y="865.96" text-anchor="middle" font-size="11" fill="#1f2937">Кабинет</text>
+<rect x="420" y="852" width="80.68" height="20" rx="10.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="460.34000000000003" y="865.78" text-anchor="middle" font-size="10.5" fill="#1f2937">авторизация</text>
+<text x="506.68" y="867" text-anchor="start" font-size="11" fill="#6b7280">+1</text>
+<rect x="548" y="851" width="71.19999999999999" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="583.6" y="866.14" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#b91c1c">▲ High ▾</text>
+<rect x="660" y="850" width="54" height="24" rx="12" fill="#ffffff" stroke="#6b7280" stroke-width="1.4"/>
+<text x="682" y="867" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">8</text>
+<text x="702" y="866" text-anchor="middle" font-size="10" fill="#6b7280">✎</text>
+<rect x="726" y="850" width="146" height="24" rx="6" fill="#ffffff" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="738" y="867" text-anchor="start" font-size="12" fill="#6b7280">Не назначен</text>
+<text x="862" y="867" text-anchor="middle" font-size="11" fill="#6b7280">▾</text>
+<rect x="20" y="882" width="860" height="36" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="28" y="905" text-anchor="start" font-size="13" fill="#6b7280">⋮⋮</text>
+<rect x="50" y="891" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="59.0" y="904" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">T</text>
+<text x="75" y="905" text-anchor="start" font-size="12" font-weight="bold" fill="#2563eb">DEMO-11</text>
+<text x="146" y="905" text-anchor="start" font-size="13" fill="#1f2937">Пагинация списка заказов</text>
+<rect x="346" y="889" width="52.96" height="22" rx="11.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="372.48" y="903.96" text-anchor="middle" font-size="11" fill="#1f2937">Заказы</text>
+<rect x="420" y="890" width="51.28" height="20" rx="10.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="445.64" y="903.78" text-anchor="middle" font-size="10.5" fill="#1f2937">заказы</text>
+<rect x="475.28" y="890" width="51.28" height="20" rx="10.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="500.91999999999996" y="903.78" text-anchor="middle" font-size="10.5" fill="#1f2937">бэкенд</text>
+<rect x="548" y="889" width="61.080000000000005" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="578.54" y="904.14" text-anchor="middle" font-size="11.5" fill="#1f2937">▼ Low ▾</text>
+<rect x="660" y="888" width="54" height="24" rx="12" fill="#ffffff" stroke="#6b7280" stroke-width="1.4"/>
+<text x="682" y="905" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">3</text>
+<text x="702" y="904" text-anchor="middle" font-size="10" fill="#6b7280">✎</text>
+<rect x="726" y="888" width="146" height="24" rx="6" fill="#ffffff" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="738" y="905" text-anchor="start" font-size="12" fill="#6b7280">Не назначен</text>
+<text x="862" y="905" text-anchor="middle" font-size="11" fill="#6b7280">▾</text>
+<rect x="20" y="920" width="860" height="36" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="28" y="943" text-anchor="start" font-size="13" fill="#6b7280">⋮⋮</text>
+<rect x="50" y="929" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="59.0" y="942" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">T</text>
+<text x="75" y="943" text-anchor="start" font-size="12" font-weight="bold" fill="#2563eb">DEMO-29</text>
+<text x="146" y="943" text-anchor="start" font-size="13" fill="#1f2937">Ускорить загрузку списка…</text>
+<rect x="346" y="927" width="52.96" height="22" rx="11.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="372.48" y="941.96" text-anchor="middle" font-size="11" fill="#1f2937">Заказы</text>
+<rect x="420" y="928" width="51.28" height="20" rx="10.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="445.64" y="941.78" text-anchor="middle" font-size="10.5" fill="#1f2937">заказы</text>
+<rect x="548" y="927" width="80.4" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="588.2" y="942.14" text-anchor="middle" font-size="11.5" fill="#1f2937">■ Medium ▾</text>
+<rect x="660" y="926" width="54" height="24" rx="12" fill="#ffffff" stroke="#b91c1c" stroke-width="1.4" stroke-dasharray="6 4"/>
+<text x="687" y="943" text-anchor="middle" font-size="13" fill="#b91c1c">—</text>
+<rect x="726" y="926" width="146" height="24" rx="6" fill="#ffffff" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="738" y="943" text-anchor="start" font-size="12" fill="#6b7280">Не назначен</text>
+<text x="862" y="943" text-anchor="middle" font-size="11" fill="#6b7280">▾</text>
+<rect x="20" y="958" width="860" height="36" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="28" y="981" text-anchor="start" font-size="13" fill="#6b7280">⋮⋮</text>
+<rect x="50" y="967" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="59.0" y="980" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">S</text>
+<text x="75" y="981" text-anchor="start" font-size="12" font-weight="bold" fill="#2563eb">DEMO-32</text>
+<text x="146" y="981" text-anchor="start" font-size="13" fill="#1f2937">Сохранение корзины</text>
+<rect x="346" y="965" width="52.96" height="22" rx="11.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="372.48" y="979.96" text-anchor="middle" font-size="11" fill="#1f2937">Заказы</text>
+<rect x="420" y="966" width="51.28" height="20" rx="10.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="445.64" y="979.78" text-anchor="middle" font-size="10.5" fill="#1f2937">заказы</text>
+<rect x="548" y="965" width="80.4" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="588.2" y="980.14" text-anchor="middle" font-size="11.5" fill="#1f2937">■ Medium ▾</text>
+<rect x="660" y="964" width="54" height="24" rx="12" fill="#ffffff" stroke="#6b7280" stroke-width="1.4"/>
+<text x="682" y="981" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">5</text>
+<text x="702" y="980" text-anchor="middle" font-size="10" fill="#6b7280">✎</text>
+<rect x="726" y="964" width="146" height="24" rx="6" fill="#ffffff" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="738" y="981" text-anchor="start" font-size="12" fill="#6b7280">Не назначен</text>
+<text x="862" y="981" text-anchor="middle" font-size="11" fill="#6b7280">▾</text>
+<rect x="20" y="996" width="860" height="36" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="28" y="1019" text-anchor="start" font-size="13" fill="#6b7280">⋮⋮</text>
+<rect x="50" y="1005" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="59.0" y="1018" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">T</text>
+<text x="75" y="1019" text-anchor="start" font-size="12" font-weight="bold" fill="#2563eb">DEMO-36</text>
+<text x="146" y="1019" text-anchor="start" font-size="13" fill="#1f2937">Журнал входов в систему</text>
+<rect x="346" y="1003" width="59.120000000000005" height="22" rx="11.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="375.56" y="1017.96" text-anchor="middle" font-size="11" fill="#1f2937">Кабинет</text>
+<rect x="420" y="1004" width="86.56" height="20" rx="10.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="463.28" y="1017.78" text-anchor="middle" font-size="10.5" fill="#1f2937">безопасность</text>
+<rect x="548" y="1003" width="80.4" height="22" rx="11.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="588.2" y="1018.14" text-anchor="middle" font-size="11.5" fill="#1f2937">■ Medium ▾</text>
+<rect x="660" y="1002" width="54" height="24" rx="12" fill="#ffffff" stroke="#6b7280" stroke-width="1.4"/>
+<text x="682" y="1019" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">3</text>
+<text x="702" y="1018" text-anchor="middle" font-size="10" fill="#6b7280">✎</text>
+<rect x="726" y="1002" width="146" height="24" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<circle cx="742" cy="1014" r="9" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="742" y="1018" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">АК</text>
+<text x="758" y="1019" text-anchor="start" font-size="12" fill="#1f2937">Анна К.</text>
+<text x="862" y="1019" text-anchor="middle" font-size="11" fill="#6b7280">▾</text>
+<text x="450" y="1048" text-anchor="middle" font-size="12.5" fill="#2563eb">ещё 4 ▾</text>
+<text x="20" y="1086" text-anchor="start" font-size="14" font-weight="bold" fill="#2563eb">Выполненные спринты ↗</text>
+<text x="220" y="1086" text-anchor="start" font-size="12" fill="#6b7280">открывается отдельная вкладка «Прошлые спринты»</text>
+<circle cx="14" cy="1068" r="11" fill="#b91c1c"/>
+<text x="14" y="1073" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">6</text>
+<rect x="729" y="694" width="146" height="112" rx="6" fill="#000000" fill-opacity="0.15"/>
+<rect x="726" y="690" width="146" height="108" rx="6" fill="#ffffff" stroke="#2563eb" stroke-width="1.6"/>
+<text x="736" y="709" text-anchor="start" font-size="12" fill="#6b7280">Не назначен</text>
+<circle cx="744" cy="725" r="9" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="744" y="729" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">ИС</text>
+<text x="760" y="730" text-anchor="start" font-size="12" fill="#1f2937">Игорь Смирнов</text>
+<rect x="729" y="739" width="140" height="24" rx="4" fill="#dbeafe"/>
+<circle cx="744" cy="751" r="9" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="744" y="755" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">МО</text>
+<text x="760" y="756" text-anchor="start" font-size="12" font-weight="bold" fill="#1f2937">Мария Орлова</text>
+<circle cx="744" cy="777" r="9" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="744" y="781" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">АК</text>
+<text x="760" y="782" text-anchor="start" font-size="12" fill="#1f2937">Анна Ковалёва</text>
+<circle cx="718" cy="688" r="11" fill="#b91c1c"/>
+<text x="718" y="693" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">7</text>
+</svg>
