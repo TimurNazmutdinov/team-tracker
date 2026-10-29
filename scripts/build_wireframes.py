@@ -27,6 +27,11 @@ LIGHT = dict(
     accent="#2563eb", accent_ink="#ffffff", accent_bg="#dbeafe", card="#ffffff", warn="#b91c1c",
     status={"Backlog": "#e5e7eb", "To Do": "#e0e7ff", "In Progress": "#dbeafe", "Review": "#fef3c7", "Done": "#dcfce7"},
 )
+BEIGE = dict(
+    name="beige", bg="#faf9f5", panel="#ffffff", line="#d6cfbf", ink="#2b2520", muted="#5e5348",
+    accent="#6a5440", accent_ink="#ffffff", accent_bg="#f1ebdf", card="#ffffff", warn="#9b2c2c",
+    status={"Backlog": "#efece4", "To Do": "#f3eee2", "In Progress": "#e6eeea", "Review": "#f7ebcf", "Done": "#e8efdf"},
+)
 DARK = dict(
     name="dark", bg="#111827", panel="#1f2937", line="#4b5563", ink="#f3f4f6", muted="#9ca3af",
     accent="#60a5fa", accent_ink="#111827", accent_bg="#1e3a8a", card="#273244", warn="#fca5a5",
@@ -173,7 +178,7 @@ class WF:
         self.text(98, 22, url, 12, fill=t["muted"])
         self.line(1, 86, W - 1, 86)
         # логотип (ADR-013): знак и надпись «Team Tracker»; на макетах — цвета «Стандартной» гаммы
-        ring, check = ("#2B4ACB", "#F08C00") if t["name"] == "light" else ("#7B93FF", "#F08C00")
+        ring, check = {"light": ("#2B4ACB", "#F08C00"), "beige": ("#484039", "#95816C")}.get(t["name"], ("#7B93FF", "#F08C00"))
         self.p.append(
             f'<g transform="translate(18 47) scale(0.4375)">'
             f'<path d="M52.78 20 A24 24 0 1 1 35.34 8.23" fill="none" stroke="{ring}" stroke-width="7" stroke-linecap="round"/>'
@@ -1343,8 +1348,8 @@ def side_group(wf, x, y, w, title, sub, state_chip=None, used=None, cap=None):
     return 44 if used is not None else 30
 
 
-def screen_retro_board():
-    wf = WF(560, "Доска: кнопки-ссылки на прошлое и будущее")
+def screen_retro_board(theme=LIGHT):
+    wf = WF(560, "Доска: кнопки-ссылки на прошлое и будущее", theme)
     t = wf.t
     wf.shell(f"team-tracker.app/projects/{KEY}/board", "Доска")
     nav_pills(wf, 96)
@@ -1739,6 +1744,7 @@ SCREENS = {
     "wf-backups": screen_backups,
     "wf-palette": screen_palette,
     "wf-retro-board": screen_retro_board,
+    "wf-board-beige": lambda: screen_retro_board(BEIGE),
     "wf-backlog-new": screen_backlog_new,
     "wf-retro-responsive": screen_retro_responsive,
     "wf-issue-views": screen_issue_views,
