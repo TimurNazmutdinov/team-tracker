@@ -993,6 +993,59 @@ def screen_settings():
     return wf
 
 
+def screen_backups():
+    wf = WF(745, "Блок «Резервные копии» на экране «Настройки» (только администратор)")
+    t = wf.t
+    wf.shell(f"team-tracker.app/projects/{KEY}/settings", "Настройки")
+    # предупреждение при ошибке: видно администратору на любом экране
+    wf.rect(0, 87, W, 40, fill="#fee2e2", stroke=t["warn"], r=0)
+    wf.text(20, 112, "⚠ Резервная копия за 28.10.2026 18:00 не создана: нет места на диске. Откройте «Настройки → Резервные копии».", 13, bold=True, fill=t["warn"])
+    wf.callout(1, 884, 107)
+    wf.text(20, 168, "Настройки проекта", 24, bold=True)
+    wf.text(20, 202, "Спринты: …", 14, fill=t["muted"])
+    wf.line(20, 218, 880, 218)
+    wf.text(20, 252, "Резервные копии", 18, bold=True)
+    wf.text(210, 252, "только администратор", 12, fill=t["muted"])
+    # состояние
+    wf.rect(20, 270, 860, 92, fill=t["panel"], stroke=t["line"], r=8)
+    wf.text(36, 298, "Последняя копия:  29.10.2026 18:00", 15, bold=True)
+    wf.chip(360, 282, "✓ проверена", 13, fill="#dcfce7", h=24)
+    wf.text(36, 324, "Следующая:  сегодня в 18:00 (BACKUP_TIME)", 14)
+    wf.text(36, 348, "Папка:  D:\\Dropbox\\tracker-backups  (BACKUP_DIR)", 14, fill=t["muted"])
+    wf.callout(2, 12, 282)
+    # кнопки
+    wf.button(20, 378, 220, 38, "Сделать копию сейчас", True)
+    wf.button(256, 378, 180, 38, "Скачать Excel")
+    wf.text(452, 402, "tracker.xlsx из копии от 29.10.2026 18:00", 12, fill=t["muted"])
+    wf.callout(3, 12, 392)
+    # список копий
+    wf.text(20, 450, "Последние копии", 15, bold=True)
+    wf.rect(20, 462, 860, 30, fill=t["panel"], stroke=t["line"], r=4)
+    for n, dx in (("Дата", 14), ("Причина", 190), ("Результат", 380), ("Состав", 540)):
+        wf.text(20 + dx, 482, n, 13, bold=True)
+    rows = [
+        ("29.10.2026 18:00", "по расписанию", "✓ проверена", "задач 16, спринтов 3, людей 5"),
+        ("29.10.2026 09:12", "при запуске", "✓ проверена", "задач 16, спринтов 3, людей 5"),
+        ("28.10.2026 18:00", "по расписанию", "✗ ошибка: нет места", "—"),
+        ("27.10.2026 18:00", "вручную", "✓ проверена", "задач 15, спринтов 3, людей 4"),
+    ]
+    y = 492
+    for i, (d, why, res, content) in enumerate(rows):
+        bad = res.startswith("✗")
+        wf.rect(20, y, 860, 34, fill=t["bg"], stroke=t["warn"] if bad else t["line"], r=4)
+        wf.text(34, y + 22, d, 13)
+        wf.text(210, y + 22, why, 13)
+        wf.text(400, y + 22, res, 13, bold=bad, fill=t["warn"] if bad else None)
+        wf.text(560, y + 22, content, 13, fill=t["muted"])
+        y += 34
+    wf.callout(4, 12, 508)
+    wf.text(20, y + 30, "Хранятся 30 последних ежедневных и 12 ежемесячных копий (BACKUP_KEEP_DAILY, BACKUP_KEEP_MONTHLY).", 12, fill=t["muted"])
+    wf.text(20, y + 50, "В каждой копии: tracker.xlsx (для чтения), tracker.json (для восстановления), копия базы.", 12, fill=t["muted"])
+    wf.text(20, y + 70, "Восстановление — только из командной строки: npm run restore <папка копии>.", 12, fill=t["muted"])
+    wf.callout(5, 12, y + 28)
+    return wf
+
+
 def screen_search():
     wf = WF(600, "Поиск и подсказка клавиш")
     t = wf.t
@@ -1049,6 +1102,7 @@ SCREENS = {
     "wf-login": screen_login,
     "wf-search": screen_search,
     "wf-settings": screen_settings,
+    "wf-backups": screen_backups,
 }
 
 
