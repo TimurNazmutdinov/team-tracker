@@ -1299,21 +1299,25 @@ def cap_bar(wf, x, y, w, used, cap, h=8):
     return state, fill
 
 
-def retro_toolbar(wf, y):
+def retro_toolbar(wf, y, x0=20, short=False):
+    """Фильтры доски активного спринта (относятся только к центру)."""
     t = wf.t
-    wf.chip(20, y + 6, "Спринт 3 ▾", 14, h=30)
-    wf.chip(130, y + 6, "Группировать: Исполнитель ▾", 14, h=30, fill=t["accent_bg"])
-    wf.chip(358, y + 6, "Тип ▾", 14, h=30)
-    wf.chip(420, y + 6, "Приоритет ▾", 14, h=30)
+    x = x0
+    x += wf.chip(x, y + 6, "Спринт 3 ▾", 13, h=28) + 8
+    x += wf.chip(x, y + 6, "Группировка ▾" if short else "Группировать: Исполнитель ▾", 13, h=28, fill=t["accent_bg"]) + 8
+    if not short:
+        x += wf.chip(x, y + 6, "Тип ▾", 13, h=28) + 8
+        wf.chip(x, y + 6, "Приоритет ▾", 13, h=28)
 
 
-def side_toggles(wf, y, past=True, future=True):
+def zone_headers(wf, y, left_x, center_x0, center_x1, right_x):
+    """Три подписи над зонами: прошлое и будущее — ссылки на отдельные вкладки (↗), центр — просто подпись."""
     t = wf.t
-    x = W - 20
-    for label, on in (("Бэклог ✓" if future else "Бэклог", future), ("Прошлое ✓" if past else "Прошлое", past)):
-        w = wf.est(label, 13) + 18
-        wf.chip(x - w, y + 6, label, 13, h=30, fill=t["accent_bg"] if on else None)
-        x -= w + 8
+    wf.chip(left_x, y + 4, "Прошлые спринты ↗", 12.5, h=28, fill=t["accent_bg"], bold=True)
+    wf.text((center_x0 + center_x1) / 2, y + 23, "Текущий спринт · Спринт 3", 14, "middle", True)
+    label = "Планирование будущих спринтов ↗"
+    wf.chip(W - 20 - (wf.est(label, 12.5, True) + 16), y + 4, label, 12.5, h=28, fill=t["accent_bg"], bold=True)
+
 
 
 def past_tab(wf, x, y0, h, n, sprint, dates, tasks, w=52):
@@ -1341,16 +1345,14 @@ def side_group(wf, x, y, w, title, sub, state_chip=None, used=None, cap=None):
 
 
 def screen_retro_board():
-    H = 420
-    y0 = 144
+    H = 424
+    y0 = 176
     wf = WF(y0 + H + 56, "Доска: прошлое, текущее и будущее — обычное состояние")
     t = wf.t
     wf.shell(f"team-tracker.app/projects/{KEY}/board", "Доска")
-    retro_toolbar(wf, 98)
-    wf.chip(530, 104, "WIP ≤ 3 ▾", 12, h=26, stroke=True)  # необязательно: см. вопросы на согласование
-    wf.p.append(f'<rect x="530" y="104" width="{wf.est("WIP ≤ 3 ▾", 12) + 16}" height="26" rx="13" fill="{t["bg"]}" fill-opacity="0.7" stroke="{t["muted"]}" stroke-dasharray="4 3"/>')
-    side_toggles(wf, 98)
-    wf.callout(1, 868, 104)
+    zone_headers(wf, 96, 20, 138, 654, 666)
+    wf.callout(1, 14, 98)
+    retro_toolbar(wf, 132, x0=138)
 
     # --- слева: прошлое (сжатые колонки, старые слева → новые ближе к текущему спринту)
     past_tab(wf, 20, y0, H, 1, "Спринт 1", "12.10–23.10", S1)
@@ -1387,10 +1389,9 @@ def screen_retro_board():
     # --- справа: будущее — сжатый бэклог (планируемые спринты группами, затем общий бэклог)
     rx, rw = 666, 214
     wf.rect(rx, y0, rw, H, fill=t["bg"], stroke=t["line"], r=8)
-    wf.text(rx + 10, y0 + 20, "Бэклог", 14, bold=True)
-    wf.text(rx + 66, y0 + 20, f"{len(S4) + len(S5) + len(BACKLOG)} задач · {SUM(S4) + SUM(S5) + SUM(BACKLOG)} sp", 11, fill=t["muted"])
+    wf.text(rx + 10, y0 + 20, f"{len(S4) + len(S5) + len(BACKLOG)} задач · {SUM(S4) + SUM(S5) + SUM(BACKLOG)} sp", 11, fill=t["muted"])
     wf.text(rx + rw - 12, y0 + 20, "▸", 14, "middle", fill=t["muted"])
-    wf.callout(4, rx + rw - 8, y0 - 2)
+    wf.callout(4, rx + rw - 8, 98)
     yy = y0 + 30
     yy += side_group(wf, rx + 6, yy, rw - 12, "Спринт 4", f"{SUM(S4)} / {CAP_TXT} sp", "запл.", SUM(S4), CAP)
     for i in S4:
@@ -1406,18 +1407,18 @@ def screen_retro_board():
         yy += 42
     wf.text(rx + rw / 2, yy + 12, "ещё 7 ▾", 12, "middle", fill=t["accent"])
     wf.callout(6, rx + 6, yy - 86)
-    wf.text(20, y0 + H + 26, "Слева — прошлое (только чтение), в центре — настоящее, справа — будущее. Время течёт слева направо.", 12, fill=t["muted"])
+    wf.text(20, y0 + H + 26, "Слева — прошлое (только чтение), в центре — настоящее, справа — будущее. ↗ — открывается отдельная вкладка. Макет, не готовый экран.", 12, fill=t["muted"])
     return wf
 
 
 def screen_retro_board_open():
-    H = 420
-    y0 = 144
+    H = 424
+    y0 = 176
     wf = WF(y0 + H + 56, "Доска: развёрнутая колонка прошлого спринта и развёрнутый бэклог")
     t = wf.t
     wf.shell(f"team-tracker.app/projects/{KEY}/board", "Доска")
-    retro_toolbar(wf, 98)
-    side_toggles(wf, 98)
+    zone_headers(wf, 96, 20, 292, 640, 640)
+    retro_toolbar(wf, 132, x0=292, short=True)
 
     # --- слева: Спринт 1 сжат, Спринт 2 развёрнут в список выполненных задач
     past_tab(wf, 20, y0, H, 1, "Спринт 1", "12.10–23.10", S1)
@@ -1462,7 +1463,7 @@ def screen_retro_board_open():
     # --- справа: бэклог развёрнут (шире, с фильтрами), задача перетаскивается на доску
     rx, rw = 640, 240
     wf.rect(rx, y0, rw, H, fill=t["bg"], stroke=t["accent"], r=8, sw=1.8)
-    wf.text(rx + 10, y0 + 20, "Бэклог", 14, bold=True)
+    wf.text(rx + 10, y0 + 20, "Спринты и общий бэклог", 14, bold=True)
     wf.text(rx + rw - 12, y0 + 20, "▸", 14, "middle", fill=t["muted"])
     wf.chip(rx + 8, y0 + 30, "Эпик ▾", 11, h=22)
     wf.chip(rx + 62, y0 + 30, "Исполнитель ▾", 11, h=22)
@@ -1481,6 +1482,10 @@ def screen_retro_board_open():
         stack_row(wf, rx + 6, yy, rw - 12, i, handle=True)
         yy += 42
     wf.text(rx + rw / 2, yy + 10, "ещё 8 ▾", 12, "middle", fill=t["accent"])
+    # пакетный перенос: выделить несколько задач и отправить в любой будущий спринт
+    wf.rect(rx + 6, y0 + H - 34, rw - 12, 28, fill=t["accent_bg"], stroke=t["accent"], r=6)
+    wf.text(rx + 14, y0 + H - 15, "☑ Выбрано 2", 12, bold=True)
+    wf.chip(rx + 106, y0 + H - 31, "В спринт 5 ▾", 11.5, h=22, fill=t["bg"])
 
     # перетаскиваемая карточка: из правой панели в колонку To Do активного спринта
     gx, gy = 478, y0 + 78
@@ -1578,11 +1583,10 @@ def sprint_block(wf, y, title, state, state_fill, dates, goal, tasks, cap, note,
 
 
 def screen_backlog_new():
-    wf = WF(1120, "Вкладка «Бэклог» — главный экран планирования")
+    wf = WF(1160, "Вкладка «Планирование будущих спринтов»")
     t = wf.t
     wf.shell(f"team-tracker.app/projects/{KEY}/backlog", "Бэклог")
-    wf.text(20, 126, "Бэклог", 24, bold=True)
-    wf.text(112, 126, "Подробное планирование: порядок, оценка, исполнители, состав спринтов.", 13, fill=t["muted"])
+    wf.text(20, 126, "Планирование будущих спринтов", 24, bold=True)
     wf.button(W - 200, 106, 180, 32, "+ Создать задачу", True)
     # фильтры
     wf.rect(20, 148, 210, 30, fill=t["bg"], stroke=t["line"], r=6)
@@ -1595,7 +1599,12 @@ def screen_backlog_new():
     wf.text(W - 20, 169, "28 задач", 12.5, "end", fill=t["muted"])
     wf.callout(1, 14, 148)
     # заголовки колонок
-    y = 188
+    wf.rect(20, 186, 860, 30, fill=t["accent_bg"], stroke=t["accent"], r=6)
+    wf.text(32, 206, "☑ Выбрано 2 задачи · 8 sp", 12.5, bold=True)
+    wf.chip(230, 190, "Перенести в спринт ▾", 12, h=22, fill=t["bg"])
+    wf.text(400, 206, "Одна или несколько задач сразу — в Спринт 4, Спринт 5 или в общий бэклог.", 12, fill=t["muted"])
+    wf.callout(8, 14, 186)
+    y = 224
     for label, dx in (("Задача", 30), ("Название", 126), ("Эпик", 326), ("Метки", 400), ("Приоритет", 528), ("Points", 640), ("Исполнитель", 706)):
         wf.text(20 + dx, y + 12, label, 11, fill=t["muted"])
     wf.line(20, y + 18, 880, y + 18)
@@ -1781,6 +1790,43 @@ def screen_issue_views():
     return wf
 
 
+def screen_history():
+    wf = WF(700, "Вкладка «Прошлые спринты» — вся история")
+    t = wf.t
+    wf.shell(f"team-tracker.app/projects/{KEY}/history", "Спринты")
+    wf.text(20, 126, "Прошлые спринты", 24, bold=True)
+    wf.text(250, 126, "История закрытых спринтов: только чтение.", 13, fill=t["muted"])
+    wf.rect(20, 148, 210, 30, fill=t["bg"], stroke=t["line"], r=6)
+    wf.text(30, 168, "Номер или название", 12.5, fill=t["muted"])
+    x = 242
+    for name in ("Эпик ▾", "Исполнитель ▾", "Тип ▾"):
+        x += wf.chip(x, 151, name, 12.5, h=26) + 6
+    wf.text(W - 20, 169, "2 спринта · 11 задач · 34 sp", 12.5, "end", fill=t["muted"])
+    wf.callout(1, 14, 148)
+    y = 192
+    for n, tasks, dates, closed, open_ in ((2, S2, "26.10 – 06.11", "06.11", True), (1, S1, "12.10 – 23.10", "23.10", False)):
+        h = 56
+        wf.rect(20, y, 860, h, fill=t["panel"], stroke=t["line"], r=6)
+        label = ("▾ " if open_ else "▸ ") + f"Спринт {n}"
+        wf.text(34, y + 24, label, 15, bold=True)
+        wf.chip(34 + wf.est(label, 15, True) + 10, y + 9, "закрыт", 11.5, h=22)
+        wf.text(34 + wf.est(label, 15, True) + 90, y + 25, dates, 12.5, fill=t["muted"])
+        wf.text(34, y + 44, f"{len(tasks)} задач · {SUM(tasks)} sp · velocity {VEL[n]} sp · закрыт {closed}", 12, fill=t["muted"])
+        wf.text(W - 34, y + 24, "Открыть отчёт спринта ↗", 12, "end", fill=t["accent"])
+        y += h + 4
+        if open_:
+            for i in tasks:
+                compact_row(wf, 20, y, 860, i, h=30)
+                y += 32
+            wf.text(20, y + 14, "Только чтение: перетаскивать и править нельзя. Клик по ключу — карточка задачи.", 11.5, fill=t["muted"])
+            y += 26
+    wf.callout(2, 14, 192)
+    wf.callout(3, 14, 192 + 62)
+    wf.text(450, y + 20, "ещё спринты загружаются порциями по 5 ▾", 12.5, "middle", fill=t["accent"])
+    wf.callout(4, 14, y + 6)
+    return wf
+
+
 def screen_search():
     wf = WF(600, "Поиск и подсказка клавиш")
     t = wf.t
@@ -1844,6 +1890,7 @@ SCREENS = {
     "wf-backlog-new": screen_backlog_new,
     "wf-retro-responsive": screen_retro_responsive,
     "wf-issue-views": screen_issue_views,
+    "wf-history": screen_history,
 }
 
 
