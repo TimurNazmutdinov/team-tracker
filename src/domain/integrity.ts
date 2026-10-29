@@ -22,6 +22,7 @@ export function checkIntegrity(ds: Dataset): string[] {
   const collections: [string, string[]][] = [
     ['projects', ds.projects.map((x) => x.id)],
     ['people', ds.people.map((x) => x.id)],
+    ['members', ds.members.map((x) => x.id)],
     ['sprints', ds.sprints.map((x) => x.id)],
     ['issues', ds.issues.map((x) => x.id)],
     ['links', ds.links.map((x) => x.id)],
@@ -35,6 +36,21 @@ export function checkIntegrity(ds: Dataset): string[] {
     errors.push(`issues: повторяющийся номер ${key}`);
   }
 
+  for (const p of ds.projects) {
+    if (p.ownerId !== null && !people.has(p.ownerId))
+      errors.push(`project ${p.id}: нет владельца ${p.ownerId}`);
+  }
+  const memberKeys = new Set<string>();
+  for (const m of ds.members) {
+    const w = `member ${m.id}`;
+    if (!projects.has(m.projectId)) errors.push(`${w}: нет проекта ${m.projectId}`);
+    if (!people.has(m.personId)) errors.push(`${w}: нет человека ${m.personId}`);
+    if (ds.projects.some((p) => p.id === m.projectId && p.ownerId === m.personId))
+      errors.push(`${w}: владелец проекта не должен повторяться среди участников`);
+    const key = `${m.projectId}#${m.personId}`;
+    if (memberKeys.has(key)) errors.push(`${w}: человек уже участник проекта`);
+    memberKeys.add(key);
+  }
   for (const s of ds.sprints) {
     if (!projects.has(s.projectId)) errors.push(`sprint ${s.id}: нет проекта ${s.projectId}`);
     if (s.end < s.start) errors.push(`sprint ${s.id}: конец раньше начала`);

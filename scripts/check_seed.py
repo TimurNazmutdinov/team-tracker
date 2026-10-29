@@ -16,6 +16,7 @@ STATUSES = ["Backlog", "To Do", "In Progress", "Review", "Done"]
 PRIORITIES = {"Highest", "High", "Medium", "Low"}
 SPRINT_STATES = {"planned", "active", "closed"}
 LINK_TYPES = {"blocks", "relates", "duplicates"}
+PROJECT_ROLES = {"product", "lead", "developer"}
 FIELDS = {
     "created", "status", "assigneeId", "points", "sprintId",
     "title", "description", "acceptance", "priority", "parentId", "labels", "dueDate",
@@ -34,6 +35,7 @@ def main():
     if not isinstance(seed.get("version"), int) or isinstance(seed.get("version"), bool) or seed["version"] < 1:
         err("version: ожидается целое число >= 1 (при изменении seed его нужно увеличить)")
     seed = {k: v for k, v in seed.items() if k != "version"}
+    seed.setdefault("members", [])
     ids = {k: {x["id"] for x in seed[k]} for k in seed}
     for k, v in seed.items():
         if len(ids[k]) != len(v):
@@ -61,6 +63,21 @@ def main():
             err(f"{w}: sprintPrefix не может быть пустым")
         if pr.get("nextSprintStart") is not None and not isinstance(pr["nextSprintStart"], str):
             err(f"{w}: nextSprintStart — дата или null")
+        ref(pr.get("ownerId"), "people", w + " (ownerId)", True)
+    seen_members = set()
+    for m in seed.get("members", []):
+        w = f"member {m['id']}"
+        ref(m["projectId"], "projects", w)
+        ref(m["personId"], "people", w)
+        if m["role"] not in PROJECT_ROLES:
+            err(f"{w}: роль {m['role']}")
+        key = (m["projectId"], m["personId"])
+        if key in seen_members:
+            err(f"{w}: человек уже участник проекта")
+        seen_members.add(key)
+        owner = next((p.get("ownerId") for p in seed["projects"] if p["id"] == m["projectId"]), None)
+        if owner == m["personId"]:
+            err(f"{w}: владелец проекта не должен повторяться среди участников")
     for s in seed["sprints"]:
         w = f"sprint {s['id']}"
         ref(s["projectId"], "projects", w)

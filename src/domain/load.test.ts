@@ -49,6 +49,7 @@ describe('скорость расчётов на 10 000 задач', () => {
     projectId: 'p1',
     project: ds.projects[0] as View['project'],
     people: ds.people,
+    members: ds.members,
     sprints: ds.sprints,
     issues: ds.issues,
     links: ds.links,

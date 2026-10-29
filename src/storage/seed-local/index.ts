@@ -111,6 +111,10 @@ export class SeedLocalStorage implements TrackerStorage {
     return Promise.resolve(structuredClone(this.data.people));
   }
 
+  getMembers() {
+    return Promise.resolve(structuredClone(this.data.members));
+  }
+
   getSprints(projectId: string) {
     return Promise.resolve(
       structuredClone(this.data.sprints.filter((s) => s.projectId === projectId)),
@@ -153,6 +157,9 @@ export class SeedLocalStorage implements TrackerStorage {
       const next = structuredClone(this.data);
       upsert(next.projects, changes.projects);
       upsert(next.people, changes.people);
+      upsert(next.members, changes.members);
+      const removedMembers = new Set(changes.deleteMemberIds ?? []);
+      next.members = next.members.filter((m) => !removedMembers.has(m.id));
       upsert(next.sprints, changes.sprints);
       upsert(next.issues, changes.issues);
       upsert(next.links, changes.links);

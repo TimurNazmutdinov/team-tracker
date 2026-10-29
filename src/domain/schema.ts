@@ -8,6 +8,8 @@ export const ISSUE_TYPES = ['Epic', 'Story', 'Task', 'Bug', 'Sub-task'] as const
 export const STATUSES = ['Backlog', 'To Do', 'In Progress', 'Review', 'Done'] as const;
 export const PRIORITIES = ['Highest', 'High', 'Medium', 'Low'] as const;
 export const SPRINT_STATES = ['planned', 'active', 'closed'] as const;
+/** Роли в проекте: продакт, тимлид, разработчик (ADR-016). */
+export const PROJECT_ROLES = ['product', 'lead', 'developer'] as const;
 export const LINK_TYPES = ['blocks', 'relates', 'duplicates'] as const;
 export const HISTORY_FIELDS = [
   'created',
@@ -36,6 +38,16 @@ export const projectSchema = z.object({
   sprintPrefix: z.string().min(1).max(30),
   nextSprintNumber: z.number().int().min(1).max(9999),
   nextSprintStart: z.iso.date().nullable(),
+  /** Продакт-владелец проекта (ADR-016); у проектов, созданных раньше, не задан. */
+  ownerId: nullableId.default(null),
+});
+
+/** Участник проекта с ролью в нём; владелец проекта хранится в Project.ownerId и здесь не повторяется. */
+export const memberSchema = z.object({
+  id,
+  projectId: id,
+  personId: id,
+  role: z.enum(PROJECT_ROLES),
 });
 
 export const personSchema = z.object({
@@ -107,6 +119,8 @@ export const datasetSchema = z.object({
   version: z.number().int().min(1),
   projects: z.array(projectSchema),
   people: z.array(personSchema),
+  /** Участники проектов; в старых наборах данных поля нет. */
+  members: z.array(memberSchema).default([]),
   sprints: z.array(sprintSchema),
   issues: z.array(issueSchema),
   links: z.array(linkSchema),
@@ -122,7 +136,9 @@ export type LinkType = (typeof LINK_TYPES)[number];
 export type HistoryField = (typeof HISTORY_FIELDS)[number];
 
 export type Project = z.infer<typeof projectSchema>;
+export type ProjectRole = (typeof PROJECT_ROLES)[number];
 export type Person = z.infer<typeof personSchema>;
+export type ProjectMember = z.infer<typeof memberSchema>;
 export type Sprint = z.infer<typeof sprintSchema>;
 export type Issue = z.infer<typeof issueSchema>;
 export type Link = z.infer<typeof linkSchema>;

@@ -2,9 +2,10 @@ import { strFromU8, strToU8, unzipSync, zipSync } from 'fflate';
 import readXlsxFile from 'read-excel-file/node';
 import writeXlsxFile from 'write-excel-file/node';
 import { DEFAULT_PALETTE, PALETTE_LABELS, isPalette } from '../../../src/domain/palettes';
+import { PROJECT_ROLE_LABELS } from '../../../src/domain/members';
 import { ROLE_LABELS, isRole } from '../../../src/domain/permissions';
 import { velocity } from '../../../src/domain/reports';
-import type { Issue, Link, Sprint } from '../../../src/domain/schema';
+import type { Issue, Link, ProjectRole, Sprint } from '../../../src/domain/schema';
 import { FORMAT, countsOf, type AccountRecord, type Entities, type Snapshot } from './types';
 
 // tracker.xlsx — копия для чтения человеком и запасной путь восстановления (ADR-012).
@@ -43,6 +44,7 @@ export const SHEETS = {
   summary: 'Сводка',
   projects: 'Проекты',
   people: 'Люди',
+  members: 'Участники проектов',
   sprints: 'Спринты',
   issues: 'Задачи',
   links: 'Связи',
@@ -117,6 +119,7 @@ function specs(snapshot: Snapshot, meta: XlsxMeta): SheetSpec[] {
       ['Версия схемы базы', meta.schemaVersion],
       ['Проектов', counts.projects],
       ['Людей', counts.people],
+      ['Участников проектов', data.members.length],
       ['Учётных записей', accounts.length],
       ['Спринтов', counts.sprints],
       ['Задач', counts.issues],
@@ -138,7 +141,9 @@ function specs(snapshot: Snapshot, meta: XlsxMeta): SheetSpec[] {
         'Префикс спринта',
         'Номер следующего спринта',
         'Старт следующего спринта',
+        'Владелец продукта',
         '~id',
+        '~ownerId',
       ],
       rows: data.projects.map((p) => [
         p.key,
@@ -147,9 +152,11 @@ function specs(snapshot: Snapshot, meta: XlsxMeta): SheetSpec[] {
         p.sprintPrefix,
         p.nextSprintNumber,
         p.nextSprintStart,
+        nameOf(p.ownerId),
         p.id,
+        p.ownerId,
       ]),
-      widths: [10, 30, 14, 16, 14, 16, 36],
+      widths: [10, 30, 14, 16, 14, 16, 26, 36, 36],
     },
     {
       name: SHEETS.people,
@@ -177,6 +184,20 @@ function specs(snapshot: Snapshot, meta: XlsxMeta): SheetSpec[] {
         ];
       }),
       widths: [28, 24, 30, 24, 16, 36, 14, 10],
+    },
+    {
+      name: SHEETS.members,
+      headers: ['Проект', 'Человек', 'Роль в проекте', '~id', '~projectId', '~personId', '~role'],
+      rows: data.members.map((m) => [
+        project.get(m.projectId)?.key,
+        nameOf(m.personId),
+        PROJECT_ROLE_LABELS[m.role],
+        m.id,
+        m.projectId,
+        m.personId,
+        m.role,
+      ]),
+      widths: [10, 28, 18, 36, 36, 36, 12],
     },
     {
       name: SHEETS.sprints,
@@ -482,7 +503,19 @@ export async function readXlsx(buffer: Uint8Array): Promise<ReadXlsx> {
     sprintPrefix: str(need(r, 'Префикс спринта', S.projects)),
     nextSprintNumber: Number(need(r, 'Номер следующего спринта', S.projects)),
     nextSprintStart: strOrNull(need(r, 'Старт следующего спринта', S.projects)),
+    // в Excel-файлах до ADR-016 колонки владельца нет
+    ownerId: strOrNull(r['ownerId']),
   }));
+
+  // листа участников в старых файлах нет — тогда участников нет
+  const members = sheets.some((sheet) => sheet.sheet === S.members)
+    ? sheetRows(sheets, S.members).map((r) => ({
+        id: str(need(r, 'id', S.members)),
+        projectId: str(need(r, 'projectId', S.members)),
+        personId: str(need(r, 'personId', S.members)),
+        role: str(need(r, 'role', S.members)) as ProjectRole,
+      }))
+    : [];
 
   const accounts: AccountRecord[] = [];
   const people = sheetRows(sheets, S.people).map((r) => {
@@ -568,7 +601,10 @@ export async function readXlsx(buffer: Uint8Array): Promise<ReadXlsx> {
 
   const created = summary.get('Дата копии');
   return {
-    snapshot: { data: { projects, people, sprints, issues, links, comments, history }, accounts },
+    snapshot: {
+      data: { projects, people, members, sprints, issues, links, comments, history },
+      accounts,
+    },
     createdAt: created ? str(created) : null,
   };
 }

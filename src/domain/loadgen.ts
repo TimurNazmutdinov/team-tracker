@@ -8,6 +8,7 @@ import type {
   Person,
   Priority,
   Project,
+  ProjectMember,
   Sprint,
   Status,
 } from './schema';
@@ -66,6 +67,7 @@ export function generateLoadData(options: Partial<LoadOptions> = {}): Dataset {
   const someone = () => `u${1 + Math.floor(rand() * o.people)}`;
 
   const projects: Project[] = [];
+  const members: ProjectMember[] = [];
   const sprints: Sprint[] = [];
   const issues: Issue[] = [];
   const links: Link[] = [];
@@ -88,6 +90,7 @@ export function generateLoadData(options: Partial<LoadOptions> = {}): Dataset {
   for (let p = 0; p < o.projects; p += 1) {
     const projectId = `p${p + 1}`;
     const key = projectKey(p);
+    const owner = `u${1 + 8 * (p % Math.max(1, Math.ceil(o.people / 8)))}`;
     projects.push({
       id: projectId,
       key,
@@ -96,7 +99,19 @@ export function generateLoadData(options: Partial<LoadOptions> = {}): Dataset {
       sprintPrefix: 'Спринт',
       nextSprintNumber: sprintsPerProject + 1,
       nextSprintStart: null,
+      ownerId: owner,
     });
+    // Участники проекта: пять человек подряд, чередуя роли
+    for (let m = 0; m < Math.min(5, o.people); m += 1) {
+      const personId = `u${1 + ((p * 4 + m) % o.people)}`;
+      if (personId === owner) continue;
+      members.push({
+        id: `m${p + 1}-${m + 1}`,
+        projectId,
+        personId,
+        role: m === 0 ? 'lead' : 'developer',
+      });
+    }
 
     // Спринты: все закрытые, кроме последних двух (идущий и запланированный)
     const projectSprints: Sprint[] = [];
@@ -246,5 +261,5 @@ export function generateLoadData(options: Partial<LoadOptions> = {}): Dataset {
     }
   }
 
-  return { version: 1, projects, people, sprints, issues, links, comments, history };
+  return { version: 1, projects, people, members, sprints, issues, links, comments, history };
 }

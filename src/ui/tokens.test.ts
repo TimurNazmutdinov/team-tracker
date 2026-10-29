@@ -111,6 +111,7 @@ describe('токены цветовых гамм', () => {
     expect(palettes.beige.dark['--ink']).toBe('#f4f2ea');
     expect(palettes.beige.dark['--bg']).toBe('#332c26');
     expect(palettes.beige.dark['--panel']).toBe('#3e362e');
+    expect(palettes.beige.dark['--st-review']).toBe('#5a4727');
   });
 
   it('цвета логотипа совпадают с файлами Logo/', () => {
@@ -148,6 +149,12 @@ describe('токены цветовых гамм', () => {
       ['предупреждение на фоне', '--warn', '--bg'],
       ['предупреждение на поверхности', '--warn', '--panel'],
       ...STATUS.map((s): [string, string, string] => [`статус ${s}`, '--ink', s]),
+      // подписи с числами в шапках колонок доски: второстепенный текст на цвете статуса
+      ...STATUS.map((s): [string, string, string] => [
+        `второстепенный текст на ${s}`,
+        '--muted',
+        s,
+      ]),
     ];
     for (const [name, fg, bg] of pairs) {
       expect(

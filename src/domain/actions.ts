@@ -16,6 +16,7 @@ import {
   type Person,
   type Priority,
   type Project,
+  type ProjectMember,
   type Sprint,
 } from './schema';
 
@@ -34,6 +35,8 @@ export interface View {
   projectId: string;
   project: Project;
   people: Person[];
+  /** Участники проектов (ADR-016). */
+  members: ProjectMember[];
   sprints: Sprint[];
   issues: Issue[];
   links: Link[];
@@ -487,5 +490,7 @@ export function createProject(
     errors.key = 'Такой ключ уже занят, выберите другой';
   if (name.length === 0 || name.length > 100) errors.name = 'Введите название (до 100 символов)';
   if (Object.keys(errors).length > 0) return fail(errors);
-  return ok({ projects: [{ id: ctx.newId(), key, name, ...DEFAULT_SPRINT_SETTINGS }] });
+  return ok({
+    projects: [{ id: ctx.newId(), key, name, ownerId: null, ...DEFAULT_SPRINT_SETTINGS }],
+  });
 }

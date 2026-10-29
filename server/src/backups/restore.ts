@@ -189,6 +189,7 @@ export async function applyRestore(db: Db, snapshot: Snapshot): Promise<RestoreR
       t.links,
       t.issues,
       t.sprints,
+      t.projectMembers,
       t.users,
       t.people,
       t.projects,
@@ -198,6 +199,7 @@ export async function applyRestore(db: Db, snapshot: Snapshot): Promise<RestoreR
     await insertChunks((r) => tx.insert(t.projects).values(r), data.projects);
     await insertChunks((r) => tx.insert(t.people).values(r), data.people);
     await insertChunks((r) => tx.insert(t.users).values(r), users);
+    await insertChunks((r) => tx.insert(t.projectMembers).values(r), data.members);
     await insertChunks((r) => tx.insert(t.sprints).values(r), data.sprints);
     await insertChunks((r) => tx.insert(t.issues).values(r), data.issues);
     await insertChunks((r) => tx.insert(t.links).values(r), data.links);

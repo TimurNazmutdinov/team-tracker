@@ -20,6 +20,8 @@ export const projects = pgTable('projects', {
   sprintPrefix: text('sprint_prefix').notNull(),
   nextSprintNumber: integer('next_sprint_number').notNull(),
   nextSprintStart: text('next_sprint_start'),
+  /** Продакт-владелец проекта (ADR-016); без внешнего ключа: проекты и люди загружаются в любом порядке. */
+  ownerId: text('owner_id'),
 });
 
 export const people = pgTable('people', {
@@ -27,6 +29,22 @@ export const people = pgTable('people', {
   name: text('name').notNull(),
   role: text('role').notNull(),
 });
+
+/** Участники проекта с ролью в нём (ADR-016); владелец хранится в projects.owner_id. */
+export const projectMembers = pgTable(
+  'project_members',
+  {
+    id: text('id').primaryKey(),
+    projectId: text('project_id')
+      .notNull()
+      .references(() => projects.id),
+    personId: text('person_id')
+      .notNull()
+      .references(() => people.id),
+    role: text('role').notNull(),
+  },
+  (t) => [uniqueIndex('project_members_unique').on(t.projectId, t.personId)],
+);
 
 export const sprints = pgTable(
   'sprints',
@@ -132,6 +150,8 @@ export const users = pgTable('users', {
   mustChangePassword: boolean('must_change_password').notNull().default(false),
   /** Цветовая гамма интерфейса (ADR-013): хранится в профиле, видна с любого компьютера. */
   palette: text('palette').notNull().default('beige'),
+  /** Выбор проектов для фильтра (ADR-016): JSON {mode, keys}; пусто — выбор не сохранён. */
+  projectFilter: text('project_filter'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 

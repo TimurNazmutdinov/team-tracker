@@ -1,5 +1,14 @@
 import type { Changes } from '../../domain/changes';
-import type { Comment, History, Issue, Link, Person, Project, Sprint } from '../../domain/schema';
+import type {
+  Comment,
+  History,
+  Issue,
+  Link,
+  Person,
+  Project,
+  ProjectMember,
+  Sprint,
+} from '../../domain/schema';
 import { StorageError, type StorageErrorCode, type TrackerStorage } from '../types';
 
 const CODES: Record<number, StorageErrorCode> = {
@@ -59,6 +68,10 @@ export class ApiStorage implements TrackerStorage {
 
   getPeople() {
     return this.request<Person[]>('GET', '/people');
+  }
+
+  getMembers() {
+    return this.request<ProjectMember[]>('GET', '/members');
   }
 
   getSprints(projectId: string) {

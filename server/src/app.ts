@@ -6,6 +6,7 @@ import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest }
 import { z } from 'zod';
 import { PALETTES } from '../../src/domain/palettes';
 import { ROLES, can } from '../../src/domain/permissions';
+import { scopePrefSchema } from '../../src/domain/projectScope';
 import * as auth from './auth';
 import { changesSchema } from './changes-schema';
 import type { Db } from './db';
@@ -43,7 +44,12 @@ export interface AppOptions {
 const credentials = z.object({ email: z.string(), password: z.string() });
 const registration = credentials.extend({ name: z.string() });
 const roleBody = z.object({ role: z.enum(ROLES) });
-const preferencesBody = z.object({ palette: z.enum(PALETTES) });
+const preferencesBody = z
+  .object({ palette: z.enum(PALETTES), projectFilter: scopePrefSchema.nullable() })
+  .partial()
+  .refine((b) => b.palette !== undefined || b.projectFilter !== undefined, {
+    message: 'Нужно хотя бы одно поле',
+  });
 const newAccountBody = registration.extend({ role: z.enum(ROLES).optional() });
 const passwordBody = z.object({ password: z.string() });
 const changePasswordBody = z.object({ current: z.string(), next: z.string() });
@@ -180,9 +186,17 @@ export function buildApp(options: AppOptions): FastifyInstance {
   // Настройки профиля (цветовая гамма): доступны и до смены временного пароля
   app.patch('/api/auth/preferences', async (req) => {
     const me = await requireUser(req, true);
-    const { palette } = parse(preferencesBody, req.body);
-    await auth.setPalette(db, me.id, palette);
-    return { ...me, palette };
+    const body = parse(preferencesBody, req.body);
+    let next = me;
+    if (body.palette !== undefined) {
+      await auth.setPalette(db, me.id, body.palette);
+      next = { ...next, palette: body.palette };
+    }
+    if (body.projectFilter !== undefined) {
+      await auth.setProjectFilter(db, me.id, body.projectFilter);
+      next = { ...next, projectFilter: body.projectFilter };
+    }
+    return next;
   });
 
   app.post('/api/auth/password', async (req, reply) => {
@@ -356,6 +370,7 @@ export function buildApp(options: AppOptions): FastifyInstance {
 
   app.get('/api/projects', async (req) => (await requireUser(req), readers.projects(db)));
   app.get('/api/people', async (req) => (await requireUser(req), readers.people(db)));
+  app.get('/api/members', async (req) => (await requireUser(req), readers.members(db)));
 
   app.get<{ Params: { id: string } }>('/api/projects/:id/sprints', async (req) => {
     await requireUser(req);

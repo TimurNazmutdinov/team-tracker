@@ -32,10 +32,11 @@ export interface TakenSnapshot extends Snapshot {
 export function takeSnapshot(db: Db): Promise<TakenSnapshot> {
   return db.transaction(
     async (tx) => {
-      const [projects, people, sprints, issues, links, comments, history, users] =
+      const [projects, people, members, sprints, issues, links, comments, history, users] =
         await Promise.all([
           tx.select().from(t.projects),
           tx.select().from(t.people),
+          tx.select().from(t.projectMembers),
           tx.select().from(t.sprints),
           tx.select().from(t.issues),
           tx.select().from(t.links),
@@ -44,7 +45,16 @@ export function takeSnapshot(db: Db): Promise<TakenSnapshot> {
           tx.select().from(t.users),
         ]);
       const schemaVersion = await migrationCount(tx);
-      const data = { projects, people, sprints, issues, links, comments, history } as Entities;
+      const data = {
+        projects,
+        people,
+        members,
+        sprints,
+        issues,
+        links,
+        comments,
+        history,
+      } as Entities;
       const accounts: AccountRecord[] = users.flatMap((u) =>
         isRole(u.accessRole)
           ? [

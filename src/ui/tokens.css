@@ -59,11 +59,11 @@
     --danger-bg: #4f2a25;
     --warn: #e7b65c;
     --warn-bg: #4f3c1a;
-    --st-backlog: #4c443b;
-    --st-todo: #5a4d3f;
-    --st-progress: #435359;
-    --st-review: #6e5832;
-    --st-done: #48593f;
+    --st-backlog: #4a423a;
+    --st-todo: #4f4338;
+    --st-progress: #3b4950;
+    --st-review: #5a4727;
+    --st-done: #3e4e37;
     --extra-1: #c5bfaf;
     --extra-2: #b7a286;
     --extra-3: #abafa3;
@@ -113,7 +113,7 @@
     --line: #4b5563;
     --control-line: #7a8699;
     --ink: #f3f4f6;
-    --muted: #aeb6c2;
+    --muted: #ccd2dc;
     --accent: #93c5fd;
     --accent-ink: #111827;
     --accent-bg: #1e3a8a;
