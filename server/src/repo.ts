@@ -53,15 +53,37 @@ export const readers = {
 
 type Tx = Parameters<Parameters<Db['transaction']>[0]>[0];
 
-async function loadDataset(db: Db | Tx): Promise<Dataset> {
+/**
+ * Набор данных для проверки изменений. С `projectIds` — только эти проекты (их спринты, задачи, связи,
+ * комментарии, история) и все люди: проверки целостности и прав не выходят за границы проекта, а
+ * загрузка и разбор всей базы на каждую запись замедляют работу на тысячах задач (ADR-015).
+ */
+async function loadDataset(db: Db | Tx, projectIds?: string[]): Promise<Dataset> {
+  const scoped = projectIds !== undefined;
+  const ids = projectIds ?? [];
+  const issueIds = scoped
+    ? db.select({ id: t.issues.id }).from(t.issues).where(inArray(t.issues.projectId, ids))
+    : null;
   const [projects, people, sprints, issues, links, comments, history] = await Promise.all([
-    db.select().from(t.projects),
+    scoped
+      ? db.select().from(t.projects).where(inArray(t.projects.id, ids))
+      : db.select().from(t.projects),
     db.select().from(t.people),
-    db.select().from(t.sprints),
-    db.select().from(t.issues),
-    db.select().from(t.links),
-    db.select().from(t.comments),
-    db.select().from(t.history),
+    scoped
+      ? db.select().from(t.sprints).where(inArray(t.sprints.projectId, ids))
+      : db.select().from(t.sprints),
+    scoped
+      ? db.select().from(t.issues).where(inArray(t.issues.projectId, ids))
+      : db.select().from(t.issues),
+    issueIds
+      ? db.select().from(t.links).where(inArray(t.links.fromId, issueIds))
+      : db.select().from(t.links),
+    issueIds
+      ? db.select().from(t.comments).where(inArray(t.comments.issueId, issueIds))
+      : db.select().from(t.comments),
+    issueIds
+      ? db.select().from(t.history).where(inArray(t.history.issueId, issueIds))
+      : db.select().from(t.history),
   ]);
   return {
     version: DATASET_VERSION,
@@ -73,6 +95,41 @@ async function loadDataset(db: Db | Tx): Promise<Dataset> {
     comments,
     history,
   } as Dataset;
+}
+
+/** Проекты, которых касается набор изменений: свои и те, где лежат упомянутые задачи и связи. */
+async function touchedProjects(tx: Tx, changes: Changes): Promise<string[]> {
+  const out = new Set<string>();
+  for (const p of changes.projects ?? []) out.add(p.id);
+  for (const s of changes.sprints ?? []) out.add(s.projectId);
+  for (const i of changes.issues ?? []) out.add(i.projectId);
+  const issueIds = new Set<string>();
+  for (const i of changes.issues ?? []) issueIds.add(i.id);
+  for (const l of changes.links ?? []) {
+    issueIds.add(l.fromId);
+    issueIds.add(l.toId);
+  }
+  for (const c of changes.comments ?? []) issueIds.add(c.issueId);
+  for (const h of changes.history ?? []) issueIds.add(h.issueId);
+  const removed = changes.deleteLinkIds ?? [];
+  if (removed.length > 0) {
+    const rows = await tx
+      .select({ fromId: t.links.fromId, toId: t.links.toId })
+      .from(t.links)
+      .where(inArray(t.links.id, removed));
+    for (const r of rows) {
+      issueIds.add(r.fromId);
+      issueIds.add(r.toId);
+    }
+  }
+  if (issueIds.size > 0) {
+    const rows = await tx
+      .select({ projectId: t.issues.projectId })
+      .from(t.issues)
+      .where(inArray(t.issues.id, [...issueIds]));
+    for (const r of rows) out.add(r.projectId);
+  }
+  return [...out];
 }
 
 function upsert<T extends { id: string }>(target: T[], items: T[] | undefined): void {
@@ -133,7 +190,7 @@ export async function commit(
   try {
     await db.transaction(async (tx) => {
       await lockWrites(tx);
-      const current = await loadDataset(tx);
+      const current = await loadDataset(tx, await touchedProjects(tx, changes));
 
       const denied = violations(user.role, user.id, current, changes);
       if (denied.length > 0) {

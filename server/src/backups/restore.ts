@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { sql } from 'drizzle-orm';
 import type { BackupCounts } from '../../../src/domain/backups';
+import { insertChunks } from '../bulk';
 import { schema, type Db } from '../db';
 import { hashPassword, temporaryPassword } from '../passwords';
 import { lockWrites } from '../repo';
@@ -146,14 +147,6 @@ export async function loadBundle(
 export interface RestoreResult {
   /** Учётки без пароля в копии получили временные: показать один раз. */
   temporaryPasswords: { email: string; password: string }[];
-}
-
-async function insertChunks<T extends object>(
-  insert: (rows: T[]) => PromiseLike<unknown>,
-  rows: T[],
-  size = 500,
-): Promise<void> {
-  for (let i = 0; i < rows.length; i += size) await insert(rows.slice(i, i + size));
 }
 
 /** Заменяет ВСЕ данные трекера данными из снимка в одной транзакции; сессии входа закрываются. */

@@ -16,6 +16,7 @@
     "server": "tsx server/src/main.ts",
     "server:dev": "tsx watch server/src/main.ts",
     "db:seed": "tsx server/src/seed-cli.ts",
+    "load:data": "tsx server/src/loadgen-cli.ts",
     "db:generate": "drizzle-kit generate --config server/drizzle.config.ts",
     "start": "node scripts/start.mjs",
     "admin:create": "tsx server/src/admin-cli.ts",

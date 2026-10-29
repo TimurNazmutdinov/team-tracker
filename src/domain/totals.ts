@@ -18,6 +18,28 @@ export interface Snapshot {
   points: number | null;
 }
 
+/**
+ * События истории по задачам. Индекс строится один раз для массива истории и запоминается, поэтому
+ * расчёт по тысячам задач не перебирает всю историю заново для каждой (ADR-015: скорость).
+ * Порядок событий внутри задачи сохраняется — он нужен для равных моментов.
+ */
+const indexCache = new WeakMap<History[], { length: number; byIssue: Map<string, History[]> }>();
+
+function eventsOf(history: History[], issueId: string): History[] {
+  let cached = indexCache.get(history);
+  if (!cached || cached.length !== history.length) {
+    const byIssue = new Map<string, History[]>();
+    for (const h of history) {
+      const list = byIssue.get(h.issueId);
+      if (list) list.push(h);
+      else byIssue.set(h.issueId, [h]);
+    }
+    cached = { length: history.length, byIssue };
+    indexCache.set(history, cached);
+  }
+  return cached.byIssue.get(issueId) ?? [];
+}
+
 /** События в обратном порядке: новые сверху; при равных моментах — позднее записанные раньше. */
 function newestFirst(events: History[]): History[] {
   return events
@@ -34,7 +56,7 @@ export function valuesAt(issue: Issue, events: History[], t: string): Snapshot {
     assigneeId: issue.assigneeId,
     points: issue.points,
   };
-  for (const e of newestFirst(events.filter((h) => h.issueId === issue.id && h.at > t))) {
+  for (const e of newestFirst(eventsOf(events, issue.id).filter((h) => h.at > t))) {
     if (e.field === 'status' && e.from !== null) snap.status = e.from as Status;
     if (e.field === 'assigneeId') snap.assigneeId = e.from;
     if (e.field === 'points') snap.points = e.from === null ? null : Number(e.from);
@@ -46,7 +68,7 @@ export function valuesAt(issue: Issue, events: History[], t: string): Snapshot {
 export function sprintIdAt(issue: Issue, events: History[], t: string): string | null {
   let sprintId = issue.sprintId;
   for (const e of newestFirst(
-    events.filter((h) => h.issueId === issue.id && h.field === 'sprintId' && h.at > t),
+    eventsOf(events, issue.id).filter((h) => h.field === 'sprintId' && h.at > t),
   )) {
     sprintId = e.from;
   }
@@ -57,7 +79,7 @@ export function sprintIdAt(issue: Issue, events: History[], t: string): string |
 export function sprintIdBefore(issue: Issue, events: History[], t: string): string | null {
   let sprintId = issue.sprintId;
   for (const e of newestFirst(
-    events.filter((h) => h.issueId === issue.id && h.field === 'sprintId' && h.at >= t),
+    eventsOf(events, issue.id).filter((h) => h.field === 'sprintId' && h.at >= t),
   )) {
     sprintId = e.from;
   }
