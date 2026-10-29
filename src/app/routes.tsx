@@ -1,6 +1,7 @@
 import { Navigate, type RouteObject } from 'react-router';
 import { BacklogPage } from '../modules/backlog/BacklogPage';
 import { BoardPage } from '../modules/board/BoardPage';
+import { HistoryPage } from '../modules/board/HistoryPage';
 import { PeoplePage } from '../modules/people/PeoplePage';
 import { HomePage, ProjectsPage } from '../modules/projects/ProjectsPage';
 import { ProjectRoute } from '../modules/projects/ProjectRoute';
@@ -28,6 +29,7 @@ export const routes: RouteObject[] = [
           { index: true, element: <Navigate to="backlog" replace /> },
           { path: 'backlog', element: <BacklogPage /> },
           { path: 'board', element: <BoardPage /> },
+          { path: 'history', element: <HistoryPage /> },
           { path: 'sprints', element: <SprintsPage /> },
           { path: 'sprints/:id', element: <SprintsPage /> },
           { path: 'issues/:number', element: <IssuePage /> },

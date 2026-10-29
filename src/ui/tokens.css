@@ -14,8 +14,8 @@
 :root,
 :root[data-palette='beige'] {
   color-scheme: light;
-  --bg: #ecece2;
-  --panel: #f7f6f0;
+  --bg: #f7f6f0;
+  --panel: #ecece2;
   --line: #c5bfaf;
   --control-line: #8a7f70;
   --ink: #484039;

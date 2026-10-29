@@ -1,0 +1,16 @@
+/** Дата ГГГГ-ММ-ДД → ДД.ММ. */
+export const shortDate = (d: string) => `${d.slice(8, 10)}.${d.slice(5, 7)}`;
+
+/** Диапазон дат спринта: 09.11 – 20.11. */
+export const dateRange = (start: string, end: string) => `${shortDate(start)} – ${shortDate(end)}`;
+
+/** Число с десятичной запятой: 17.5 → «17,5». */
+export const num = (n: number) => String(n).replace('.', ',');
+
+/** Слово «задача» в нужной форме для числа: 1 задача, 2 задачи, 5 задач. */
+export const taskWord = (n: number) =>
+  n % 10 === 1 && n % 100 !== 11
+    ? 'задача'
+    : 2 <= n % 10 && n % 10 <= 4 && !(12 <= n % 100 && n % 100 <= 14)
+      ? 'задачи'
+      : 'задач';

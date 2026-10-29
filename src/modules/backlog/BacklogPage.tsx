@@ -21,15 +21,38 @@ import { CSS } from '@dnd-kit/utilities';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { containerItems, type View } from '../../domain/actions';
+import { canHavePoints } from '../../domain/hierarchy';
+import {
+  NO_PLANNING_FILTERS,
+  allLabels,
+  fillOf,
+  filtersActive,
+  matchesFilters,
+  sprintCapacity,
+  totalPoints,
+  unestimated,
+  type Capacity,
+  type PlanningFilters,
+} from '../../domain/planning';
 import { epicProgress, type EpicProgress } from '../../domain/progress';
-import type { Issue, Person, Sprint } from '../../domain/schema';
+import {
+  ISSUE_TYPES,
+  PRIORITIES,
+  type Issue,
+  type IssueType,
+  type Person,
+  type Priority,
+  type Sprint,
+} from '../../domain/schema';
 import { useActions } from '../../state/actions';
 import { usePermissions } from '../../state/current-user';
 import { useCreateDialog } from '../../state/create-dialog';
 import { useNotices } from '../../state/notices';
-import { useView } from '../../state/queries';
+import { useProjectHistory, useView } from '../../state/queries';
+import { dateRange, num, taskWord } from '../../ui/format';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
+import { FillIndicator } from '../planning/FillIndicator';
 import { useCurrentProject } from '../projects/ProjectRoute';
 import {
   Avatar,
@@ -44,16 +67,24 @@ const BACKLOG = 'backlog';
 const containerId = (sprintId: string | null) => `container:${sprintId ?? BACKLOG}`;
 const STATE_LABEL = { planned: 'запланирован', active: 'идёт', closed: 'закрыт' } as const;
 
-const fmt = (d: string) => `${d.slice(8, 10)}.${d.slice(5, 7)}`;
-
 interface RowProps {
   issue: Issue;
   projectKey: string;
   people: Person[];
+  epic: Issue | undefined;
   subtasks: Issue[];
   progress?: EpicProgress | undefined;
-  sprints: Sprint[];
-  onMove: (issueId: string, sprintId: string | null) => void;
+  /** Можно ли менять порядок, приоритет, оценку и исполнителя (право backlog.rank). */
+  canEdit: boolean;
+  /** Можно ли выбирать задачу для переноса в спринт (право sprint.items). */
+  canMove: boolean;
+  selected: boolean;
+  onSelect: (issueId: string, on: boolean) => void;
+  onEdit: (
+    issueId: string,
+    patch: { priority?: Priority; points?: number | null; assigneeId?: string | null },
+  ) => void;
+  showStatus: boolean;
   nested?: boolean;
 }
 
@@ -61,30 +92,55 @@ function IssueRow({
   issue,
   projectKey,
   people,
+  epic,
   subtasks,
   progress,
-  sprints,
-  onMove,
+  canEdit,
+  canMove,
+  selected,
+  onSelect,
+  onEdit,
+  showStatus,
   nested = false,
 }: RowProps) {
   const [expanded, setExpanded] = useState(false);
-  const perms = usePermissions();
-  const canRank = perms.can('backlog.rank');
-  const sortable = useSortable({ id: issue.id, disabled: nested || !canRank });
+  const sortable = useSortable({ id: issue.id, disabled: nested || !canEdit });
   const style = {
     transform: CSS.Transform.toString(sortable.transform),
     transition: sortable.transition,
   };
   const assignee = people.find((p) => p.id === issue.assigneeId);
   const key = `${projectKey}-${issue.number}`;
+  const editable = canEdit && !nested;
+  const [draft, setDraft] = useState<string | null>(null);
+
+  const commitPoints = () => {
+    if (draft === null) return;
+    const text = draft.trim();
+    setDraft(null);
+    const next = text === '' ? null : Number(text);
+    if (next !== null && (!Number.isInteger(next) || next < 0)) return;
+    if (next !== issue.points) onEdit(issue.id, { points: next });
+  };
+
   return (
     <>
       <li
         ref={nested ? undefined : sortable.setNodeRef}
         style={nested ? undefined : style}
-        className={`issue-row${nested ? ' nested' : ''}${sortable.isDragging ? ' dragging' : ''}`}
+        className={`issue-row planning-row${nested ? ' nested' : ''}${sortable.isDragging ? ' dragging' : ''}`}
       >
-        {nested || !canRank ? (
+        {nested || !canMove ? (
+          <span className="handle-space" />
+        ) : (
+          <input
+            type="checkbox"
+            checked={selected}
+            aria-label={`Выбрать ${key}`}
+            onChange={(e) => onSelect(issue.id, e.target.checked)}
+          />
+        )}
+        {nested || !canEdit ? (
           <span className="handle-space" />
         ) : (
           <button
@@ -102,49 +158,100 @@ function IssueRow({
         <Link to={`/projects/${projectKey}/issues/${issue.number}`} className="issue-key">
           {key}
         </Link>
-        <span className="issue-title">
-          <Link to={`/projects/${projectKey}/issues/${issue.number}`}>{issue.title}</Link>
-          {subtasks.length > 0 && (
-            <button
-              type="button"
-              className="chip subtasks"
-              aria-expanded={expanded}
-              onClick={() => setExpanded(!expanded)}
-              title="Показать подзадачи"
-            >
-              ↳ {subtasks.length}
-            </button>
+        <span className="issue-cell">
+          <span className="issue-title">
+            <Link to={`/projects/${projectKey}/issues/${issue.number}`}>{issue.title}</Link>
+            {subtasks.length > 0 && (
+              <button
+                type="button"
+                className="chip subtasks"
+                aria-expanded={expanded}
+                onClick={() => setExpanded(!expanded)}
+                title="Показать подзадачи"
+              >
+                ↳ {subtasks.length}
+              </button>
+            )}
+          </span>
+          {(epic || issue.labels.length > 0) && (
+            <span className="row-meta">
+              {epic && (
+                <Link
+                  to={`/projects/${projectKey}/issues/${epic.number}`}
+                  className="chip"
+                  title="Эпик"
+                >
+                  {epic.title}
+                </Link>
+              )}
+
+              {issue.labels.slice(0, 2).map((l) => (
+                <span key={l} className="chip label">
+                  {l}
+                </span>
+              ))}
+              {issue.labels.length > 2 && (
+                <span className="muted small" title={issue.labels.slice(2).join(', ')}>
+                  +{issue.labels.length - 2}
+                </span>
+              )}
+            </span>
           )}
         </span>
-        <PriorityChip priority={issue.priority} />
-        <StatusChip status={issue.status} />
+        {editable ? (
+          <select
+            className="row-field"
+            aria-label={`Приоритет ${key}`}
+            value={issue.priority}
+            onChange={(e) => onEdit(issue.id, { priority: e.target.value as Priority })}
+          >
+            {PRIORITIES.map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <PriorityChip priority={issue.priority} />
+        )}
+        {showStatus ? <StatusChip status={issue.status} /> : <span />}
         {progress ? (
           <EpicProgressView progress={progress} compact />
+        ) : editable && canHavePoints(issue.type) ? (
+          <input
+            type="number"
+            min={0}
+            step={1}
+            className={`row-field points-input${issue.points === null ? ' unset' : ''}`}
+            aria-label={`Story points ${key}`}
+            placeholder="—"
+            value={draft ?? (issue.points === null ? '' : String(issue.points))}
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={commitPoints}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') e.currentTarget.blur();
+              if (e.key === 'Escape') setDraft(null);
+            }}
+          />
         ) : (
           <PointsBadge points={issue.points} />
         )}
-        <Avatar person={assignee} />
-        {nested || !perms.can('sprint.items') ? (
-          <span />
-        ) : (
+        {editable ? (
           <select
-            className="move"
-            aria-label={`Переместить ${key}`}
-            value=""
-            onChange={(e) => onMove(issue.id, e.target.value === BACKLOG ? null : e.target.value)}
+            className={`row-field${assignee ? '' : ' unset'}`}
+            aria-label={`Исполнитель ${key}`}
+            value={issue.assigneeId ?? ''}
+            onChange={(e) => onEdit(issue.id, { assigneeId: e.target.value || null })}
           >
-            <option value="" disabled>
-              Переместить…
-            </option>
-            {issue.sprintId !== null && <option value={BACKLOG}>В бэклог</option>}
-            {sprints
-              .filter((s) => s.state !== 'closed' && s.id !== issue.sprintId)
-              .map((s) => (
-                <option key={s.id} value={s.id}>
-                  В {s.name}
-                </option>
-              ))}
+            <option value="">Не назначен</option>
+            {people.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
           </select>
+        ) : (
+          <Avatar person={assignee} />
         )}
       </li>
       {expanded &&
@@ -154,9 +261,14 @@ function IssueRow({
             issue={s}
             projectKey={projectKey}
             people={people}
+            epic={undefined}
             subtasks={[]}
-            sprints={sprints}
-            onMove={onMove}
+            canEdit={false}
+            canMove={false}
+            selected={false}
+            onSelect={onSelect}
+            onEdit={onEdit}
+            showStatus={showStatus}
             nested
           />
         ))}
@@ -168,44 +280,71 @@ interface SectionProps {
   title: string;
   sprint: Sprint | null;
   view: View;
+  /** Все задачи списка и показанные под фильтрами. */
+  all: Issue[];
   items: Issue[];
+  capacity: Capacity | null;
+  filtered: boolean;
   projectKey: string;
-  onMove: (issueId: string, sprintId: string | null) => void;
+  canEdit: boolean;
+  canMove: boolean;
+  selected: Set<string>;
+  onSelect: (issueId: string, on: boolean) => void;
+  onEdit: RowProps['onEdit'];
 }
 
-function Section({ title, sprint, view, items, projectKey, onMove }: SectionProps) {
+function Section({
+  title,
+  sprint,
+  view,
+  all,
+  items,
+  capacity,
+  filtered,
+  projectKey,
+  canEdit,
+  canMove,
+  selected,
+  onSelect,
+  onEdit,
+}: SectionProps) {
   const [collapsed, setCollapsed] = useState(false);
   const droppable = useDroppable({ id: containerId(sprint?.id ?? null) });
-  const points = items.reduce((sum, i) => sum + (i.points ?? 0), 0);
+  const points = totalPoints(all);
+  const epics = new Map(view.issues.filter((i) => i.type === 'Epic').map((i) => [i.id, i]));
   return (
     <section className="backlog-section" aria-label={title}>
-      <header className="section-head">
-        <button
-          type="button"
-          className="plain"
-          aria-expanded={!collapsed}
-          onClick={() => setCollapsed(!collapsed)}
-        >
-          {collapsed ? '▸' : '▾'} <strong>{title}</strong>
-        </button>
-        {sprint ? (
-          <>
-            <span className={`chip state-${sprint.state}`}>{STATE_LABEL[sprint.state]}</span>
+      <header className="section-head planning-head">
+        <div className="section-line">
+          <button
+            type="button"
+            className="plain"
+            aria-expanded={!collapsed}
+            onClick={() => setCollapsed(!collapsed)}
+          >
+            {collapsed ? '▸' : '▾'} <strong>{title}</strong>
+          </button>
+          {sprint ? (
+            <>
+              <span className={`chip state-${sprint.state}`}>{STATE_LABEL[sprint.state]}</span>
+              <span className="muted">{dateRange(sprint.start, sprint.end)}</span>
+            </>
+          ) : (
             <span className="muted">
-              {fmt(sprint.start)} – {fmt(sprint.end)}
+              {all.length} {taskWord(all.length)} · {num(points)} sp
+              {unestimated(all) > 0 && ` · без оценки: ${unestimated(all)}`}
             </span>
-            <span className="spacer" />
-            <strong>{points} sp</strong>
-          </>
-        ) : (
-          <>
-            <span className="muted">
-              {items.length === 1 ? '1 задача' : `${items.length} задач`}
+          )}
+          {filtered && (
+            <span className="muted small">
+              показано {items.length} из {all.length}
             </span>
-            <span className="spacer" />
-            <strong>{points} sp</strong>
-          </>
+          )}
+        </div>
+        {sprint && capacity && (
+          <FillIndicator fill={fillOf(points, capacity.value)} capacity={capacity} />
         )}
+        {sprint && !capacity && <strong>{num(points)} sp</strong>}
       </header>
       {sprint && sprint.goal && !collapsed && <p className="muted goal">Цель: {sprint.goal}</p>}
       {!collapsed && (
@@ -217,15 +356,26 @@ function Section({ title, sprint, view, items, projectKey, onMove }: SectionProp
                 issue={issue}
                 projectKey={projectKey}
                 people={view.people}
+                epic={issue.parentId ? epics.get(issue.parentId) : undefined}
                 progress={issue.type === 'Epic' ? epicProgress(view.issues, issue.id) : undefined}
                 subtasks={view.issues
                   .filter((s) => s.type === 'Sub-task' && s.parentId === issue.id)
                   .sort((a, b) => a.order - b.order)}
-                sprints={view.sprints}
-                onMove={onMove}
+                canEdit={canEdit}
+                canMove={canMove}
+                selected={selected.has(issue.id)}
+                onSelect={onSelect}
+                onEdit={onEdit}
+                showStatus={sprint?.state === 'active'}
               />
             ))}
-            {items.length === 0 && <li className="drop-hint">Перетащите задачи сюда</li>}
+            {items.length === 0 && (
+              <li className="drop-hint">
+                {filtered && all.length > 0
+                  ? 'Нет задач, подходящих под фильтры'
+                  : 'Перетащите задачи сюда'}
+              </li>
+            )}
           </ul>
         </SortableContext>
       )}
@@ -233,27 +383,137 @@ function Section({ title, sprint, view, items, projectKey, onMove }: SectionProp
   );
 }
 
-/** Экран «Бэклог» (wireframes.md, раздел 4): списки спринтов и бэклога, порядок перетаскиванием. */
+interface FiltersBarProps {
+  view: View;
+  projectKey: string;
+  filters: PlanningFilters;
+  onChange: (f: PlanningFilters) => void;
+  shown: number;
+}
+
+function FiltersBar({ view, filters, onChange, shown }: FiltersBarProps) {
+  const epics = view.issues.filter((i) => i.type === 'Epic');
+  const labels = allLabels(view.issues);
+  const set = (patch: Partial<PlanningFilters>) => onChange({ ...filters, ...patch });
+  return (
+    <div className="board-toolbar planning-filters" role="search" aria-label="Фильтры бэклога">
+      <label>
+        Поиск
+        <input
+          type="search"
+          value={filters.search}
+          placeholder="Номер или название"
+          onChange={(e) => set({ search: e.target.value })}
+        />
+      </label>
+      <label>
+        Эпик
+        <select
+          value={filters.epicId ?? ''}
+          onChange={(e) => set({ epicId: e.target.value || null })}
+        >
+          <option value="">Все</option>
+          {epics.map((e) => (
+            <option key={e.id} value={e.id}>
+              {e.title}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        Исполнитель
+        <select
+          value={filters.assigneeId ?? ''}
+          onChange={(e) => set({ assigneeId: e.target.value || null })}
+        >
+          <option value="">Все</option>
+          {view.people.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.name}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        Метка
+        <select
+          value={filters.label ?? ''}
+          onChange={(e) => set({ label: e.target.value || null })}
+        >
+          <option value="">Все</option>
+          {labels.map((l) => (
+            <option key={l} value={l}>
+              {l}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        Тип
+        <select
+          value={filters.type ?? ''}
+          onChange={(e) => set({ type: (e.target.value || null) as IssueType | null })}
+        >
+          <option value="">Все</option>
+          {ISSUE_TYPES.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="check">
+        <input
+          type="checkbox"
+          checked={filters.noEstimate}
+          onChange={(e) => set({ noEstimate: e.target.checked })}
+        />
+        Без оценки
+      </label>
+      <label className="check">
+        <input
+          type="checkbox"
+          checked={filters.noAssignee}
+          onChange={(e) => set({ noAssignee: e.target.checked })}
+        />
+        Без исполнителя
+      </label>
+      <span className="spacer" />
+      {filtersActive(filters) && (
+        <button type="button" onClick={() => onChange(NO_PLANNING_FILTERS)}>
+          Сбросить
+        </button>
+      )}
+      <span className="muted" role="status">
+        {shown} {taskWord(shown)}
+      </span>
+    </div>
+  );
+}
+
+/**
+ * Вкладка «Планирование будущих спринтов» (wireframes.md, 17.4, ADR-014): идущий и запланированные
+ * спринты и общий бэклог одним списком, заполнение спринтов, фильтры, быстрая правка и перенос.
+ */
 export function BacklogPage() {
   const project = useCurrentProject();
   const view = useView(project.id);
+  const history = useProjectHistory(project.id);
   const actions = useActions(project.id);
+  const perms = usePermissions();
   const showCreate = useCreateDialog((s) => s.show);
   const push = useNotices((s) => s.push);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [filters, setFilters] = useState<PlanningFilters>(NO_PLANNING_FILTERS);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
+  const canEdit = perms.can('backlog.rank');
+  const canMove = perms.can('sprint.items');
 
   const report = (errors: Record<string, string>) => push(Object.values(errors).join('. '));
-
-  const move = async (issueId: string, sprintId: string | null) => {
-    if (!view) return;
-    const index = containerItems(view, sprintId).filter((i) => i.id !== issueId).length;
-    const result = await actions.moveIssue(issueId, { sprintId, index });
-    if (!result.ok) report(result.errors);
-  };
 
   const onDragEnd = async (e: DragEndEvent) => {
     setActiveId(null);
@@ -279,6 +539,40 @@ export function BacklogPage() {
 
   const onDragStart = (e: DragStartEvent) => setActiveId(String(e.active.id));
 
+  const edit: RowProps['onEdit'] = async (issueId, patch) => {
+    const result = await actions.updateIssue(issueId, patch);
+    if (!result.ok) report(result.errors);
+  };
+
+  const select = (issueId: string, on: boolean) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (on) next.add(issueId);
+      else next.delete(issueId);
+      return next;
+    });
+
+  /** Пакетный перенос: выбранные задачи встают в конец целевого списка в порядке их показа. */
+  const moveSelected = async (target: string) => {
+    if (!view || target === '') return;
+    const sprintId = target === BACKLOG ? null : target;
+    const ids = view.issues
+      .filter((i) => selected.has(i.id))
+      .sort((a, b) => a.order - b.order)
+      .map((i) => i.id);
+    let moved = 0;
+    for (const id of ids) {
+      const index = containerItems(view, sprintId).length + moved;
+      const result = await actions.moveIssue(id, { sprintId, index });
+      if (!result.ok) {
+        report(result.errors);
+        break;
+      }
+      moved += 1;
+    }
+    setSelected(new Set());
+  };
+
   const sprints = (view?.sprints ?? [])
     .filter((s) => s.state !== 'closed')
     .sort(
@@ -287,10 +581,26 @@ export function BacklogPage() {
         a.start.localeCompare(b.start),
     );
   const activeIssue = view?.issues.find((i) => i.id === activeId);
+  const capacity =
+    view && history.data ? sprintCapacity(view.sprints, view.issues, history.data) : null;
+  const filtered = filtersActive(filters);
+  const listOf = (sprintId: string | null) => {
+    if (!view) return { all: [] as Issue[], items: [] as Issue[] };
+    const all = containerItems(view, sprintId);
+    const items = filtered
+      ? all.filter((i) => matchesFilters(i, `${project.key}-${i.number}`, filters))
+      : all;
+    return { all, items };
+  };
+  const shown = view
+    ? [...sprints.map((s) => s.id), null].reduce((n, id) => n + listOf(id).items.length, 0)
+    : 0;
+  const selectedPoints = view ? totalPoints(view.issues.filter((i) => selected.has(i.id))) : 0;
+  const selectedCount = selected.size;
 
   return (
-    <>
-      <PageHeader title="Бэклог">
+    <div className="planning-page">
+      <PageHeader title="Планирование будущих спринтов">
         <button type="button" className="primary" onClick={() => showCreate()}>
           + Создать задачу
         </button>
@@ -305,48 +615,98 @@ export function BacklogPage() {
           </button>
         </div>
       ) : (
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCorners}
-          onDragStart={onDragStart}
-          onDragEnd={(e) => void onDragEnd(e)}
-          onDragCancel={() => setActiveId(null)}
-        >
-          {sprints.map((s) => (
-            <Section
-              key={s.id}
-              title={s.name}
-              sprint={s}
-              view={view}
-              items={containerItems(view, s.id)}
-              projectKey={project.key}
-              onMove={(id, to) => void move(id, to)}
-            />
-          ))}
-          <Section
-            title="Бэклог"
-            sprint={null}
+        <>
+          <FiltersBar
             view={view}
-            items={containerItems(view, null)}
             projectKey={project.key}
-            onMove={(id, to) => void move(id, to)}
+            filters={filters}
+            onChange={setFilters}
+            shown={shown}
           />
-          <DragOverlay>
-            {activeIssue ? (
-              <div className="issue-row overlay">
-                <TypeIcon type={activeIssue.type} />
-                <strong>
-                  {project.key}-{activeIssue.number}
-                </strong>
-                <span>{activeIssue.title}</span>
-              </div>
-            ) : null}
-          </DragOverlay>
-        </DndContext>
+          {selectedCount > 0 && (
+            <div className="bulk-bar" role="region" aria-label="Перенос выбранных задач">
+              <strong>
+                Выбрано {selectedCount} · {num(selectedPoints)} sp
+              </strong>
+              <label>
+                Перенести в
+                <select value="" onChange={(e) => void moveSelected(e.target.value)}>
+                  <option value="" disabled>
+                    выберите…
+                  </option>
+                  {sprints.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                  <option value={BACKLOG}>Общий бэклог</option>
+                </select>
+              </label>
+              <button type="button" onClick={() => setSelected(new Set())}>
+                Снять выбор
+              </button>
+            </div>
+          )}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCorners}
+            onDragStart={onDragStart}
+            onDragEnd={(e) => void onDragEnd(e)}
+            onDragCancel={() => setActiveId(null)}
+          >
+            {sprints.map((s) => (
+              <Section
+                key={s.id}
+                title={s.name}
+                sprint={s}
+                view={view}
+                {...listOf(s.id)}
+                capacity={capacity}
+                filtered={filtered}
+                projectKey={project.key}
+                canEdit={canEdit}
+                canMove={canMove}
+                selected={selected}
+                onSelect={select}
+                onEdit={(id, patch) => void edit(id, patch)}
+              />
+            ))}
+            <Section
+              title="Общий бэклог"
+              sprint={null}
+              view={view}
+              {...listOf(null)}
+              capacity={capacity}
+              filtered={filtered}
+              projectKey={project.key}
+              canEdit={canEdit}
+              canMove={canMove}
+              selected={selected}
+              onSelect={select}
+              onEdit={(id, patch) => void edit(id, patch)}
+            />
+            <DragOverlay>
+              {activeIssue ? (
+                <div className="issue-row overlay">
+                  <TypeIcon type={activeIssue.type} />
+                  <strong>
+                    {project.key}-{activeIssue.number}
+                  </strong>
+                  <span>{activeIssue.title}</span>
+                </div>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
+        </>
       )}
       <p className="muted small">
-        Порядок задаётся перетаскиванием за ручку ⋮⋮ (с клавиатуры: Пробел, стрелки, Пробел) или
-        списком «Переместить…». Подзадачи показываются внутри родителя и переносятся вместе с ним.
+        Порядок задаётся перетаскиванием за ручку ⋮⋮ (с клавиатуры: Пробел, стрелки, Пробел) между
+        любыми спринтами и бэклогом; несколько задач сразу — отметкой и списком «Перенести в».
+        Оценка, приоритет и исполнитель правятся прямо в строке. Подзадачи показываются внутри
+        родителя и переносятся вместе с ним.
+      </p>
+      <p>
+        <Link to={`/projects/${project.key}/history`}>Выполненные спринты</Link>
       </p>
       {view && view.issues.length > 0 && !view.sprints.some((s) => s.state !== 'closed') && (
         <p className="warn">
@@ -354,6 +714,6 @@ export function BacklogPage() {
           <Link to={`/projects/${project.key}/sprints`}>«Спринты»</Link>.
         </p>
       )}
-    </>
+    </div>
   );
 }
