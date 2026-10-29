@@ -12,7 +12,7 @@ if errorlevel 1 (
 
 if not exist node_modules (
   echo Первый запуск: устанавливаю зависимости, это займёт пару минут...
-  call npm install
+  call npm ci
   if errorlevel 1 (
     echo Не удалось установить зависимости.
     pause
