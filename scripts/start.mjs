@@ -11,9 +11,58 @@ try {
   // .env нет — значения по умолчанию
 }
 
-if (!existsSync('node_modules')) {
-  console.error('Не установлены зависимости. Выполните: npm install');
-  process.exit(1);
+const port = process.env.PORT || '3000';
+
+// Браузер: на Windows через cmd, на macOS и Linux — open и xdg-open
+function openBrowser(url) {
+  if (process.platform === 'win32') {
+    spawn('cmd.exe', ['/c', 'start', '""', url], {
+      stdio: 'ignore',
+      detached: true,
+      windowsVerbatimArguments: true,
+    }).unref();
+  } else {
+    spawn(process.platform === 'darwin' ? 'open' : 'xdg-open', [url], {
+      stdio: 'ignore',
+      detached: true,
+    })
+      .on('error', () => {})
+      .unref();
+  }
+}
+
+// Трекер уже работает: второй не запускаем и зависимости под ним не трогаем. Повторный двойной
+// щелчок по start.cmd просто открывает браузер.
+const running = await fetch(`http://127.0.0.1:${port}/api/health`, {
+  signal: AbortSignal.timeout(1500),
+})
+  .then((r) => r.ok)
+  .catch(() => false);
+if (running) {
+  console.log(`Трекер уже запущен: http://localhost:${port}`);
+  if (process.argv.includes('--open')) openBrowser(`http://localhost:${port}`);
+  process.exit(0);
+}
+
+// --- зависимости: ставятся при первом запуске и сами обновляются, когда изменился package-lock.json
+// (например, после git pull). npm ci ставит ровно по lock-файлу и сам его не меняет, поэтому
+// следующий git pull не упирается в изменённый package-lock.json.
+function depsOutdated() {
+  const installed = join('node_modules', '.package-lock.json');
+  if (!existsSync(installed)) return true;
+  return statSync('package-lock.json').mtimeMs > statSync(installed).mtimeMs;
+}
+
+if (!existsSync('node_modules') || depsOutdated()) {
+  console.log('Устанавливаю зависимости (npm ci), это займёт пару минут…');
+  const install = spawnSync('npm', ['ci', '--no-audit', '--no-fund'], {
+    stdio: 'inherit',
+    shell: true,
+  });
+  if (install.status !== 0) {
+    console.error('Не удалось установить зависимости. Выполните вручную: npm ci');
+    process.exit(install.status ?? 1);
+  }
 }
 
 // --- сборка интерфейса: нужна, если её нет, она устарела или собрана не для сервера ---
@@ -61,25 +110,7 @@ for (const signal of ['SIGINT', 'SIGTERM', 'SIGBREAK']) {
 }
 
 // --- браузер ---
-function openBrowser(url) {
-  if (process.platform === 'win32') {
-    spawn('cmd.exe', ['/c', 'start', '""', url], {
-      stdio: 'ignore',
-      detached: true,
-      windowsVerbatimArguments: true,
-    }).unref();
-  } else {
-    spawn(process.platform === 'darwin' ? 'open' : 'xdg-open', [url], {
-      stdio: 'ignore',
-      detached: true,
-    })
-      .on('error', () => {})
-      .unref();
-  }
-}
-
 if (process.argv.includes('--open')) {
-  const port = process.env.PORT || '3000';
   const probe = `http://127.0.0.1:${port}/api/health`;
   for (let i = 0; i < 120 && !stopped; i++) {
     const ok = await fetch(probe)
