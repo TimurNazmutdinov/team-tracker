@@ -124,7 +124,11 @@ export function BackupsPanel() {
     mutationFn: backupsClient.runNow,
     onSuccess: (s) => {
       after(s);
-      push(s.last?.ok ? 'Копия сделана и проверена' : `Копия не создана: ${s.last?.message ?? 'ошибка'}`);
+      push(
+        s.last?.ok
+          ? 'Копия сделана и проверена'
+          : `Копия не создана: ${s.last?.message ?? 'ошибка'}`,
+      );
     },
     onError: (e) => push(message(e, 'Не удалось сделать копию')),
   });
@@ -134,7 +138,11 @@ export function BackupsPanel() {
       after(s);
       setDir(null);
       setDirError(null);
-      push(s.last?.ok ? 'Папка для копий изменена, первая копия сделана' : 'Папка изменена, но копия не создалась');
+      push(
+        s.last?.ok
+          ? 'Папка для копий изменена, первая копия сделана'
+          : 'Папка изменена, но копия не создалась',
+      );
     },
     onError: (e) => setDirError(message(e, 'Папку не удалось сохранить')),
   });
@@ -166,7 +174,9 @@ export function BackupsPanel() {
             </p>
             <p>
               Следующая:{' '}
-              {s.nextAt ? `${fmtDateTime(s.nextAt)} (каждый день в ${s.time})` : 'автокопирование выключено'}
+              {s.nextAt
+                ? `${fmtDateTime(s.nextAt)} (каждый день в ${s.time})`
+                : 'автокопирование выключено'}
             </p>
           </div>
 
@@ -229,10 +239,16 @@ export function BackupsPanel() {
             >
               {run.isPending || s.running ? 'Копирую…' : 'Сделать копию сейчас'}
             </button>{' '}
-            <button type="button" disabled={excel.isPending || !lastOk} onClick={() => excel.mutate()}>
+            <button
+              type="button"
+              disabled={excel.isPending || !lastOk}
+              onClick={() => excel.mutate()}
+            >
               Скачать Excel
             </button>{' '}
-            <span className="muted">{lastOk ? `tracker.xlsx из копии от ${lastOk}` : 'копий пока нет'}</span>
+            <span className="muted">
+              {lastOk ? `tracker.xlsx из копии от ${lastOk}` : 'копий пока нет'}
+            </span>
           </p>
 
           <h3>Последние копии</h3>
@@ -256,9 +272,9 @@ export function BackupsPanel() {
             </table>
           )}
           <p className="muted">
-            Хранятся {s.keepDaily} последних ежедневных и {s.keepMonthly} ежемесячных копий. В каждой:
-            tracker.xlsx (для чтения), tracker.json (для восстановления) и копия базы. Восстановление —
-            из командной строки: <code>npm run restore &lt;папка копии&gt;</code>.
+            Хранятся {s.keepDaily} последних ежедневных и {s.keepMonthly} ежемесячных копий. В
+            каждой: tracker.xlsx (для чтения), tracker.json (для восстановления) и копия базы.
+            Восстановление — из командной строки: <code>npm run restore &lt;папка копии&gt;</code>.
           </p>
         </>
       )}

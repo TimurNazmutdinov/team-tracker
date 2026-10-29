@@ -65,7 +65,9 @@ async function fromJson(folder: string): Promise<LoadResult> {
   const real = countsOf(snapshot.data);
   for (const key of Object.keys(counts) as (keyof BackupCounts)[]) {
     if (counts[key] !== real[key]) {
-      problems.push(`${JSON_FILE}: заявлено ${key} ${counts[key]}, а записей ${real[key]} — файл повреждён`);
+      problems.push(
+        `${JSON_FILE}: заявлено ${key} ${counts[key]}, а записей ${real[key]} — файл повреждён`,
+      );
     }
   }
   if (problems.length > 0) return { ok: false, problems };
@@ -122,7 +124,10 @@ async function fromXlsx(folder: string): Promise<LoadResult> {
  * Читает и проверяет комплект. `auto` — json, а если он повреждён или его нет, Excel (с пометкой);
  * явный источник проверяется без запасных путей.
  */
-export async function loadBundle(folder: string, source: Source | 'auto' = 'auto'): Promise<LoadResult> {
+export async function loadBundle(
+  folder: string,
+  source: Source | 'auto' = 'auto',
+): Promise<LoadResult> {
   if (!existsSync(folder)) return { ok: false, problems: [`папка не найдена: ${folder}`] };
   if (source === 'json') return fromJson(folder);
   if (source === 'xlsx') return fromXlsx(folder);
@@ -130,7 +135,10 @@ export async function loadBundle(folder: string, source: Source | 'auto' = 'auto
   if (json.ok) return json;
   const xlsx = await fromXlsx(folder);
   if (xlsx.ok) {
-    return { ...xlsx, notes: [`json не подошёл (${json.problems[0] ?? 'ошибка'}), взят Excel.`, ...xlsx.notes] };
+    return {
+      ...xlsx,
+      notes: [`json не подошёл (${json.problems[0] ?? 'ошибка'}), взят Excel.`, ...xlsx.notes],
+    };
   }
   return { ok: false, problems: [...json.problems, ...xlsx.problems] };
 }
@@ -179,7 +187,17 @@ export async function applyRestore(db: Db, snapshot: Snapshot): Promise<RestoreR
   await db.transaction(async (tx) => {
     await lockWrites(tx);
     // Порядок удаления и вставки учитывает внешние ключи
-    for (const table of [t.sessions, t.comments, t.history, t.links, t.issues, t.sprints, t.users, t.people, t.projects]) {
+    for (const table of [
+      t.sessions,
+      t.comments,
+      t.history,
+      t.links,
+      t.issues,
+      t.sprints,
+      t.users,
+      t.people,
+      t.projects,
+    ]) {
       await tx.delete(table);
     }
     await insertChunks((r) => tx.insert(t.projects).values(r), data.projects);
@@ -211,4 +229,3 @@ export async function currentCounts(db: Db): Promise<BackupCounts & { accounts: 
     accounts: await count('users'),
   };
 }
-

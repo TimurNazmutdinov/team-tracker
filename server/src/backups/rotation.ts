@@ -14,7 +14,9 @@ export function bundleName(d: Date, prefix = ''): string {
 
 /** Время создания комплекта по имени папки (местное), null — имя не комплект. */
 export function bundleDate(name: string): Date | null {
-  const m = BUNDLE_RE.exec(name.startsWith(SAFETY_PREFIX) ? name.slice(SAFETY_PREFIX.length) : name);
+  const m = BUNDLE_RE.exec(
+    name.startsWith(SAFETY_PREFIX) ? name.slice(SAFETY_PREFIX.length) : name,
+  );
   if (!m) return null;
   const [y, mo, d, h, mi] = m.slice(1).map(Number) as [number, number, number, number, number];
   return new Date(y, mo - 1, d, h, mi);
@@ -25,7 +27,10 @@ export function bundleDate(name: string): Date | null {
  * последний комплект каждого из `keepMonthly` последних месяцев; остальное удаляется.
  */
 export function planRotation(names: string[], keepDaily: number, keepMonthly: number): string[] {
-  const bundles = names.filter((n) => BUNDLE_RE.test(n)).sort().reverse(); // новые первыми
+  const bundles = names
+    .filter((n) => BUNDLE_RE.test(n))
+    .sort()
+    .reverse(); // новые первыми
   const keep = new Set<string>();
   const days = new Set<string>();
   const months = new Set<string>();

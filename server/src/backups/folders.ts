@@ -25,9 +25,12 @@ export function checkBackupDir(input: string, dataDir: string): string {
   }
   const dir = resolve(raw);
   if (inside(dir, dataDir) || inside(dataDir, dir)) {
-    throw new HttpError(422, 'invalid_data', 'Папка копий не должна быть связана с папкой данных базы', [
-      `Папка данных: ${dataDir}`,
-    ]);
+    throw new HttpError(
+      422,
+      'invalid_data',
+      'Папка копий не должна быть связана с папкой данных базы',
+      [`Папка данных: ${dataDir}`],
+    );
   }
   try {
     mkdirSync(dir, { recursive: true });

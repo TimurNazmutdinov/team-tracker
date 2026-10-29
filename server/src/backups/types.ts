@@ -101,7 +101,15 @@ export function snapshotProblems(snapshot: Snapshot): string[] {
     emails.add(a.email.toLowerCase());
   }
   const ids = new Set<string>();
-  for (const key of ['projects', 'people', 'sprints', 'issues', 'links', 'comments', 'history'] as const) {
+  for (const key of [
+    'projects',
+    'people',
+    'sprints',
+    'issues',
+    'links',
+    'comments',
+    'history',
+  ] as const) {
     ids.clear();
     for (const row of snapshot.data[key]) {
       if (ids.has(row.id)) problems.push(`${key}: id ${row.id} повторяется`);

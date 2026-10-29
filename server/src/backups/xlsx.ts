@@ -155,7 +155,14 @@ function specs(snapshot: Snapshot, meta: XlsxMeta): SheetSpec[] {
       headers: ['Имя', 'Должность', 'Почта', 'Роль доступа', '~id', '~accessRole'],
       rows: data.people.map((p) => {
         const a = account.get(p.id);
-        return [p.name, p.role, a?.email, a ? ROLE_LABELS[a.accessRole] : null, p.id, a?.accessRole];
+        return [
+          p.name,
+          p.role,
+          a?.email,
+          a ? ROLE_LABELS[a.accessRole] : null,
+          p.id,
+          a?.accessRole,
+        ];
       }),
       widths: [28, 24, 30, 24, 36, 14],
     },
@@ -248,7 +255,9 @@ function specs(snapshot: Snapshot, meta: XlsxMeta): SheetSpec[] {
         i.sprintId,
         i.order,
       ]),
-      widths: [11, 10, 40, 14, 13, 11, 8, 20, 20, 16, 20, 12, 21, 21, 60, 50, 36, 36, 8, 36, 36, 36, 36, 8],
+      widths: [
+        11, 10, 40, 14, 13, 11, 8, 20, 20, 16, 20, 12, 21, 21, 60, 50, 36, 36, 8, 36, 36, 36, 36, 8,
+      ],
     },
     {
       name: SHEETS.links,
@@ -368,7 +377,9 @@ export async function buildXlsx(snapshot: Snapshot, meta: XlsxMeta): Promise<Bui
   ).toBuffer();
 
   if (truncated > 0) {
-    warnings.push(`обрезано ячеек длиннее ${CELL_LIMIT} символов: ${truncated} (полный текст — в tracker.json)`);
+    warnings.push(
+      `обрезано ячеек длиннее ${CELL_LIMIT} символов: ${truncated} (полный текст — в tracker.json)`,
+    );
   }
   return { data: addAutoFilters(new Uint8Array(file), sheets), warnings };
 }
@@ -382,7 +393,9 @@ function addAutoFilters(xlsx: Uint8Array, sheets: SheetSpec[]): Uint8Array {
     const xml = files[path];
     if (!xml) throw new Error(`в xlsx нет листа ${path}`);
     const ref = `A1:${columnLetter(s.headers.length - 1)}${s.rows.length + 1}`;
-    files[path] = strToU8(strFromU8(xml).replace('</sheetData>', `</sheetData><autoFilter ref="${ref}"/>`));
+    files[path] = strToU8(
+      strFromU8(xml).replace('</sheetData>', `</sheetData><autoFilter ref="${ref}"/>`),
+    );
     const abs = `$A$1:$${columnLetter(s.headers.length - 1)}$${s.rows.length + 1}`;
     names.push(
       `<definedName name="_xlnm._FilterDatabase" localSheetId="${i}" hidden="1">'${s.name}'!${abs}</definedName>`,
@@ -417,7 +430,8 @@ function need(row: Row, key: string, sheet: string): unknown {
 }
 
 const str = (v: unknown): string => (v === null || v === undefined ? '' : String(v));
-const strOrNull = (v: unknown): string | null => (v === null || v === undefined || v === '' ? null : String(v));
+const strOrNull = (v: unknown): string | null =>
+  v === null || v === undefined || v === '' ? null : String(v);
 const numOrNull = (v: unknown): number | null =>
   v === null || v === undefined || v === '' ? null : Number(v);
 
@@ -432,9 +446,12 @@ export async function readXlsx(buffer: Uint8Array): Promise<ReadXlsx> {
   try {
     sheets = (await readXlsxFile(Buffer.from(buffer))) as { sheet: string; data: unknown[][] }[];
   } catch (e) {
-    throw new Error(`не удалось прочитать Excel-файл: ${e instanceof Error ? e.message : String(e)}`, {
-      cause: e,
-    });
+    throw new Error(
+      `не удалось прочитать Excel-файл: ${e instanceof Error ? e.message : String(e)}`,
+      {
+        cause: e,
+      },
+    );
   }
 
   const summary = new Map(
@@ -461,7 +478,14 @@ export async function readXlsx(buffer: Uint8Array): Promise<ReadXlsx> {
     const email = strOrNull(need(r, 'Почта', S.people));
     const role = strOrNull(need(r, 'accessRole', S.people));
     if (email && isRole(role)) {
-      accounts.push({ id, email, passwordHash: null, accessRole: role, mustChangePassword: true, createdAt: null });
+      accounts.push({
+        id,
+        email,
+        passwordHash: null,
+        accessRole: role,
+        mustChangePassword: true,
+        createdAt: null,
+      });
     }
     return { id, name: str(need(r, 'Имя', S.people)), role: str(need(r, 'Должность', S.people)) };
   });

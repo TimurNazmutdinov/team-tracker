@@ -21,7 +21,11 @@ export function BackupWarning() {
   return (
     <div className="backup-warning" role="alert">
       <strong>⚠ {warning}.</strong>{' '}
-      {key ? <Link to={`/projects/${key}/settings`}>Открыть «Настройки → Резервные копии»</Link> : 'Откройте проект → «Настройки» → «Резервные копии».'}
+      {key ? (
+        <Link to={`/projects/${key}/settings`}>Открыть «Настройки → Резервные копии»</Link>
+      ) : (
+        'Откройте проект → «Настройки» → «Резервные копии».'
+      )}
     </div>
   );
 }

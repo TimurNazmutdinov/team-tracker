@@ -27,7 +27,10 @@ export function dailyDue(args: {
   const due = dueAt(args.now, args.time);
   if (args.now < due) return false;
   if (args.lastOkAt && args.lastOkAt >= due) return false;
-  if (args.lastAttemptAt && args.now.getTime() - args.lastAttemptAt.getTime() < RETRY_AFTER_ERROR_MS) {
+  if (
+    args.lastAttemptAt &&
+    args.now.getTime() - args.lastAttemptAt.getTime() < RETRY_AFTER_ERROR_MS
+  ) {
     return false;
   }
   return true;

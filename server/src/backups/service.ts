@@ -57,7 +57,15 @@ export interface RunResult {
   durationMs: number;
 }
 
-const ENTITY_KEYS = ['projects', 'people', 'sprints', 'issues', 'links', 'comments', 'history'] as const;
+const ENTITY_KEYS = [
+  'projects',
+  'people',
+  'sprints',
+  'issues',
+  'links',
+  'comments',
+  'history',
+] as const;
 
 /** Расхождения между снимком и прочитанной обратно копией (количества и состав id). */
 export function compareEntities(label: string, expected: Entities, actual: Entities): string[] {
@@ -66,11 +74,14 @@ export function compareEntities(label: string, expected: Entities, actual: Entit
     const want = new Set(expected[key].map((r) => r.id));
     const got = new Set(actual[key].map((r) => r.id));
     if (want.size !== got.size || expected[key].length !== actual[key].length) {
-      problems.push(`${label}: ${key} — в базе ${expected[key].length}, в копии ${actual[key].length}`);
+      problems.push(
+        `${label}: ${key} — в базе ${expected[key].length}, в копии ${actual[key].length}`,
+      );
       continue;
     }
     const missing = [...want].filter((id) => !got.has(id));
-    if (missing.length > 0) problems.push(`${label}: ${key} — не хватает записей (${missing.length})`);
+    if (missing.length > 0)
+      problems.push(`${label}: ${key} — не хватает записей (${missing.length})`);
   }
   return problems;
 }
@@ -82,7 +93,14 @@ function clean(text: string): string {
 function parseLocal(stamp: string): Date | null {
   const m = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/.exec(stamp);
   if (!m) return null;
-  const [y, mo, d, h, mi, s] = m.slice(1).map(Number) as [number, number, number, number, number, number];
+  const [y, mo, d, h, mi, s] = m.slice(1).map(Number) as [
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+  ];
   return new Date(y, mo - 1, d, h, mi, s);
 }
 
@@ -145,7 +163,13 @@ export class BackupService {
     this.lastAttemptAt = started;
     try {
       const result = await this.build(reason, prefix, started);
-      this.log(started, 'OK', result.bundle, reason, `${countsText(result.counts)}${result.warnings.length ? `; предупреждения: ${result.warnings.join('; ')}` : ''}`);
+      this.log(
+        started,
+        'OK',
+        result.bundle,
+        reason,
+        `${countsText(result.counts)}${result.warnings.length ? `; предупреждения: ${result.warnings.join('; ')}` : ''}`,
+      );
       this.rotate();
       return result;
     } catch (e) {
@@ -269,7 +293,13 @@ export class BackupService {
       .sort();
   }
 
-  private log(at: Date, result: 'OK' | 'ОШИБКА', bundle: string, reason: string, message: string): void {
+  private log(
+    at: Date,
+    result: 'OK' | 'ОШИБКА',
+    bundle: string,
+    reason: string,
+    message: string,
+  ): void {
     const line = [localStamp(at), result, bundle, reason, clean(message)].join(' | ');
     try {
       mkdirSync(this.dirPath, { recursive: true });
