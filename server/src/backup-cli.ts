@@ -1,33 +1,19 @@
-import { backupPglite, restorePglite } from './backup';
-import { loadEnv, readConfig } from './config';
+import { explain, openCli } from './cli-context';
 
-// npm run backup — копия базы в backups/ с датой и временем.
-// npm run restore <файл> — восстановление из копии. Оба действия — при остановленном трекере.
+// npm run backup — комплект копии в папке копий (BACKUP_DIR или выбранной в настройках).
+// Со встроенной базой работает при остановленном трекере; при работающем — кнопка в настройках.
 
-loadEnv();
-const config = readConfig();
-
-async function main(): Promise<void> {
-  const [command, file] = process.argv.slice(2);
-  if (config.databaseUrl) {
-    throw new Error(
-      'Задан DATABASE_URL (PostgreSQL): копии делает pg_dump, в Docker — scripts/backup.sh и scripts/restore.sh.',
-    );
+try {
+  const { connection, backups, release } = await openCli();
+  try {
+    const result = await backups.run('вручную (командная строка)');
+    console.log(`Копия готова: ${result.dir}`);
+    for (const w of result.warnings) console.log(`Предупреждение: ${w}`);
+  } finally {
+    await connection.close();
+    release();
   }
-  if (command === 'backup') {
-    const path = await backupPglite(config.dataDir, config.backupDir, config.backupKeep);
-    console.log(`Копия сохранена: ${path}`);
-  } else if (command === 'restore') {
-    if (!file) throw new Error('Укажите файл копии: npm run restore backups\\tracker-….tar.gz');
-    const { previous } = await restorePglite(file, config.dataDir);
-    console.log(`База восстановлена из ${file}.`);
-    if (previous) console.log(`Прежние данные сохранены в ${previous} (можно удалить).`);
-  } else {
-    throw new Error('Использование: backup-cli backup | restore <файл>');
-  }
-}
-
-main().catch((e: unknown) => {
-  console.error(e instanceof Error ? e.message : String(e));
+} catch (e) {
+  console.error(explain(e));
   process.exitCode = 1;
-});
+}

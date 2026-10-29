@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import cookie from '@fastify/cookie';
 import fastifyStatic from '@fastify/static';
@@ -9,7 +9,10 @@ import * as auth from './auth';
 import { changesSchema } from './changes-schema';
 import type { Db } from './db';
 import { HttpError } from './errors';
+import { checkBackupDir, listFolders } from './backups/folders';
+import type { BackupService } from './backups/service';
 import { commit, findIssueByNumber, readers } from './repo';
+import { BACKUP_DIR_KEY, setSetting } from './settings';
 
 const COOKIE = 'tt_session';
 
@@ -17,6 +20,10 @@ export interface AppOptions {
   db: Db;
   /** Каталог собранного приложения (dist); если он есть, сервер отдаёт его же. */
   staticDir?: string;
+  /** Резервные копии: если задан, появляются маршруты `/api/admin/backups` (только администратор). */
+  backups?: BackupService;
+  /** Папка данных встроенной базы: копии не должны лежать внутри неё. */
+  dataDir?: string;
   /** Открыта ли самостоятельная регистрация; по умолчанию закрыта (ADR-011). */
   allowRegistration?: boolean;
   /** Ставить cookie только по HTTPS (включать за HTTPS-прокси). */
@@ -201,6 +208,68 @@ export function buildApp(options: AppOptions): FastifyInstance {
     await auth.setRole(db, req.params.id, parse(roleBody, req.body).role);
     return reply.status(204).send();
   });
+
+  // ---------------------------------------------------------------- резервные копии (ADR-012)
+
+  const backups = options.backups;
+  if (backups) {
+    const adminOnly = async (req: FastifyRequest) => {
+      const me = await requireUser(req);
+      if (!can(me.role, 'backups.manage')) {
+        throw new HttpError(403, 'forbidden', 'Резервные копии доступны только администратору');
+      }
+      return me;
+    };
+
+    app.get('/api/admin/backups', async (req) => {
+      await adminOnly(req);
+      return backups.status();
+    });
+
+    // Копия не останавливает трекер; результат (в том числе ошибка) виден в состоянии
+    app.post('/api/admin/backups', async (req) => {
+      await adminOnly(req);
+      try {
+        await backups.run('вручную');
+      } catch (e) {
+        if (e instanceof HttpError) throw e;
+      }
+      return backups.status();
+    });
+
+    app.get('/api/admin/backups/excel', async (req, reply) => {
+      await adminOnly(req);
+      const latest = backups.latestXlsx();
+      if (!latest) throw new HttpError(404, 'not_found', 'Копий с Excel-файлом пока нет');
+      return reply
+        .header('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        .header(
+          'content-disposition',
+          `attachment; filename="tracker.xlsx"; filename*=UTF-8''tracker-${latest.bundle}.xlsx`,
+        )
+        .send(readFileSync(latest.path));
+    });
+
+    app.get<{ Querystring: { path?: string } }>('/api/admin/backups/folders', async (req) => {
+      await adminOnly(req);
+      return listFolders(req.query.path);
+    });
+
+    // Выбор папки для копий: проверка, сохранение и первая копия, чтобы сразу увидеть, что всё работает
+    app.put('/api/admin/backups/dir', async (req) => {
+      await adminOnly(req);
+      const body = parse(z.object({ dir: z.string() }), req.body);
+      const dir = checkBackupDir(body.dir, options.dataDir ?? '');
+      await setSetting(db, BACKUP_DIR_KEY, dir);
+      backups.setDir(dir);
+      try {
+        await backups.run('смена папки');
+      } catch (e) {
+        if (e instanceof HttpError) throw e;
+      }
+      return backups.status();
+    });
+  }
 
   // ---------------------------------------------------------------- данные
 

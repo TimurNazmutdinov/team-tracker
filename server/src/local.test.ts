@@ -1,13 +1,12 @@
-import { existsSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import type { FastifyInstance } from 'fastify';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { buildApp } from './app';
 import { createAccount, listAccounts } from './auth';
-import { backupPglite, restorePglite, stamp } from './backup';
 import { readConfig } from './config';
-import { openPglite, schema, type Connection } from './db';
+import { openPglite, type Connection } from './db';
 import { acquireLock, lockPath, lockedBy } from './lock';
 import { importDataset, readSeedFile } from './seed';
 
@@ -24,7 +23,12 @@ describe('настройки', () => {
     expect(c.databaseUrl).toBeUndefined();
     expect(c.dataDir).toBe(resolve('./local-data'));
     expect(c.allowRegistration).toBe(false);
-    expect(c.backupKeep).toBe(14);
+    expect(c).toMatchObject({
+      backupAuto: true,
+      backupTime: '18:00',
+      backupKeepDaily: 30,
+      backupKeepMonthly: 12,
+    });
   });
 
   it('читает переменные окружения и проверяет числа', () => {
@@ -34,7 +38,10 @@ describe('настройки', () => {
       DATABASE_URL: 'postgres://x',
       DATA_DIR: '/tmp/data',
       ALLOW_REGISTRATION: 'true',
-      BACKUP_KEEP: '3',
+      BACKUP_KEEP_DAILY: '3',
+      BACKUP_KEEP_MONTHLY: '2',
+      BACKUP_TIME: '7:05',
+      BACKUP_AUTO: 'false',
     });
     expect(c).toMatchObject({
       host: '0.0.0.0',
@@ -42,12 +49,17 @@ describe('настройки', () => {
       databaseUrl: 'postgres://x',
       dataDir: resolve('/tmp/data'),
       allowRegistration: true,
-      backupKeep: 3,
+      backupKeepDaily: 3,
+      backupKeepMonthly: 2,
+      backupTime: '07:05',
+      backupAuto: false,
     });
     expect(() => readConfig({ PORT: 'abc' })).toThrow('PORT');
     expect(() => readConfig({ PORT: '70000' })).toThrow('PORT');
     expect(readConfig({ ALLOW_REGISTRATION: 'yes' }).allowRegistration).toBe(false);
     expect(readConfig({ DATABASE_URL: '  ' }).databaseUrl).toBeUndefined();
+    expect(() => readConfig({ BACKUP_TIME: '25:00' })).toThrow('BACKUP_TIME');
+    expect(() => readConfig({ BACKUP_KEEP_DAILY: '0' })).toThrow('BACKUP_KEEP_DAILY');
   });
 });
 
@@ -230,81 +242,5 @@ describe('закрытая регистрация и учётки от адми�
       payload: { password: 'temp-pass-3' },
     });
     expect(missing.statusCode).toBe(404);
-  });
-});
-
-describe('резервные копии встроенной базы', () => {
-  const root = mkdtempSync(join(tmpdir(), 'tt-backup-'));
-  const data = join(root, 'local-data');
-  const backups = join(root, 'backups');
-  afterAll(() => rmSync(root, { recursive: true, force: true }));
-
-  const count = async (table: 'users' | 'issues') => {
-    const c = await openPglite(data);
-    try {
-      return (await c.db.select().from(schema[table])).length;
-    } finally {
-      await c.close();
-    }
-  };
-
-  it('метка времени в имени файла', () => {
-    expect(stamp(new Date(2026, 9, 5, 7, 8, 9))).toBe('20261005-070809');
-  });
-
-  it('круг: копия → правка → восстановление возвращает данные на момент копии', async () => {
-    const c = await openPglite(data);
-    await importDataset(c.db, readSeedFile('data/seed.json'));
-    await createAccount(c.db, {
-      email: 'a@b.ru',
-      name: 'Админ',
-      password: PASSWORD,
-      role: 'admin',
-    });
-    await c.close();
-    const issues = await count('issues');
-    expect(issues).toBeGreaterThan(0);
-
-    const file = await backupPglite(data, backups, 14, new Date(2026, 9, 5, 7, 8, 9));
-    expect(file.endsWith('tracker-20261005-070809.tar.gz')).toBe(true);
-    expect(existsSync(file)).toBe(true);
-
-    // после копии база меняется
-    const again = await openPglite(data);
-    await createAccount(again.db, { email: 'c@d.ru', name: 'Позже', password: PASSWORD });
-    await again.close();
-    expect(await count('users')).toBe(2);
-
-    const { previous } = await restorePglite(file, data, new Date(2026, 9, 5, 8, 0, 0));
-    expect(previous).toBe(`${data}.before-restore-20261005-080000`);
-    expect(existsSync(previous ?? '')).toBe(true);
-    expect(await count('users')).toBe(1);
-    expect(await count('issues')).toBe(issues);
-  }, 120_000);
-
-  it('битый файл не портит текущую базу', async () => {
-    const broken = join(root, 'broken.tar.gz');
-    writeFileSync(broken, 'это не копия');
-    const before = await count('users');
-    await expect(restorePglite(broken, data)).rejects.toThrow('Не удалось восстановить');
-    expect(await count('users')).toBe(before);
-    await expect(restorePglite(join(root, 'нет.tar.gz'), data)).rejects.toThrow('не найден');
-  }, 120_000);
-
-  it('хранятся только последние копии', async () => {
-    for (const minute of [1, 2, 3]) {
-      await backupPglite(data, backups, 2, new Date(2026, 9, 6, 7, minute, 0));
-    }
-    const left = readdirSync(backups).filter((f) => f.startsWith('tracker-'));
-    expect(left).toHaveLength(2);
-    expect(left.sort()[0]).toContain('20261006-070200');
-  }, 120_000);
-
-  it('при запущенном трекере копия и восстановление отказывают', async () => {
-    writeFileSync(lockPath(data), String(process.ppid));
-    await expect(backupPglite(data, backups, 14)).rejects.toThrow('запущен');
-    await expect(restorePglite(join(backups, 'x'), data)).rejects.toThrow('запущен');
-    rmSync(lockPath(data), { force: true });
-    await expect(backupPglite(join(root, 'нет-такой'), backups, 14)).rejects.toThrow('Нет данных');
   });
 });

@@ -3,12 +3,12 @@ import type { Account } from '../state/session';
 
 // Запросы входа к серверу (ADR-010). Данные трекера идут через TrackerStorage, а вход — отдельно.
 
-const BASE = import.meta.env.VITE_API_URL ?? '/api';
+export const API_BASE = import.meta.env.VITE_API_URL ?? '/api';
 
-async function call<T>(method: string, path: string, body?: unknown): Promise<T> {
+export async function call<T>(method: string, path: string, body?: unknown): Promise<T> {
   let res: Response;
   try {
-    res = await fetch(`${BASE}${path}`, {
+    res = await fetch(`${API_BASE}${path}`, {
       method,
       credentials: 'same-origin',
       headers: body === undefined ? {} : { 'content-type': 'application/json' },

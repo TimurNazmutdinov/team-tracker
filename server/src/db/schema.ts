@@ -141,3 +141,9 @@ export const sessions = pgTable('sessions', {
     .references(() => users.id),
   expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
 });
+
+/** Настройки приложения, которые меняет администратор в интерфейсе (например, папка копий). */
+export const settings = pgTable('settings', {
+  key: text('key').primaryKey(),
+  value: text('value').notNull(),
+});
