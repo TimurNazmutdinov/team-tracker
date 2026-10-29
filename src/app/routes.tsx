@@ -4,6 +4,7 @@ import { BacklogPage } from '../modules/backlog/BacklogPage';
 import { BoardPage } from '../modules/board/BoardPage';
 import { HistoryPage } from '../modules/board/HistoryPage';
 import { PeoplePage } from '../modules/people/PeoplePage';
+import { PortfolioPage } from '../modules/portfolio/PortfolioPage';
 import { HomePage, ProjectsPage } from '../modules/projects/ProjectsPage';
 import { ProjectRoute } from '../modules/projects/ProjectRoute';
 import { SettingsPage } from '../modules/projects/SettingsPage';
@@ -24,6 +25,7 @@ export const routes: RouteObject[] = [
       { index: true, element: <HomePage /> },
       { path: 'projects', element: <ProjectsPage /> },
       { path: 'about', element: <AboutPage /> },
+      { path: 'portfolio', element: <PortfolioPage /> },
       {
         path: 'projects/:key',
         element: <ProjectRoute />,

@@ -18,8 +18,8 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { useState } from 'react';
-import { Link } from 'react-router';
+import { useState, type ReactNode } from 'react';
+import { Link, useParams } from 'react-router';
 import { containerItems, type View } from '../../domain/actions';
 import { canHavePoints } from '../../domain/hierarchy';
 import {
@@ -42,18 +42,20 @@ import {
   type IssueType,
   type Person,
   type Priority,
+  type Project,
   type Sprint,
 } from '../../domain/schema';
 import { useActions } from '../../state/actions';
 import { usePermissions } from '../../state/current-user';
 import { useCreateDialog } from '../../state/create-dialog';
 import { useNotices } from '../../state/notices';
-import { useProjectHistory, useView } from '../../state/queries';
+import { useProjectScope } from '../../state/project-scope';
+import { useProjectHistory, useProjectViews, useView } from '../../state/queries';
+import { ProjectFilter } from '../../ui/ProjectFilter';
 import { dateRange, num, taskWord } from '../../ui/format';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
 import { FillIndicator } from '../planning/FillIndicator';
-import { useCurrentProject } from '../projects/ProjectRoute';
 import {
   Avatar,
   EpicProgressView,
@@ -384,19 +386,30 @@ function Section({
 }
 
 interface FiltersBarProps {
-  view: View;
-  projectKey: string;
+  /** Фильтр по проектам (ADR-016). */
+  projectFilter: ReactNode;
+  /** Эпики для фильтра; null — эпики разных проектов не смешиваются, фильтра по эпику нет. */
+  epics: Issue[] | null;
+  people: Person[];
+  labels: string[];
   filters: PlanningFilters;
   onChange: (f: PlanningFilters) => void;
   shown: number;
 }
 
-function FiltersBar({ view, filters, onChange, shown }: FiltersBarProps) {
-  const epics = view.issues.filter((i) => i.type === 'Epic');
-  const labels = allLabels(view.issues);
+function FiltersBar({
+  projectFilter,
+  epics,
+  people,
+  labels,
+  filters,
+  onChange,
+  shown,
+}: FiltersBarProps) {
   const set = (patch: Partial<PlanningFilters>) => onChange({ ...filters, ...patch });
   return (
     <div className="board-toolbar planning-filters" role="search" aria-label="Фильтры бэклога">
+      {projectFilter}
       <label>
         Поиск
         <input
@@ -406,20 +419,22 @@ function FiltersBar({ view, filters, onChange, shown }: FiltersBarProps) {
           onChange={(e) => set({ search: e.target.value })}
         />
       </label>
-      <label>
-        Эпик
-        <select
-          value={filters.epicId ?? ''}
-          onChange={(e) => set({ epicId: e.target.value || null })}
-        >
-          <option value="">Все</option>
-          {epics.map((e) => (
-            <option key={e.id} value={e.id}>
-              {e.title}
-            </option>
-          ))}
-        </select>
-      </label>
+      {epics && (
+        <label>
+          Эпик
+          <select
+            value={filters.epicId ?? ''}
+            onChange={(e) => set({ epicId: e.target.value || null })}
+          >
+            <option value="">Все</option>
+            {epics.map((e) => (
+              <option key={e.id} value={e.id}>
+                {e.title}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
       <label>
         Исполнитель
         <select
@@ -427,7 +442,7 @@ function FiltersBar({ view, filters, onChange, shown }: FiltersBarProps) {
           onChange={(e) => set({ assigneeId: e.target.value || null })}
         >
           <option value="">Все</option>
-          {view.people.map((p) => (
+          {people.map((p) => (
             <option key={p.id} value={p.id}>
               {p.name}
             </option>
@@ -495,8 +510,16 @@ function FiltersBar({ view, filters, onChange, shown }: FiltersBarProps) {
  * Вкладка «Планирование будущих спринтов» (wireframes.md, 17.4, ADR-014): идущий и запланированные
  * спринты и общий бэклог одним списком, заполнение спринтов, фильтры, быстрая правка и перенос.
  */
-export function BacklogPage() {
-  const project = useCurrentProject();
+function ProjectPlanning({
+  project,
+  filters,
+  multi,
+}: {
+  project: Project;
+  filters: PlanningFilters;
+  /** Проект показан среди нескольких: нужен заголовок с ключом. */
+  multi: boolean;
+}) {
   const view = useView(project.id);
   const history = useProjectHistory(project.id);
   const actions = useActions(project.id);
@@ -504,7 +527,6 @@ export function BacklogPage() {
   const showCreate = useCreateDialog((s) => s.show);
   const push = useNotices((s) => s.push);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [filters, setFilters] = useState<PlanningFilters>(NO_PLANNING_FILTERS);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -592,19 +614,20 @@ export function BacklogPage() {
       : all;
     return { all, items };
   };
-  const shown = view
-    ? [...sprints.map((s) => s.id), null].reduce((n, id) => n + listOf(id).items.length, 0)
-    : 0;
   const selectedPoints = view ? totalPoints(view.issues.filter((i) => selected.has(i.id))) : 0;
   const selectedCount = selected.size;
 
   return (
-    <div className="planning-page">
-      <PageHeader title="Планирование будущих спринтов">
-        <button type="button" className="primary" onClick={() => showCreate()}>
-          + Создать задачу
-        </button>
-      </PageHeader>
+    <section
+      className="project-planning"
+      aria-label={multi ? `Проект ${project.key}` : 'Планирование'}
+    >
+      {multi && (
+        <h2 className="project-heading">
+          <span className="chip project-tag">{project.key}</span>{' '}
+          <Link to={`/projects/${project.key}/board?projects=${project.key}`}>{project.name}</Link>
+        </h2>
+      )}
       {!view ? (
         <Loading />
       ) : view.issues.length === 0 ? (
@@ -616,13 +639,6 @@ export function BacklogPage() {
         </div>
       ) : (
         <>
-          <FiltersBar
-            view={view}
-            projectKey={project.key}
-            filters={filters}
-            onChange={setFilters}
-            shown={shown}
-          />
           {selectedCount > 0 && (
             <div className="bulk-bar" role="region" aria-label="Перенос выбранных задач">
               <strong>
@@ -699,21 +715,93 @@ export function BacklogPage() {
           </DndContext>
         </>
       )}
-      <p className="muted small">
-        Порядок задаётся перетаскиванием за ручку ⋮⋮ (с клавиатуры: Пробел, стрелки, Пробел) между
-        любыми спринтами и бэклогом; несколько задач сразу — отметкой и списком «Перенести в».
-        Оценка, приоритет и исполнитель правятся прямо в строке. Подзадачи показываются внутри
-        родителя и переносятся вместе с ним.
-      </p>
-      <p>
-        <Link to={`/projects/${project.key}/history`}>Выполненные спринты</Link>
-      </p>
       {view && view.issues.length > 0 && !view.sprints.some((s) => s.state !== 'closed') && (
         <p className="warn">
           Нет спринтов для планирования. Создайте спринт на экране{' '}
           <Link to={`/projects/${project.key}/sprints`}>«Спринты»</Link>.
         </p>
       )}
+    </section>
+  );
+}
+
+/**
+ * Вкладка «Планирование будущих спринтов» (wireframes.md, 17.4, ADR-014): идущий и запланированные
+ * спринты и общий бэклог. Несколько выбранных проектов идут своими блоками (ADR-016).
+ */
+export function BacklogPage() {
+  const { ready, scope } = useProjectScope();
+  const { key = '' } = useParams();
+  const showCreate = useCreateDialog((s) => s.show);
+  const views = useProjectViews(scope.projects);
+  const [filters, setFilters] = useState<PlanningFilters>(NO_PLANNING_FILTERS);
+  const projects = scope.projects;
+  const [only] = projects;
+  const header = (
+    <PageHeader title="Планирование будущих спринтов">
+      <button type="button" className="primary" onClick={() => showCreate()}>
+        + Создать задачу
+      </button>
+    </PageHeader>
+  );
+
+  if (!ready || !views) {
+    return (
+      <div className="planning-page">
+        {header}
+        <Loading />
+      </div>
+    );
+  }
+
+  const issues = views.flatMap((v) => v.issues);
+  const single = projects.length === 1;
+  const shown = views.reduce((total, v) => {
+    const ids = [...v.sprints.filter((s) => s.state !== 'closed').map((s) => s.id), null];
+    return (
+      total +
+      ids.reduce(
+        (n, id) =>
+          n +
+          containerItems(v, id).filter((i) =>
+            matchesFilters(i, `${v.project.key}-${i.number}`, filters),
+          ).length,
+        0,
+      )
+    );
+  }, 0);
+  const projectFilter = <ProjectFilter />;
+  const toolbar = (
+    <FiltersBar
+      projectFilter={projectFilter}
+      epics={single ? issues.filter((i) => i.type === 'Epic') : null}
+      people={views[0]?.people ?? []}
+      labels={allLabels(issues)}
+      filters={filters}
+      onChange={setFilters}
+      shown={shown}
+    />
+  );
+
+  return (
+    <div className="planning-page">
+      {header}
+      {toolbar}
+      {projects.length === 0 && (
+        <p className="empty">Не выбрано ни одного проекта: выберите проекты в фильтре.</p>
+      )}
+      {projects.map((project) => (
+        <ProjectPlanning key={project.id} project={project} filters={filters} multi={!single} />
+      ))}
+      <p className="muted small">
+        Порядок задаётся перетаскиванием за ручку ⋮⋮ (с клавиатуры: Пробел, стрелки, Пробел) между
+        любыми спринтами и бэклогом проекта; несколько задач сразу — отметкой и списком «Перенести
+        в». Оценка, приоритет и исполнитель правятся прямо в строке. Подзадачи показываются внутри
+        родителя и переносятся вместе с ним.
+      </p>
+      <p>
+        <Link to={`/projects/${key || only?.key || ''}/history`}>Выполненные спринты</Link>
+      </p>
     </div>
   );
 }

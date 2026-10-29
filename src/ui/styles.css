@@ -1280,7 +1280,7 @@ a.pill:hover {
   min-width: 12rem;
 }
 
-.planning-filters label.check {
+.board-toolbar label.check {
   flex-direction: row;
   align-items: center;
   gap: 0.35rem;
@@ -1403,11 +1403,11 @@ main:has(.planning-page) {
   overflow: hidden;
 }
 
-.planning-filters label.check input {
+.board-toolbar label.check input {
   width: auto;
 }
 
-.planning-filters label.check {
+.board-toolbar label.check {
   white-space: nowrap;
 }
 
@@ -1485,4 +1485,255 @@ main:has(.planning-page) {
 .log-list time {
   color: var(--muted);
   white-space: nowrap;
+}
+
+/* ---- фильтр по проектам (ADR-016) ---- */
+.project-filter {
+  position: relative;
+  align-self: flex-end;
+}
+
+.filter-button {
+  border-radius: 999px;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent);
+  font-weight: 600;
+}
+
+.filter-pop {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  width: 22rem;
+  max-width: 90vw;
+  padding: 0.75rem;
+  background: var(--panel);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px var(--shadow);
+}
+
+.filter-pop fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  border: 0;
+}
+
+.filter-pop legend {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.filter-pop label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.filter-pop input {
+  width: auto;
+}
+
+.filter-list {
+  list-style: none;
+  margin: 0 0 0.5rem;
+  padding: 0.5rem 0 0;
+  border-top: 1px solid var(--line);
+}
+
+.filter-list li {
+  padding: 0.15rem 0;
+}
+
+/* ---- проекты и портфель (ADR-016) ---- */
+.project-tag {
+  background: var(--accent-bg);
+  font-weight: 700;
+}
+
+.project-heading {
+  margin: 1.25rem 0 0.5rem;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(26rem, 1fr));
+  gap: 1rem;
+}
+
+.overview-card {
+  padding: 0.75rem 1rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.overview-card.risky {
+  border-color: var(--danger);
+  border-width: 2px;
+}
+
+.overview-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.6rem;
+}
+
+.overview-head h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.risk-text {
+  color: var(--danger);
+}
+
+.overview-sprint {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0.5rem 0 0.15rem;
+}
+
+.overview-progress {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.overview-progress > div:first-child {
+  flex: 1;
+}
+
+.overview-progress p {
+  margin: 0.25rem 0;
+}
+
+.meter {
+  height: 0.5rem;
+  background: var(--bg);
+  border: 1px solid var(--control-line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.meter span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.spark {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.spark polyline {
+  fill: none;
+}
+
+.spark-ideal {
+  stroke: var(--muted);
+  stroke-width: 1.4;
+  stroke-dasharray: 4 3;
+}
+
+.spark-real {
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.status-bar {
+  display: flex;
+  height: 0.9rem;
+  margin: 0.6rem 0 0.25rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.status-bar span {
+  display: block;
+  border-right: 1px solid var(--line);
+}
+
+.overview-flags {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.6rem 0 0.25rem;
+}
+
+.overview-list,
+.overview-epics {
+  list-style: none;
+  margin: 0.25rem 0;
+  padding: 0;
+  font-size: 0.9rem;
+}
+
+.overview-epics li {
+  display: grid;
+  grid-template-columns: 1fr 7rem 3rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.15rem 0;
+}
+
+.overview-links {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  font-weight: 700;
+}
+
+.portfolio-nav {
+  display: flex;
+}
+
+.owner-field {
+  display: flex;
+  flex-direction: column;
+  max-width: 22rem;
+  margin-bottom: 0.75rem;
+}
+
+.member-add {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.member-add label {
+  display: flex;
+  flex-direction: column;
+}
+
+.status-bar .status-backlog {
+  background: var(--st-backlog);
+}
+
+.status-bar .status-to-do {
+  background: var(--st-todo);
+}
+
+.status-bar .status-in-progress {
+  background: var(--st-progress);
+}
+
+.status-bar .status-review {
+  background: var(--st-review);
+}
+
+.status-bar .status-done {
+  background: var(--st-done);
 }

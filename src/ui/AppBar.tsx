@@ -19,6 +19,9 @@ export function AppBar() {
       <Link to="/" className="logo">
         <Logo />
       </Link>
+      <nav aria-label="Портфель" className="portfolio-nav">
+        <NavLink to="/portfolio">Портфель</NavLink>
+      </nav>
       {key && (
         <>
           <Link to="/projects" className="project-chip" title="Все проекты">

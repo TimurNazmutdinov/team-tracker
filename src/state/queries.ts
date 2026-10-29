@@ -1,6 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import { useStorage } from '../app/storage-context';
 import type { View } from '../domain/actions';
+import type { History, Project } from '../domain/schema';
 
 // Чтение данных: TanStack Query поверх модуля хранения. Ключи начинаются с имени сущности,
 // чтобы после изменений можно было сбросить кэш целиком (invalidateQueries()).
@@ -41,6 +42,11 @@ export function usePeople() {
   return useQuery({ queryKey: ['people'], queryFn: () => storage.getPeople() });
 }
 
+export function useMembers() {
+  const storage = useStorage();
+  return useQuery({ queryKey: ['members'], queryFn: () => storage.getMembers() });
+}
+
 export function useLinks(projectId: string) {
   const storage = useStorage();
   return useQuery({ queryKey: ['links', projectId], queryFn: () => storage.getLinks(projectId) });
@@ -68,17 +74,73 @@ export function useHistory(issueId: string) {
 export function useView(projectId: string): View | undefined {
   const projects = useProjects();
   const people = usePeople();
+  const members = useMembers();
   const sprints = useSprints(projectId);
   const issues = useIssues(projectId);
   const links = useLinks(projectId);
   const project = projects.data?.find((p) => p.id === projectId);
-  if (!project || !people.data || !sprints.data || !issues.data || !links.data) return undefined;
+  if (!project || !people.data || !members.data || !sprints.data || !issues.data || !links.data)
+    return undefined;
   return {
     projectId,
     project,
     people: people.data,
+    members: members.data,
     sprints: sprints.data,
     issues: issues.data,
     links: links.data,
   };
+}
+
+/**
+ * Данные нескольких проектов для логики; undefined, пока что-то загружается. Ключи запросов те же,
+ * что у экранов одного проекта, поэтому кэш общий (ADR-016).
+ */
+export function useProjectViews(projects: Project[]): View[] | undefined {
+  const storage = useStorage();
+  const people = usePeople();
+  const members = useMembers();
+  const results = useQueries({
+    queries: projects.flatMap((p) => [
+      { queryKey: ['sprints', p.id], queryFn: () => storage.getSprints(p.id) },
+      { queryKey: ['issues', p.id], queryFn: () => storage.getIssues(p.id) },
+      { queryKey: ['links', p.id], queryFn: () => storage.getLinks(p.id) },
+    ]),
+  });
+  if (!people.data || !members.data) return undefined;
+  const views: View[] = [];
+  for (const [n, project] of projects.entries()) {
+    const sprints = results[n * 3]?.data;
+    const issues = results[n * 3 + 1]?.data;
+    const links = results[n * 3 + 2]?.data;
+    if (!sprints || !issues || !links) return undefined;
+    views.push({
+      projectId: project.id,
+      project,
+      people: people.data,
+      members: members.data,
+      sprints: sprints as View['sprints'],
+      issues: issues as View['issues'],
+      links: links as View['links'],
+    });
+  }
+  return views;
+}
+
+/** История задач нескольких проектов по проектам; undefined, пока что-то загружается. */
+export function useProjectHistories(projects: Project[]): Map<string, History[]> | undefined {
+  const storage = useStorage();
+  const results = useQueries({
+    queries: projects.map((p) => ({
+      queryKey: ['project-history', p.id],
+      queryFn: () => storage.getProjectHistory(p.id),
+    })),
+  });
+  const map = new Map<string, History[]>();
+  for (const [n, project] of projects.entries()) {
+    const data = results[n]?.data;
+    if (!data) return undefined;
+    map.set(project.id, data);
+  }
+  return map;
 }
