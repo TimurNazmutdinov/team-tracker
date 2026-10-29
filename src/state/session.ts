@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { Palette } from '../domain/palettes';
 import type { Role } from '../domain/permissions';
 
 // Сессия входа (ADR-010). В демо-режиме (без сервера) входа нет: account всегда null, а права не
@@ -11,6 +12,8 @@ export interface Account {
   role: Role;
   /** Пароль временный: до его смены доступна только смена пароля (ADR-011). */
   mustChangePassword: boolean;
+  /** Цветовая гамма из профиля (ADR-013). */
+  palette: Palette;
 }
 
 export type SessionStatus = 'unknown' | 'signedOut' | 'signedIn';

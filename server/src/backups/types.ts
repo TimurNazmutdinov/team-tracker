@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { checkIntegrity } from '../../../src/domain/integrity';
+import { DEFAULT_PALETTE, PALETTES, type Palette } from '../../../src/domain/palettes';
 import { ROLES, type Role } from '../../../src/domain/permissions';
 import {
   commentSchema,
@@ -25,6 +26,8 @@ export interface AccountRecord {
   passwordHash: string | null;
   accessRole: Role;
   mustChangePassword: boolean;
+  /** Цветовая гамма профиля (ADR-013). */
+  palette: Palette;
   createdAt: string | null;
 }
 
@@ -63,6 +66,8 @@ const accountSchema = z.object({
   passwordHash: z.string().min(1).nullable(),
   accessRole: z.enum(ROLES),
   mustChangePassword: z.boolean(),
+  // в копиях до ADR-013 поля нет — тогда гамма по умолчанию
+  palette: z.enum(PALETTES).default(DEFAULT_PALETTE),
   createdAt: z.iso.datetime().nullable(),
 });
 

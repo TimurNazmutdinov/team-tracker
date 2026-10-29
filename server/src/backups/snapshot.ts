@@ -1,4 +1,5 @@
 import { sql } from 'drizzle-orm';
+import { DEFAULT_PALETTE, isPalette } from '../../../src/domain/palettes';
 import { isRole } from '../../../src/domain/permissions';
 import { schema, type Db } from '../db';
 import type { AccountRecord, Entities, Snapshot } from './types';
@@ -53,6 +54,7 @@ export function takeSnapshot(db: Db): Promise<TakenSnapshot> {
                 passwordHash: u.passwordHash,
                 accessRole: u.accessRole,
                 mustChangePassword: u.mustChangePassword,
+                palette: isPalette(u.palette) ? u.palette : DEFAULT_PALETTE,
                 createdAt: u.createdAt.toISOString(),
               },
             ]

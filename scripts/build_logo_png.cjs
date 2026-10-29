@@ -13,7 +13,9 @@ const jobs = [
 
 (async () => {
   const browser = await chromium.launch();
-  for (const palette of fs.readdirSync(logo).filter((d) => fs.statSync(path.join(logo, d)).isDirectory())) {
+  for (const palette of fs
+    .readdirSync(logo)
+    .filter((d) => fs.statSync(path.join(logo, d)).isDirectory())) {
     for (const [src, dst, size] of jobs) {
       const svg = fs.readFileSync(path.join(logo, palette, src), 'utf8');
       const page = await browser.newPage({ viewport: { width: size, height: size } });

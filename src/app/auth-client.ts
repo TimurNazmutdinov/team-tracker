@@ -1,3 +1,4 @@
+import type { Palette } from '../domain/palettes';
 import { StorageError } from '../storage';
 import type { Account } from '../state/session';
 
@@ -59,6 +60,7 @@ export const authClient = {
     call<Account>('POST', '/users', input),
   resetPassword: (id: string, password: string) =>
     call<undefined>('POST', `/users/${id}/password`, { password }),
+  setPalette: (palette: Palette) => call<Account>('PATCH', '/auth/preferences', { palette }),
   changePassword: (current: string, next: string) =>
     call<undefined>('POST', '/auth/password', { current, next }),
   setRole: (id: string, role: Account['role']) =>

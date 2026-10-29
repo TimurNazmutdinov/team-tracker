@@ -1,4 +1,5 @@
 import { StorageError } from '../storage';
+import { Logo } from '../ui/Logo';
 import { clearSavedData } from './create-storage';
 
 /** Экран ошибки запуска: данные повреждены. Предлагает сбросить сохранённые изменения. */
@@ -11,6 +12,9 @@ export function BootError({ error }: { error: unknown }) {
   };
   return (
     <main className="boot-error" role="alert">
+      <p className="login-logo">
+        <Logo size={36} />
+      </p>
       <h1>Не удалось загрузить данные</h1>
       <p>{message}</p>
       {details.length > 0 && (

@@ -1,6 +1,7 @@
 import { strFromU8, strToU8, unzipSync, zipSync } from 'fflate';
 import readXlsxFile from 'read-excel-file/node';
 import writeXlsxFile from 'write-excel-file/node';
+import { DEFAULT_PALETTE, PALETTE_LABELS, isPalette } from '../../../src/domain/palettes';
 import { ROLE_LABELS, isRole } from '../../../src/domain/permissions';
 import { velocity } from '../../../src/domain/reports';
 import type { Issue, Link, Sprint } from '../../../src/domain/schema';
@@ -152,7 +153,16 @@ function specs(snapshot: Snapshot, meta: XlsxMeta): SheetSpec[] {
     },
     {
       name: SHEETS.people,
-      headers: ['Имя', 'Должность', 'Почта', 'Роль доступа', '~id', '~accessRole'],
+      headers: [
+        'Имя',
+        'Должность',
+        'Почта',
+        'Роль доступа',
+        'Цветовая гамма',
+        '~id',
+        '~accessRole',
+        '~palette',
+      ],
       rows: data.people.map((p) => {
         const a = account.get(p.id);
         return [
@@ -160,11 +170,13 @@ function specs(snapshot: Snapshot, meta: XlsxMeta): SheetSpec[] {
           p.role,
           a?.email,
           a ? ROLE_LABELS[a.accessRole] : null,
+          a ? PALETTE_LABELS[a.palette] : null,
           p.id,
           a?.accessRole,
+          a?.palette,
         ];
       }),
-      widths: [28, 24, 30, 24, 36, 14],
+      widths: [28, 24, 30, 24, 16, 36, 14, 10],
     },
     {
       name: SHEETS.sprints,
@@ -477,6 +489,8 @@ export async function readXlsx(buffer: Uint8Array): Promise<ReadXlsx> {
     const id = str(need(r, 'id', S.people));
     const email = strOrNull(need(r, 'Почта', S.people));
     const role = strOrNull(need(r, 'accessRole', S.people));
+    // в Excel-файлах до ADR-013 колонки с гаммой нет — тогда гамма по умолчанию
+    const palette = strOrNull(r['palette']);
     if (email && isRole(role)) {
       accounts.push({
         id,
@@ -484,6 +498,7 @@ export async function readXlsx(buffer: Uint8Array): Promise<ReadXlsx> {
         passwordHash: null,
         accessRole: role,
         mustChangePassword: true,
+        palette: isPalette(palette) ? palette : DEFAULT_PALETTE,
         createdAt: null,
       });
     }

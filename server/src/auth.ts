@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { and, eq, gt, sql } from 'drizzle-orm';
+import { DEFAULT_PALETTE, isPalette, type Palette } from '../../src/domain/palettes';
 import { ROLE_LABELS, isRole, type Role } from '../../src/domain/permissions';
 import { schema, type Db } from './db';
 import { HttpError } from './errors';
@@ -18,6 +19,13 @@ export interface Account {
   role: Role;
   /** Пароль временный: до его смены доступна только смена пароля. */
   mustChangePassword: boolean;
+  /** Цветовая гамма интерфейса из профиля (ADR-013). */
+  palette: Palette;
+}
+
+/** Гамма из базы; незнакомое значение (например, после отката версии) — по умолчанию. */
+function paletteOf(value: string): Palette {
+  return isPalette(value) ? value : DEFAULT_PALETTE;
 }
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -74,7 +82,7 @@ export async function createAccount(db: Db, input: NewAccount): Promise<Account>
     await tx.insert(users).values({ id, email, passwordHash, accessRole, mustChangePassword });
     return accessRole;
   });
-  return { id, name, email, role, mustChangePassword };
+  return { id, name, email, role, mustChangePassword, palette: DEFAULT_PALETTE };
 }
 
 /** Самостоятельная регистрация (только при ALLOW_REGISTRATION=true). */
@@ -108,6 +116,7 @@ export async function login(
       hash: users.passwordHash,
       role: users.accessRole,
       mustChange: users.mustChangePassword,
+      palette: users.palette,
       name: people.name,
     })
     .from(users)
@@ -128,6 +137,7 @@ export async function login(
       email: row.email,
       role: row.role,
       mustChangePassword: row.mustChange,
+      palette: paletteOf(row.palette),
     },
     token,
   };
@@ -146,6 +156,7 @@ export async function accountByToken(db: Db, token: string | undefined): Promise
       email: users.email,
       role: users.accessRole,
       mustChange: users.mustChangePassword,
+      palette: users.palette,
       name: people.name,
     })
     .from(sessions)
@@ -160,6 +171,7 @@ export async function accountByToken(db: Db, token: string | undefined): Promise
     email: row.email,
     role: row.role,
     mustChangePassword: row.mustChange,
+    palette: paletteOf(row.palette),
   };
 }
 
@@ -170,6 +182,7 @@ export async function listAccounts(db: Db): Promise<Account[]> {
       email: users.email,
       role: users.accessRole,
       mustChange: users.mustChangePassword,
+      palette: users.palette,
       name: people.name,
     })
     .from(users)
@@ -183,6 +196,7 @@ export async function listAccounts(db: Db): Promise<Account[]> {
             name: r.name,
             role: r.role,
             mustChangePassword: r.mustChange,
+            palette: paletteOf(r.palette),
           },
         ]
       : [],
@@ -253,4 +267,14 @@ export async function resetPassword(db: Db, userId: string, temporary: string): 
     .returning({ id: users.id });
   if (updated.length === 0) throw new HttpError(404, 'not_found', 'Учётка не найдена');
   await db.delete(sessions).where(eq(sessions.userId, userId));
+}
+
+/** Сохраняет цветовую гамму в профиле: видна пользователю с любого компьютера (ADR-013). */
+export async function setPalette(db: Db, userId: string, palette: Palette): Promise<void> {
+  const updated = await db
+    .update(users)
+    .set({ palette })
+    .where(eq(users.id, userId))
+    .returning({ id: users.id });
+  if (updated.length === 0) throw new HttpError(404, 'not_found', 'Учётка не найдена');
 }

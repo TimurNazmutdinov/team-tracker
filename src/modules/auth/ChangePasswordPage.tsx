@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { authClient } from '../../app/auth-client';
 import { StorageError } from '../../storage';
 import { useSession } from '../../state/session';
+import { Logo } from '../../ui/Logo';
 import { TextField } from '../../ui/fields';
 
 /** Смена пароля после входа с временным паролем (ADR-011): пока она не сделана, работать нельзя. */
@@ -43,6 +44,9 @@ export function ChangePasswordPage() {
 
   return (
     <main className="login" id="main">
+      <p className="login-logo">
+        <Logo size={36} />
+      </p>
       <h1>Смените пароль</h1>
       <p>
         {account?.name}, вам выдан временный пароль. Придумайте свой — после этого откроется трекер.

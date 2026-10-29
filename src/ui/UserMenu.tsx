@@ -3,11 +3,59 @@ import { useEffect, useRef, useState } from 'react';
 import { useStorage } from '../app/storage-context';
 import { SERVER_MODE } from '../app/create-storage';
 import { authClient } from '../app/auth-client';
+import { PALETTES, PALETTE_LABELS, type Palette } from '../domain/palettes';
 import { ROLE_LABELS } from '../domain/permissions';
+import { usePalette } from '../state/palette';
 import { resolveAuthor, useUserStore } from '../state/current-user';
 import { useSession } from '../state/session';
 import { useNotices } from '../state/notices';
 import { usePeople } from '../state/queries';
+
+/** Выбор цветовой гаммы (ADR-013): применяется сразу; с сервером сохраняется в профиле. */
+function PaletteField() {
+  const palette = usePalette((s) => s.palette);
+  const apply = usePalette((s) => s.set);
+  const account = useSession((s) => s.account);
+  const setAccount = useSession((s) => s.set);
+  const push = useNotices((s) => s.push);
+
+  const choose = async (next: Palette) => {
+    if (next === palette) return;
+    const previous = palette;
+    apply(next);
+    if (!SERVER_MODE || !account) return;
+    try {
+      setAccount(await authClient.setPalette(next));
+    } catch {
+      apply(previous);
+      push('Не удалось сохранить цветовую гамму: проверьте связь с сервером');
+    }
+  };
+
+  return (
+    <fieldset className="palette-field">
+      <legend>Цветовая гамма</legend>
+      {PALETTES.map((p) => (
+        <label key={p} className={`palette-option${p === palette ? ' selected' : ''}`}>
+          <input
+            type="radio"
+            name="palette"
+            value={p}
+            checked={p === palette}
+            onChange={() => void choose(p)}
+          />
+          <span>{PALETTE_LABELS[p]}</span>
+          <span className="swatches" data-swatch={p} aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </span>
+        </label>
+      ))}
+      <p className="hint">Применяется сразу{SERVER_MODE ? '; сохраняется в вашем профиле' : ''}.</p>
+    </fieldset>
+  );
+}
 
 /** Меню профиля. В демо-режиме содержит «Сбросить данные» (возврат к seed.json). */
 export function UserMenu() {
@@ -91,6 +139,7 @@ export function UserMenu() {
               </select>
             </label>
           )}
+          <PaletteField />
           {SERVER_MODE ? (
             <button type="button" role="menuitem" onClick={() => void onLogout()}>
               Выйти
