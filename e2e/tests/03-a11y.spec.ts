@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 
 // Проверка доступности ключевых экранов (axe, WCAG 2.1 A и AA) в светлой и тёмной версиях гаммы.
-// Идёт после сквозного теста (01-flow): администратор уже зарегистрирован.
+// Идёт после сквозных тестов (01-flow, 02-projects): администратор уже зарегистрирован, проектов два.
 
 const SCREENS: [string, string][] = [
   ['доска', '/projects/DEMO/board'],
@@ -14,6 +14,10 @@ const SCREENS: [string, string][] = [
   ['люди', '/projects/DEMO/people'],
   ['настройки', '/projects/DEMO/settings'],
   ['о программе', '/about'],
+  ['портфель', '/portfolio?projects=all'],
+  ['доска нескольких проектов', '/projects/DEMO/board?projects=all'],
+  ['планирование нескольких проектов', '/projects/DEMO/backlog?projects=all'],
+  ['отчёты нескольких проектов', '/projects/DEMO/reports?projects=all'],
 ];
 
 async function audit(page: Page, name: string): Promise<void> {
