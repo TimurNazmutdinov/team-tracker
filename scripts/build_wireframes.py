@@ -1350,7 +1350,7 @@ def screen_retro_board():
     nav_pills(wf, 96)
     wf.callout(1, 14, 96)
     wf.callout(2, 178, 96)
-    wf.callout(3, 500, 96)
+    wf.callout(3, 524, 96)
     retro_toolbar(wf, 136, x0=20)
     wf.callout(4, 14, 138)
     cols = ["To Do", "In Progress", "Review", "Done"]
