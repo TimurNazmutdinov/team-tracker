@@ -11,28 +11,43 @@
 <text x="31" y="156" font-size="15" font-weight="bold" fill="#475569">Сервер: Node.js 22 + Fastify 5  (server/src)</text>
 <rect x="30" y="165" width="840" height="50" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
 <text x="450.0" y="194" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e3a8a">Маршруты: /api/auth, /users, чтение, /commit</text>
-<path d="M165 215 L165 245" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
-<path d="M450 215 L450 245" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
-<path d="M735 215 L735 245" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
-<rect x="30" y="245" width="270" height="80" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
-<text x="165.0" y="281" text-anchor="middle" font-size="16" font-weight="bold" fill="#1e3a8a">Вход</text>
-<text x="165.0" y="305" text-anchor="middle" font-size="12" fill="#1f2937">scrypt, сессии: хэш токена в базе</text>
-<rect x="315" y="245" width="270" height="80" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
-<text x="450.0" y="281" text-anchor="middle" font-size="16" font-weight="bold" fill="#1e3a8a">Запись</text>
-<text x="450.0" y="305" text-anchor="middle" font-size="12" fill="#1f2937">блокировка, права, проверка, транзакция</text>
-<rect x="600" y="245" width="270" height="80" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
-<text x="735.0" y="281" text-anchor="middle" font-size="16" font-weight="bold" fill="#1e3a8a">Чтение</text>
-<text x="735.0" y="305" text-anchor="middle" font-size="12" fill="#1f2937">проекты, задачи, спринты, история</text>
-<path d="M165 325 L165 365" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
-<path d="M450 325 L450 365" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
-<path d="M735 325 L735 365" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<path d="M127 215 L127 245" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<path d="M342 215 L342 245" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<path d="M557 215 L557 245" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<path d="M772 215 L772 245" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<rect x="30" y="245" width="195" height="80" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="127.5" y="272" text-anchor="middle" font-size="16" font-weight="bold" fill="#1e3a8a">Вход</text>
+<text x="127.5" y="296" text-anchor="middle" font-size="12" fill="#1f2937">scrypt, сессии</text>
+<text x="127.5" y="314" text-anchor="middle" font-size="12" fill="#1f2937">хэш токена в базе</text>
+<rect x="245" y="245" width="195" height="80" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="342.5" y="272" text-anchor="middle" font-size="16" font-weight="bold" fill="#1e3a8a">Запись</text>
+<text x="342.5" y="296" text-anchor="middle" font-size="12" fill="#1f2937">блокировка, права,</text>
+<text x="342.5" y="314" text-anchor="middle" font-size="12" fill="#1f2937">проверка, транзакция</text>
+<rect x="460" y="245" width="195" height="80" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+<text x="557.5" y="272" text-anchor="middle" font-size="16" font-weight="bold" fill="#1e3a8a">Чтение</text>
+<text x="557.5" y="296" text-anchor="middle" font-size="12" fill="#1f2937">проекты, задачи,</text>
+<text x="557.5" y="314" text-anchor="middle" font-size="12" fill="#1f2937">спринты, история</text>
+<rect x="675" y="245" width="195" height="80" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text x="772.5" y="272" text-anchor="middle" font-size="16" font-weight="bold" fill="#14532d">Копии</text>
+<text x="772.5" y="296" text-anchor="middle" font-size="12" fill="#1f2937">снимок, Excel и JSON,</text>
+<text x="772.5" y="314" text-anchor="middle" font-size="12" fill="#1f2937">проверка, ротация</text>
+<path d="M127 325 L127 365" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<path d="M342 325 L342 365" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<path d="M557 325 L557 365" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<path d="M700 325 L700 365" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
 <rect x="30" y="365" width="840" height="55" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
 <text x="450.0" y="397" text-anchor="middle" font-size="15" font-weight="bold" fill="#1e3a8a">Drizzle ORM: схема таблиц и миграции (server/migrations)</text>
 <path d="M450 440 L450 490" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
 <text x="480" y="475" text-anchor="middle" font-size="13" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="6" stroke-linejoin="round">SQL</text>
 <rect x="250" y="490" width="400" height="70" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
 <text x="450.0" y="521" text-anchor="middle" font-size="17" font-weight="bold" fill="#14532d">PostgreSQL 16</text>
-<text x="450.0" y="546" text-anchor="middle" font-size="13" fill="#1f2937">или PGlite: тесты и разработка без установки</text>
+<text x="450.0" y="546" text-anchor="middle" font-size="13" fill="#1f2937">или PGlite: встроенная база, тесты</text>
+<rect x="690" y="490" width="195" height="70" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+<text x="787.5" y="512" text-anchor="middle" font-size="17" font-weight="bold" fill="#78350f">Папка копий</text>
+<text x="787.5" y="536" text-anchor="middle" font-size="12" fill="#1f2937">BACKUP_DIR или выбранная,</text>
+<text x="787.5" y="554" text-anchor="middle" font-size="12" fill="#1f2937">в том числе облачная</text>
+<path d="M845 325 L845 490" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr)"/>
+<text x="808" y="415" text-anchor="middle" font-size="12" fill="#1f2937" paint-order="stroke" stroke="#ffffff" stroke-width="6" stroke-linejoin="round">файлы</text>
 <rect x="15" y="590" width="870" height="95" rx="14" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
 <text x="31" y="616" font-size="15" font-weight="bold" fill="#475569">Общий код src/domain (используют и клиент, и сервер)</text>
 <rect x="30" y="622" width="270" height="50" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>

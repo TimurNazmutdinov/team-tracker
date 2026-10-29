@@ -30,10 +30,18 @@ services:
       # внутри контейнера слушаем все адреса; наружу порт открывает ports ниже
       HOST: 0.0.0.0
       ALLOW_REGISTRATION: ${ALLOW_REGISTRATION:-false}
+      # резервные копии: ежедневно в BACKUP_TIME по часовому поясу TZ
+      BACKUP_DIR: /backups
+      BACKUP_TIME: ${BACKUP_TIME:-18:00}
+      TZ: ${TZ:-UTC}
       # true — только если приложение стоит за HTTPS-прокси
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
+    volumes:
+      # комплекты копий; чтобы класть их в папку на компьютере, замените на ./backups:/backups
+      - backups:/backups
     ports:
       - '${APP_PORT:-3000}:3000'
 
 volumes:
   pgdata:
+  backups:
