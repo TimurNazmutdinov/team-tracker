@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="700" viewBox="0 0 900 700" font-family="Helvetica, Arial, 'Segoe UI', 'DejaVu Sans', sans-serif" role="img" aria-label="Экран «О программе»: версия, копии, диагностика, журнал ошибок">
+<title>Экран «О программе»: версия, копии, диагностика, журнал ошибок</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker></defs>
+<rect width="900" height="700" fill="#ffffff"/>
+<rect x="0.6" y="0.6" width="898.8" height="698.8" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="0.6" y="0.6" width="898.8" height="34" rx="10" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="1" y="20" width="898" height="15" rx="0" fill="#f3f4f6"/>
+<circle cx="18" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="36" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="54" cy="17" r="5" fill="#cbd5e1"/>
+<rect x="84" y="6" width="732" height="23" rx="11.5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="98" y="22" text-anchor="start" font-size="12" fill="#6b7280">team-tracker.app/about</text>
+<line x1="1" y1="86" x2="899" y2="86" stroke="#cbd5e1" stroke-width="1.2"/>
+<g transform="translate(18 47) scale(0.4375)"><path d="M52.78 20 A24 24 0 1 1 35.34 8.23" fill="none" stroke="#2B4ACB" stroke-width="7" stroke-linecap="round"/><polygon points="45.24,9.62 36.31,1.30 34.37,15.16" fill="#2B4ACB" stroke="#2B4ACB" stroke-width="2" stroke-linejoin="round"/><polyline points="23,33 29.5,39.5 41,27" fill="none" stroke="#F08C00" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="52" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#2B4ACB">Team</text>
+<text x="94" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#F08C00">Tracker</text>
+<rect x="158" y="52" width="59.68000000000001" height="26" rx="13.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="187.84" y="69.68" text-anchor="middle" font-size="13" fill="#1f2937">DEMO ▾</text>
+<text x="230" y="67" text-anchor="start" font-size="14" fill="#1f2937">Бэклог</text>
+<text x="295.04" y="67" text-anchor="start" font-size="14" fill="#1f2937">Доска</text>
+<text x="352.24" y="67" text-anchor="start" font-size="14" fill="#1f2937">Спринты</text>
+<text x="425.12" y="67" text-anchor="start" font-size="14" fill="#1f2937">Отчёты</text>
+<text x="490.16" y="67" text-anchor="start" font-size="14" fill="#1f2937">Люди</text>
+<text x="539.52" y="67" text-anchor="start" font-size="14" font-weight="bold" fill="#2563eb">Настройки</text>
+<rect x="537.52" y="80" width="83.6" height="4" rx="2" fill="#2563eb"/>
+<rect x="640" y="50" width="130" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="650" y="70" text-anchor="start" font-size="13" fill="#6b7280">Поиск</text>
+<rect x="740" y="55" width="24" height="20" rx="4" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="752" y="70" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">/</text>
+<circle cx="844" cy="65" r="15" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="844" y="69" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">АК</text>
+<text x="866" y="70" text-anchor="middle" font-size="13" fill="#6b7280">▾</text>
+<text x="20" y="130" text-anchor="start" font-size="24" font-weight="bold" fill="#1f2937">О программе</text>
+<text x="190" y="130" text-anchor="start" font-size="12" fill="#6b7280">из меню профиля → «О программе»</text>
+<rect x="20" y="150" width="860" height="112" rx="8" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="36" y="180" text-anchor="start" font-size="18" font-weight="bold" fill="#1f2937">Team Tracker  0.3.0</text>
+<text x="36" y="206" text-anchor="start" font-size="13" fill="#6b7280">Сборка</text>
+<text x="150" y="206" text-anchor="start" font-size="13" fill="#1f2937">29.10.2026 11:30 (клиент и сервер одной версии)</text>
+<text x="36" y="226" text-anchor="start" font-size="13" fill="#6b7280">Режим</text>
+<text x="150" y="226" text-anchor="start" font-size="13" fill="#1f2937">сервер · встроенная база PGlite</text>
+<text x="36" y="246" text-anchor="start" font-size="13" fill="#6b7280">Окружение</text>
+<text x="150" y="246" text-anchor="start" font-size="13" fill="#1f2937">Node 22 · Windows</text>
+<circle cx="12" cy="160" r="11" fill="#b91c1c"/>
+<text x="12" y="165" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">1</text>
+<text x="20" y="296" text-anchor="start" font-size="16" font-weight="bold" fill="#1f2937">Резервные копии</text>
+<text x="190" y="296" text-anchor="start" font-size="12" fill="#6b7280">только администратор</text>
+<rect x="20" y="306" width="860" height="56" rx="8" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="36" y="330" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">Последняя копия: 29.10.2026 18:00</text>
+<rect x="330" y="314" width="96.08000000000001" height="24" rx="12.0" fill="#dcfce7" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="378.04" y="330.68" text-anchor="middle" font-size="13" fill="#1f2937">✓ проверена</text>
+<text x="36" y="351" text-anchor="start" font-size="13" fill="#6b7280">Следующая — сегодня в 18:00.</text>
+<text x="866" y="330" text-anchor="end" font-size="13" fill="#2563eb">Настройки → Резервные копии ›</text>
+<circle cx="12" cy="316" r="11" fill="#b91c1c"/>
+<text x="12" y="321" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">2</text>
+<text x="20" y="396" text-anchor="start" font-size="16" font-weight="bold" fill="#1f2937">Диагностика</text>
+<text x="150" y="396" text-anchor="start" font-size="12" fill="#6b7280">только администратор</text>
+<rect x="20" y="408" width="230" height="38" rx="6" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="135.0" y="432.04" text-anchor="middle" font-size="14" font-weight="bold" fill="#ffffff">Собрать диагностику</text>
+<text x="266" y="432" text-anchor="start" font-size="13" fill="#6b7280">diagnostics-2026-10-29.zip — скачивается на этот компьютер</text>
+<text x="20" y="466" text-anchor="start" font-size="12" fill="#6b7280">В архиве: версия и сборка, настройки без секретов (пароли и строка подключения не</text>
+<text x="20" y="484" text-anchor="start" font-size="12" fill="#6b7280">включаются), последние записи журнала ошибок, состояние копий. Данные задач и людей — нет.</text>
+<circle cx="12" cy="420" r="11" fill="#b91c1c"/>
+<text x="12" y="425" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">3</text>
+<text x="20" y="520" text-anchor="start" font-size="16" font-weight="bold" fill="#1f2937">Журнал ошибок</text>
+<text x="180" y="520" text-anchor="start" font-size="12" fill="#6b7280">последние записи · только администратор</text>
+<rect x="20" y="530" width="860" height="120" rx="8" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="36" y="556" text-anchor="start" font-size="12" fill="#6b7280">29.10 10:12</text>
+<rect x="120" y="541" width="52.96" height="20" rx="10.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="146.48" y="554.96" text-anchor="middle" font-size="11" fill="#1f2937">клиент</text>
+<text x="190" y="556" text-anchor="start" font-size="12.5" fill="#1f2937">TypeError: Cannot read properties of undefined (экран «Доска»)</text>
+<text x="36" y="584" text-anchor="start" font-size="12" fill="#6b7280">29.10 09:40</text>
+<rect x="120" y="569" width="52.96" height="20" rx="10.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="146.48" y="582.96" text-anchor="middle" font-size="11" fill="#1f2937">сервер</text>
+<text x="190" y="584" text-anchor="start" font-size="12.5" fill="#1f2937">500 POST /api/commit: нарушена целостность данных</text>
+<text x="36" y="612" text-anchor="start" font-size="12" fill="#6b7280">28.10 18:00</text>
+<rect x="120" y="597" width="52.96" height="20" rx="10.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="146.48" y="610.96" text-anchor="middle" font-size="11" fill="#1f2937">сервер</text>
+<text x="190" y="612" text-anchor="start" font-size="12.5" fill="#1f2937">копия не создана: нет места на диске</text>
+<text x="866" y="520" text-anchor="end" font-size="12" fill="#6b7280">Файлы: DATA_DIR/logs (ротация: до 5 × 1 МБ)</text>
+<circle cx="12" cy="540" r="11" fill="#b91c1c"/>
+<text x="12" y="545" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">4</text>
+<text x="20" y="680" text-anchor="start" font-size="12" fill="#6b7280">Обычный участник видит только блок «Версия». Макет, не готовый экран.</text>
+</svg>

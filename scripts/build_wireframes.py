@@ -1070,6 +1070,53 @@ def screen_backups():
     return wf
 
 
+def screen_about():
+    wf = WF(700, "Экран «О программе»: версия, копии, диагностика, журнал ошибок")
+    t = wf.t
+    wf.shell(f"team-tracker.app/about", "Настройки")
+    wf.text(20, 130, "О программе", 24, bold=True)
+    wf.text(190, 130, "из меню профиля → «О программе»", 12, fill=t["muted"])
+    # версия: видят все роли
+    wf.rect(20, 150, 860, 112, fill=t["panel"], stroke=t["line"], r=8)
+    wf.text(36, 180, "Team Tracker  0.3.0", 18, bold=True)
+    rows = [("Сборка", "29.10.2026 11:30 (клиент и сервер одной версии)"), ("Режим", "сервер · встроенная база PGlite"), ("Окружение", "Node 22 · Windows")]
+    for n, (a, b) in enumerate(rows):
+        wf.text(36, 206 + n * 20, a, 13, fill=t["muted"])
+        wf.text(150, 206 + n * 20, b, 13)
+    wf.callout(1, 12, 160)
+    # резервные копии: только администратор
+    wf.text(20, 296, "Резервные копии", 16, bold=True)
+    wf.text(190, 296, "только администратор", 12, fill=t["muted"])
+    wf.rect(20, 306, 860, 56, fill=t["panel"], stroke=t["line"], r=8)
+    wf.text(36, 330, "Последняя копия: 29.10.2026 18:00", 14, bold=True)
+    wf.chip(330, 314, "✓ проверена", 13, fill=t["status"]["Done"], h=24)
+    wf.text(36, 351, "Следующая — сегодня в 18:00.", 13, fill=t["muted"])
+    wf.text(880 - 14, 330, "Настройки → Резервные копии ›", 13, "end", fill=t["accent"])
+    wf.callout(2, 12, 316)
+    # диагностика
+    wf.text(20, 396, "Диагностика", 16, bold=True)
+    wf.text(150, 396, "только администратор", 12, fill=t["muted"])
+    wf.button(20, 408, 230, 38, "Собрать диагностику", True)
+    wf.text(266, 432, "diagnostics-2026-10-29.zip — скачивается на этот компьютер", 13, fill=t["muted"])
+    wf.text(20, 466, "В архиве: версия и сборка, настройки без секретов (пароли и строка подключения не", 12, fill=t["muted"])
+    wf.text(20, 484, "включаются), последние записи журнала ошибок, состояние копий. Данные задач и людей — нет.", 12, fill=t["muted"])
+    wf.callout(3, 12, 420)
+    # журнал ошибок
+    wf.text(20, 520, "Журнал ошибок", 16, bold=True)
+    wf.text(180, 520, "последние записи · только администратор", 12, fill=t["muted"])
+    wf.rect(20, 530, 860, 120, fill=t["panel"], stroke=t["line"], r=8)
+    log = [("29.10 10:12", "клиент", "TypeError: Cannot read properties of undefined (экран «Доска»)"), ("29.10 09:40", "сервер", "500 POST /api/commit: нарушена целостность данных"), ("28.10 18:00", "сервер", "копия не создана: нет места на диске")]
+    for n, (d, src, msg) in enumerate(log):
+        y = 556 + n * 28
+        wf.text(36, y, d, 12, fill=t["muted"])
+        wf.chip(120, y - 15, src, 11, h=20)
+        wf.text(190, y, wf.fit(msg, 680, 12.5), 12.5)
+    wf.text(880 - 14, 520, "Файлы: DATA_DIR/logs (ротация: до 5 × 1 МБ)", 12, "end", fill=t["muted"])
+    wf.callout(4, 12, 540)
+    wf.text(20, 680, "Обычный участник видит только блок «Версия». Макет, не готовый экран.", 12, fill=t["muted"])
+    return wf
+
+
 def screen_palette():
     wf = WF(560, "Блок «Цветовая гамма» в профиле пользователя")
     t = wf.t
@@ -1743,6 +1790,7 @@ SCREENS = {
     "wf-settings": screen_settings,
     "wf-backups": screen_backups,
     "wf-palette": screen_palette,
+    "wf-about": screen_about,
     "wf-retro-board": screen_retro_board,
     "wf-board-beige": lambda: screen_retro_board(BEIGE),
     "wf-backlog-new": screen_backlog_new,
