@@ -87,16 +87,30 @@ describe('токены цветовых гамм', () => {
 
   it('бежевая гамма использует цвета из задания', () => {
     const l = palettes.beige.light;
-    expect(l['--bg']).toBe('#f7f6f0');
-    expect(l['--panel']).toBe('#ecece2');
-    expect(l['--ink']).toBe('#484039');
+    expect(l['--bg']).toBe('#faf9f5');
+    expect(l['--panel']).toBe('#ffffff');
+    expect(l['--line']).toBe('#e4dfd3');
+    expect(l['--control-line']).toBe('#9c8f7c');
+    expect(l['--ink']).toBe('#2b2520');
+    expect(l['--muted']).toBe('#5e5348');
+    expect(l['--accent']).toBe('#6a5440');
+    expect(l['--accent-bg']).toBe('#f1ebdf');
+    expect(STATUS.map((s) => l[s])).toEqual([
+      '#efece4',
+      '#f3eee2',
+      '#e6eeea',
+      '#f7ebcf',
+      '#e8efdf',
+    ]);
     expect([l['--extra-1'], l['--extra-2'], l['--extra-3']]).toEqual([
       '#c5bfaf',
       '#b7a286',
       '#abafa3',
     ]);
     expect(l['--logo-check']).toBe('#95816c');
-    expect(palettes.beige.dark['--ink']).toBe('#eeeee5');
+    expect(palettes.beige.dark['--ink']).toBe('#f4f2ea');
+    expect(palettes.beige.dark['--bg']).toBe('#332c26');
+    expect(palettes.beige.dark['--panel']).toBe('#3e362e');
   });
 
   it('цвета логотипа совпадают с файлами Logo/', () => {

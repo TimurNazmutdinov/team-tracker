@@ -35,24 +35,24 @@
 <rect x="20" y="190" width="262" height="190" rx="8" fill="#ffffff" stroke="#2563eb" stroke-width="2.4"/>
 <text x="34" y="216" text-anchor="start" font-size="15" font-weight="bold" fill="#1f2937">Бежевая (по умолчанию)</text>
 <text x="34" y="234" text-anchor="start" font-size="12" fill="#6b7280">тёплые бежево-коричневые тона</text>
-<rect x="32" y="248" width="114" height="96" rx="6" fill="#F7F6F0" stroke="#cbd5e1" stroke-width="1.2"/>
-<rect x="40" y="256" width="98" height="40" rx="4" fill="#ECECE2"/>
-<text x="48" y="280" text-anchor="start" font-size="11" font-weight="bold" fill="#484039">Текст</text>
-<rect x="88" y="266" width="44" height="20" rx="4" fill="#6E5A47"/>
+<rect x="32" y="248" width="114" height="96" rx="6" fill="#FAF9F5" stroke="#cbd5e1" stroke-width="1.2"/>
+<rect x="40" y="256" width="98" height="40" rx="4" fill="#FFFFFF"/>
+<text x="48" y="280" text-anchor="start" font-size="11" font-weight="bold" fill="#2B2520">Текст</text>
+<rect x="88" y="266" width="44" height="20" rx="4" fill="#6A5440"/>
 <text x="110" y="280" text-anchor="middle" font-size="10" font-weight="bold" fill="#FFFFFF">Кнопка</text>
 <rect x="40" y="306" width="28" height="12" rx="3" fill="#C5BFAF"/>
 <rect x="72" y="306" width="28" height="12" rx="3" fill="#B7A286"/>
 <rect x="104" y="306" width="28" height="12" rx="3" fill="#ABAFA3"/>
-<text x="40" y="336" text-anchor="start" font-size="11" fill="#484039">светлая</text>
-<rect x="156" y="248" width="114" height="96" rx="6" fill="#2A241F" stroke="#cbd5e1" stroke-width="1.2"/>
-<rect x="164" y="256" width="98" height="40" rx="4" fill="#362F28"/>
-<text x="172" y="280" text-anchor="start" font-size="11" font-weight="bold" fill="#EEEEE5">Текст</text>
+<text x="40" y="336" text-anchor="start" font-size="11" fill="#2B2520">светлая</text>
+<rect x="156" y="248" width="114" height="96" rx="6" fill="#332C26" stroke="#cbd5e1" stroke-width="1.2"/>
+<rect x="164" y="256" width="98" height="40" rx="4" fill="#3E362E"/>
+<text x="172" y="280" text-anchor="start" font-size="11" font-weight="bold" fill="#F4F2EA">Текст</text>
 <rect x="212" y="266" width="44" height="20" rx="4" fill="#D2B991"/>
 <text x="234" y="280" text-anchor="middle" font-size="10" font-weight="bold" fill="#2A241F">Кнопка</text>
 <rect x="164" y="306" width="28" height="12" rx="3" fill="#C5BFAF"/>
 <rect x="196" y="306" width="28" height="12" rx="3" fill="#B7A286"/>
 <rect x="228" y="306" width="28" height="12" rx="3" fill="#ABAFA3"/>
-<text x="164" y="336" text-anchor="start" font-size="11" fill="#EEEEE5">тёмная</text>
+<text x="164" y="336" text-anchor="start" font-size="11" fill="#F4F2EA">тёмная</text>
 <text x="34" y="368" text-anchor="start" font-size="10" fill="#6b7280">Светлая или тёмная — по настройке системы</text>
 <circle cx="12" cy="206" r="11" fill="#b91c1c"/>
 <text x="12" y="211" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">2</text>
