@@ -1247,3 +1247,194 @@ code {
 .folder-list li {
   padding: 0.15rem 0.5rem;
 }
+
+/* ---- плашки доски, планирование и история (ADR-014) ---- */
+.board-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.pill {
+  display: inline-block;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid var(--control-line);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+a.pill:hover {
+  background: var(--accent-bg);
+}
+
+.pill.current {
+  background: var(--accent-bg);
+  color: var(--ink);
+}
+
+.planning-filters input[type='search'] {
+  min-width: 12rem;
+}
+
+.planning-filters label.check {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--ink);
+}
+
+.bulk-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+}
+
+.bulk-bar label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.planning-head {
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.section-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  flex: 1 1 18rem;
+}
+
+.fill {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 16rem;
+}
+
+.fill-line {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.fill-bar {
+  position: relative;
+  flex: 0 0 11rem;
+  height: 0.6rem;
+  background: var(--bg);
+  border: 1px solid var(--control-line);
+  border-radius: 999px;
+}
+
+.fill-value {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 999px;
+}
+
+.fill-mark {
+  position: absolute;
+  top: -0.25rem;
+  bottom: -0.25rem;
+  width: 2px;
+  background: var(--ink);
+}
+
+.fill-near .fill-value {
+  background: var(--warn);
+}
+
+.fill-over .fill-value {
+  background: var(--danger);
+}
+
+.fill-note {
+  font-weight: 700;
+}
+
+.fill-near .fill-note {
+  color: var(--warn);
+}
+
+.fill-over .fill-note {
+  color: var(--danger);
+}
+
+main:has(.planning-page) {
+  max-width: 82rem;
+}
+
+.planning-row {
+  grid-template-columns: 1.4rem 1.6rem 1.4rem 5rem minmax(0, 1fr) 6.5rem 6.5rem 6.5rem 10rem;
+}
+
+.planning-row .chip,
+.planning-row .epic-progress {
+  white-space: nowrap;
+}
+
+.issue-cell {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 0.2rem;
+}
+
+.row-meta {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.planning-filters label.check input {
+  width: auto;
+}
+
+.planning-filters label.check {
+  white-space: nowrap;
+}
+
+.closed-row {
+  grid-template-columns: 1.4rem 5rem minmax(0, 1fr) 6.5rem 2.5rem 2.5rem;
+}
+
+.row-field {
+  width: 100%;
+  min-width: 0;
+  font-size: 0.85rem;
+  padding: 0.15rem 0.25rem;
+}
+
+.row-field.unset {
+  border-style: dashed;
+}
+
+.points-input {
+  text-align: center;
+}
+
+@media (max-width: 52rem) {
+  .planning-row {
+    grid-template-columns: 1.4rem 1.6rem 1.4rem 5rem minmax(0, 1fr) auto;
+  }
+  .planning-row .row-meta {
+    display: none;
+  }
+}

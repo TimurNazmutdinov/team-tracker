@@ -49,6 +49,7 @@ import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
 import { useCurrentProject } from '../projects/ProjectRoute';
 import { Avatar, PointsBadge, PriorityChip, TypeIcon } from '../tasks/IssueBits';
+import { BoardNav } from './BoardNav';
 
 const cellId = (laneKey: string, column: BoardColumn) => `cell:${laneKey}:${column}`;
 
@@ -238,6 +239,7 @@ export function BoardPage() {
   return (
     <>
       <PageHeader title="Доска" />
+      <BoardNav projectKey={project.key} sprint={sprint} />
       <div className="board-toolbar">
         <label>
           Спринт

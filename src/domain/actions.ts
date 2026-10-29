@@ -338,6 +338,17 @@ export function updateIssue(
   if (newSprintId !== issue.sprintId) {
     history.push(historyEntry(ctx, issue.id, authorId, 'sprintId', issue.sprintId, newSprintId));
     next.sprintId = newSprintId;
+    // Возврат из идущего спринта в бэклог сбрасывает рабочий статус в To Do (ADR-014)
+    if (
+      newSprintId === null &&
+      sprintById(view, issue.sprintId)?.state === 'active' &&
+      patch.status === undefined &&
+      next.status !== 'Backlog' &&
+      next.status !== 'To Do'
+    ) {
+      history.push(historyEntry(ctx, issue.id, authorId, 'status', next.status, 'To Do'));
+      next.status = 'To Do';
+    }
     if (issue.type !== 'Sub-task') {
       for (const sub of subtasksOf(view, issue.id)) {
         history.push(historyEntry(ctx, sub.id, authorId, 'sprintId', sub.sprintId, newSprintId));
