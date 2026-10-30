@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="820" viewBox="0 0 900 820" font-family="Helvetica, Arial, 'Segoe UI', 'DejaVu Sans', sans-serif" role="img" aria-label="Планирование: спринт в общей рамке, иерархия эпик → задачи">
+<title>Планирование: спринт в общей рамке, иерархия эпик → задачи</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker></defs>
+<rect width="900" height="820" fill="#ffffff"/>
+<rect x="0.6" y="0.6" width="898.8" height="818.8" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="0.6" y="0.6" width="898.8" height="34" rx="10" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="1" y="20" width="898" height="15" rx="0" fill="#f3f4f6"/>
+<circle cx="18" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="36" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="54" cy="17" r="5" fill="#cbd5e1"/>
+<rect x="84" y="6" width="732" height="23" rx="11.5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="98" y="22" text-anchor="start" font-size="12" fill="#6b7280">team-tracker.app/projects/DEMO/backlog</text>
+<line x1="1" y1="86" x2="899" y2="86" stroke="#cbd5e1" stroke-width="1.2"/>
+<g transform="translate(18 47) scale(0.4375)"><path d="M52.78 20 A24 24 0 1 1 35.34 8.23" fill="none" stroke="#2B4ACB" stroke-width="7" stroke-linecap="round"/><polygon points="45.24,9.62 36.31,1.30 34.37,15.16" fill="#2B4ACB" stroke="#2B4ACB" stroke-width="2" stroke-linejoin="round"/><polyline points="23,33 29.5,39.5 41,27" fill="none" stroke="#F08C00" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="52" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#2B4ACB">Team</text>
+<text x="94" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#F08C00">Tracker</text>
+<rect x="158" y="52" width="59.68000000000001" height="26" rx="13.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="187.84" y="69.68" text-anchor="middle" font-size="13" fill="#1f2937">DEMO ▾</text>
+<text x="230" y="67" text-anchor="start" font-size="14" font-weight="bold" fill="#2563eb">Бэклог</text>
+<rect x="228" y="80" width="58.4" height="4" rx="2" fill="#2563eb"/>
+<text x="298.4" y="67" text-anchor="start" font-size="14" fill="#1f2937">Доска</text>
+<text x="355.59999999999997" y="67" text-anchor="start" font-size="14" fill="#1f2937">Спринты</text>
+<text x="428.47999999999996" y="67" text-anchor="start" font-size="14" fill="#1f2937">Отчёты</text>
+<text x="493.52" y="67" text-anchor="start" font-size="14" fill="#1f2937">Люди</text>
+<text x="542.88" y="67" text-anchor="start" font-size="14" fill="#1f2937">Настройки</text>
+<rect x="640" y="50" width="130" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="650" y="70" text-anchor="start" font-size="13" fill="#6b7280">Поиск</text>
+<rect x="740" y="55" width="24" height="20" rx="4" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="752" y="70" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">/</text>
+<circle cx="844" cy="65" r="15" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="844" y="69" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">АК</text>
+<text x="866" y="70" text-anchor="middle" font-size="13" fill="#6b7280">▾</text>
+<text x="20" y="130" text-anchor="start" font-size="22" font-weight="bold" fill="#1f2937">Планирование будущих спринтов</text>
+<rect x="20" y="150" width="860" height="230" rx="10" fill="#ffffff" stroke="#6b7280" stroke-width="1.8"/>
+<rect x="20" y="150" width="860" height="62" rx="10" fill="#f3f4f6"/>
+<line x1="20" y1="212" x2="880" y2="212" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="34" y="178" text-anchor="start" font-size="15" font-weight="bold" fill="#1f2937">▾ Спринт 1</text>
+<rect x="130" y="163" width="42.88" height="22" rx="11.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="151.44" y="178.32" text-anchor="middle" font-size="12" fill="#1f2937">идёт</text>
+<text x="190" y="179" text-anchor="start" font-size="13" fill="#6b7280">28.10 – 04.11</text>
+<text x="866" y="178" text-anchor="end" font-size="13" font-weight="bold" fill="#1f2937">9 / 16 sp · 56 %</text>
+<text x="34" y="202" text-anchor="start" font-size="12.5" fill="#6b7280">Цель: смена пароля и начало истории заказов</text>
+<circle cx="14" cy="150" r="11" fill="#b91c1c"/>
+<text x="14" y="155" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">1</text>
+<rect x="34" y="224" width="832" height="58" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<rect x="46" y="242" width="20" height="20" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="56.0" y="257" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">T</text>
+<text x="80" y="260" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">TEST-1</text>
+<text x="150" y="260" text-anchor="start" font-size="14" fill="#1f2937">Тест задача</text>
+<rect x="34" y="294" width="832" height="58" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<rect x="46" y="312" width="20" height="20" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="56.0" y="327" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">S</text>
+<text x="80" y="330" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">TEST-4</text>
+<text x="150" y="330" text-anchor="start" font-size="14" fill="#1f2937">Форма смены пароля</text>
+<rect x="20" y="400" width="860" height="360" rx="10" fill="#ffffff" stroke="#6b7280" stroke-width="1.8"/>
+<rect x="20" y="400" width="860" height="44" rx="10" fill="#f3f4f6"/>
+<line x1="20" y1="444" x2="880" y2="444" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="34" y="428" text-anchor="start" font-size="15" font-weight="bold" fill="#1f2937">▾ Общий бэклог</text>
+<text x="190" y="428" text-anchor="start" font-size="13" fill="#6b7280">5 задач · 8 sp</text>
+<circle cx="14" cy="400" r="11" fill="#b91c1c"/>
+<text x="14" y="405" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">2</text>
+<rect x="34" y="456" width="832" height="44" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="1.2"/>
+<text x="46" y="484" text-anchor="start" font-size="14" fill="#1f2937">▾</text>
+<rect x="66" y="468" width="20" height="20" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="76.0" y="483" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">E</text>
+<text x="98" y="484" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">TEST-2</text>
+<text x="170" y="484" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">Тест Эпик 1</text>
+<text x="860" y="484" text-anchor="end" font-size="12.5" fill="#6b7280">1 из 3 · 33 %</text>
+<line x1="52" y1="500" x2="52" y2="528" stroke="#6b7280" stroke-width="1.2"/>
+<line x1="52" y1="528" x2="72" y2="528" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="76" y="508" width="790" height="40" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<rect x="88" y="518" width="20" height="20" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="98.0" y="533" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">T</text>
+<text x="120" y="534" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">TEST-3</text>
+<text x="190" y="534" text-anchor="start" font-size="14" fill="#1f2937">Задача в эпике 1</text>
+<line x1="52" y1="552" x2="52" y2="576" stroke="#6b7280" stroke-width="1.2"/>
+<line x1="52" y1="576" x2="72" y2="576" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="76" y="556" width="790" height="40" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<rect x="88" y="566" width="20" height="20" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="98.0" y="581" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">S</text>
+<text x="120" y="582" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">TEST-5</text>
+<text x="190" y="582" text-anchor="start" font-size="14" fill="#1f2937">Экспорт заказов</text>
+<line x1="52" y1="600" x2="52" y2="624" stroke="#6b7280" stroke-width="1.2"/>
+<line x1="52" y1="624" x2="72" y2="624" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="76" y="604" width="790" height="40" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<rect x="88" y="614" width="20" height="20" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="98.0" y="629" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">T</text>
+<text x="120" y="630" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">TEST-6</text>
+<text x="190" y="630" text-anchor="start" font-size="14" fill="#1f2937">Письмо о смене пароля</text>
+<rect x="700" y="613" width="89.92" height="22" rx="11.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="744.96" y="628.32" text-anchor="middle" font-size="12" fill="#1f2937">в Спринте 1</text>
+<circle cx="14" cy="458" r="11" fill="#b91c1c"/>
+<text x="14" y="463" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">3</text>
+<circle cx="680" cy="646" r="11" fill="#b91c1c"/>
+<text x="680" y="651" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">4</text>
+<rect x="34" y="660" width="832" height="40" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<rect x="46" y="670" width="20" height="20" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="56.0" y="685" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">B</text>
+<text x="80" y="686" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">TEST-9</text>
+<text x="150" y="686" text-anchor="start" font-size="14" fill="#1f2937">Ошибка округления (без эпика)</text>
+<text x="20" y="790" text-anchor="start" font-size="12" fill="#6b7280">Эпик — строка-заголовок с прогрессом; его задачи вложены под ним отступом и линией (как подзадачи под родителем). Эпик сворачивается ▾/▸.</text>
+</svg>

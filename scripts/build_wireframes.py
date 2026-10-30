@@ -2612,6 +2612,240 @@ def screen_help():
     return wf
 
 
+def screen_nav_tabs():
+    wf = WF(560, "Шапка на «Портфеле» и «Аналитике»: те же вкладки проекта, переключатель проектов")
+    t = wf.t
+    wf.shell("team-tracker.app/portfolio", "Портфель")
+    # открытый переключатель проектов
+    wf.rect(300, 96, 300, 150, fill=t["bg"], stroke=t["accent"], r=8, sw=1.6)
+    for n, (name, cur) in enumerate((("TEST · Проект 1", True), ("DEMO · Демо-проект", False), ("SHOP · Интернет-магазин", False))):
+        wf.rect(306, 102 + n * 30, 288, 28, fill=t["accent_bg"] if cur else t["bg"], r=4)
+        wf.text(318, 121 + n * 30, ("✓ " if cur else "") + name, 13, bold=cur)
+    wf.line(306, 196, 594, 196)
+    wf.text(318, 218, "Все проекты…", 13)
+    wf.text(318, 238, "+ Новый проект (администратор)", 13, fill=t["muted"])
+    wf.callout(1, 294, 100)
+    wf.text(20, 300, "Портфель", 24, bold=True)
+    wf.text(20, 326, "Вкладки проекта видны и здесь: переход в Бэклог, Доску, Спринты… без возврата в список проектов.", 13, fill=t["muted"])
+    wf.callout(2, 14, 96)
+    wf.text(20, 372, "1. Чип проекта становится переключателем: текущий проект, быстрый выбор другого, «Все проекты…» (список и создание).", 13)
+    wf.text(20, 398, "2. Какой проект стоит в чипе на «Портфеле» и «Аналитике»: последний открытый (запоминается), иначе первый из выбранных.", 13)
+    wf.text(20, 424, "3. Вкладки проекта — те же, что внутри проекта; «Портфель» и «Аналитика» остаются слева и подсвечиваются, когда открыты.", 13)
+    wf.text(20, 450, "4. Выбор проекта в чипе не меняет фильтр «Проекты: …» на странице: фильтр — про то, что считать, чип — куда переходить.", 13)
+    return wf
+
+
+def screen_frames():
+    wf = WF(820, "Планирование: спринт в общей рамке, иерархия эпик → задачи")
+    t = wf.t
+    wf.shell(f"team-tracker.app/projects/{KEY}/backlog", "Бэклог")
+    wf.text(20, 130, "Планирование будущих спринтов", 22, bold=True)
+    # спринт в одной рамке
+    wf.rect(20, 150, 860, 230, fill=t["bg"], stroke=t["muted"], r=10, sw=1.8)
+    wf.rect(20, 150, 860, 62, fill=t["panel"], stroke=None, r=10)
+    wf.line(20, 212, 880, 212, color=t["line"])
+    wf.text(34, 178, "▾ Спринт 1", 15, bold=True)
+    wf.chip(130, 163, "идёт", 12)
+    wf.text(190, 179, "28.10 – 04.11", 13, fill=t["muted"])
+    wf.text(866, 178, "9 / 16 sp · 56 %", 13, "end", True)
+    wf.text(34, 202, "Цель: смена пароля и начало истории заказов", 12.5, fill=t["muted"])
+    wf.callout(1, 14, 150)
+    for n, (key, title, typ) in enumerate((("TEST-1", "Тест задача", "Task"), ("TEST-4", "Форма смены пароля", "Story"))):
+        yy = 224 + n * 70
+        wf.rect(34, yy, 832, 58, fill=t["bg"], stroke=t["line"], r=6)
+        wf.icon(46, yy + 18, typ, 20)
+        wf.text(80, yy + 36, key, 13, bold=True)
+        wf.text(150, yy + 36, title, 14)
+    # бэклог с иерархией
+    wf.rect(20, 400, 860, 360, fill=t["bg"], stroke=t["muted"], r=10, sw=1.8)
+    wf.rect(20, 400, 860, 44, fill=t["panel"], stroke=None, r=10)
+    wf.line(20, 444, 880, 444, color=t["line"])
+    wf.text(34, 428, "▾ Общий бэклог", 15, bold=True)
+    wf.text(190, 428, "5 задач · 8 sp", 13, fill=t["muted"])
+    wf.callout(2, 14, 400)
+    # эпик с вложенными
+    wf.rect(34, 456, 832, 44, fill=t["accent_bg"], stroke=t["accent"], r=6)
+    wf.text(46, 484, "▾", 14)
+    wf.icon(66, 468, "Epic", 20)
+    wf.text(98, 484, "TEST-2", 13, bold=True)
+    wf.text(170, 484, "Тест Эпик 1", 14, bold=True)
+    wf.text(860, 484, "1 из 3 · 33 %", 12.5, "end", fill=t["muted"])
+    for n, (key, title, typ, where) in enumerate((("TEST-3", "Задача в эпике 1", "Task", ""), ("TEST-5", "Экспорт заказов", "Story", ""), ("TEST-6", "Письмо о смене пароля", "Task", "в Спринте 1"))):
+        yy = 508 + n * 48
+        wf.line(52, 500 if n == 0 else yy - 4, 52, yy + 20, color=t["muted"])
+        wf.line(52, yy + 20, 72, yy + 20, color=t["muted"])
+        wf.rect(76, yy, 790, 40, fill=t["bg"], stroke=t["line"], r=6)
+        wf.icon(88, yy + 10, typ, 20)
+        wf.text(120, yy + 26, key, 13, bold=True)
+        wf.text(190, yy + 26, title, 14)
+        if where:
+            wf.chip(700, yy + 9, where, 12, fill=t["panel"])
+    wf.callout(3, 14, 458)
+    wf.callout(4, 680, 646)
+    wf.rect(34, 660, 832, 40, fill=t["bg"], stroke=t["line"], r=6)
+    wf.icon(46, 670, "Bug", 20)
+    wf.text(80, 686, "TEST-9", 13, bold=True)
+    wf.text(150, 686, "Ошибка округления (без эпика)", 14)
+    wf.text(20, 790, "Эпик — строка-заголовок с прогрессом; его задачи вложены под ним отступом и линией (как подзадачи под родителем). Эпик сворачивается ▾/▸.", 12, fill=t["muted"])
+    return wf
+
+
+def screen_settings_groups():
+    wf = WF(980, "Настройки проекта: группы в тонких рамках")
+    t = wf.t
+    wf.shell(f"team-tracker.app/projects/{KEY}/settings", "Настройки")
+    wf.text(20, 130, "Настройки проекта", 24, bold=True)
+
+    def frame(y, h, title, sub):
+        wf.rect(20, y, 860, h, fill=t["bg"], stroke=t["line"], r=8, sw=1.2)
+        wf.text(36, y + 26, title, 16, bold=True)
+        wf.text(36, y + 46, sub, 12, fill=t["muted"])
+    frame(150, 160, "Спринты", "значения подставляются в форму нового спринта")
+    wf.field(36, 266 - 100, 150, "Длительность, дней", "14")
+    wf.field(204, 266 - 100, 150, "Префикс названия", "Спринт")
+    wf.field(372, 266 - 100, 150, "Номер следующего", "3")
+    wf.field(540, 266 - 100, 170, "Старт следующего", "05.11.2026")
+    wf.button(36, 270, 110, 30, "Сохранить", True, 13)
+    wf.callout(1, 14, 150)
+    frame(324, 110, "WIP-лимиты колонок", "предупреждение при превышении; запрета нет")
+    wf.rect(36, 366, 40, 22, fill=t["bg"], stroke=t["muted"], r=11, sw=1.4)
+    wf.p.append(f'<circle cx="47" cy="377" r="8" fill="{t["muted"]}"/>')
+    wf.text(86, 382, "Выключены", 13)
+    for n, c in enumerate(("To Do", "In Progress", "Review", "Done")):
+        wf.chip(250 + n * 150, 364, f"{c}: —", 12, h=26)
+    wf.callout(2, 14, 324)
+    frame(448, 100, "Definition of Done", "пункты подтверждаются при переводе в Done")
+    wf.rect(36, 492, 560, 44, fill=t["bg"], stroke=t["line"], r=6)
+    wf.text(46, 519, "- [ ] Код проверен · - [ ] Тесты проходят", 12.5, fill=t["muted"])
+    # шаблоны — список слева, редактор справа
+    frame(562, 270, "Шаблоны задач", "тип, описание и критерии подставляются при создании")
+    wf.rect(36, 604, 200, 214, fill=t["panel"], stroke=t["line"], r=6)
+    for n, (name, sel) in enumerate((("Баг", True), ("Story", False), ("Задача", False))):
+        wf.rect(42, 610 + n * 38, 188, 32, fill=t["accent_bg"] if sel else t["panel"], stroke=t["accent"] if sel else None, r=5)
+        wf.text(54, 631 + n * 38, name, 13, bold=sel)
+    wf.button(42, 774, 188, 30, "+ Новый шаблон", size=12.5)
+    wf.rect(252, 604, 616, 214, fill=t["bg"], stroke=t["line"], r=6)
+    wf.field(266, 630, 250, "Название", "Баг", h=30)
+    wf.field(534, 630, 150, "Тип", "Bug", h=30, dropdown=True)
+    wf.rect(266, 698, 588, 70, fill=t["bg"], stroke=t["line"], r=6)
+    wf.text(278, 724, "## Шаги воспроизведения …", 12.5, fill=t["muted"])
+    wf.button(266, 778, 110, 28, "Сохранить", True, 12.5)
+    wf.button(386, 778, 90, 28, "Удалить", size=12.5)
+    wf.callout(3, 14, 562)
+    frame(846, 120, "Участники проекта", "роль в проекте; владелец отвечает за проект")
+    wf.text(36, 892, "Владелец: Админ Тестов ▾", 13)
+    wf.chip(250, 874, "Анна Ковалёва · Тимлид ✕", 12, h=26)
+    wf.chip(450, 874, "Игорь Смирнов · Разработчик ✕", 12, h=26)
+    wf.callout(4, 14, 846)
+    return wf
+
+
+def screen_roles_groups():
+    wf = WF(700, "Люди: учётки и роли — таблица в рамке, форма в отдельной рамке")
+    t = wf.t
+    wf.shell(f"team-tracker.app/projects/{KEY}/people", "Люди")
+    wf.text(20, 130, "Учётки и роли", 22, bold=True)
+    wf.rect(20, 150, 860, 250, fill=t["bg"], stroke=t["line"], r=8)
+    for k, (h, x) in enumerate((("Человек", 36), ("Почта", 250), ("Роль", 520), ("Пароль", 700))):
+        wf.text(x, 178, h, 12, fill=t["muted"])
+    wf.line(20, 188, 880, 188, color=t["line"])
+    for n, (name, mail, role) in enumerate((("Админ Тестов", "admin@example.com", "Администратор"), ("Анна Ковалёва", "anna@example.com", "Тимлид"), ("Игорь Смирнов", "igor@example.com", "Разработчик"))):
+        yy = 214 + n * 52
+        wf.avatar(46, yy, name, 12)
+        wf.text(68, yy + 5, name, 13)
+        wf.text(250, yy + 5, mail, 13, fill=t["muted"])
+        wf.rect(520, yy - 15, 150, 30, fill=t["bg"], stroke=t["line"], r=6)
+        wf.text(530, yy + 5, role, 13)
+        wf.text(655, yy + 6, "▾", 13, fill=t["muted"])
+        wf.button(700, yy - 15, 150, 30, "Сбросить пароль", size=12)
+        if n < 2:
+            wf.line(30, yy + 26, 870, yy + 26, color=t["line"])
+    wf.callout(1, 14, 150)
+    wf.rect(20, 420, 860, 200, fill=t["bg"], stroke=t["line"], r=8)
+    wf.text(36, 448, "Новый участник", 16, bold=True)
+    wf.text(36, 468, "создаётся учётка с временным паролем; человек сменит его при первом входе", 12, fill=t["muted"])
+    wf.field(36, 482, 190, "Имя", "")
+    wf.field(240, 482, 210, "Почта", "")
+    wf.field(464, 482, 200, "Временный пароль", "k7Rm2xQp9cWs")
+    wf.field(678, 482, 180, "Роль", "Разработчик", dropdown=True)
+    wf.button(36, 566, 180, 34, "Создать участника", True, 13)
+    wf.callout(2, 14, 420)
+    wf.text(20, 650, "Роль «Администратор» видят и меняют только администраторы; изменение своей роли заблокировано. Рядом с ролью — подсказка при наведении.", 12, fill=t["muted"])
+    return wf
+
+
+def screen_tooltips():
+    wf = WF(560, "Подсказки при наведении: где и какие")
+    t = wf.t
+    wf.shell(f"team-tracker.app/projects/{KEY}/board", "Доска")
+    def tip(x, y, w, text):
+        wf.rect(x, y, w, 30, fill=t["ink"], r=5)
+        wf.text(x + 10, y + 20, text, 12, fill=t["bg"])
+    wf.chip(40, 140, "Проекты: TEST ▾", 13, h=30, fill=t["accent_bg"])
+    tip(40, 176, 330, "Какие проекты показывать на экране: свои, все или выбранные")
+    wf.chip(420, 140, "⚠ WIP 4 из 3", 12.5, h=28)
+    tip(420, 174, 400, "Задач в колонке больше лимита; перенос не запрещён")
+    wf.chip(40, 260, "In Progress", 12.5, h=28, fill=t["status"]["In Progress"])
+    tip(40, 294, 360, "Статус задачи. Допустим любой переход; он пишется в историю")
+    wf.rect(450, 260, 70, 30, fill=t["bg"], stroke=t["line"], r=5)
+    wf.text(466, 280, "8", 14)
+    tip(450, 294, 330, "Story points — оценка в целых числах (1, 2, 3, 5, 8, 13)")
+    wf.text(40, 400, "Правила подсказок", 16, bold=True)
+    for k, line in enumerate(("Есть у всех кнопок-значков, сокращений, чипов, статусов, фильтров, полей настроек и переключателей.", "Текст — одна короткая фраза: что это и что произойдёт. Без повторения подписи кнопки.", "То же текстом для чтецов экрана (aria-label / описание), не только мышь.", "Появляется при наведении и при фокусе с клавиатуры; не закрывает поле, к которому относится.")):
+        wf.text(40, 428 + k * 26, "• " + line, 13)
+    return wf
+
+
+def screen_roles_matrix():
+    wf = WF(860, "Настройки: роли и права — таблица с галочками")
+    t = wf.t
+    wf.shell(f"team-tracker.app/settings/roles", "Настройки")
+    wf.text(20, 130, "Роли и права", 24, bold=True)
+    wf.text(20, 154, "Название роли — любое; галочки задают, что роли разрешено. Просмотр данных доступен всем ролям.", 13, fill=t["muted"])
+    wf.rect(20, 172, 860, 600, fill=t["bg"], stroke=t["line"], r=8)
+    roles = ("Администратор", "Тимлид", "Продакт", "Разработчик", "Наблюдатель")
+    x0 = 330
+    cw = 108
+    # шапка: названия — поля ввода
+    for k, name in enumerate(roles):
+        x = x0 + k * cw
+        wf.rect(x, 186, cw - 8, 30, fill=t["panel"] if k == 0 else t["bg"], stroke=t["line"], r=5)
+        wf.text(x + 8, 206, wf.fit(name, cw - 24, 12), 12, bold=True)
+    wf.text(36, 206, "Функция", 12, fill=t["muted"])
+    wf.callout(1, x0 - 8, 186)
+    groups = (
+        ("Задачи", (("Создавать задачи", (1, 1, 1, 1, 0)), ("Редактировать поля и описание", (1, 1, 1, 1, 0)), ("Комментировать", (1, 1, 1, 1, 0)), ("Менять статус своих задач", (1, 1, 1, 1, 0)), ("Менять статус чужих задач", (1, 1, 1, 0, 0)))),
+        ("Планирование", (("Приоритет и порядок задач", (1, 1, 1, 0, 0)), ("Состав спринта", (1, 1, 1, 0, 0)), ("Спринты и настройки проекта", (1, 1, 0, 0, 0)), ("Шаблоны, WIP и Definition of Done", (1, 1, 0, 0, 0)), ("Отпуска и больничные", (1, 1, 0, 0, 0)))),
+        ("Администрирование", (("Проекты, люди и участники", (1, 0, 0, 0, 0)), ("Учётки и роли", (1, 0, 0, 0, 0)), ("Резервные копии и диагностика", (1, 0, 0, 0, 0)))),
+    )
+    y = 236
+    for title, rows in groups:
+        wf.rect(28, y, 844, 24, fill=t["panel"], r=4)
+        wf.text(38, y + 17, title, 12, bold=True)
+        y += 30
+        for label, vals in rows:
+            wf.text(40, y + 17, label, 13)
+            for k, v in enumerate(vals):
+                bx = x0 + k * cw + (cw - 8) / 2 - 9
+                locked = k == 0
+                wf.rect(bx, y + 3, 18, 18, fill=t["accent"] if v and not locked else (t["muted"] if v else t["bg"]), stroke=t["muted"] if locked else t["accent"], r=4)
+                if v:
+                    wf.text(bx + 9, y + 17, "✓", 13, "middle", True, t["accent_ink"])
+            y += 28
+        y += 6
+    wf.callout(2, 28, 270)
+    wf.text(36, y + 18, "Роль «Администратор» защищена: все права, галочки не снимаются, удалить нельзя.", 12.5, fill=t["muted"])
+    wf.text(36, y + 40, "«Наблюдатель» — только чтение: ни одной галочки.", 12.5, fill=t["muted"])
+    wf.callout(3, 28, y + 14)
+    wf.button(36, y + 68, 160, 32, "+ Новая роль", size=13)
+    wf.button(206, y + 68, 150, 32, "Копировать роль", size=13)
+    wf.button(366, y + 68, 120, 32, "Удалить роль", size=13)
+    wf.button(700, y + 68, 160, 32, "Сохранить", True, 13)
+    wf.callout(4, 28, y + 68)
+    wf.text(36, y + 124, "Удалить можно роль, которой нет ни у одной учётки. Права действуют сразу после сохранения; сервер проверяет их сам.", 12.5, fill=t["muted"])
+    return wf
+
+
 SCREENS = {
     "wf-map": screen_map,
     "wf-projects": screen_projects,
@@ -2640,6 +2874,12 @@ SCREENS = {
     "wf-templates": screen_templates,
     "wf-create-template": screen_create_template,
     "wf-availability": screen_availability,
+    "wf-nav-tabs": screen_nav_tabs,
+    "wf-frames": screen_frames,
+    "wf-settings-groups": screen_settings_groups,
+    "wf-roles-groups": screen_roles_groups,
+    "wf-roles-matrix": screen_roles_matrix,
+    "wf-tooltips": screen_tooltips,
     "wf-wizard": screen_wizard,
     "wf-help": screen_help,
     "wf-cfd": screen_cfd,
