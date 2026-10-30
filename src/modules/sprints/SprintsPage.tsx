@@ -16,6 +16,7 @@ import { TextArea } from '../../ui/fields';
 import { useCurrentProject } from '../projects/ProjectRoute';
 import { TotalsTable } from '../reports/TotalsTable';
 import { Avatar, PointsBadge, StatusChip, TypeIcon } from '../tasks/IssueBits';
+import { RetroSection } from './RetroSection';
 import { CloseSprintDialog } from './CloseSprintDialog';
 import { SprintFormDialog } from './SprintFormDialog';
 
@@ -165,6 +166,9 @@ function SprintDetail({
         <h2>{sprint.name}</h2>
         <span className={`chip state-${sprint.state}`}>{STATE_LABEL[sprint.state]}</span>
         <span className="spacer" />
+        <Link className="button" to={`/projects/${projectKey}/sprints/${sprint.id}/report`}>
+          Отчёт спринта →
+        </Link>
         {!readOnly && canManage && (
           <button type="button" onClick={() => onDialog('edit')}>
             Изменить
@@ -273,6 +277,9 @@ function SprintDetail({
 
       <h3>Итоги по людям</h3>
       <TotalsTable summary={summary} people={view.people} />
+
+      <h3>Ретроспектива</h3>
+      <RetroSection projectId={view.projectId} projectKey={projectKey} sprint={sprint} />
 
       <h3>Состав спринта</h3>
       <ul className="plain-list">

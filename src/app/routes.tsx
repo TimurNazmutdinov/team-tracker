@@ -9,6 +9,7 @@ import { HomePage, ProjectsPage } from '../modules/projects/ProjectsPage';
 import { ProjectRoute } from '../modules/projects/ProjectRoute';
 import { SettingsPage } from '../modules/projects/SettingsPage';
 import { ReportsPage } from '../modules/reports/ReportsPage';
+import { SprintReportPage } from '../modules/sprints/SprintReportPage';
 import { SprintsPage } from '../modules/sprints/SprintsPage';
 import { IssuePage } from '../modules/tasks/IssuePage';
 import { Layout } from '../ui/Layout';
@@ -36,6 +37,7 @@ export const routes: RouteObject[] = [
           { path: 'history', element: <HistoryPage /> },
           { path: 'sprints', element: <SprintsPage /> },
           { path: 'sprints/:id', element: <SprintsPage /> },
+          { path: 'sprints/:id/report', element: <SprintReportPage /> },
           { path: 'issues/:number', element: <IssuePage /> },
           { path: 'reports', element: <ReportsPage /> },
           { path: 'people', element: <PeoplePage /> },

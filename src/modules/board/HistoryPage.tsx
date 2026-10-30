@@ -9,6 +9,7 @@ import { ProjectFilter } from '../../ui/ProjectFilter';
 import { dateRange, num, shortDate, taskWord } from '../../ui/format';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
+import { RetroSection } from '../sprints/RetroSection';
 import { Avatar, PointsBadge, PriorityChip, TypeIcon } from '../tasks/IssueBits';
 
 interface Filters {
@@ -46,6 +47,7 @@ function SprintBlock({
           <span className="chip">закрыт</span>
           <span className="muted">{dateRange(sprint.start, sprint.end)}</span>
           <span className="spacer" />
+          <Link to={`/projects/${projectKey}/sprints/${sprint.id}/report`}>Отчёт спринта</Link>
           <Link to={`/projects/${projectKey}/reports`}>Отчёты спринтов</Link>
         </div>
         <span className="muted">
@@ -72,6 +74,17 @@ function SprintBlock({
           ))}
           {issues.length === 0 && <li className="drop-hint">Нет задач под фильтры</li>}
         </ul>
+      )}
+      {open && (
+        <>
+          <h3>Ретроспектива</h3>
+          <RetroSection
+            projectId={sprint.projectId}
+            projectKey={projectKey}
+            sprint={sprint}
+            readOnly
+          />
+        </>
       )}
     </section>
   );

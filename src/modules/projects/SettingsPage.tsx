@@ -11,7 +11,7 @@ import { ErrorMessage } from '../../ui/ErrorMessage';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
 import { TextField } from '../../ui/fields';
-import { TemplatesSection, WipSettingsForm } from './ProjectTools';
+import { DodSettingsForm, TemplatesSection, WipSettingsForm } from './ProjectTools';
 import { ProjectMembers } from './ProjectMembers';
 import { useCurrentProject } from './ProjectRoute';
 
@@ -33,6 +33,7 @@ export function SettingsPage() {
             key={JSON.stringify(view.project.wipLimits) + view.project.wipEnabled}
             view={view}
           />
+          <DodSettingsForm key={view.project.dod} view={view} />
           <TemplatesSection view={view} />
           <ProjectMembers view={view} />
         </>

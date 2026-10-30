@@ -7,7 +7,8 @@ import { useActions } from '../../state/actions';
 import { usePermissions } from '../../state/current-user';
 import { useNotices } from '../../state/notices';
 import { ErrorMessage } from '../../ui/ErrorMessage';
-import { MarkdownField, SelectField, TextField } from '../../ui/fields';
+import { dodItems } from '../../domain/dod';
+import { MarkdownField, SelectField, TextArea, TextField } from '../../ui/fields';
 
 const TEMPLATE_TYPES = ISSUE_TYPES.filter((t) => t !== 'Epic');
 
@@ -228,5 +229,57 @@ export function TemplatesSection({ view }: { view: View }) {
         <p className="muted">Шаблоны меняют тимлид и администратор.</p>
       )}
     </section>
+  );
+}
+
+/** Definition of Done проекта (wireframes.md, 21.2): чек-лист; при переводе в Done пункты подтверждаются. */
+export function DodSettingsForm({ view }: { view: View }) {
+  const actions = useActions(view.projectId);
+  const canEdit = usePermissions().can('sprint.manage');
+  const push = useNotices((s) => s.push);
+  const [text, setText] = useState(view.project.dod);
+  const [errors, setErrors] = useState<FieldErrors>({});
+  const count = dodItems({ dod: text }).length;
+
+  const submit = async (e: FormEvent) => {
+    e.preventDefault();
+    const result = await actions.updateDod(text);
+    if (result.ok) {
+      setErrors({});
+      push('Definition of Done сохранён');
+    } else setErrors(result.errors);
+  };
+
+  return (
+    <form
+      className="settings"
+      onSubmit={(e) => void submit(e)}
+      noValidate
+      aria-labelledby="dod-title"
+    >
+      <h2 id="dod-title">Definition of Done</h2>
+      <p className="muted">
+        Пункты в виде строк «- [ ] текст». При переводе задачи в Done их нужно подтвердить; пустой
+        список — без подтверждения.
+      </p>
+      <TextArea
+        name="dod"
+        label="Список пунктов"
+        rows={5}
+        value={text}
+        disabled={!canEdit}
+        onChange={setText}
+        hint={`Пунктов: ${count}`}
+        error={errors.dod}
+      />
+      {errors.form && <ErrorMessage message={errors.form} />}
+      {canEdit ? (
+        <button type="submit" className="primary">
+          Сохранить
+        </button>
+      ) : (
+        <p className="muted">Definition of Done меняют тимлид и администратор.</p>
+      )}
+    </form>
   );
 }

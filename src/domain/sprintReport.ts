@@ -4,7 +4,7 @@ import { sprintCapacity } from './planning';
 import { burndown, type BurndownDay } from './reports';
 import { RETRO_LABELS, retroOf } from './retro';
 import type { History, RetroItem, Sprint, Status } from './schema';
-import { sprintSnapshots, summarize, type PersonRow } from './totals';
+import { sprintSnapshots, summarize, type PersonRow, type SprintSummary } from './totals';
 
 // Отчёт спринта (ADR-018): цель, выполнено и перенесено, velocity, burndown, итоги по людям,
 // ретроспектива. Ничего не хранится — считается из задач, истории и записей ретроспективы.
@@ -28,6 +28,7 @@ export interface SprintReport {
   velocity: number;
   capacity: AdjustedCapacity;
   people: PersonRow[];
+  summary: SprintSummary;
   burndown: BurndownDay[];
   retro: RetroItem[];
 }
@@ -69,6 +70,7 @@ export function sprintReport(
     velocity: summary.total.done,
     capacity,
     people: summary.rows,
+    summary,
     burndown: burndown(sprint, view.issues, history, today),
     retro: retroOf(view, sprint.id),
   };

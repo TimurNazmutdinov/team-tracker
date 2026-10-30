@@ -15,6 +15,14 @@ import {
   type Result,
   type View,
 } from '../domain/actions';
+import {
+  addAbsence,
+  deleteAbsence,
+  updateAbsence,
+  type AbsenceInput,
+} from '../domain/availability';
+import { updateDod } from '../domain/dod';
+import { addRetroItem, deleteRetroItem, retroToIssue, type RetroInput } from '../domain/retro';
 import { bulkUpdate, type BulkPatch } from '../domain/bulk';
 import type { Changes } from '../domain/changes';
 import { addMember, removeMember, setMemberRole, setOwner } from '../domain/members';
@@ -131,6 +139,13 @@ function makeActions(
     setOwner: (personId: string | null) => run((v) => setOwner(v, personId, browserCtx)),
     bulkUpdate: (ids: string[], patch: BulkPatch) =>
       run((v, a) => bulkUpdate(v, ids, patch, a, browserCtx)),
+    addAbsence: (input: AbsenceInput) => run((v) => addAbsence(v, input, browserCtx)),
+    updateAbsence: (id: string, input: AbsenceInput) => run((v) => updateAbsence(v, id, input)),
+    deleteAbsence: (id: string) => run((v) => deleteAbsence(v, id)),
+    updateDod: (dod: string) => run((v) => updateDod(v, dod)),
+    addRetroItem: (input: RetroInput) => run((v, a) => addRetroItem(v, input, a, browserCtx)),
+    deleteRetroItem: (id: string) => run((v) => deleteRetroItem(v, id)),
+    retroToIssue: (id: string) => run((v, a) => retroToIssue(v, id, a, browserCtx)),
     createTemplate: (input: TemplateInput) => run((v) => createTemplate(v, input, browserCtx)),
     updateTemplate: (id: string, input: TemplateInput) => run((v) => updateTemplate(v, id, input)),
     deleteTemplate: (id: string) => run((v) => deleteTemplate(v, id)),

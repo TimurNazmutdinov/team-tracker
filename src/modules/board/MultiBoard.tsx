@@ -40,6 +40,7 @@ import { useProjectViews } from '../../state/queries';
 import { dateRange, num } from '../../ui/format';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
+import { useDodGate } from '../tasks/DodGate';
 import { BoardNav } from './BoardNav';
 import { BoardCard, LaneView, plural } from './BoardParts';
 
@@ -71,6 +72,7 @@ export function MultiBoard({
   const actionsFor = useActionsFor();
   const perms = usePermissions();
   const push = useNotices((s) => s.push);
+  const dod = useDodGate();
   const [filters, setFilters] = useState<BoardFilters>(NO_BOARD_FILTERS);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -106,6 +108,14 @@ export function MultiBoard({
   const activeIssue = activeId ? issueOf(activeId) : undefined;
 
   const changeStatus = async (projectId: string, issueId: string, status: Status) => {
+    const owner = lanes.find((l) => l.view.projectId === projectId);
+    const issue = owner?.lane.issues.find((i) => i.id === issueId);
+    if (
+      owner &&
+      issue &&
+      !(await dod.ask(owner.view.project, [issue], status, owner.view.project.key))
+    )
+      return;
     const result = await actionsFor(projectId).updateIssue(issueId, { status });
     if (!result.ok) push(Object.values(result.errors).join('. '));
   };
@@ -135,6 +145,7 @@ export function MultiBoard({
 
   return (
     <>
+      {dod.dialog}
       <PageHeader title="Доска" />
       <BoardNav projectKey={routeKey} projectCount={projects.length} />
       <div className="board-toolbar">

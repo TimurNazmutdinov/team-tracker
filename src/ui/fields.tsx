@@ -82,10 +82,11 @@ export function TextArea(
     value: string;
     onChange: (value: string) => void;
     rows?: number;
+    disabled?: boolean | undefined;
   },
 ) {
   const id = useId();
-  const { name, value, onChange, rows = 3 } = props;
+  const { name, value, onChange, rows = 3, disabled } = props;
   return (
     <Wrapper {...props} id={id}>
       <textarea
@@ -93,6 +94,7 @@ export function TextArea(
         name={name}
         rows={rows}
         value={value}
+        disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
       />
     </Wrapper>

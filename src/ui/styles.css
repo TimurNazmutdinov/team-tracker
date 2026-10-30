@@ -1891,3 +1891,111 @@ main:has(.planning-page) {
   border: 1px solid var(--line);
   border-radius: 4px;
 }
+
+/* Definition of Done */
+.dod-list {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0.5rem 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.absences {
+  border-collapse: collapse;
+  margin: 0.5rem 0 1rem;
+}
+.absences th,
+.absences td {
+  padding: 0.3rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: end;
+}
+
+/* Ретроспектива */
+.retro-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+.retro-column {
+  padding: 0.5rem 0.75rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.retro-column h3 {
+  margin-top: 0.25rem;
+}
+.retro-item {
+  margin-bottom: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.retro-item p {
+  margin: 0 0 0.2rem;
+}
+@media (max-width: 52rem) {
+  .retro-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Отчёт спринта */
+.report-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0.5rem 0;
+}
+.report-cards > div {
+  padding: 0.5rem 0.75rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.report-cards dt {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.report-cards dd {
+  margin: 0;
+  font-weight: 700;
+}
+@media (max-width: 52rem) {
+  .report-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media print {
+  .app-bar,
+  .skip-link,
+  .no-print,
+  .notices,
+  nav,
+  button {
+    display: none !important;
+  }
+  main {
+    max-width: none;
+    padding: 0;
+  }
+}
+
+a.button {
+  display: inline-block;
+  color: inherit;
+  background: var(--bg);
+  border: 1px solid var(--control-line);
+  border-radius: 6px;
+  padding: 0.3rem 0.75rem;
+  text-decoration: none;
+}

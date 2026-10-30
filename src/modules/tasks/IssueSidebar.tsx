@@ -6,6 +6,7 @@ import { STATUSES } from '../../domain/schema';
 import { useActions } from '../../state/actions';
 import { usePermissions } from '../../state/current-user';
 import { SelectField, TextField } from '../../ui/fields';
+import { useDodGate } from './DodGate';
 import { PRIORITY_OPTIONS } from './IssueBits';
 
 const fmtDateTime = (iso: string) =>
@@ -25,6 +26,7 @@ export function IssueSidebar({
 }) {
   const actions = useActions(view.projectId);
   const perms = usePermissions();
+  const dod = useDodGate();
   const [errors, setErrors] = useState<FieldErrors>({});
   const [points, setPoints] = useState(issue.points === null ? '' : String(issue.points));
   const [labels, setLabels] = useState(issue.labels.join(', '));
@@ -42,13 +44,20 @@ export function IssueSidebar({
 
   return (
     <aside className="sidebar" aria-label="Поля задачи">
+      {dod.dialog}
       <SelectField
         name="status"
         label="Статус"
         value={issue.status}
         disabled={readOnly || !perms.canChangeStatus(issue)}
         options={STATUSES.map((s) => ({ value: s, label: s }))}
-        onChange={(v) => void apply({ status: v as Status })}
+        onChange={(v) =>
+          void (async () => {
+            if (await dod.ask(view.project, [issue], v as Status, projectKey)) {
+              await apply({ status: v as Status });
+            }
+          })()
+        }
         error={errors.status}
       />
       <SelectField

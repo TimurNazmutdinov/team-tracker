@@ -45,6 +45,7 @@ import { useView } from '../../state/queries';
 import { ProjectFilter } from '../../ui/ProjectFilter';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
+import { useDodGate } from '../tasks/DodGate';
 import { BulkBar } from '../tasks/BulkBar';
 import { BoardNav } from './BoardNav';
 import { BoardCard, LaneView, plural } from './BoardParts';
@@ -61,6 +62,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
   const [filters, setFilters] = useState<BoardFilters>(NO_BOARD_FILTERS);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [activeId, setActiveId] = useState<string | null>(null);
+  const dod = useDodGate();
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const perms = usePermissions();
   const sensors = useSensors(
@@ -115,6 +117,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
 
   const changeStatus = async (issueId: string, status: Status) => {
     const before = view.issues.find((i) => i.id === issueId);
+    if (before && !(await dod.ask(project, [before], status, project.key))) return;
     const result = await actions.updateIssue(issueId, { status });
     if (!result.ok) push(Object.values(result.errors).join('. '));
     else if (before && before.status !== status) warnWip(status, 1);
@@ -130,6 +133,8 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
     });
   const applyBulk = async (patch: BulkPatch) => {
     const ids = pickedIssues.map((i) => i.id);
+    if (patch.status && !(await dod.ask(project, pickedIssues, patch.status, project.key)))
+      return { ok: false, errors: { form: 'Перевод в Done отменён' } } as const;
     const result = await actions.bulkUpdate(ids, patch);
     if (result.ok) {
       push(`Изменено задач: ${ids.length}`);
@@ -173,6 +178,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
 
   return (
     <>
+      {dod.dialog}
       <PageHeader title="Доска" />
       <BoardNav projectKey={project.key} sprint={sprint} />
       <div className="board-toolbar">

@@ -49,6 +49,12 @@ import { useActions } from '../../state/actions';
 import { usePermissions } from '../../state/current-user';
 import type { BulkPatch } from '../../domain/bulk';
 import type { Result } from '../../domain/actions';
+import {
+  adjustedCapacity,
+  sprintAvailability,
+  type AdjustedCapacity,
+} from '../../domain/availability';
+import { useDodGate } from '../tasks/DodGate';
 import { BulkBar } from '../tasks/BulkBar';
 import { useCreateDialog } from '../../state/create-dialog';
 import { useNotices } from '../../state/notices';
@@ -316,6 +322,10 @@ function Section({
   const [collapsed, setCollapsed] = useState(false);
   const droppable = useDroppable({ id: containerId(sprint?.id ?? null) });
   const points = totalPoints(all);
+  // ёмкость этого спринта: velocity с поправкой на доступность людей (ADR-018)
+  const sprintCapacity =
+    sprint && capacity ? adjustedCapacity(capacity, sprintAvailability(view, sprint)) : capacity;
+  const sprintCapacityValue = sprintCapacity?.value ?? null;
   const epics = new Map(view.issues.filter((i) => i.type === 'Epic').map((i) => [i.id, i]));
   return (
     <section className="backlog-section" aria-label={title}>
@@ -347,7 +357,11 @@ function Section({
           )}
         </div>
         {sprint && capacity && (
-          <FillIndicator fill={fillOf(points, capacity.value)} capacity={capacity} />
+          <FillIndicator
+            fill={fillOf(points, sprintCapacityValue)}
+            capacity={sprintCapacity as AdjustedCapacity}
+            names={view.people}
+          />
         )}
         {sprint && !capacity && <strong>{num(points)} sp</strong>}
       </header>
@@ -530,6 +544,7 @@ function ProjectPlanning({
   const showCreate = useCreateDialog((s) => s.show);
   const push = useNotices((s) => s.push);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const dod = useDodGate();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -584,6 +599,11 @@ function ProjectPlanning({
       .filter((i) => selected.has(i.id))
       .sort((a, b) => a.order - b.order)
       .map((i) => i.id);
+    if (patch.status) {
+      const chosen = view.issues.filter((i) => selected.has(i.id));
+      if (!(await dod.ask(view.project, chosen, patch.status, project.key)))
+        return { ok: false, errors: { form: 'Перевод в Done отменён' } } as Result;
+    }
     const result = await actions.bulkUpdate(ids, patch);
     if (result.ok) {
       push(`Изменено задач: ${ids.length}`);
@@ -619,6 +639,7 @@ function ProjectPlanning({
       className="project-planning"
       aria-label={multi ? `Проект ${project.key}` : 'Планирование'}
     >
+      {dod.dialog}
       {multi && (
         <h2 className="project-heading">
           <span className="chip project-tag">{project.key}</span>{' '}
