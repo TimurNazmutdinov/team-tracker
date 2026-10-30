@@ -142,6 +142,9 @@ describe('экспорт, проверка и восстановление', () 
     first.description = 'Строка 1\nСтрока 2\n\n🎉 <b>&amp;</b> "кавычки" =SUM(A1:A2) +1 @cmd';
     first.acceptance = '- [ ] первое\n- [ ] второе';
     first.labels = ['бэкенд', 'срочно'];
+    // Definition of Done с переносами строк должен пройти оба круга (json и Excel)
+    const demo = seed.projects[0];
+    if (demo) demo.dod = '- [ ] Тесты проходят\n- [ ] Ревью сделано';
     await importDataset(source.db, seed);
     await createAccount(source.db, {
       email: 'admin@example.com',

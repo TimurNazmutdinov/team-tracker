@@ -29,7 +29,7 @@ export function RetroSection({
   if (!retro.data || !people.data || !issues.data) return <Loading />;
   const items = retroOf({ retroItems: retro.data }, sprint.id);
   return (
-    <section className="retro" aria-label={`Ретроспектива: ${sprint.name}`}>
+    <section className="retro" aria-label="Ретроспектива">
       <div className="retro-columns">
         {RETRO_KINDS.map((kind) => (
           <RetroColumn

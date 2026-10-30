@@ -46,7 +46,7 @@ export function SprintReportPage() {
       const keys = new Map(view.issues.map((i) => [i.id, `${project.key}-${i.number}`]));
       const authors = new Map(view.people.map((p) => [p.id, p.name]));
       const blob = await buildReportXlsx(reportSheets(report, { authors, issueKeys: keys }));
-      saveBlob(blob, `report-${project.key}-${sprint.name.replace(/\s+/g, '-')}.xlsx`);
+      saveBlob(blob, `report-${project.key}-${sprint.start}.xlsx`);
     } catch {
       push('Не удалось создать Excel-файл');
     } finally {

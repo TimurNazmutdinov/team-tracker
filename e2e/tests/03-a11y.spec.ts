@@ -10,6 +10,8 @@ const SCREENS: [string, string][] = [
   ['прошлые спринты', '/projects/DEMO/history'],
   ['спринты', '/projects/DEMO/sprints'],
   ['карточка задачи', '/projects/DEMO/issues/5'],
+  ['спринт с ретроспективой', '/projects/DEMO/sprints/s1'],
+  ['отчёт спринта', '/projects/DEMO/sprints/s1/report'],
   ['отчёты', '/projects/DEMO/reports'],
   ['люди', '/projects/DEMO/people'],
   ['настройки', '/projects/DEMO/settings'],
