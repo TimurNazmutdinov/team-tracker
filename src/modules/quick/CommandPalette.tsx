@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router';
 import { PALETTES, PALETTE_LABELS } from '../../domain/palettes';
 import { ALL, MINE } from '../../domain/projectScope';
 import { searchIssues } from '../../domain/search';
+import { ancestors } from '../../domain/tree';
 import { usePermissions } from '../../state/current-user';
 import { useHelp } from '../../state/help';
 import { useCreateDialog } from '../../state/create-dialog';
@@ -17,6 +18,8 @@ interface Item {
   group: 'Задачи' | 'Экраны' | 'Действия';
   label: string;
   hint?: string;
+  /** Вторая строка: для задач — путь до родителей («эпик › задача»). */
+  sub?: string;
   run: () => void;
 }
 
@@ -171,6 +174,9 @@ function Palette({ onClose }: { onClose: () => void }) {
             group: 'Задачи' as const,
             label: `${h.key}  ${h.issue.title}`,
             hint: h.issue.status,
+            sub: ancestors(h.issue, views.find((v) => v.projectId === h.project.id)?.issues ?? [])
+              .map((a) => a.title)
+              .join(' › '),
             run: go(`/projects/${h.project.key}/issues/${h.issue.number}`),
           }))
         : [];
@@ -236,7 +242,10 @@ function Palette({ onClose }: { onClose: () => void }) {
                 onMouseMove={() => setActive(n)}
                 onClick={() => choose(item)}
               >
-                <span>{item.label}</span>
+                <span>
+                  {item.label}
+                  {item.sub && <span className="palette-sub">{item.sub}</span>}
+                </span>
                 {item.hint && <kbd>{item.hint}</kbd>}
               </div>
             </li>

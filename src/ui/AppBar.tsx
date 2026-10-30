@@ -1,11 +1,13 @@
-import { useEffect } from 'react';
-import { Link, NavLink, useParams } from 'react-router';
+import { useEffect, useRef } from 'react';
+import { customPref } from '../domain/projectScope';
+import { useProjectScope } from '../state/project-scope';
+import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router';
 import { useHelp } from '../state/help';
 import { useLastProject } from '../state/last-project';
 import { useProjects } from '../state/queries';
 import { useQuick } from '../state/quick';
 import { Logo } from './Logo';
-import { ProjectSwitcher } from './ProjectSwitcher';
+import { ProjectFilter } from './ProjectFilter';
 import { UserMenu } from './UserMenu';
 
 const TABS = [
@@ -34,7 +36,35 @@ export function AppBar() {
   }, [key, setLast]);
   // на «Портфеле» и «Аналитике» показываем вкладки последнего открытого проекта (wireframes.md, 24.1)
   const known = projects.data ?? [];
-  const shown = key ?? (known.some((p) => p.key === last) ? last : (known[0]?.key ?? null));
+  const { ready, scope, choose } = useProjectScope();
+  const shown =
+    key ??
+    scope.projects[0]?.key ??
+    (known.some((p) => p.key === last) ? last : (known[0]?.key ?? null));
+
+  // Экраны одного проекта и общий выбор проектов согласованы (wireframes.md, 25.1): открыв проект,
+  // выбор включает его; сменив выбор так, что проекта нет, переходим в первый выбранный.
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const single = /^\/projects\/([^/]+)\/(sprints|people|settings|issues)(\/|$)/.test(pathname);
+  const lastKey = useRef<string | null>(null);
+  const included = scope.projects.some((p) => p.key === key);
+  const firstSelected = scope.projects[0]?.key;
+  useEffect(() => {
+    if (!ready || !single || !key) {
+      lastKey.current = null;
+      return;
+    }
+    if (lastKey.current !== key) {
+      lastKey.current = key;
+      if (!included) void choose(customPref([key]));
+    } else if (!included && firstSelected) {
+      const to = pathname
+        .replace(`/projects/${key}/`, `/projects/${firstSelected}/`)
+        .replace(/\/issues\/\d+$/, '/backlog');
+      void navigate(to);
+    }
+  }, [ready, single, key, included, firstSelected, choose, navigate, pathname]);
   return (
     <header className="app-bar">
       <Link to="/" className="logo">
@@ -48,9 +78,9 @@ export function AppBar() {
           Аналитика
         </NavLink>
       </nav>
+      <ProjectFilter />
       {shown && (
         <>
-          <ProjectSwitcher current={shown} />
           <nav aria-label="Разделы проекта">
             {TABS.map((tab) => (
               <NavLink key={tab.to} to={`/projects/${shown}/${tab.to}`} title={tab.tip}>

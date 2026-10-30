@@ -61,7 +61,6 @@ import { useCreateDialog } from '../../state/create-dialog';
 import { useNotices } from '../../state/notices';
 import { useProjectScope } from '../../state/project-scope';
 import { useProjectHistory, useProjectViews, useView } from '../../state/queries';
-import { ProjectFilter } from '../../ui/ProjectFilter';
 import { dateRange, num, taskWord } from '../../ui/format';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
@@ -871,7 +870,7 @@ export function BacklogPage() {
       )
     );
   }, 0);
-  const projectFilter = <ProjectFilter />;
+  const projectFilter = null;
   const toolbar = (
     <FiltersBar
       projectFilter={projectFilter}

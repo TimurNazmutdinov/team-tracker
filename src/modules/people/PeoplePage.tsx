@@ -9,6 +9,7 @@ import { SERVER_MODE } from '../../app/create-storage';
 import { AbsencesSection } from './AbsencesSection';
 import { Accounts } from './Accounts';
 import { useCurrentProject } from '../projects/ProjectRoute';
+import { treeRows } from '../../domain/tree';
 import { Avatar, PointsBadge, StatusChip, TypeIcon } from '../tasks/IssueBits';
 
 /** Экран «Люди» (wireframes.md, раздел 11): нагрузка участников в выбранном спринте и их задачи. */
@@ -100,20 +101,42 @@ export function PeoplePage() {
           <h2 id="person-tasks-title">Задачи: {selected.name}</h2>
           {tasks.length === 0 && <p className="muted">В этом спринте задач нет.</p>}
           <ul className="plain-list">
-            {tasks.map((s) => (
-              <li key={s.issue.id} className="link-row">
-                <TypeIcon type={s.issue.type} />
-                <Link
-                  to={`/projects/${project.key}/issues/${s.issue.number}`}
-                  className="issue-key"
+            {treeRows(
+              tasks.map((x) => x.issue),
+              { all: view.issues },
+            ).map(({ issue, depth, context }) => {
+              const snap = tasks.find((x) => x.issue.id === issue.id);
+              return (
+                <li
+                  key={issue.id}
+                  className={`link-row tree-row${context ? ' context' : ''}`}
+                  data-depth={depth}
+                  style={{ '--depth': depth } as React.CSSProperties}
                 >
-                  {project.key}-{s.issue.number}
-                </Link>
-                <span className="issue-title">{s.issue.title}</span>
-                <StatusChip status={s.status} />
-                <PointsBadge points={s.points} />
-              </li>
-            ))}
+                  <TypeIcon type={issue.type} />
+                  <Link
+                    to={`/projects/${project.key}/issues/${issue.number}`}
+                    className="issue-key"
+                  >
+                    {project.key}-{issue.number}
+                  </Link>
+                  <span className="issue-title">{issue.title}</span>
+                  {snap ? (
+                    <>
+                      <StatusChip status={snap.status} />
+                      <PointsBadge points={snap.points} />
+                    </>
+                  ) : (
+                    <span
+                      className="muted small"
+                      title="Не задача этого человека; показана как родитель"
+                    >
+                      родитель
+                    </span>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </section>
       )}

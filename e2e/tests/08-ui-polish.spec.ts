@@ -37,14 +37,35 @@ test('на «Портфеле» и «Аналитике» видны вклад�
   }
 });
 
-test('чип проекта — переключатель: выбор другого проекта сохраняет вкладку', async () => {
-  await page.goto('/projects/DEMO/people');
-  await page.getByRole('button', { name: /DEMO ▾/ }).click();
-  const menu = page.getByRole('menu', { name: 'Проекты' });
-  await expect(menu.getByRole('menuitem', { name: /Все проекты/ })).toBeVisible();
-  await audit('переключатель проектов');
-  await menu.getByRole('menuitem', { name: /SHOP/ }).click();
-  await page.waitForURL('**/projects/SHOP/people');
+test('фильтр проектов в шапке на всех вкладках и метка проекта в заголовке', async () => {
+  for (const url of [
+    '/portfolio',
+    '/analytics?projects=all',
+    '/projects/DEMO/board',
+    '/projects/DEMO/people',
+    '/projects/DEMO/settings',
+    '/projects/DEMO/sprints',
+    '/projects/DEMO/reports',
+  ]) {
+    await page.goto(url);
+    await expect(page.locator('.app-bar').getByRole('button', { name: /Проекты:/ })).toBeVisible();
+    await expect(page.locator('main .page-header .project-tags')).toBeVisible();
+  }
+  // чипа проекта в шапке больше нет
+  await expect(page.locator('.app-bar .project-chip')).toHaveCount(0);
+});
+
+test('на экране одного проекта выбор другого проекта в фильтре переводит в него', async () => {
+  await page.goto('/projects/DEMO/people?projects=all');
+  await page
+    .locator('.app-bar')
+    .getByRole('button', { name: /Проекты:/ })
+    .click();
+  const pop = page.getByRole('dialog', { name: 'Выбор проектов' });
+  await pop.getByLabel(/DEMO/).click();
+  await page.waitForURL('**/projects/SHOP/people**');
+  await expect(page.locator('main .project-tags')).toContainText('SHOP');
+  await audit('фильтр проектов в шапке');
 });
 
 test('планирование: спринт и его задачи в общей рамке, эпик с вложенными задачами сворачивается', async () => {
@@ -129,4 +150,33 @@ test('настройки: каждая настройка в своей рамк
   await templates.getByRole('button', { name: /Story/ }).click();
   await expect(page.getByLabel('Название шаблона')).toHaveValue('Story');
   await audit('настройки в рамках');
+});
+
+test('иерархия: состав спринта и карточка задачи показывают вложенность', async () => {
+  await page.goto('/projects/DEMO/sprints/s1');
+  const rows = page.getByRole('list', { name: 'Состав спринта' }).locator('.tree-row');
+  await expect(rows.first()).toBeVisible();
+  const depths = await rows.evaluateAll((els) =>
+    els.map((e) => Number(e.getAttribute('data-depth'))),
+  );
+  expect(Math.max(...depths)).toBeGreaterThanOrEqual(1);
+
+  await page.goto('/projects/DEMO/issues/9');
+  const trail = page.getByRole('navigation', { name: 'Путь' });
+  await expect(trail.getByRole('link').nth(1)).toBeVisible();
+  await audit('карточка с путём');
+});
+
+test('иерархия: эпик в портфеле раскрывается до задач, в поиске виден путь', async () => {
+  await page.goto('/portfolio?projects=DEMO');
+  await page
+    .getByRole('button', { name: /Развернуть эпик/ })
+    .first()
+    .click();
+  await expect(page.locator('.epic-family li').first()).toBeVisible();
+
+  await page.keyboard.press('Control+k');
+  await page.getByRole('combobox', { name: /Поиск задач/ }).fill('Форма смены');
+  await expect(page.locator('.palette-sub').first()).toContainText('Личный кабинет клиента');
+  await page.keyboard.press('Escape');
 });

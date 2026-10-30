@@ -2846,6 +2846,110 @@ def screen_roles_matrix():
     return wf
 
 
+def tree_row(wf, x, y, w, typ, key, title, depth=0, extra=None, epic=False, last=False):
+    t = wf.t
+    if depth:
+        wf.line(x + 8, y - 6, x + 8, y + 16, color=t["muted"])
+        wf.line(x + 8, y + 16, x + 26, y + 16, color=t["muted"])
+        x += 30
+        w -= 30
+    wf.rect(x, y, w, 34, fill=t["accent_bg"] if epic else t["bg"], stroke=t["accent"] if epic else t["line"], r=6)
+    wf.icon(x + 10, y + 8, typ, 18)
+    wf.text(x + 40, y + 22, key, 12.5, bold=True)
+    wf.text(x + 104, y + 22, wf.fit(title, w - 260, 13), 13, bold=epic)
+    if extra:
+        wf.text(x + w - 12, y + 22, extra, 12, "end", fill=t["muted"])
+
+
+def screen_hierarchy_lists():
+    wf = WF(980, "Иерархия артефактов везде: состав спринта, прошлые спринты, портфель, поиск")
+    t = wf.t
+    wf.shell(f"team-tracker.app/projects/{KEY}/sprints/s2", "Спринты")
+    wf.text(20, 130, "Состав спринта", 18, bold=True)
+    tree_row(wf, 20, 146, 860, "Epic", "TEST-2", "Личный кабинет клиента", epic=True, extra="▾ 3 из 5 задач · 40 %")
+    tree_row(wf, 20, 186, 860, "Story", "TEST-4", "Смена пароля", depth=1, extra="In Progress · 5 sp")
+    tree_row(wf, 20, 226, 860, "Task", "TEST-9", "Форма смены пароля", depth=2, extra="Review · 3 sp")
+    tree_row(wf, 20, 266, 860, "Sub-task", "TEST-14", "Валидация e-mail", depth=3, extra="Done · 1 sp")
+    tree_row(wf, 20, 306, 860, "Bug", "TEST-13", "Адреса с «+» отвергаются", depth=1, extra="Review · 1 sp")
+    tree_row(wf, 20, 346, 860, "Task", "TEST-7", "Обновить зависимости (без эпика)", extra="To Do · 2 sp")
+    wf.callout(1, 14, 146)
+    wf.text(20, 410, "Прошлые спринты, портфель, отчёты — тот же порядок: эпик, под ним его задачи, под задачей подзадачи.", 12.5, fill=t["muted"])
+    wf.line(20, 430, 880, 430)
+    wf.text(20, 458, "Портфель: эпик раскрывается до задач", 16, bold=True)
+    wf.rect(20, 472, 420, 150, fill=t["panel"], stroke=t["line"], r=8)
+    wf.text(34, 498, "▾ Личный кабинет клиента", 13, bold=True)
+    wf.text(420, 498, "40 %", 13, "end", True)
+    for k, (key, title, st) in enumerate((("TEST-4", "Смена пароля", "In Progress"), ("TEST-13", "Адреса с «+»", "Review"), ("TEST-9", "Форма смены пароля", "Done"))):
+        wf.line(40, 506 + k * 30, 40, 522 + k * 30, color=t["muted"])
+        wf.line(40, 522 + k * 30, 56, 522 + k * 30, color=t["muted"])
+        wf.text(64, 527 + k * 30, f"{key} {title}", 12.5)
+        wf.text(420, 527 + k * 30, st, 12, "end", fill=t["muted"])
+    wf.callout(2, 14, 472)
+    wf.text(470, 458, "Поиск Ctrl+K: путь до родителя", 16, bold=True)
+    wf.rect(470, 472, 410, 150, fill=t["panel"], stroke=t["line"], r=8)
+    wf.text(486, 502, "TEST-9  Форма смены пароля", 13, bold=True)
+    wf.text(486, 522, "Личный кабинет клиента › Смена пароля", 12, fill=t["muted"])
+    wf.line(480, 536, 870, 536, color=t["line"])
+    wf.text(486, 562, "TEST-14  Валидация e-mail", 13, bold=True)
+    wf.text(486, 582, "Личный кабинет клиента › Смена пароля › Форма смены пароля", 12, fill=t["muted"])
+    wf.callout(3, 464, 472)
+    wf.text(20, 660, "Дорожная карта: у эпика кнопка ▸ раскрывает его задачи отдельными полосами по их спринтам.", 12.5, fill=t["muted"])
+    wf.text(20, 684, "Везде вложенность одинаковая: линия и отступ, значок типа, ключ; свернуть и развернуть можно у эпика.", 12.5, fill=t["muted"])
+    return wf
+
+
+def screen_hierarchy_issue():
+    wf = WF(700, "Иерархия в карточке задачи и на доске")
+    t = wf.t
+    wf.shell(f"team-tracker.app/projects/{KEY}/issues/9", "Бэклог")
+    wf.text(20, 132, "Личный кабинет клиента  ›  Смена пароля  ›  Форма смены пароля", 13, fill=t["accent"], bold=True)
+    wf.callout(1, 14, 120)
+    wf.text(20, 168, "TEST-9  Форма смены пароля", 22, bold=True)
+    wf.text(20, 214, "Дерево задачи", 15, bold=True)
+    tree_row(wf, 20, 226, 560, "Epic", "TEST-2", "Личный кабинет клиента", epic=False, extra="эпик")
+    tree_row(wf, 20, 266, 560, "Story", "TEST-4", "Смена пароля", depth=1, extra="родитель")
+    wf.rect(50, 306, 530, 34, fill=t["accent_bg"], stroke=t["accent"], r=6, sw=1.8)
+    wf.icon(60, 314, "Task", 18)
+    wf.text(90, 328, "TEST-9", 12.5, bold=True)
+    wf.text(154, 328, "Форма смены пароля — эта задача", 13, bold=True)
+    wf.line(38, 300, 38, 322, color=t["muted"])
+    wf.line(38, 322, 50, 322, color=t["muted"])
+    tree_row(wf, 20, 346, 560, "Sub-task", "TEST-14", "Валидация e-mail", depth=3, extra="Done")
+    tree_row(wf, 20, 386, 560, "Sub-task", "TEST-15", "Письмо с подтверждением", depth=3, extra="To Do")
+    wf.callout(2, 14, 226)
+    wf.text(20, 450, "Доска: на карточке — путь до эпика", 15, bold=True)
+    wf.rect(20, 464, 280, 96, fill=t["bg"], stroke=t["line"], r=8)
+    wf.icon(32, 476, "Task", 18)
+    wf.text(62, 490, "TEST-9", 12.5, bold=True)
+    wf.chip(130, 474, "Личный кабинет › Смена пароля", 11, h=22)
+    wf.text(34, 530, "Форма смены пароля", 13)
+    wf.callout(3, 14, 464)
+    wf.text(330, 490, "Группировка по родителю остаётся: дорожка — эпик,", 12.5, fill=t["muted"])
+    wf.text(330, 510, "в ней задачи; подзадачи — под своей задачей.", 12.5, fill=t["muted"])
+    wf.text(20, 600, "Хлебные крошки ведут вверх по иерархии (каждое звено — ссылка); дерево показывает соседей и подзадачи.", 12.5, fill=t["muted"])
+    return wf
+
+
+def screen_project_control():
+    wf = WF(560, "Проекты: один выбор в шапке, проект на экранах проекта — в заголовке")
+    t = wf.t
+    wf.shell("team-tracker.app/projects/TEST/settings", "Настройки", tabs=False)
+    wf.rect(20, 96, 196, 30, fill=t["accent_bg"], stroke=t["accent"], r=15, sw=1.6)
+    wf.text(34, 116, "Проекты: TEST ▾", 13, bold=True)
+    wf.callout(1, 14, 96)
+    wf.text(232, 116, "Бэклог  Доска  Спринты  Отчёты  Люди  Настройки", 13)
+    wf.text(20, 176, "Настройки · TEST ▾", 24, bold=True)
+    wf.callout(2, 14, 160)
+    wf.text(20, 214, "Экраны одного проекта (Спринты, Отчёты, Люди, Настройки, карточка задачи) показывают проект в заголовке.", 13, fill=t["muted"])
+    wf.text(20, 238, "Стрелка ▾ рядом открывает список проектов: выбранный сохраняется для этой вкладки.", 13, fill=t["muted"])
+    wf.line(20, 270, 880, 270)
+    wf.text(20, 300, "Что значит «Проекты: …» в шапке", 16, bold=True)
+    for k, line in enumerate(("1. Один выбор на весь продукт: «Мои», «Все» или перечень. Запоминается и отражается в адресе.", "2. Доска, планирование, прошлые спринты, портфель и аналитика показывают и считают выбранные проекты.", "3. Вкладки в шапке открываются для первого выбранного проекта (или последнего открытого).", "4. Чипа проекта в шапке больше нет: он дублировал фильтр и путал.")):
+        wf.text(20, 330 + k * 26, line, 13)
+    wf.callout(3, 14, 316)
+    return wf
+
+
 SCREENS = {
     "wf-map": screen_map,
     "wf-projects": screen_projects,
@@ -2875,6 +2979,9 @@ SCREENS = {
     "wf-create-template": screen_create_template,
     "wf-availability": screen_availability,
     "wf-nav-tabs": screen_nav_tabs,
+    "wf-hierarchy-lists": screen_hierarchy_lists,
+    "wf-hierarchy-issue": screen_hierarchy_issue,
+    "wf-project-control": screen_project_control,
     "wf-frames": screen_frames,
     "wf-settings-groups": screen_settings_groups,
     "wf-roles-groups": screen_roles_groups,

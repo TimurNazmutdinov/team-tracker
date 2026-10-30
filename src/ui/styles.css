@@ -2380,3 +2380,92 @@ a.button {
     grid-template-columns: 1fr;
   }
 }
+
+/* Метка проекта в заголовке экрана и фильтр проектов в шапке */
+.project-tags {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.project-name {
+  font-weight: 400;
+}
+
+/* Иерархия артефактов везде (wireframes.md, 25.2) */
+.tree-row {
+  position: relative;
+  margin-left: calc(var(--depth, 0) * 1.9rem);
+}
+.tree-row[data-depth]:not([data-depth='0'])::before {
+  content: '';
+  position: absolute;
+  left: -1.1rem;
+  top: -0.5rem;
+  bottom: 50%;
+  width: 0.9rem;
+  border-left: 1.5px solid var(--muted);
+  border-bottom: 1.5px solid var(--muted);
+  border-bottom-left-radius: 6px;
+}
+.tree-row.context {
+  background: var(--panel);
+}
+.tree-row.context .issue-title {
+  color: var(--muted);
+}
+.tree-toggle {
+  padding: 0 0.3rem;
+}
+.trail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  align-items: center;
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+}
+.trail a {
+  color: var(--accent);
+}
+.trail .sep {
+  color: var(--muted);
+}
+
+.epic-family {
+  flex-basis: 100%;
+  margin: 0.4rem 0 0.2rem 1rem;
+}
+.epic-family li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+.overview-epics li {
+  flex-wrap: wrap;
+}
+
+.palette-sub {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.roadmap-task .roadmap-name {
+  padding-left: 1.6rem;
+  font-size: 0.9rem;
+}
+.roadmap-task .roadmap-bar {
+  border-style: dashed;
+}
+
+.card-trail {
+  margin: 0.1rem 0 0.3rem;
+  overflow: hidden;
+  font-size: 0.78rem;
+  color: var(--muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

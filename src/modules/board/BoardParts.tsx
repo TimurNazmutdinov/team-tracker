@@ -15,6 +15,8 @@ interface CardProps {
   projectKey: string;
   parentKey: string | null;
   readOnly: boolean;
+  /** Путь до родителей («эпик › задача»), если они есть. */
+  trail?: string | undefined;
   /** Показать метку проекта (когда на доске несколько проектов). */
   showProject?: boolean;
   onStatus: (issueId: string, status: Status) => void;
@@ -29,6 +31,7 @@ export function BoardCard({
   parentKey,
   readOnly,
   showProject,
+  trail,
   onStatus,
   selected,
   onSelect,
@@ -83,6 +86,11 @@ export function BoardCard({
         <PointsBadge points={issue.points} />
       </header>
       <p className="card-title">{issue.title}</p>
+      {trail && (
+        <p className="card-trail" title={`Родители: ${trail}`}>
+          ↑ {trail}
+        </p>
+      )}
       <footer>
         <PriorityChip priority={issue.priority} />
         <select
