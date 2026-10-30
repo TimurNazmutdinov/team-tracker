@@ -23,7 +23,7 @@ function message(e: unknown, fallback: string): string {
 }
 
 /** Выданный временный пароль показывается один раз: на сервере хранится только его хэш. */
-function TemporaryPassword({ who, password }: { who: string; password: string }) {
+export function TemporaryPassword({ who, password }: { who: string; password: string }) {
   return (
     <p className="warn" role="status">
       Временный пароль для {who}: <code>{password}</code>. Передайте его участнику — при первом
@@ -32,7 +32,11 @@ function TemporaryPassword({ who, password }: { who: string; password: string })
   );
 }
 
-function NewAccountForm({ onCreated }: { onCreated: (who: string, password: string) => void }) {
+export function NewAccountForm({
+  onCreated,
+}: {
+  onCreated: (who: string, password: string) => void;
+}) {
   const queryClient = useQueryClient();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');

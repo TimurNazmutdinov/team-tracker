@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 
 // Главный путь пользователя от входа до резервной копии. Тесты идут по порядку и делят состояние:
@@ -9,7 +10,7 @@ const TITLE = 'Сквозной тест: экспорт заказов';
 let page: Page;
 
 test.beforeAll(async ({ browser }) => {
-  page = await browser.newPage();
+  page = await (await browser.newContext()).newPage();
 });
 test.afterAll(async () => {
   await page.close();
@@ -23,6 +24,25 @@ test('вход: первая зарегистрированная учётка �
   await page.getByLabel('Пароль').fill('password-1');
   await page.locator('form button[type=submit]').click();
   await expect(page.locator('.board-nav')).toBeVisible();
+
+  // мастер первого запуска открывается администратору сразу после входа (ADR-020)
+  const wizard = page.getByRole('dialog', { name: /Добро пожаловать/ });
+  await expect(wizard).toBeVisible();
+  await expect(wizard.getByRole('heading', { name: 'Проект', exact: true })).toBeVisible();
+  const audit = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+    .analyze();
+  expect(audit.violations.map((v) => v.id)).toEqual([]);
+  await wizard.getByRole('button', { name: 'Далее →' }).click();
+  await wizard.getByRole('combobox', { name: 'Владелец' }).selectOption({ label: 'Админ Тестов' });
+  await expect(page.getByText('Владелец проекта сохранён')).toBeVisible();
+  await wizard.getByRole('button', { name: 'Далее →' }).click();
+  await expect(wizard.getByRole('heading', { name: 'Люди' })).toBeVisible();
+  await wizard.getByRole('button', { name: 'Далее →' }).click();
+  await expect(wizard.getByRole('radio', { name: /Бежевая/ })).toBeVisible();
+  await wizard.getByRole('button', { name: 'Готово' }).click();
+  await expect(wizard).toBeHidden();
+
   await page.getByRole('button', { name: /Админ Тестов/ }).click();
   await expect(page.getByText('Администратор')).toBeVisible();
   await page.keyboard.press('Escape');

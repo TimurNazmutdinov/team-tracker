@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router';
 import { PALETTES, PALETTE_LABELS } from '../../domain/palettes';
 import { ALL, MINE } from '../../domain/projectScope';
 import { searchIssues } from '../../domain/search';
+import { useHelp } from '../../state/help';
 import { useCreateDialog } from '../../state/create-dialog';
 import { usePalette } from '../../state/palette';
 import { useProjectScope } from '../../state/project-scope';
@@ -18,6 +19,16 @@ interface Item {
   run: () => void;
 }
 
+/** Клавиши после «G»: буква → экран проекта. Справка перечисляет те же буквы. */
+export const SCREEN_KEYS: Record<string, string> = {
+  b: 'backlog',
+  d: 'board',
+  s: 'sprints',
+  r: 'reports',
+  p: 'people',
+  h: 'history',
+};
+
 const isTyping = (el: EventTarget | null) =>
   el instanceof HTMLElement &&
   (el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName));
@@ -30,17 +41,10 @@ export function QuickKeys() {
   const navigate = useNavigate();
   const { key } = useParams();
   const showCreate = useCreateDialog((s) => s.show);
+  const showHelp = useHelp((s) => s.show);
   const goTo = useRef(0);
 
   useEffect(() => {
-    const SCREENS: Record<string, string> = {
-      b: 'backlog',
-      d: 'board',
-      s: 'sprints',
-      r: 'reports',
-      p: 'people',
-      h: 'history',
-    };
     const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
@@ -50,12 +54,15 @@ export function QuickKeys() {
       if (e.ctrlKey || e.metaKey || e.altKey || isTyping(e.target)) return;
       if (document.querySelector('dialog[open]')) return;
       const k = e.key.toLowerCase();
-      if (e.key === '/') {
+      if (e.key === '?') {
+        e.preventDefault();
+        showHelp();
+      } else if (e.key === '/') {
         e.preventDefault();
         show();
-      } else if (goTo.current > Date.now() && SCREENS[k] && key) {
+      } else if (goTo.current > Date.now() && SCREEN_KEYS[k] && key) {
         goTo.current = 0;
-        void navigate(`/projects/${key}/${SCREENS[k]}`);
+        void navigate(`/projects/${key}/${SCREEN_KEYS[k]}`);
       } else if (k === 'g') {
         goTo.current = Date.now() + 1000;
       } else if (k === 'c' && key) {
@@ -65,7 +72,7 @@ export function QuickKeys() {
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [show, navigate, key, showCreate]);
+  }, [show, navigate, key, showCreate, showHelp]);
   return null;
 }
 

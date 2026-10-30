@@ -61,6 +61,8 @@ export const authClient = {
     call<Account>('POST', '/users', input),
   resetPassword: (id: string, password: string) =>
     call<undefined>('POST', `/users/${id}/password`, { password }),
+  onboarding: () => call<{ done: boolean }>('GET', '/onboarding'),
+  setOnboarding: (done: boolean) => call<{ done: boolean }>('PUT', '/onboarding', { done }),
   setPalette: (palette: Palette) => call<Account>('PATCH', '/auth/preferences', { palette }),
   setProjectFilter: (projectFilter: ScopePref | null) =>
     call<Account>('PATCH', '/auth/preferences', { projectFilter }),

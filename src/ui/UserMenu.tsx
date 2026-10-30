@@ -13,7 +13,7 @@ import { useNotices } from '../state/notices';
 import { usePeople } from '../state/queries';
 
 /** Выбор цветовой гаммы (ADR-013): применяется сразу; с сервером сохраняется в профиле. */
-function PaletteField() {
+export function PaletteField() {
   const palette = usePalette((s) => s.palette);
   const apply = usePalette((s) => s.set);
   const account = useSession((s) => s.account);

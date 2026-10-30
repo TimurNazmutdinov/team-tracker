@@ -16,7 +16,7 @@ import type { BackupService } from './backups/service';
 import { buildDiagnostics, type AboutInfo } from './about';
 import type { LogStore } from './logs';
 import { commit, findIssueByNumber, readers } from './repo';
-import { BACKUP_DIR_KEY, setSetting } from './settings';
+import { BACKUP_DIR_KEY, ONBOARDING_KEY, getSetting, setSetting } from './settings';
 
 const COOKIE = 'tt_session';
 
@@ -204,6 +204,23 @@ export function buildApp(options: AppOptions): FastifyInstance {
     const body = parse(changePasswordBody, req.body);
     setSession(reply, await auth.changePassword(db, me.id, body.current, body.next));
     return reply.status(204).send();
+  });
+
+  // ---------------------------------------------------------------- мастер первого запуска (ADR-020)
+
+  app.get('/api/onboarding', async (req) => {
+    await requireUser(req);
+    return { done: (await getSetting(db, ONBOARDING_KEY)) === 'done' };
+  });
+
+  app.put('/api/onboarding', async (req) => {
+    const me = await requireUser(req);
+    if (!can(me.role, 'users.manage')) {
+      throw new HttpError(403, 'forbidden', 'Мастер первого запуска настраивает администратор');
+    }
+    const body = parse(z.object({ done: z.boolean() }), req.body);
+    await setSetting(db, ONBOARDING_KEY, body.done ? 'done' : 'pending');
+    return { done: body.done };
   });
 
   // ---------------------------------------------------------------- учётки (администратор)

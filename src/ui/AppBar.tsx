@@ -1,4 +1,5 @@
 import { Link, NavLink, useParams } from 'react-router';
+import { useHelp } from '../state/help';
 import { useQuick } from '../state/quick';
 import { Logo } from './Logo';
 import { UserMenu } from './UserMenu';
@@ -16,6 +17,7 @@ const TABS = [
 export function AppBar() {
   const { key } = useParams();
   const showQuick = useQuick((s) => s.show);
+  const showHelp = useHelp((s) => s.show);
   return (
     <header className="app-bar">
       <Link to="/" className="logo">
@@ -42,6 +44,15 @@ export function AppBar() {
       <div className="spacer" />
       <button type="button" className="search" onClick={showQuick} title="Поиск: Ctrl+K">
         Поиск <kbd>Ctrl K</kbd>
+      </button>
+      <button
+        type="button"
+        className="help-button"
+        onClick={showHelp}
+        aria-label="Справка"
+        title="Справка (?)"
+      >
+        ?
       </button>
       <UserMenu />
     </header>
