@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="980" viewBox="0 0 900 980" font-family="Helvetica, Arial, 'Segoe UI', 'DejaVu Sans', sans-serif" role="img" aria-label="Иерархия артефактов везде: состав спринта, прошлые спринты, портфель, поиск">
+<title>Иерархия артефактов везде: состав спринта, прошлые спринты, портфель, поиск</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker></defs>
+<rect width="900" height="980" fill="#ffffff"/>
+<rect x="0.6" y="0.6" width="898.8" height="978.8" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="0.6" y="0.6" width="898.8" height="34" rx="10" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="1" y="20" width="898" height="15" rx="0" fill="#f3f4f6"/>
+<circle cx="18" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="36" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="54" cy="17" r="5" fill="#cbd5e1"/>
+<rect x="84" y="6" width="732" height="23" rx="11.5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="98" y="22" text-anchor="start" font-size="12" fill="#6b7280">team-tracker.app/projects/DEMO/sprints/s2</text>
+<line x1="1" y1="86" x2="899" y2="86" stroke="#cbd5e1" stroke-width="1.2"/>
+<g transform="translate(18 47) scale(0.4375)"><path d="M52.78 20 A24 24 0 1 1 35.34 8.23" fill="none" stroke="#2B4ACB" stroke-width="7" stroke-linecap="round"/><polygon points="45.24,9.62 36.31,1.30 34.37,15.16" fill="#2B4ACB" stroke="#2B4ACB" stroke-width="2" stroke-linejoin="round"/><polyline points="23,33 29.5,39.5 41,27" fill="none" stroke="#F08C00" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="52" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#2B4ACB">Team</text>
+<text x="94" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#F08C00">Tracker</text>
+<rect x="158" y="52" width="59.68000000000001" height="26" rx="13.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="187.84" y="69.68" text-anchor="middle" font-size="13" fill="#1f2937">DEMO ▾</text>
+<text x="230" y="67" text-anchor="start" font-size="14" fill="#1f2937">Бэклог</text>
+<text x="295.04" y="67" text-anchor="start" font-size="14" fill="#1f2937">Доска</text>
+<text x="352.24" y="67" text-anchor="start" font-size="14" font-weight="bold" fill="#2563eb">Спринты</text>
+<rect x="350.24" y="80" width="66.8" height="4" rx="2" fill="#2563eb"/>
+<text x="429.04" y="67" text-anchor="start" font-size="14" fill="#1f2937">Отчёты</text>
+<text x="494.08000000000004" y="67" text-anchor="start" font-size="14" fill="#1f2937">Люди</text>
+<text x="543.44" y="67" text-anchor="start" font-size="14" fill="#1f2937">Настройки</text>
+<rect x="640" y="50" width="130" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="650" y="70" text-anchor="start" font-size="13" fill="#6b7280">Поиск</text>
+<rect x="740" y="55" width="24" height="20" rx="4" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="752" y="70" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">/</text>
+<circle cx="844" cy="65" r="15" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="844" y="69" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">АК</text>
+<text x="866" y="70" text-anchor="middle" font-size="13" fill="#6b7280">▾</text>
+<text x="20" y="130" text-anchor="start" font-size="18" font-weight="bold" fill="#1f2937">Состав спринта</text>
+<rect x="20" y="146" width="860" height="34" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="30" y="154" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="39.0" y="167" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">E</text>
+<text x="60" y="168" text-anchor="start" font-size="12.5" font-weight="bold" fill="#1f2937">TEST-2</text>
+<text x="124" y="168" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">Личный кабинет клиента</text>
+<text x="868" y="168" text-anchor="end" font-size="12" fill="#6b7280">▾ 3 из 5 задач · 40 %</text>
+<line x1="28" y1="180" x2="28" y2="202" stroke="#6b7280" stroke-width="1.2"/>
+<line x1="28" y1="202" x2="46" y2="202" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="50" y="186" width="830" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<rect x="60" y="194" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="69.0" y="207" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">S</text>
+<text x="90" y="208" text-anchor="start" font-size="12.5" font-weight="bold" fill="#1f2937">TEST-4</text>
+<text x="154" y="208" text-anchor="start" font-size="13" fill="#1f2937">Смена пароля</text>
+<text x="868" y="208" text-anchor="end" font-size="12" fill="#6b7280">In Progress · 5 sp</text>
+<line x1="28" y1="220" x2="28" y2="242" stroke="#6b7280" stroke-width="1.2"/>
+<line x1="28" y1="242" x2="46" y2="242" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="50" y="226" width="830" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<rect x="60" y="234" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="69.0" y="247" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">T</text>
+<text x="90" y="248" text-anchor="start" font-size="12.5" font-weight="bold" fill="#1f2937">TEST-9</text>
+<text x="154" y="248" text-anchor="start" font-size="13" fill="#1f2937">Форма смены пароля</text>
+<text x="868" y="248" text-anchor="end" font-size="12" fill="#6b7280">Review · 3 sp</text>
+<line x1="28" y1="260" x2="28" y2="282" stroke="#6b7280" stroke-width="1.2"/>
+<line x1="28" y1="282" x2="46" y2="282" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="50" y="266" width="830" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<rect x="60" y="274" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="69.0" y="287" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">s</text>
+<text x="90" y="288" text-anchor="start" font-size="12.5" font-weight="bold" fill="#1f2937">TEST-14</text>
+<text x="154" y="288" text-anchor="start" font-size="13" fill="#1f2937">Валидация e-mail</text>
+<text x="868" y="288" text-anchor="end" font-size="12" fill="#6b7280">Done · 1 sp</text>
+<line x1="28" y1="300" x2="28" y2="322" stroke="#6b7280" stroke-width="1.2"/>
+<line x1="28" y1="322" x2="46" y2="322" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="50" y="306" width="830" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<rect x="60" y="314" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="69.0" y="327" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">B</text>
+<text x="90" y="328" text-anchor="start" font-size="12.5" font-weight="bold" fill="#1f2937">TEST-13</text>
+<text x="154" y="328" text-anchor="start" font-size="13" fill="#1f2937">Адреса с «+» отвергаются</text>
+<text x="868" y="328" text-anchor="end" font-size="12" fill="#6b7280">Review · 1 sp</text>
+<rect x="20" y="346" width="860" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<rect x="30" y="354" width="18" height="18" rx="4" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.2"/>
+<text x="39.0" y="367" text-anchor="middle" font-size="12" font-weight="bold" fill="#1f2937">T</text>
+<text x="60" y="368" text-anchor="start" font-size="12.5" font-weight="bold" fill="#1f2937">TEST-7</text>
+<text x="124" y="368" text-anchor="start" font-size="13" fill="#1f2937">Обновить зависимости (без эпика)</text>
+<text x="868" y="368" text-anchor="end" font-size="12" fill="#6b7280">To Do · 2 sp</text>
+<circle cx="14" cy="146" r="11" fill="#b91c1c"/>
+<text x="14" y="151" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">1</text>
+<text x="20" y="410" text-anchor="start" font-size="12.5" fill="#6b7280">Прошлые спринты, портфель, отчёты — тот же порядок: эпик, под ним его задачи, под задачей подзадачи.</text>
+<line x1="20" y1="430" x2="880" y2="430" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="20" y="458" text-anchor="start" font-size="16" font-weight="bold" fill="#1f2937">Портфель: эпик раскрывается до задач</text>
+<rect x="20" y="472" width="420" height="150" rx="8" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="34" y="498" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">▾ Личный кабинет клиента</text>
+<text x="420" y="498" text-anchor="end" font-size="13" font-weight="bold" fill="#1f2937">40 %</text>
+<line x1="40" y1="506" x2="40" y2="522" stroke="#6b7280" stroke-width="1.2"/>
+<line x1="40" y1="522" x2="56" y2="522" stroke="#6b7280" stroke-width="1.2"/>
+<text x="64" y="527" text-anchor="start" font-size="12.5" fill="#1f2937">TEST-4 Смена пароля</text>
+<text x="420" y="527" text-anchor="end" font-size="12" fill="#6b7280">In Progress</text>
+<line x1="40" y1="536" x2="40" y2="552" stroke="#6b7280" stroke-width="1.2"/>
+<line x1="40" y1="552" x2="56" y2="552" stroke="#6b7280" stroke-width="1.2"/>
+<text x="64" y="557" text-anchor="start" font-size="12.5" fill="#1f2937">TEST-13 Адреса с «+»</text>
+<text x="420" y="557" text-anchor="end" font-size="12" fill="#6b7280">Review</text>
+<line x1="40" y1="566" x2="40" y2="582" stroke="#6b7280" stroke-width="1.2"/>
+<line x1="40" y1="582" x2="56" y2="582" stroke="#6b7280" stroke-width="1.2"/>
+<text x="64" y="587" text-anchor="start" font-size="12.5" fill="#1f2937">TEST-9 Форма смены пароля</text>
+<text x="420" y="587" text-anchor="end" font-size="12" fill="#6b7280">Done</text>
+<circle cx="14" cy="472" r="11" fill="#b91c1c"/>
+<text x="14" y="477" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">2</text>
+<text x="470" y="458" text-anchor="start" font-size="16" font-weight="bold" fill="#1f2937">Поиск Ctrl+K: путь до родителя</text>
+<rect x="470" y="472" width="410" height="150" rx="8" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="486" y="502" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">TEST-9  Форма смены пароля</text>
+<text x="486" y="522" text-anchor="start" font-size="12" fill="#6b7280">Личный кабинет клиента › Смена пароля</text>
+<line x1="480" y1="536" x2="870" y2="536" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="486" y="562" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">TEST-14  Валидация e-mail</text>
+<text x="486" y="582" text-anchor="start" font-size="12" fill="#6b7280">Личный кабинет клиента › Смена пароля › Форма смены пароля</text>
+<circle cx="464" cy="472" r="11" fill="#b91c1c"/>
+<text x="464" y="477" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">3</text>
+<text x="20" y="660" text-anchor="start" font-size="12.5" fill="#6b7280">Дорожная карта: у эпика кнопка ▸ раскрывает его задачи отдельными полосами по их спринтам.</text>
+<text x="20" y="684" text-anchor="start" font-size="12.5" fill="#6b7280">Везде вложенность одинаковая: линия и отступ, значок типа, ключ; свернуть и развернуть можно у эпика.</text>
+</svg>
