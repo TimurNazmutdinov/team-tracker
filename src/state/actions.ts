@@ -15,6 +15,7 @@ import {
   type Result,
   type View,
 } from '../domain/actions';
+import { bulkUpdate, type BulkPatch } from '../domain/bulk';
 import type { Changes } from '../domain/changes';
 import { addMember, removeMember, setMemberRole, setOwner } from '../domain/members';
 import type { LinkType, ProjectRole } from '../domain/schema';
@@ -27,6 +28,13 @@ import {
   type CloseTarget,
   type SprintInput,
 } from '../domain/sprints';
+import {
+  createTemplate,
+  deleteTemplate,
+  updateTemplate,
+  type TemplateInput,
+} from '../domain/templates';
+import { updateWipSettings, type WipInput } from '../domain/wip';
 import { StorageError, type TrackerStorage } from '../storage';
 import { resolveAuthor, useUserStore } from './current-user';
 import { useSession } from './session';
@@ -107,6 +115,12 @@ function makeActions(
       run((v) => setMemberRole(v, memberId, role)),
     removeMember: (memberId: string) => run((v) => removeMember(v, memberId)),
     setOwner: (personId: string | null) => run((v) => setOwner(v, personId, browserCtx)),
+    bulkUpdate: (ids: string[], patch: BulkPatch) =>
+      run((v, a) => bulkUpdate(v, ids, patch, a, browserCtx)),
+    createTemplate: (input: TemplateInput) => run((v) => createTemplate(v, input, browserCtx)),
+    updateTemplate: (id: string, input: TemplateInput) => run((v) => updateTemplate(v, id, input)),
+    deleteTemplate: (id: string) => run((v) => deleteTemplate(v, id)),
+    updateWipSettings: (input: WipInput) => run((v) => updateWipSettings(v, input)),
     addComment: (issueId: string, text: string) =>
       run((v, a) => addComment(v, issueId, a, text, browserCtx)),
   };

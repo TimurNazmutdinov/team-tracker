@@ -1821,3 +1821,35 @@ main:has(.planning-page) {
   border: 1px dashed var(--line);
   border-radius: 4px;
 }
+
+/* Командная палитра */
+.palette input[role='combobox'] {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+.palette-list {
+  max-height: 55vh;
+  overflow-y: auto;
+}
+.palette-group {
+  margin: 0.5rem 0 0.15rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.palette-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.palette-item.active {
+  background: var(--accent-bg);
+  outline: 1px solid var(--accent);
+}
+.palette-foot {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+}

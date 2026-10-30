@@ -1,4 +1,5 @@
 import { Link, NavLink, useParams } from 'react-router';
+import { useQuick } from '../state/quick';
 import { Logo } from './Logo';
 import { UserMenu } from './UserMenu';
 
@@ -14,6 +15,7 @@ const TABS = [
 /** Верхняя панель по макетам: название, проект, вкладки, поиск (этап 4), меню. */
 export function AppBar() {
   const { key } = useParams();
+  const showQuick = useQuick((s) => s.show);
   return (
     <header className="app-bar">
       <Link to="/" className="logo">
@@ -37,8 +39,8 @@ export function AppBar() {
         </>
       )}
       <div className="spacer" />
-      <button type="button" className="search" disabled title="Поиск появится на этапе 4">
-        Поиск <kbd>/</kbd>
+      <button type="button" className="search" onClick={showQuick} title="Поиск: Ctrl+K">
+        Поиск <kbd>Ctrl K</kbd>
       </button>
       <UserMenu />
     </header>
