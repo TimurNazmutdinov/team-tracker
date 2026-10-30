@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { authClient } from '../../app/auth-client';
-import { ROLES, ROLE_LABELS, can, type Role } from '../../domain/permissions';
+import { DEFAULT_ROLES, can, roleName, type Role } from '../../domain/permissions';
+import { useRoles } from '../../state/queries';
 import { StorageError } from '../../storage';
 import { useNotices } from '../../state/notices';
 import { useSession } from '../../state/session';
@@ -40,7 +41,12 @@ export function NewAccountForm({
   const queryClient = useQueryClient();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState<Role>('developer');
+  const roles = useRoles().data ?? DEFAULT_ROLES;
+  const [chosen, setRole] = useState<Role>('developer');
+  // выбранную роль могли удалить в настройках: тогда берётся первая обычная
+  const role = roles.some((r) => r.id === chosen)
+    ? chosen
+    : ((roles.find((r) => !r.system) ?? roles[0])?.id ?? chosen);
   const [password, setPassword] = useState(generatePassword);
   const [errors, setErrors] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
@@ -88,9 +94,9 @@ export function NewAccountForm({
             value={role}
             onChange={(e) => setRole(e.target.value as Role)}
           >
-            {ROLES.map((r) => (
-              <option key={r} value={r}>
-                {ROLE_LABELS[r]}
+            {roles.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.name}
               </option>
             ))}
           </select>
@@ -112,6 +118,7 @@ export function NewAccountForm({
 
 /** Учётки и роли (ADR-010, ADR-011): видят все вошедшие; создавать участников и менять роли и пароли — администратор. */
 export function Accounts() {
+  const roles = useRoles().data ?? DEFAULT_ROLES;
   const me = useSession((s) => s.account);
   const queryClient = useQueryClient();
   const push = useNotices((s) => s.push);
@@ -134,7 +141,7 @@ export function Accounts() {
     },
     onError: (e) => push(message(e, 'Не удалось выдать пароль')),
   });
-  const manage = me !== null && can(me.role, 'users.manage');
+  const manage = me !== null && can(roles, me.role, 'users.manage');
 
   return (
     <section aria-labelledby="accounts-title" className="accounts">
@@ -165,14 +172,14 @@ export function Accounts() {
                       disabled={change.isPending}
                       onChange={(e) => change.mutate({ id: u.id, role: e.target.value as Role })}
                     >
-                      {ROLES.map((r) => (
-                        <option key={r} value={r}>
-                          {ROLE_LABELS[r]}
+                      {roles.map((r) => (
+                        <option key={r.id} value={r.id}>
+                          {r.name}
                         </option>
                       ))}
                     </select>
                   ) : (
-                    ROLE_LABELS[u.role]
+                    roleName(roles, u.role)
                   )}
                 </td>
                 {manage && (

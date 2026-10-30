@@ -112,7 +112,7 @@ function Palette({ onClose }: { onClose: () => void }) {
       ...(projectKey
         ? [
             ['board', 'Доска', 'G D'],
-            ['backlog', 'Планирование будущих спринтов', 'G B'],
+            ['backlog', 'Планирование спринтов', 'G B'],
             ['history', 'Прошлые спринты', 'G H'],
             ['sprints', 'Спринты', 'G S'],
             ['reports', 'Отчёты', 'G R'],

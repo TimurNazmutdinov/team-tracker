@@ -30,7 +30,7 @@ export function BoardNav({
         {label}
       </span>
       <Link className="pill" to={{ pathname: `/projects/${projectKey}/backlog`, search }}>
-        Планирование будущих спринтов
+        Планирование спринтов
       </Link>
     </nav>
   );

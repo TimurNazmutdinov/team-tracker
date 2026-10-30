@@ -1,4 +1,5 @@
-import { ROLES, can, type Action, type Role } from '../../domain/permissions';
+import { ACTIONS, can, type Action, type RoleDef } from '../../domain/permissions';
+import { ACTION_LABELS } from '../../domain/roles';
 
 // Содержимое встроенной справки (ADR-020): клавиши, правила простым языком, таблица прав. Права берутся
 // из той же проверки `can`, что использует сервер, поэтому таблица не расходится с поведением.
@@ -12,7 +13,7 @@ export const HOTKEYS: Hotkey[] = [
   { keys: 'Ctrl+K  ·  /', action: 'Поиск задач, переход по экранам, команды' },
   { keys: 'C', action: 'Создать задачу (внутри проекта)' },
   { keys: 'G, затем D', action: 'Перейти на доску' },
-  { keys: 'G, затем B', action: 'Перейти в планирование будущих спринтов' },
+  { keys: 'G, затем B', action: 'Перейти в планирование спринтов' },
   { keys: 'G, затем H', action: 'Перейти в прошлые спринты' },
   { keys: 'G, затем S', action: 'Перейти в спринты' },
   { keys: 'G, затем R', action: 'Перейти в отчёты' },
@@ -66,32 +67,18 @@ export const RULES: Rule[] = [
   },
 ];
 
-/** Человеческие названия прав; тип Record заставляет описать каждое право. */
-export const ACTION_LABELS: Record<Action, string> = {
-  'status.own': 'Менять статус своих задач',
-  'status.other': 'Менять статус чужих задач',
-  'backlog.rank': 'Менять приоритет и порядок задач',
-  'sprint.items': 'Добавлять и убирать задачи в спринте',
-  'sprint.manage': 'Создавать, запускать и закрывать спринты, настройки проекта',
-  'project.create': 'Создавать проекты и управлять людьми',
-  'users.manage': 'Менять роли и выдавать доступ',
-  'backups.manage': 'Резервные копии',
-  'system.diagnose': 'Журнал ошибок и диагностика',
-  'project.members': 'Владелец и участники проекта',
-  'project.templates': 'Шаблоны задач проекта',
-  'people.availability': 'Отпуска и больничные людей',
-};
-
 export interface PermissionRow {
   action: Action;
   label: string;
-  allowed: Record<Role, boolean>;
+  /** Идентификатор роли → разрешено ли. */
+  allowed: Record<string, boolean>;
 }
 
-export function permissionRows(): PermissionRow[] {
-  return (Object.keys(ACTION_LABELS) as Action[]).map((action) => ({
+/** Таблица прав по настроенным ролям: строится из той же проверки `can`, что на сервере. */
+export function permissionRows(roles: readonly RoleDef[]): PermissionRow[] {
+  return ACTIONS.map((action) => ({
     action,
     label: ACTION_LABELS[action],
-    allowed: Object.fromEntries(ROLES.map((r) => [r, can(r, action)])) as Record<Role, boolean>,
+    allowed: Object.fromEntries(roles.map((r) => [r.id, can(roles, r.id, action)])),
   }));
 }

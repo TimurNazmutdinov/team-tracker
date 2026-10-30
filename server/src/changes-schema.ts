@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { roleSchema } from '../../src/domain/roles';
 import type { Changes } from '../../src/domain/changes';
 import {
   commentSchema,
@@ -20,6 +21,8 @@ export const changesSchema: z.ZodType<Changes> = z.strictObject({
   people: z.array(personSchema).optional(),
   members: z.array(memberSchema).optional(),
   deleteMemberIds: z.array(z.string().min(1)).optional(),
+  roles: z.array(roleSchema).optional(),
+  deleteRoleIds: z.array(z.string().min(1)).optional(),
   absences: z.array(absenceSchema).optional(),
   deleteAbsenceIds: z.array(z.string().min(1)).optional(),
   retroItems: z.array(retroItemSchema).optional(),

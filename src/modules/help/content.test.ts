@@ -1,17 +1,28 @@
 import { describe, expect, it } from 'vitest';
-import { ROLES, can } from '../../domain/permissions';
+import { DEFAULT_ROLES, can } from '../../domain/permissions';
+import { ACTIONS } from '../../domain/roles';
 import { SCREEN_KEYS } from '../quick/CommandPalette';
-import { ACTION_LABELS, HOTKEYS, RULES, permissionRows } from './content';
+import { HOTKEYS, RULES, permissionRows } from './content';
 
 describe('справка', () => {
-  it('таблица прав совпадает с проверкой прав и охватывает все действия', () => {
-    const rows = permissionRows();
-    expect(rows).toHaveLength(Object.keys(ACTION_LABELS).length);
+  it('таблица прав совпадает с проверкой прав и охватывает все функции', () => {
+    const rows = permissionRows(DEFAULT_ROLES);
+    expect(rows.map((r) => r.action)).toEqual([...ACTIONS]);
     for (const row of rows) {
-      for (const role of ROLES) expect(row.allowed[role]).toBe(can(role, row.action));
+      for (const role of DEFAULT_ROLES)
+        expect(row.allowed[role.id]).toBe(can(DEFAULT_ROLES, role.id, row.action));
     }
     // у администратора есть всё
-    expect(rows.every((r) => r.allowed.admin)).toBe(true);
+    expect(rows.every((r) => r.allowed['admin'])).toBe(true);
+  });
+
+  it('таблица строится по настроенным ролям, в том числе новым', () => {
+    const roles = [
+      ...DEFAULT_ROLES,
+      { id: 'viewer', name: 'Наблюдатель', permissions: [], system: false },
+    ];
+    const rows = permissionRows(roles);
+    expect(rows.every((r) => r.allowed['viewer'] === false)).toBe(true);
   });
 
   it('клавиши и правила заполнены, названия не повторяются', () => {

@@ -1,60 +1,37 @@
 import type { Changes } from './changes';
 import { isParticipant } from './members';
+import type { Action, RoleDef } from './roles';
 import type { Dataset, Issue, Project } from './schema';
 
 // Права по ролям (docs/capabilities.md §2, ADR-010). Один источник для сервера, который проверяет
 // каждое изменение, и для интерфейса, который скрывает недоступные действия.
 
-export const ROLES = ['developer', 'product', 'lead', 'admin'] as const;
-export type Role = (typeof ROLES)[number];
+export { ACTIONS, ADMIN_ROLE, DEFAULT_ROLES, type Action, type RoleDef } from './roles';
 
-export const ROLE_LABELS: Record<Role, string> = {
-  developer: 'Разработчик',
-  product: 'Продакт',
-  lead: 'Тимлид / scrum-мастер',
-  admin: 'Администратор',
-};
+/** Идентификатор роли учётки (ADR-021): у встроенных ролей — developer, product, lead, admin. */
+export type Role = string;
 
-export function isRole(value: unknown): value is Role {
-  return typeof value === 'string' && (ROLES as readonly string[]).includes(value);
+type Roles = readonly RoleDef[];
+
+/** Название роли по идентификатору; для неизвестной — сам идентификатор. */
+export function roleName(roles: Roles, role: Role): string {
+  return roles.find((r) => r.id === role)?.name ?? role;
 }
 
-export type Action =
-  | 'status.own' // сменить статус своей задачи
-  | 'status.other' // сменить статус чужой или неназначенной задачи
-  | 'backlog.rank' // приоритет и порядок задач
-  | 'sprint.items' // добавлять и убирать задачи в спринте
-  | 'sprint.manage' // создавать, запускать, закрывать спринты, настройки спринтов
-  | 'project.create' // создавать проекты и управлять людьми
-  | 'users.manage' // менять роли учёток
-  | 'backups.manage' // резервные копии: состояние, копия сейчас, Excel
-  | 'system.diagnose' // журнал ошибок и диагностика (ADR-015)
-  | 'project.members' // владелец и участники проекта: администратор и владелец проекта (ADR-016)
-  | 'project.templates' // шаблоны задач проекта (ADR-017)
-  | 'people.availability'; // отсутствия людей (ADR-018)
-
-const MATRIX: Record<Action, readonly Role[]> = {
-  'status.own': ROLES,
-  'status.other': ['product', 'lead', 'admin'],
-  'backlog.rank': ['product', 'lead', 'admin'],
-  'sprint.items': ['product', 'lead', 'admin'],
-  'sprint.manage': ['lead', 'admin'],
-  'project.create': ['admin'],
-  'users.manage': ['admin'],
-  'backups.manage': ['admin'],
-  'system.diagnose': ['admin'],
-  'project.members': ['admin', 'product'],
-  'project.templates': ['lead', 'admin'],
-  'people.availability': ['lead', 'admin'],
-};
-
-export function can(role: Role, action: Action): boolean {
-  return MATRIX[action].includes(role);
+export function can(roles: Roles, role: Role, action: Action): boolean {
+  const def = roles.find((r) => r.id === role);
+  if (!def) return false;
+  return def.system || def.permissions.includes(action);
 }
 
 /** Можно ли менять статус задачи: своя — исполнитель совпадает с пользователем (ADR-010). */
-export function canChangeStatus(role: Role, userId: string, issue: Pick<Issue, 'assigneeId'>) {
-  return can(role, issue.assigneeId === userId ? 'status.own' : 'status.other');
+export function canChangeStatus(
+  roles: Roles,
+  role: Role,
+  userId: string,
+  issue: Pick<Issue, 'assigneeId'>,
+) {
+  return can(roles, role, issue.assigneeId === userId ? 'status.own' : 'status.other');
 }
 
 /** Поля проекта, которые меняют настройки и нумерацию спринтов, а не сам проект. */
@@ -82,6 +59,23 @@ function changedProjectFields(before: Project, after: Project): 'core' | 'sprint
   return differs(before, after, SPRINT_SETTING_FIELDS) ? 'sprints' : null;
 }
 
+/** Поля задачи, которые правит «Редактировать»; статус, приоритет, порядок и спринт имеют свои права. */
+const CONTENT_FIELDS = [
+  'type',
+  'title',
+  'description',
+  'acceptance',
+  'points',
+  'assigneeId',
+  'parentId',
+  'labels',
+  'dueDate',
+] as const;
+
+function changedContent(before: Issue, after: Issue): boolean {
+  return CONTENT_FIELDS.some((f) => JSON.stringify(before[f]) !== JSON.stringify(after[f]));
+}
+
 /**
  * Нарушения прав в наборе изменений: что пользователь менять не вправе. Пустой список — можно.
  * `current` — данные до изменения. Авторство записей истории и комментариев и reporterId новых
@@ -97,31 +91,33 @@ export function violations(
   const deny = (message: string) => {
     if (!out.includes(message)) out.push(message);
   };
+  const roles = current.roles;
+  const may = (action: Action) => can(roles, role, action);
 
   for (const p of changes.projects ?? []) {
     const before = current.projects.find((x) => x.id === p.id);
     if (!before) {
-      if (!can(role, 'project.create')) deny('Создавать проекты может только администратор');
+      if (!may('project.create')) deny('Создавать проекты ваша роль не позволяет');
       continue;
     }
     const kind = changedProjectFields(before, p);
-    if (kind === 'core' && !can(role, 'project.create'))
-      deny('Менять ключ и название проекта может только администратор');
-    if (kind === 'sprints' && !can(role, 'sprint.manage'))
-      deny('Настройки спринтов меняют тимлид и администратор');
+    if (kind === 'core' && !may('project.create'))
+      deny('Менять ключ и название проекта ваша роль не позволяет');
+    if (kind === 'sprints' && !may('sprint.manage'))
+      deny('Менять настройки проекта ваша роль не позволяет');
   }
 
   if (
     ((changes.templates ?? []).length > 0 || (changes.deleteTemplateIds ?? []).length > 0) &&
-    !can(role, 'project.templates')
+    !may('project.templates')
   )
-    deny('Шаблоны задач меняют тимлид и администратор');
+    deny('Менять шаблоны задач, WIP-лимиты и Definition of Done ваша роль не позволяет');
 
   if (
     ((changes.absences ?? []).length > 0 || (changes.deleteAbsenceIds ?? []).length > 0) &&
-    !can(role, 'people.availability')
+    !may('people.availability')
   )
-    deny('Отсутствия людей меняют тимлид и администратор');
+    deny('Менять отсутствия людей ваша роль не позволяет');
 
   for (const r of changes.retroItems ?? []) {
     if (r.authorId !== userId && !current.retroItems.some((x) => x.id === r.id))
@@ -129,8 +125,22 @@ export function violations(
   }
   for (const id of changes.deleteRetroItemIds ?? []) {
     const known = current.retroItems.find((x) => x.id === id);
-    if (known && known.authorId !== userId && role !== 'lead' && role !== 'admin')
-      deny('Чужие записи ретроспективы удаляют тимлид и администратор');
+    if (known && known.authorId !== userId && !may('sprint.manage'))
+      deny('Удалять чужие записи ретроспективы ваша роль не позволяет');
+  }
+
+  // Роли меняют те, у кого есть право на учётки и роли; защищённая роль неизменна (ADR-021)
+  if ((changes.roles ?? []).length > 0 || (changes.deleteRoleIds ?? []).length > 0) {
+    if (!may('users.manage')) deny('Менять роли ваша роль не позволяет');
+    for (const r of changes.roles ?? []) {
+      const before = current.roles.find((x) => x.id === r.id);
+      if (r.system !== (before?.system ?? false)) deny('Признак защищённой роли менять нельзя');
+      if (before?.system && JSON.stringify(before) !== JSON.stringify(r))
+        deny('Роль «Администратор» защищена: менять её нельзя');
+    }
+    for (const id of changes.deleteRoleIds ?? []) {
+      if (current.roles.find((x) => x.id === id)?.system) deny('Защищённую роль удалить нельзя');
+    }
   }
 
   // Участники проекта: администратор или владелец этого проекта (ADR-016)
@@ -142,19 +152,19 @@ export function violations(
   }
   for (const projectId of memberProjects) {
     const project = current.projects.find((p) => p.id === projectId);
-    const own = role === 'product' && project?.ownerId === userId;
-    if (role !== 'admin' && !own)
-      deny('Участников проекта меняют администратор и владелец проекта');
+    // продакт — только владелец проекта; остальным с этим правом проект не важен
+    const allowed = may('project.members') && (role !== 'product' || project?.ownerId === userId);
+    if (!allowed) deny('Менять участников проекта ваша роль не позволяет');
   }
 
-  if ((changes.people ?? []).length > 0 && !can(role, 'project.create'))
-    deny('Управлять людьми может только администратор');
+  if ((changes.people ?? []).length > 0 && !may('project.create'))
+    deny('Управлять людьми ваша роль не позволяет');
 
   for (const s of changes.sprints ?? []) {
     const before = current.sprints.find((x) => x.id === s.id);
     if (!before || JSON.stringify(before) !== JSON.stringify(s)) {
-      if (!can(role, 'sprint.manage'))
-        deny('Создавать, запускать и закрывать спринты могут тимлид и администратор');
+      if (!may('sprint.manage'))
+        deny('Создавать, запускать и закрывать спринты ваша роль не позволяет');
     }
   }
 
@@ -170,20 +180,23 @@ export function violations(
     const before = current.issues.find((x) => x.id === issue.id);
     if (!before) {
       if (issue.sprintId !== null && foreign(issue.projectId)) deny(FOREIGN);
+      if (!may('issue.create')) deny('Создавать задачи ваша роль не позволяет');
       if (issue.reporterId !== userId) deny('Автор задачи — только текущий пользователь');
-      if (issue.sprintId !== null && !can(role, 'sprint.items'))
-        deny('Добавлять задачи в спринт могут продакт, тимлид и администратор');
+      if (issue.sprintId !== null && !may('sprint.items'))
+        deny('Добавлять задачи в спринт ваша роль не позволяет');
       continue;
     }
-    if (before.status !== issue.status && !canChangeStatus(role, userId, before))
-      deny('Менять статус чужой задачи разработчик не может');
+    if (changedContent(before, issue) && !may('issue.edit'))
+      deny('Редактировать задачи ваша роль не позволяет');
+    if (before.status !== issue.status && !canChangeStatus(roles, role, userId, before))
+      deny('Менять статус этой задачи ваша роль не позволяет');
     if (
       (before.priority !== issue.priority || before.order !== issue.order) &&
-      !can(role, 'backlog.rank')
+      !may('backlog.rank')
     )
-      deny('Менять приоритет и порядок задач разработчик не может');
-    if (before.sprintId !== issue.sprintId && !can(role, 'sprint.items'))
-      deny('Добавлять и убирать задачи в спринте разработчик не может');
+      deny('Менять приоритет и порядок задач ваша роль не позволяет');
+    if (before.sprintId !== issue.sprintId && !may('sprint.items'))
+      deny('Добавлять и убирать задачи в спринте ваша роль не позволяет');
     if (
       (before.sprintId !== issue.sprintId ||
         before.priority !== issue.priority ||
@@ -193,6 +206,15 @@ export function violations(
       deny(FOREIGN);
   }
 
+  if ((changes.comments ?? []).length > 0 && !may('issue.comment'))
+    deny('Комментировать ваша роль не позволяет');
+  if ((changes.retroItems ?? []).length > 0 && !may('issue.comment'))
+    deny('Вести ретроспективу ваша роль не позволяет');
+  if (
+    ((changes.links ?? []).length > 0 || (changes.deleteLinkIds ?? []).length > 0) &&
+    !may('issue.edit')
+  )
+    deny('Менять связи задач ваша роль не позволяет');
   for (const c of changes.comments ?? [])
     if (c.authorId !== userId) deny('Автор комментария — только текущий пользователь');
   for (const h of changes.history ?? [])

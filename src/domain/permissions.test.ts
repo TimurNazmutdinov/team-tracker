@@ -10,13 +10,22 @@ import {
   type Result,
 } from './actions';
 import type { Changes } from './changes';
-import { can, canChangeStatus, isRole, ROLES, violations, type Role } from './permissions';
+import {
+  DEFAULT_ROLES,
+  can,
+  canChangeStatus,
+  roleName,
+  violations,
+  type Role,
+} from './permissions';
 import type { Dataset } from './schema';
 import { closeSprint, createSprint } from './sprints';
 import { updateSprintSettings } from './settings';
 import { testCtx, viewOf } from './testing';
 
 const ds = seed as unknown as Dataset;
+const ROLES = DEFAULT_ROLES.map((r) => r.id);
+const canDo = (role: Role, action: Parameters<typeof can>[2]) => can(DEFAULT_ROLES, role, action);
 
 function changesOf(r: Result): Changes {
   if (!r.ok) throw new Error(`ожидался успех: ${JSON.stringify(r.errors)}`);
@@ -42,7 +51,11 @@ const check = (role: Role, userId: string, c: Changes) => violations(role, userI
 
 describe('матрица прав', () => {
   it('совпадает с capabilities.md §2', () => {
-    const rows: [Parameters<typeof can>[1], Role[]][] = [
+    const rows: [Parameters<typeof can>[2], Role[]][] = [
+      ['issue.create', ['developer', 'product', 'lead', 'admin']],
+      ['issue.edit', ['developer', 'product', 'lead', 'admin']],
+      ['issue.comment', ['developer', 'product', 'lead', 'admin']],
+      ['project.members', ['product', 'admin']],
       ['status.own', ['developer', 'product', 'lead', 'admin']],
       ['status.other', ['product', 'lead', 'admin']],
       ['backlog.rank', ['product', 'lead', 'admin']],
@@ -56,16 +69,21 @@ describe('матрица прав', () => {
       ['people.availability', ['lead', 'admin']],
     ];
     for (const [action, allowed] of rows)
-      expect(ROLES.filter((r) => can(r, action))).toEqual(ROLES.filter((r) => allowed.includes(r)));
+      expect(ROLES.filter((r) => canDo(r, action))).toEqual(
+        ROLES.filter((r) => allowed.includes(r)),
+      );
   });
 
-  it('isRole и «своя» задача', () => {
-    expect(isRole('lead')).toBe(true);
-    expect(isRole('boss')).toBe(false);
-    expect(canChangeStatus('developer', 'u2', { assigneeId: 'u2' })).toBe(true);
-    expect(canChangeStatus('developer', 'u2', { assigneeId: 'u3' })).toBe(false);
-    expect(canChangeStatus('developer', 'u2', { assigneeId: null })).toBe(false);
-    expect(canChangeStatus('product', 'u2', { assigneeId: null })).toBe(true);
+  it('неизвестная роль ничего не может; «своя» задача', () => {
+    expect(canDo('boss', 'status.own')).toBe(false);
+    expect(roleName(DEFAULT_ROLES, 'lead')).toBe('Тимлид / scrum-мастер');
+    expect(roleName(DEFAULT_ROLES, 'boss')).toBe('boss');
+    const status = (role: Role, userId: string, assigneeId: string | null) =>
+      canChangeStatus(DEFAULT_ROLES, role, userId, { assigneeId });
+    expect(status('developer', 'u2', 'u2')).toBe(true);
+    expect(status('developer', 'u2', 'u3')).toBe(false);
+    expect(status('developer', 'u2', null)).toBe(false);
+    expect(status('product', 'u2', null)).toBe(true);
   });
 });
 

@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "projects": [
     {
       "id": "p1",
@@ -81,6 +81,73 @@
       "type": "Task",
       "description": "## Что нужно сделать\nКоротко опишите работу",
       "acceptance": "- [ ] Работа выполнена"
+    }
+  ],
+  "roles": [
+    {
+      "id": "developer",
+      "name": "Разработчик",
+      "permissions": [
+        "issue.create",
+        "issue.edit",
+        "issue.comment",
+        "status.own"
+      ],
+      "system": false
+    },
+    {
+      "id": "product",
+      "name": "Продакт",
+      "permissions": [
+        "issue.create",
+        "issue.edit",
+        "issue.comment",
+        "status.own",
+        "status.other",
+        "backlog.rank",
+        "sprint.items",
+        "project.members"
+      ],
+      "system": false
+    },
+    {
+      "id": "lead",
+      "name": "Тимлид / scrum-мастер",
+      "permissions": [
+        "issue.create",
+        "issue.edit",
+        "issue.comment",
+        "status.own",
+        "status.other",
+        "backlog.rank",
+        "sprint.items",
+        "sprint.manage",
+        "project.templates",
+        "people.availability"
+      ],
+      "system": false
+    },
+    {
+      "id": "admin",
+      "name": "Администратор",
+      "permissions": [
+        "issue.create",
+        "issue.edit",
+        "issue.comment",
+        "status.own",
+        "status.other",
+        "backlog.rank",
+        "sprint.items",
+        "sprint.manage",
+        "project.templates",
+        "people.availability",
+        "project.create",
+        "project.members",
+        "users.manage",
+        "backups.manage",
+        "system.diagnose"
+      ],
+      "system": true
     }
   ],
   "absences": [

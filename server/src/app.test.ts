@@ -202,7 +202,7 @@ describe('сервер', () => {
     const foreign = changes(updateIssue(v2, 'i5', { status: 'Review' }, dev.id, testCtx()));
     const denied = await dev.call('POST', '/api/commit', foreign);
     expect(denied.status).toBe(403);
-    expect(denied.json.error.details[0]).toContain('чужой');
+    expect(denied.json.error.details[0]).toContain('ваша роль');
     // тот же набор принимает администратор
     const asAdmin = changes(updateIssue(v2, 'i5', { status: 'Review' }, admin.id, testCtx()));
     expect((await admin.call('POST', '/api/commit', asAdmin)).status).toBe(204);

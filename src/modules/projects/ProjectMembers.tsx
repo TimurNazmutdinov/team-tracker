@@ -31,7 +31,7 @@ export function ProjectMembers({ view }: { view: View }) {
   };
 
   return (
-    <section className="about-block" aria-labelledby="members-title">
+    <section className="settings-card" aria-labelledby="members-title">
       <h2 id="members-title">Участники проекта</h2>
       <label className="owner-field">
         Владелец продукта

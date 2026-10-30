@@ -54,7 +54,7 @@ export function AbsencesSection({ view }: { view: View }) {
   };
 
   return (
-    <section className="settings" aria-labelledby="absences-title">
+    <section className="settings-card" aria-labelledby="absences-title">
       <h2 id="absences-title">Отсутствия</h2>
       <p className="muted">
         Отпуска и больничные уменьшают ёмкость спринтов команды проекта. Рабочие дни —

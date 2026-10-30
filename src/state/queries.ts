@@ -52,6 +52,11 @@ export function useTemplates() {
   return useQuery({ queryKey: ['templates'], queryFn: () => storage.getTemplates() });
 }
 
+export function useRoles() {
+  const storage = useStorage();
+  return useQuery({ queryKey: ['roles'], queryFn: () => storage.getRoles() });
+}
+
 export function useAbsences() {
   const storage = useStorage();
   return useQuery({ queryKey: ['absences'], queryFn: () => storage.getAbsences() });

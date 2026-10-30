@@ -1,5 +1,6 @@
 import type {
   Absence,
+  RoleDef,
   RetroItem,
   Comment,
   History,
@@ -21,6 +22,8 @@ export interface Changes {
   people?: Person[];
   members?: ProjectMember[];
   deleteMemberIds?: string[];
+  roles?: RoleDef[];
+  deleteRoleIds?: string[];
   absences?: Absence[];
   deleteAbsenceIds?: string[];
   retroItems?: RetroItem[];

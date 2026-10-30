@@ -6,7 +6,7 @@ import { expect, test, type Page } from '@playwright/test';
 
 const SCREENS: [string, string][] = [
   ['доска', '/projects/DEMO/board'],
-  ['планирование будущих спринтов', '/projects/DEMO/backlog'],
+  ['планирование спринтов', '/projects/DEMO/backlog'],
   ['прошлые спринты', '/projects/DEMO/history'],
   ['спринты', '/projects/DEMO/sprints'],
   ['карточка задачи', '/projects/DEMO/issues/5'],

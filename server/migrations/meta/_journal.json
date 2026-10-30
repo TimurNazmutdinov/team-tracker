@@ -50,6 +50,13 @@
       "when": 1793342216917,
       "tag": "0006_planning-scrum",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793347957915,
+      "tag": "0007_roles",
+      "breakpoints": true
     }
   ]
 }

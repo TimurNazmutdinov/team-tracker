@@ -1394,7 +1394,7 @@ def screen_quick():
     y += 12
     wf.text(mx + 20, y, "Экраны", 12, fill=t["muted"])
     y += 10
-    for label, hint in (("Портфель", "G P"), ("Планирование будущих спринтов", "G B")):
+    for label, hint in (("Портфель", "G P"), ("Планирование спринтов", "G B")):
         wf.rect(mx + 10, y, mw - 20, 32, fill=t["bg"], r=4)
         wf.text(mx + 24, y + 21, "→  " + label, 13)
         wf.text(mx + mw - 24, y + 21, hint, 12, "end", fill=t["muted"])
@@ -1840,7 +1840,7 @@ def nav_pills(wf, y):
     x = 20
     x += wf.chip(x, y, "Прошлые спринты ↗", 13, h=32, fill=t["bg"], bold=True, ink=t["accent"]) + 8
     x += wf.chip(x, y, "Текущий спринт · Спринт 3 · 09.11 – 20.11", 13, h=32, fill=t["accent_bg"], bold=True) + 8
-    wf.chip(x, y, "Планирование будущих спринтов ↗", 13, h=32, fill=t["bg"], bold=True, ink=t["accent"])
+    wf.chip(x, y, "Планирование спринтов ↗", 13, h=32, fill=t["bg"], bold=True, ink=t["accent"])
 
 
 def past_tab(wf, x, y0, h, n, sprint, dates, tasks, w=52):
@@ -1988,10 +1988,10 @@ def sprint_block(wf, y, title, state, state_fill, dates, goal, tasks, cap, note,
 
 
 def screen_backlog_new():
-    wf = WF(1160, "Вкладка «Планирование будущих спринтов»")
+    wf = WF(1160, "Вкладка «Планирование спринтов»")
     t = wf.t
     wf.shell(f"team-tracker.app/projects/{KEY}/backlog", "Бэклог")
-    wf.text(20, 126, "Планирование будущих спринтов", 24, bold=True)
+    wf.text(20, 126, "Планирование спринтов", 24, bold=True)
     wf.button(W - 200, 106, 180, 32, "+ Создать задачу", True)
     # фильтры
     wf.rect(20, 148, 210, 30, fill=t["bg"], stroke=t["line"], r=6)
@@ -2251,7 +2251,7 @@ def screen_availability():
     wf = WF(780, "Доступность людей и ёмкость спринта")
     t = wf.t
     wf.shell(f"team-tracker.app/projects/{KEY}/backlog", "Бэклог")
-    wf.text(20, 130, "Планирование будущих спринтов", 22, bold=True)
+    wf.text(20, 130, "Планирование спринтов", 22, bold=True)
     # заголовок спринта + индикатор
     wf.rect(20, 150, 860, 150, fill=t["panel"], stroke=t["line"], r=8)
     wf.text(34, 178, "▾ Спринт 3", 15, bold=True)
@@ -2639,7 +2639,7 @@ def screen_frames():
     wf = WF(820, "Планирование: спринт в общей рамке, иерархия эпик → задачи")
     t = wf.t
     wf.shell(f"team-tracker.app/projects/{KEY}/backlog", "Бэклог")
-    wf.text(20, 130, "Планирование будущих спринтов", 22, bold=True)
+    wf.text(20, 130, "Планирование спринтов", 22, bold=True)
     # спринт в одной рамке
     wf.rect(20, 150, 860, 230, fill=t["bg"], stroke=t["muted"], r=10, sw=1.8)
     wf.rect(20, 150, 860, 62, fill=t["panel"], stroke=None, r=10)

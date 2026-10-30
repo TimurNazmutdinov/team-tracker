@@ -35,6 +35,14 @@ export const people = pgTable('people', {
   role: text('role').notNull(),
 });
 
+/** Роли и права (ADR-021); у учётки в `users.access_role` — идентификатор роли. */
+export const roles = pgTable('roles', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  permissions: jsonb('permissions').$type<string[]>().notNull().default([]),
+  system: boolean('system').notNull().default(false),
+});
+
 /** Отсутствия людей (ADR-018); без внешнего ключа на человека, как owner_id. */
 export const absences = pgTable(
   'absences',

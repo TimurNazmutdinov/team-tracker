@@ -10,6 +10,7 @@ import type {
   ProjectMember,
   IssueTemplate,
   Absence,
+  RoleDef,
   RetroItem,
   Sprint,
 } from '../domain/schema';
@@ -26,6 +27,8 @@ export interface TrackerStorage {
   getMembers(): Promise<ProjectMember[]>;
   /** Шаблоны задач всех проектов (ADR-017). */
   getTemplates(): Promise<IssueTemplate[]>;
+  /** Роли и права (ADR-021). */
+  getRoles(): Promise<RoleDef[]>;
   /** Отсутствия людей (ADR-018): общие для всех проектов. */
   getAbsences(): Promise<Absence[]>;
   /** Записи ретроспектив спринтов проекта (ADR-018). */

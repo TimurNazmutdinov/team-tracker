@@ -114,7 +114,7 @@ describe('права на шаблоны', () => {
     if (!c.ok) throw new Error('ожидался успех');
     expect(violations('lead', 'u4', ds, c.changes)).toEqual([]);
     expect(violations('admin', 'u9', ds, c.changes)).toEqual([]);
-    expect(violations('product', 'u1', ds, c.changes).join(' ')).toContain('Шаблоны задач');
+    expect(violations('product', 'u1', ds, c.changes).join(' ')).toContain('шаблоны задач');
     expect(violations('developer', 'u2', ds, c.changes)).not.toEqual([]);
   });
 });

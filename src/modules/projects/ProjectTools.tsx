@@ -34,7 +34,7 @@ export function WipSettingsForm({ view }: { view: View }) {
 
   return (
     <form
-      className="settings"
+      className="settings-card"
       onSubmit={(e) => void submit(e)}
       noValidate
       aria-labelledby="wip-title"
@@ -86,11 +86,14 @@ const EMPTY: TemplateInput = { name: '', type: 'Task', description: '', acceptan
 function TemplateForm({
   view,
   template,
+  canEdit,
   onDone,
 }: {
   view: View;
   template: IssueTemplate | null;
-  onDone: () => void;
+  canEdit: boolean;
+  /** Вызывается после сохранения или удаления; id — выбрать этот шаблон дальше. */
+  onDone: (selectId?: string | null) => void;
 }) {
   const actions = useActions(view.projectId);
   const push = useNotices((s) => s.push);
@@ -113,8 +116,21 @@ function TemplateForm({
       : await actions.createTemplate(draft);
     if (result.ok) {
       push(template ? 'Шаблон сохранён' : 'Шаблон создан');
-      onDone();
+      onDone(result.changes.templates?.[0]?.id ?? template?.id ?? null);
     } else setErrors(result.errors);
+  };
+
+  const remove = async () => {
+    if (!template) return;
+    if (
+      !window.confirm(`Удалить шаблон «${template.name}»? Созданные по нему задачи не изменятся.`)
+    )
+      return;
+    const result = await actions.deleteTemplate(template.id);
+    if (result.ok) {
+      push('Шаблон удалён');
+      onDone(null);
+    } else push(Object.values(result.errors).join('. '));
   };
 
   return (
@@ -129,6 +145,7 @@ function TemplateForm({
           name="template-name"
           label="Название шаблона"
           required
+          disabled={!canEdit}
           value={draft.name}
           onChange={(name) => setDraft({ ...draft, name })}
           error={errors.name}
@@ -136,6 +153,7 @@ function TemplateForm({
         <SelectField
           name="template-type"
           label="Тип задачи"
+          disabled={!canEdit}
           value={draft.type}
           options={TEMPLATE_TYPES.map((t) => ({ value: t, label: t }))}
           onChange={(v) => setDraft({ ...draft, type: v as IssueType })}
@@ -159,75 +177,86 @@ function TemplateForm({
         error={errors.acceptance}
       />
       {errors.form && <ErrorMessage message={errors.form} />}
-      <button type="submit" className="primary">
-        Сохранить шаблон
-      </button>{' '}
-      <button type="button" onClick={onDone}>
-        Отмена
-      </button>
+      {canEdit && (
+        <div className="form-actions">
+          <button type="submit" className="primary">
+            Сохранить шаблон
+          </button>
+          {template ? (
+            <button type="button" onClick={() => void remove()}>
+              Удалить
+            </button>
+          ) : (
+            <button type="button" onClick={() => onDone()}>
+              Отмена
+            </button>
+          )}
+        </div>
+      )}
     </form>
   );
 }
 
-/** Шаблоны задач проекта: список, правка и удаление (тимлид и администратор). */
+/** Шаблоны задач проекта: список слева, редактор выбранного справа (wireframes.md, 24.3). */
 export function TemplatesSection({ view }: { view: View }) {
-  const actions = useActions(view.projectId);
   const canEdit = usePermissions().can('project.templates');
-  const push = useNotices((s) => s.push);
-  const [editing, setEditing] = useState<string | 'new' | null>(null);
   const list = templatesOf(view);
-
-  const remove = async (t: IssueTemplate) => {
-    if (!window.confirm(`Удалить шаблон «${t.name}»? Созданные по нему задачи не изменятся.`))
-      return;
-    const result = await actions.deleteTemplate(t.id);
-    if (result.ok) push('Шаблон удалён');
-    else push(Object.values(result.errors).join('. '));
-  };
+  const [selected, setSelected] = useState<string | 'new' | null>(null);
+  const current =
+    selected === 'new' ? null : (list.find((t) => t.id === selected) ?? list[0] ?? null);
+  const creating = selected === 'new';
 
   return (
-    <section className="settings" aria-labelledby="templates-title">
+    <section className="settings-card" aria-labelledby="templates-title">
       <h2 id="templates-title">Шаблоны задач</h2>
       <p className="muted">
         Шаблон подставляет тип, описание и критерии при создании задачи. Тексты — в Markdown.
+        {!canEdit && ' Шаблоны меняют те, у кого есть право на настройки проекта.'}
       </p>
-      {list.length === 0 && <p className="muted">Шаблонов нет.</p>}
-      <ul className="plain-list">
-        {list.map((t) => (
-          <li key={t.id} className="template-row">
-            {editing === t.id ? (
-              <TemplateForm view={view} template={t} onDone={() => setEditing(null)} />
-            ) : (
-              <>
-                <strong>{t.name}</strong> <span className="chip">{t.type}</span>
-                {canEdit && (
-                  <>
-                    {' '}
-                    <button type="button" onClick={() => setEditing(t.id)}>
-                      Изменить
-                    </button>{' '}
-                    <button type="button" onClick={() => void remove(t)}>
-                      Удалить
-                    </button>
-                  </>
-                )}
-              </>
-            )}
-          </li>
-        ))}
-      </ul>
-      {editing === 'new' && (
-        <TemplateForm view={view} template={null} onDone={() => setEditing(null)} />
-      )}
-      {canEdit ? (
-        editing === null && (
-          <button type="button" onClick={() => setEditing('new')}>
-            + Новый шаблон
-          </button>
-        )
-      ) : (
-        <p className="muted">Шаблоны меняют тимлид и администратор.</p>
-      )}
+      <div className="templates-layout">
+        <nav className="templates-list" aria-label="Шаблоны">
+          <ul className="plain-list">
+            {list.map((t) => (
+              <li key={t.id}>
+                <button
+                  type="button"
+                  aria-pressed={!creating && current?.id === t.id}
+                  className={!creating && current?.id === t.id ? 'on' : undefined}
+                  onClick={() => setSelected(t.id)}
+                >
+                  {t.name} <span className="muted small">{t.type}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+          {canEdit && (
+            <button type="button" aria-pressed={creating} onClick={() => setSelected('new')}>
+              + Новый шаблон
+            </button>
+          )}
+        </nav>
+        <div className="templates-editor">
+          {creating ? (
+            <TemplateForm
+              key="new"
+              view={view}
+              template={null}
+              canEdit={canEdit}
+              onDone={(id) => setSelected(id ?? null)}
+            />
+          ) : current ? (
+            <TemplateForm
+              key={current.id}
+              view={view}
+              template={current}
+              canEdit={canEdit}
+              onDone={(id) => setSelected(id ?? null)}
+            />
+          ) : (
+            <p className="muted">Шаблонов нет.</p>
+          )}
+        </div>
+      </div>
     </section>
   );
 }
@@ -252,7 +281,7 @@ export function DodSettingsForm({ view }: { view: View }) {
 
   return (
     <form
-      className="settings"
+      className="settings-card"
       onSubmit={(e) => void submit(e)}
       noValidate
       aria-labelledby="dod-title"

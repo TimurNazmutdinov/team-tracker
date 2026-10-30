@@ -1,7 +1,11 @@
+import { useEffect } from 'react';
 import { Link, NavLink, useParams } from 'react-router';
 import { useHelp } from '../state/help';
+import { useLastProject } from '../state/last-project';
+import { useProjects } from '../state/queries';
 import { useQuick } from '../state/quick';
 import { Logo } from './Logo';
+import { ProjectSwitcher } from './ProjectSwitcher';
 import { UserMenu } from './UserMenu';
 
 const TABS = [
@@ -18,6 +22,15 @@ export function AppBar() {
   const { key } = useParams();
   const showQuick = useQuick((s) => s.show);
   const showHelp = useHelp((s) => s.show);
+  const projects = useProjects();
+  const last = useLastProject((s) => s.key);
+  const setLast = useLastProject((s) => s.set);
+  useEffect(() => {
+    if (key) setLast(key);
+  }, [key, setLast]);
+  // на «Портфеле» и «Аналитике» показываем вкладки последнего открытого проекта (wireframes.md, 24.1)
+  const known = projects.data ?? [];
+  const shown = key ?? (known.some((p) => p.key === last) ? last : (known[0]?.key ?? null));
   return (
     <header className="app-bar">
       <Link to="/" className="logo">
@@ -27,14 +40,12 @@ export function AppBar() {
         <NavLink to="/portfolio">Портфель</NavLink>
         <NavLink to="/analytics">Аналитика</NavLink>
       </nav>
-      {key && (
+      {shown && (
         <>
-          <Link to="/projects" className="project-chip" title="Все проекты">
-            {key} ▾
-          </Link>
+          <ProjectSwitcher current={shown} />
           <nav aria-label="Разделы проекта">
             {TABS.map((tab) => (
-              <NavLink key={tab.to} to={`/projects/${key}/${tab.to}`}>
+              <NavLink key={tab.to} to={`/projects/${shown}/${tab.to}`}>
                 {tab.label}
               </NavLink>
             ))}
