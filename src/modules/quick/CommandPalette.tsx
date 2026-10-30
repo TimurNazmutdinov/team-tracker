@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router';
 import { PALETTES, PALETTE_LABELS } from '../../domain/palettes';
 import { ALL, MINE } from '../../domain/projectScope';
 import { searchIssues } from '../../domain/search';
+import { usePermissions } from '../../state/current-user';
 import { useHelp } from '../../state/help';
 import { useCreateDialog } from '../../state/create-dialog';
 import { usePalette } from '../../state/palette';
@@ -42,6 +43,7 @@ export function QuickKeys() {
   const { key } = useParams();
   const showCreate = useCreateDialog((s) => s.show);
   const showHelp = useHelp((s) => s.show);
+  const canCreate = usePermissions().can('issue.create');
   const goTo = useRef(0);
 
   useEffect(() => {
@@ -65,14 +67,14 @@ export function QuickKeys() {
         void navigate(`/projects/${key}/${SCREEN_KEYS[k]}`);
       } else if (k === 'g') {
         goTo.current = Date.now() + 1000;
-      } else if (k === 'c' && key) {
+      } else if (k === 'c' && key && canCreate) {
         e.preventDefault();
         showCreate();
       }
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [show, navigate, key, showCreate, showHelp]);
+  }, [show, navigate, key, showCreate, showHelp, canCreate]);
   return null;
 }
 
@@ -94,6 +96,7 @@ function Palette({ onClose }: { onClose: () => void }) {
   const scope = useProjectScope();
   const views = useProjectViews(scope.scope.projects);
   const showCreate = useCreateDialog((s) => s.show);
+  const perms = usePermissions();
   const palette = usePalette((s) => s.palette);
   const setPalette = usePalette((s) => s.set);
   const [query, setQuery] = useState('');
@@ -129,7 +132,7 @@ function Palette({ onClose }: { onClose: () => void }) {
       { id: 'about', group: 'Экраны', label: 'О программе', run: go('/about') },
     ];
     const actions: Item[] = [
-      ...(routeKey
+      ...(routeKey && perms.can('issue.create')
         ? [
             {
               id: 'create',
@@ -172,7 +175,7 @@ function Palette({ onClose }: { onClose: () => void }) {
           }))
         : [];
     return [...found, ...filter(screens), ...filter(actions)];
-  }, [query, views, routeKey, scope, navigate, showCreate, palette, setPalette]);
+  }, [query, views, routeKey, scope, navigate, showCreate, palette, setPalette, perms]);
 
   const index = Math.min(active, Math.max(items.length - 1, 0));
   const choose = (item: Item | undefined) => {

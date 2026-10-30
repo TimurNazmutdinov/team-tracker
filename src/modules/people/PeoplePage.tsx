@@ -40,7 +40,7 @@ export function PeoplePage() {
     <>
       <PageHeader title="Люди">
         {sprint && (
-          <label className="inline-select">
+          <label className="inline-select" title="Спринт, по которому считается нагрузка">
             Спринт
             <select
               value={sprint.id}

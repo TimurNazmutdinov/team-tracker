@@ -43,7 +43,7 @@ function SingleReport({ project }: { project: Project }) {
       <PageHeader title="Отчёты">
         <ProjectFilter />
         {sprints.length > 0 && (
-          <label className="inline-select">
+          <label className="inline-select" title="Спринт для burndown и итогов">
             Спринт
             <select
               value={sprint?.id ?? ''}

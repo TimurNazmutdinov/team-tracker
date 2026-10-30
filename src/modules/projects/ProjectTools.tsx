@@ -144,6 +144,7 @@ function TemplateForm({
         <TextField
           name="template-name"
           label="Название шаблона"
+          tip="Как шаблон называется в списке при создании задачи"
           required
           disabled={!canEdit}
           value={draft.name}
@@ -153,6 +154,7 @@ function TemplateForm({
         <SelectField
           name="template-type"
           label="Тип задачи"
+          tip="Тип, который подставится при выборе шаблона"
           disabled={!canEdit}
           value={draft.type}
           options={TEMPLATE_TYPES.map((t) => ({ value: t, label: t }))}
@@ -163,6 +165,7 @@ function TemplateForm({
       <MarkdownField
         name="template-description"
         label="Описание"
+        tip="Заготовка описания в Markdown"
         rows={6}
         value={draft.description}
         onChange={(description) => setDraft({ ...draft, description })}
@@ -171,6 +174,7 @@ function TemplateForm({
       <MarkdownField
         name="template-acceptance"
         label="Критерии приёмки"
+        tip="Заготовка критериев; строки «- [ ]» станут флажками"
         rows={4}
         value={draft.acceptance}
         onChange={(acceptance) => setDraft({ ...draft, acceptance })}
@@ -294,6 +298,7 @@ export function DodSettingsForm({ view }: { view: View }) {
       <TextArea
         name="dod"
         label="Список пунктов"
+        tip="По одному пункту в строке: «- [ ] текст»"
         rows={5}
         value={text}
         disabled={!canEdit}

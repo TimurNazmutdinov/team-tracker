@@ -133,6 +133,8 @@ function IssueRow({
   const assignee = people.find((p) => p.id === issue.assigneeId);
   const key = `${projectKey}-${issue.number}`;
   const editable = canEdit && !nested;
+  // points и исполнитель — это правка задачи: нужно право «Редактировать»
+  const fieldsOk = usePermissions().can('issue.edit');
   const [draft, setDraft] = useState<string | null>(null);
 
   const commitPoints = () => {
@@ -158,6 +160,7 @@ function IssueRow({
             type="checkbox"
             checked={selected}
             aria-label={`Выбрать ${key}`}
+            title="Отметить для массового изменения"
             onChange={(e) => onSelect(issue.id, e.target.checked)}
           />
         )}
@@ -168,6 +171,7 @@ function IssueRow({
             type="button"
             className="handle"
             aria-label={`Перетащить задачу ${key}`}
+            title="Перетащить: изменить порядок или перенести в другой спринт"
             ref={sortable.setActivatorNodeRef}
             {...sortable.attributes}
             {...sortable.listeners}
@@ -238,6 +242,7 @@ function IssueRow({
           <select
             className="row-field"
             aria-label={`Приоритет ${key}`}
+            title="Приоритет задачи"
             value={issue.priority}
             onChange={(e) => onEdit(issue.id, { priority: e.target.value as Priority })}
           >
@@ -253,13 +258,14 @@ function IssueRow({
         {showStatus ? <StatusChip status={issue.status} /> : <span />}
         {progress ? (
           <EpicProgressView progress={progress} compact />
-        ) : editable && canHavePoints(issue.type) ? (
+        ) : editable && fieldsOk && canHavePoints(issue.type) ? (
           <input
             type="number"
             min={0}
             step={1}
             className={`row-field points-input${issue.points === null ? ' unset' : ''}`}
             aria-label={`Story points ${key}`}
+            title="Story points: оценка целым числом (1, 2, 3, 5, 8, 13)"
             placeholder="—"
             value={draft ?? (issue.points === null ? '' : String(issue.points))}
             onChange={(e) => setDraft(e.target.value)}
@@ -272,10 +278,11 @@ function IssueRow({
         ) : (
           <PointsBadge points={issue.points} />
         )}
-        {editable ? (
+        {editable && fieldsOk ? (
           <select
             className={`row-field${assignee ? '' : ' unset'}`}
             aria-label={`Исполнитель ${key}`}
+            title="Исполнитель задачи"
             value={issue.assigneeId ?? ''}
             onChange={(e) => onEdit(issue.id, { assigneeId: e.target.value || null })}
           >
@@ -378,6 +385,7 @@ function Section({
           <button
             type="button"
             className="plain"
+            title={collapsed ? 'Развернуть список' : 'Свернуть список'}
             aria-expanded={!collapsed}
             onClick={() => setCollapsed(!collapsed)}
           >
@@ -508,7 +516,7 @@ function FiltersBar({
   return (
     <div className="board-toolbar planning-filters" role="search" aria-label="Фильтры бэклога">
       {projectFilter}
-      <label>
+      <label title="Найти задачу по номеру или названию">
         Поиск
         <input
           type="search"
@@ -518,7 +526,7 @@ function FiltersBar({
         />
       </label>
       {epics && (
-        <label>
+        <label title="Показать задачи одного эпика">
           Эпик
           <select
             value={filters.epicId ?? ''}
@@ -533,7 +541,7 @@ function FiltersBar({
           </select>
         </label>
       )}
-      <label>
+      <label title="Показать задачи одного исполнителя">
         Исполнитель
         <select
           value={filters.assigneeId ?? ''}
@@ -547,7 +555,7 @@ function FiltersBar({
           ))}
         </select>
       </label>
-      <label>
+      <label title="Показать задачи с этой меткой">
         Метка
         <select
           value={filters.label ?? ''}
@@ -561,7 +569,7 @@ function FiltersBar({
           ))}
         </select>
       </label>
-      <label>
+      <label title="Показать только задачи этого типа">
         Тип
         <select
           value={filters.type ?? ''}
@@ -731,10 +739,12 @@ function ProjectPlanning({
         <Loading />
       ) : view.issues.length === 0 ? (
         <div className="empty">
-          <p>В проекте пока нет задач. Создайте первую.</p>
-          <button type="button" className="primary" onClick={() => showCreate()}>
-            + Создать задачу
-          </button>
+          <p>В проекте пока нет задач.{perms.can('issue.create') ? ' Создайте первую.' : ''}</p>
+          {perms.can('issue.create') && (
+            <button type="button" className="primary" onClick={() => showCreate()}>
+              + Создать задачу
+            </button>
+          )}
         </div>
       ) : (
         <>
@@ -821,15 +831,18 @@ export function BacklogPage() {
   const { ready, scope } = useProjectScope();
   const { key = '' } = useParams();
   const showCreate = useCreateDialog((s) => s.show);
+  const canCreate = usePermissions().can('issue.create');
   const views = useProjectViews(scope.projects);
   const [filters, setFilters] = useState<PlanningFilters>(NO_PLANNING_FILTERS);
   const projects = scope.projects;
   const [only] = projects;
   const header = (
     <PageHeader title="Планирование спринтов">
-      <button type="button" className="primary" onClick={() => showCreate()}>
-        + Создать задачу
-      </button>
+      {canCreate && (
+        <button type="button" className="primary" onClick={() => showCreate()}>
+          + Создать задачу
+        </button>
+      )}
     </PageHeader>
   );
 

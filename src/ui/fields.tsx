@@ -5,6 +5,8 @@ interface BaseProps {
   label: string;
   error?: string | undefined;
   hint?: string | undefined;
+  /** Подсказка при наведении; без неё берётся пояснение под полем. */
+  tip?: string | undefined;
   required?: boolean | undefined;
   className?: string | undefined;
 }
@@ -13,13 +15,14 @@ function Wrapper({
   label,
   error,
   hint,
+  tip,
   required,
   className,
   id,
   children,
 }: BaseProps & { id: string; children: ReactNode }) {
   return (
-    <div className={`field${className ? ` ${className}` : ''}`}>
+    <div className={`field${className ? ` ${className}` : ''}`} title={tip ?? hint}>
       <label htmlFor={id}>
         {label}
         {required ? ' *' : ''}

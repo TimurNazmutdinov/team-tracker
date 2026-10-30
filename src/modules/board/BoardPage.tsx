@@ -183,7 +183,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
       <BoardNav projectKey={project.key} sprint={sprint} />
       <div className="board-toolbar">
         {filter}
-        <label>
+        <label title="Какой спринт показать на доске">
           Спринт
           <select
             value={sprint.id}
@@ -203,7 +203,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
             ))}
           </select>
         </label>
-        <label>
+        <label title="Разбить доску на дорожки по полю">
           Группировать по
           <select
             value={groupBy}
@@ -216,7 +216,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
             ))}
           </select>
         </label>
-        <label>
+        <label title="Показать только задачи этого типа">
           Тип
           <select
             value={filters.type ?? ''}
@@ -235,7 +235,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
             ))}
           </select>
         </label>
-        <label>
+        <label title="Показать только задачи этого приоритета">
           Приоритет
           <select
             value={filters.priority ?? ''}

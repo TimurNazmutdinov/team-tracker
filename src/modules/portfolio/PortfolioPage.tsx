@@ -242,14 +242,14 @@ export function PortfolioPage() {
         просроченные задачи, блокировки, закончившийся, но не закрытый спринт.
       </p>
       <div className="board-toolbar" role="group" aria-label="Порядок и фильтр">
-        <label>
+        <label title="Порядок карточек: сначала проекты с риском или по названию">
           Сортировка
           <select value={sort} onChange={(e) => setSort(e.target.value as PortfolioSort)}>
             <option value="risk">По риску</option>
             <option value="project">По проекту</option>
           </select>
         </label>
-        <label className="check">
+        <label className="check" title="Скрыть проекты без риска">
           <input
             type="checkbox"
             checked={onlyRisk}

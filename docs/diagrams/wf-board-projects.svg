@@ -34,8 +34,8 @@
 <text x="94.3" y="116.68" text-anchor="middle" font-size="13" font-weight="bold" fill="#2563eb">Прошлые спринты ↗</text>
 <rect x="176.6" y="96" width="335.8" height="32" rx="16.0" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1.2"/>
 <text x="344.5" y="116.68" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">Текущий спринт · Спринт 3 · 09.11 – 20.11</text>
-<rect x="520.4" y="96" width="257.79999999999995" height="32" rx="16.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
-<text x="649.3" y="116.68" text-anchor="middle" font-size="13" font-weight="bold" fill="#2563eb">Планирование будущих спринтов ↗</text>
+<rect x="520.4" y="96" width="195.4" height="32" rx="16.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="618.1" y="116.68" text-anchor="middle" font-size="13" font-weight="bold" fill="#2563eb">Планирование спринтов ↗</text>
 <rect x="20" y="134" width="188" height="30" rx="15" fill="#dbeafe" stroke="#2563eb" stroke-width="1.6"/>
 <text x="34" y="154" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">Проекты: Мои (2) ▾</text>
 <circle cx="14" cy="134" r="11" fill="#b91c1c"/>

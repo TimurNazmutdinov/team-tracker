@@ -115,6 +115,7 @@ export function UserMenu() {
       <button
         type="button"
         aria-haspopup="menu"
+        title="Профиль: гамма, смена пароля, выход"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
       >

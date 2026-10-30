@@ -18,10 +18,14 @@ import { ProjectFilter } from '../../ui/ProjectFilter';
 import { CfdChart, Histogram, RoadmapChart, WorkloadChart } from './charts';
 
 const TABS = [
-  { id: 'flow', label: 'Поток (CFD)' },
-  { id: 'time', label: 'Время цикла' },
-  { id: 'load', label: 'Нагрузка' },
-  { id: 'roadmap', label: 'Дорожная карта' },
+  { id: 'flow', label: 'Поток (CFD)', tip: 'Сколько задач в каждом статусе по дням' },
+  {
+    id: 'time',
+    label: 'Время цикла',
+    tip: 'Сколько дней задача идёт от начала работы и от создания до Done',
+  },
+  { id: 'load', label: 'Нагрузка', tip: 'Story points и задачи по людям в идущих спринтах' },
+  { id: 'roadmap', label: 'Дорожная карта', tip: 'Эпики на шкале времени по спринтам их задач' },
 ] as const;
 
 const DAY_OPTIONS = [30, 60, 90, 180];
@@ -128,6 +132,7 @@ export function AnalyticsPage() {
               type="button"
               className={t.id === tab ? 'on' : undefined}
               aria-pressed={t.id === tab}
+              title={t.tip}
               onClick={() => setParam('tab', t.id)}
             >
               {t.label}

@@ -74,7 +74,11 @@ export function SprintsPage() {
           ))}
           {sprints.length === 0 && <p className="muted">Спринтов пока нет</p>}
           {canManage && (
-            <button type="button" onClick={() => setDialog('create')}>
+            <button
+              type="button"
+              title="Создать спринт с настройками проекта по умолчанию"
+              onClick={() => setDialog('create')}
+            >
               + Новый спринт
             </button>
           )}
@@ -166,21 +170,39 @@ function SprintDetail({
         <h2>{sprint.name}</h2>
         <span className={`chip state-${sprint.state}`}>{STATE_LABEL[sprint.state]}</span>
         <span className="spacer" />
-        <Link className="button" to={`/projects/${projectKey}/sprints/${sprint.id}/report`}>
+        <Link
+          className="button"
+          title="Итоги спринта на одной странице: Excel и печать"
+          to={`/projects/${projectKey}/sprints/${sprint.id}/report`}
+        >
           Отчёт спринта →
         </Link>
         {!readOnly && canManage && (
-          <button type="button" onClick={() => onDialog('edit')}>
+          <button
+            type="button"
+            title="Изменить название, даты и цель спринта"
+            onClick={() => onDialog('edit')}
+          >
             Изменить
           </button>
         )}
         {canManage && sprint.state === 'planned' && (
-          <button type="button" className="primary" onClick={() => void start()}>
+          <button
+            type="button"
+            className="primary"
+            title="Начать спринт: задачи появятся на доске"
+            onClick={() => void start()}
+          >
             Запустить спринт
           </button>
         )}
         {canManage && sprint.state === 'active' && (
-          <button type="button" className="primary" onClick={() => onDialog('close')}>
+          <button
+            type="button"
+            className="primary"
+            title="Закрыть спринт: выбрать, куда перенести незавершённые задачи"
+            onClick={() => onDialog('close')}
+          >
             Закрыть спринт
           </button>
         )}

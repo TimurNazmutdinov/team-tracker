@@ -112,6 +112,7 @@ export function AbsencesSection({ view }: { view: View }) {
           <SelectField
             name="absence-person"
             label="Человек"
+            tip="Кто отсутствует"
             value={personId}
             options={view.people.map((p) => ({ value: p.id, label: p.name }))}
             onChange={setPersonId}
@@ -120,6 +121,7 @@ export function AbsencesSection({ view }: { view: View }) {
           <TextField
             name="absence-start"
             label="С"
+            tip="Первый день отсутствия"
             type="date"
             value={start}
             onChange={setStart}
@@ -128,6 +130,7 @@ export function AbsencesSection({ view }: { view: View }) {
           <TextField
             name="absence-end"
             label="По"
+            tip="Последний день отсутствия"
             type="date"
             value={end}
             onChange={setEnd}
@@ -136,6 +139,7 @@ export function AbsencesSection({ view }: { view: View }) {
           <SelectField
             name="absence-kind"
             label="Вид"
+            tip="Отпуск, больничный или другое"
             value={kind}
             options={ABSENCE_KINDS.map((k) => ({ value: k, label: ABSENCE_LABELS[k] }))}
             onChange={(v) => setKind(v as AbsenceKind)}

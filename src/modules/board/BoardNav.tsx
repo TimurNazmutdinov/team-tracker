@@ -23,13 +23,21 @@ export function BoardNav({
       : `${sprint.state === 'active' ? 'Текущий спринт' : 'Спринт'} · ${sprint.name} · ${dateRange(sprint.start, sprint.end)}`;
   return (
     <nav className="board-nav" aria-label="Прошлое, текущее и будущее">
-      <Link className="pill" to={{ pathname: `/projects/${projectKey}/history`, search }}>
+      <Link
+        className="pill"
+        to={{ pathname: `/projects/${projectKey}/history`, search }}
+        title="Закрытые спринты: что сделано и ретроспектива"
+      >
         Прошлые спринты
       </Link>
       <span className="pill current" aria-current="page">
         {label}
       </span>
-      <Link className="pill" to={{ pathname: `/projects/${projectKey}/backlog`, search }}>
+      <Link
+        className="pill"
+        to={{ pathname: `/projects/${projectKey}/backlog`, search }}
+        title="Будущие спринты и общий бэклог"
+      >
         Планирование спринтов
       </Link>
     </nav>

@@ -6,6 +6,7 @@ import { checklistProgress, toggleChecklistItem } from '../../domain/checklist';
 import { epicProgress } from '../../domain/progress';
 import type { Issue } from '../../domain/schema';
 import { useActions } from '../../state/actions';
+import { usePermissions } from '../../state/current-user';
 import { useCreateDialog } from '../../state/create-dialog';
 import { useView } from '../../state/queries';
 import { Loading } from '../../ui/Loading';
@@ -34,9 +35,12 @@ export function IssuePage() {
 
 function IssueView({ issue, view, projectKey }: { issue: Issue; view: View; projectKey: string }) {
   const showCreate = useCreateDialog((s) => s.show);
+  const perms = usePermissions();
   const parent = view.issues.find((i) => i.id === issue.parentId);
   const sprint = view.sprints.find((s) => s.id === issue.sprintId);
   const readOnly = sprint?.state === 'closed';
+  // без права «Редактировать» поля, описание и критерии только читаются
+  const canEdit = !readOnly && perms.can('issue.edit');
   const children = view.issues
     .filter((i) => i.parentId === issue.id)
     .sort((a, b) => a.number - b.number);
@@ -71,7 +75,7 @@ function IssueView({ issue, view, projectKey }: { issue: Issue; view: View; proj
       )}
       <div className="issue-layout">
         <div className="issue-main">
-          <TextBlocks issue={issue} view={view} readOnly={readOnly} />
+          <TextBlocks issue={issue} view={view} readOnly={!canEdit} />
 
           {isEpic && (
             <section aria-labelledby="progress-title">
@@ -104,7 +108,7 @@ function IssueView({ issue, view, projectKey }: { issue: Issue; view: View; proj
                 </li>
               ))}
             </ul>
-            {!readOnly && (isEpic || canHavePoints(issue.type)) && (
+            {!readOnly && perms.can('issue.create') && (isEpic || canHavePoints(issue.type)) && (
               <button
                 type="button"
                 onClick={() =>

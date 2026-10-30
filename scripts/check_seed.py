@@ -17,6 +17,11 @@ PRIORITIES = {"Highest", "High", "Medium", "Low"}
 SPRINT_STATES = {"planned", "active", "closed"}
 LINK_TYPES = {"blocks", "relates", "duplicates"}
 PROJECT_ROLES = {"product", "lead", "developer"}
+ACTIONS = {
+    "issue.create", "issue.edit", "issue.comment", "status.own", "status.other", "backlog.rank",
+    "sprint.items", "sprint.manage", "project.templates", "people.availability", "project.create",
+    "project.members", "users.manage", "backups.manage", "system.diagnose",
+}
 ABSENCE_KINDS = {"vacation", "sick", "other"}
 RETRO_KINDS = {"good", "improve", "action"}
 WIP_COLUMNS = {"To Do", "In Progress", "Review", "Done"}
@@ -41,6 +46,7 @@ def main():
     seed.setdefault("members", [])
     seed.setdefault("templates", [])
     seed.setdefault("absences", [])
+    seed.setdefault("roles", [])
     seed.setdefault("retroItems", [])
     ids = {k: {x["id"] for x in seed[k]} for k in seed}
     for k, v in seed.items():
@@ -80,6 +86,19 @@ def main():
     for pr in seed["projects"]:
         if not isinstance(pr.get("dod", ""), str) or len(pr.get("dod", "")) > 5000:
             err(f"project {pr['id']}: dod — строка до 5000 символов")
+    names = set()
+    for r in seed["roles"]:
+        w = f"role {r['id']}"
+        if not r["name"].strip() or len(r["name"]) > 40:
+            err(f"{w}: название 1–40 символов")
+        if r["name"].lower() in names:
+            err(f"{w}: название роли повторяется")
+        names.add(r["name"].lower())
+        for perm in r["permissions"]:
+            if perm not in ACTIONS:
+                err(f"{w}: неизвестное право {perm}")
+    if seed["roles"] and not any(r.get("system") for r in seed["roles"]):
+        err("roles: нет защищённой роли администратора")
     for a in seed["absences"]:
         w = f"absence {a['id']}"
         ref(a["personId"], "people", w)

@@ -64,7 +64,7 @@ export function IssueSidebar({
         name="assigneeId"
         label="Исполнитель"
         value={issue.assigneeId ?? ''}
-        disabled={readOnly}
+        disabled={readOnly || !perms.can('issue.edit')}
         options={[
           { value: '', label: 'Не назначен' },
           ...view.people.map((p) => ({ value: p.id, label: p.name })),
@@ -92,7 +92,7 @@ export function IssueSidebar({
           type="number"
           min="0"
           value={points}
-          disabled={readOnly}
+          disabled={readOnly || !perms.can('issue.edit')}
           onChange={setPoints}
           onBlur={() => {
             const next = points.trim() === '' ? null : Number(points);
@@ -132,7 +132,7 @@ export function IssueSidebar({
           name="parentId"
           label={isSub ? 'Родитель' : 'Родитель (Epic)'}
           value={issue.parentId ?? ''}
-          disabled={readOnly}
+          disabled={readOnly || !perms.can('issue.edit')}
           options={[
             { value: '', label: isSub ? 'Выберите родителя' : 'Без родителя', disabled: isSub },
             ...parents.map((p) => ({ value: p.id, label: `${projectKey}-${p.number} ${p.title}` })),
@@ -146,7 +146,7 @@ export function IssueSidebar({
         label="Метки"
         hint="Через запятую"
         value={labels}
-        disabled={readOnly}
+        disabled={readOnly || !perms.can('issue.edit')}
         onChange={setLabels}
         onBlur={() => {
           if (labels !== issue.labels.join(', ')) void apply({ labels: labels.split(',') });
@@ -157,7 +157,7 @@ export function IssueSidebar({
         label="Срок"
         type="date"
         value={dueDate}
-        disabled={readOnly}
+        disabled={readOnly || !perms.can('issue.edit')}
         onChange={(v) => {
           setDueDate(v);
           void apply({ dueDate: v === '' ? null : v });
