@@ -11,6 +11,7 @@ import { ErrorMessage } from '../../ui/ErrorMessage';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
 import { TextField } from '../../ui/fields';
+import { TemplatesSection, WipSettingsForm } from './ProjectTools';
 import { ProjectMembers } from './ProjectMembers';
 import { useCurrentProject } from './ProjectRoute';
 
@@ -28,6 +29,11 @@ export function SettingsPage() {
       {view ? (
         <>
           <SprintSettingsForm view={view} />
+          <WipSettingsForm
+            key={JSON.stringify(view.project.wipLimits) + view.project.wipEnabled}
+            view={view}
+          />
+          <TemplatesSection view={view} />
           <ProjectMembers view={view} />
         </>
       ) : (

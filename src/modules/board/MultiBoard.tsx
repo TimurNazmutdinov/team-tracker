@@ -32,6 +32,7 @@ import {
   type Sprint,
   type Status,
 } from '../../domain/schema';
+import { wipOverflows } from '../../domain/wip';
 import { useActionsFor } from '../../state/actions';
 import { usePermissions } from '../../state/current-user';
 import { useNotices } from '../../state/notices';
@@ -217,6 +218,12 @@ export function MultiBoard({
           </div>
           {lanes.map(({ view, sprint, lane, hidden }, index) => {
             const total = statsOf(lane.issues);
+            const over = wipOverflows(
+              view.project,
+              Object.fromEntries(
+                BOARD_COLUMNS.map((c) => [c, lane.issues.filter((i) => i.status === c).length]),
+              ),
+            );
             return (
               <div key={lane.key}>
                 <LaneView
@@ -238,7 +245,7 @@ export function MultiBoard({
                       </span>
                     </>
                   }
-                  meta={`${total.count} ${plural(total.count)} · ${num(total.points)} sp`}
+                  meta={`${total.count} ${plural(total.count)} · ${num(total.points)} sp${over.map((o) => ` · ⚠ WIP ${o.column}: ${o.count} из ${o.limit}`).join('')}`}
                   renderCard={(issue) => (
                     <BoardCard
                       key={issue.id}

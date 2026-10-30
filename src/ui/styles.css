@@ -1882,3 +1882,12 @@ main:has(.planning-page) {
   color: var(--danger);
   font-weight: 700;
 }
+
+.template-row {
+  margin: 0.5rem 0;
+}
+.template-form {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
