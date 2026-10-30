@@ -24,6 +24,8 @@ export function checkIntegrity(ds: Dataset): string[] {
     ['people', ds.people.map((x) => x.id)],
     ['members', ds.members.map((x) => x.id)],
     ['templates', ds.templates.map((x) => x.id)],
+    ['absences', ds.absences.map((x) => x.id)],
+    ['retroItems', ds.retroItems.map((x) => x.id)],
     ['sprints', ds.sprints.map((x) => x.id)],
     ['issues', ds.issues.map((x) => x.id)],
     ['links', ds.links.map((x) => x.id)],
@@ -55,6 +57,20 @@ export function checkIntegrity(ds: Dataset): string[] {
   for (const tpl of ds.templates) {
     const w = `template ${tpl.id}`;
     if (!projects.has(tpl.projectId)) errors.push(`${w}: нет проекта ${tpl.projectId}`);
+  }
+  for (const a of ds.absences) {
+    const w = `absence ${a.id}`;
+    if (!people.has(a.personId)) errors.push(`${w}: нет человека ${a.personId}`);
+    if (a.end < a.start) errors.push(`${w}: конец раньше начала`);
+  }
+  for (const r of ds.retroItems) {
+    const w = `retroItem ${r.id}`;
+    if (!projects.has(r.projectId)) errors.push(`${w}: нет проекта ${r.projectId}`);
+    const sprint = sprints.get(r.sprintId);
+    if (!sprint) errors.push(`${w}: нет спринта ${r.sprintId}`);
+    else if (sprint.projectId !== r.projectId) errors.push(`${w}: спринт другого проекта`);
+    if (!people.has(r.authorId)) errors.push(`${w}: нет автора ${r.authorId}`);
+    if (r.issueId !== null && !issues.has(r.issueId)) errors.push(`${w}: нет задачи ${r.issueId}`);
   }
   for (const s of ds.sprints) {
     if (!projects.has(s.projectId)) errors.push(`sprint ${s.id}: нет проекта ${s.projectId}`);

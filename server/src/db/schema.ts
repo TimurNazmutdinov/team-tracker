@@ -25,6 +25,8 @@ export const projects = pgTable('projects', {
   /** WIP-лимиты колонок доски (ADR-017). */
   wipEnabled: boolean('wip_enabled').notNull().default(false),
   wipLimits: jsonb('wip_limits').$type<Record<string, number>>().notNull().default({}),
+  /** Definition of Done проекта (ADR-018). */
+  dod: text('dod').notNull().default(''),
 });
 
 export const people = pgTable('people', {
@@ -32,6 +34,37 @@ export const people = pgTable('people', {
   name: text('name').notNull(),
   role: text('role').notNull(),
 });
+
+/** Отсутствия людей (ADR-018); без внешнего ключа на человека, как owner_id. */
+export const absences = pgTable(
+  'absences',
+  {
+    id: text('id').primaryKey(),
+    personId: text('person_id').notNull(),
+    start: text('start').notNull(),
+    end: text('end').notNull(),
+    kind: text('kind').notNull(),
+  },
+  (t) => [index('absences_person_idx').on(t.personId)],
+);
+
+/** Записи ретроспектив спринтов (ADR-018). */
+export const retroItems = pgTable(
+  'retro_items',
+  {
+    id: text('id').primaryKey(),
+    projectId: text('project_id')
+      .notNull()
+      .references(() => projects.id),
+    sprintId: text('sprint_id').notNull(),
+    kind: text('kind').notNull(),
+    text: text('text').notNull(),
+    authorId: text('author_id').notNull(),
+    createdAt: text('created_at').notNull(),
+    issueId: text('issue_id'),
+  },
+  (t) => [index('retro_items_project_idx').on(t.projectId)],
+);
 
 /** Шаблоны задач проекта (ADR-017). */
 export const issueTemplates = pgTable(

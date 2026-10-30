@@ -8,6 +8,8 @@ import type {
   Project,
   ProjectMember,
   IssueTemplate,
+  Absence,
+  RetroItem,
   Sprint,
 } from '../../domain/schema';
 import { StorageError, type StorageErrorCode, type TrackerStorage } from '../types';
@@ -77,6 +79,14 @@ export class ApiStorage implements TrackerStorage {
 
   getTemplates() {
     return this.request<IssueTemplate[]>('GET', '/templates');
+  }
+
+  getAbsences() {
+    return this.request<Absence[]>('GET', '/absences');
+  }
+
+  getRetroItems(projectId: string) {
+    return this.request<RetroItem[]>('GET', `/projects/${projectId}/retro`);
   }
 
   getSprints(projectId: string) {

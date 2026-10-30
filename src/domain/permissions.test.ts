@@ -53,6 +53,7 @@ describe('матрица прав', () => {
       ['backups.manage', ['admin']],
       ['system.diagnose', ['admin']],
       ['project.templates', ['lead', 'admin']],
+      ['people.availability', ['lead', 'admin']],
     ];
     for (const [action, allowed] of rows)
       expect(ROLES.filter((r) => can(r, action))).toEqual(ROLES.filter((r) => allowed.includes(r)));

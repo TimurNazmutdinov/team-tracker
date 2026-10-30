@@ -104,6 +104,7 @@ export function generateLoadData(options: Partial<LoadOptions> = {}): Dataset {
       ownerId: owner,
       wipEnabled: false,
       wipLimits: {},
+      dod: '',
     });
     // Участники проекта: пять человек подряд, чередуя роли
     for (let m = 0; m < Math.min(5, o.people); m += 1) {
@@ -271,6 +272,8 @@ export function generateLoadData(options: Partial<LoadOptions> = {}): Dataset {
     people,
     members,
     templates,
+    absences: [],
+    retroItems: [],
     sprints,
     issues,
     links,

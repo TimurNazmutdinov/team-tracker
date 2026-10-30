@@ -22,6 +22,7 @@ const project = (id: string, key: string, ownerId: string | null = null): Projec
   ownerId,
   wipEnabled: false,
   wipLimits: {},
+  dod: '',
 });
 
 const projects = [project('p1', 'DEMO', 'u1'), project('p2', 'SHOP'), project('p3', 'CRM', 'u2')];

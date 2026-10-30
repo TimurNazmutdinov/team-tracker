@@ -51,6 +51,8 @@ describe('скорость расчётов на 10 000 задач', () => {
     people: ds.people,
     members: ds.members,
     templates: ds.templates,
+    absences: ds.absences,
+    retroItems: ds.retroItems,
     sprints: ds.sprints,
     issues: ds.issues,
     links: ds.links,

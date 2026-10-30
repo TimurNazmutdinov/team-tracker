@@ -17,6 +17,8 @@ PRIORITIES = {"Highest", "High", "Medium", "Low"}
 SPRINT_STATES = {"planned", "active", "closed"}
 LINK_TYPES = {"blocks", "relates", "duplicates"}
 PROJECT_ROLES = {"product", "lead", "developer"}
+ABSENCE_KINDS = {"vacation", "sick", "other"}
+RETRO_KINDS = {"good", "improve", "action"}
 WIP_COLUMNS = {"To Do", "In Progress", "Review", "Done"}
 FIELDS = {
     "created", "status", "assigneeId", "points", "sprintId",
@@ -38,6 +40,8 @@ def main():
     seed = {k: v for k, v in seed.items() if k != "version"}
     seed.setdefault("members", [])
     seed.setdefault("templates", [])
+    seed.setdefault("absences", [])
+    seed.setdefault("retroItems", [])
     ids = {k: {x["id"] for x in seed[k]} for k in seed}
     for k, v in seed.items():
         if len(ids[k]) != len(v):
@@ -73,6 +77,29 @@ def main():
                 err(f"{w}: WIP-лимит для неизвестной колонки {col}")
             elif not isinstance(lim, int) or isinstance(lim, bool) or not 1 <= lim <= 999:
                 err(f"{w}: WIP-лимит колонки {col} — целое 1–999")
+    for pr in seed["projects"]:
+        if not isinstance(pr.get("dod", ""), str) or len(pr.get("dod", "")) > 5000:
+            err(f"project {pr['id']}: dod — строка до 5000 символов")
+    for a in seed["absences"]:
+        w = f"absence {a['id']}"
+        ref(a["personId"], "people", w)
+        if a["kind"] not in ABSENCE_KINDS:
+            err(f"{w}: вид {a['kind']}")
+        if a["end"] < a["start"]:
+            err(f"{w}: конец раньше начала")
+    for r in seed["retroItems"]:
+        w = f"retroItem {r['id']}"
+        ref(r["projectId"], "projects", w)
+        ref(r["sprintId"], "sprints", w)
+        ref(r["authorId"], "people", w)
+        ref(r.get("issueId"), "issues", w, True)
+        if r["kind"] not in RETRO_KINDS:
+            err(f"{w}: вид {r['kind']}")
+        if not r["text"].strip() or len(r["text"]) > 500:
+            err(f"{w}: текст 1–500 символов")
+        spr = sprints.get(r["sprintId"])
+        if spr and spr["projectId"] != r["projectId"]:
+            err(f"{w}: спринт другого проекта")
     seen_names = set()
     for tpl in seed.get("templates", []):
         w = f"template {tpl['id']}"

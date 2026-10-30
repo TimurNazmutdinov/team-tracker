@@ -22,6 +22,8 @@ export function viewOf(ds: Dataset, projectId = 'p1'): View {
     people: ds.people,
     members: ds.members,
     templates: ds.templates,
+    absences: ds.absences,
+    retroItems: ds.retroItems.filter((r) => r.projectId === projectId),
     sprints: ds.sprints.filter((s) => s.projectId === projectId),
     issues: ds.issues.filter((i) => i.projectId === projectId),
     links: ds.links.filter((l) => ids.has(l.fromId)),
@@ -40,6 +42,8 @@ export function applyChanges(ds: Dataset, c: Changes): Dataset {
   upsert(next.projects, c.projects);
   upsert(next.members, c.members);
   upsert(next.templates, c.templates);
+  upsert(next.absences, c.absences);
+  upsert(next.retroItems, c.retroItems);
   upsert(next.sprints, c.sprints);
   upsert(next.issues, c.issues);
   upsert(next.links, c.links);
@@ -49,6 +53,10 @@ export function applyChanges(ds: Dataset, c: Changes): Dataset {
   next.members = next.members.filter((m) => !removedMembers.has(m.id));
   const removedTemplates = new Set(c.deleteTemplateIds ?? []);
   next.templates = next.templates.filter((x) => !removedTemplates.has(x.id));
+  const removedAbsences = new Set(c.deleteAbsenceIds ?? []);
+  next.absences = next.absences.filter((x) => !removedAbsences.has(x.id));
+  const removedRetro = new Set(c.deleteRetroItemIds ?? []);
+  next.retroItems = next.retroItems.filter((x) => !removedRetro.has(x.id));
   next.comments.push(...(c.comments ?? []));
   next.history.push(...(c.history ?? []));
   return next;

@@ -30,7 +30,8 @@ export type Action =
   | 'backups.manage' // резервные копии: состояние, копия сейчас, Excel
   | 'system.diagnose' // журнал ошибок и диагностика (ADR-015)
   | 'project.members' // владелец и участники проекта: администратор и владелец проекта (ADR-016)
-  | 'project.templates'; // шаблоны задач проекта (ADR-017)
+  | 'project.templates' // шаблоны задач проекта (ADR-017)
+  | 'people.availability'; // отсутствия людей (ADR-018)
 
 const MATRIX: Record<Action, readonly Role[]> = {
   'status.own': ROLES,
@@ -44,6 +45,7 @@ const MATRIX: Record<Action, readonly Role[]> = {
   'system.diagnose': ['admin'],
   'project.members': ['admin', 'product'],
   'project.templates': ['lead', 'admin'],
+  'people.availability': ['lead', 'admin'],
 };
 
 export function can(role: Role, action: Action): boolean {
@@ -64,6 +66,8 @@ const SPRINT_SETTING_FIELDS = [
   // WIP-лимиты настраивает тот же, кто настраивает спринты (ADR-017)
   'wipEnabled',
   'wipLimits',
+  // Definition of Done правит тот же, кто настраивает спринты (ADR-018)
+  'dod',
 ] as const;
 
 function differs<T extends object>(a: T, b: T, fields: readonly (keyof T)[]): boolean {
@@ -112,6 +116,22 @@ export function violations(
     !can(role, 'project.templates')
   )
     deny('Шаблоны задач меняют тимлид и администратор');
+
+  if (
+    ((changes.absences ?? []).length > 0 || (changes.deleteAbsenceIds ?? []).length > 0) &&
+    !can(role, 'people.availability')
+  )
+    deny('Отсутствия людей меняют тимлид и администратор');
+
+  for (const r of changes.retroItems ?? []) {
+    if (r.authorId !== userId && !current.retroItems.some((x) => x.id === r.id))
+      deny('Автор записи ретроспективы — только текущий пользователь');
+  }
+  for (const id of changes.deleteRetroItemIds ?? []) {
+    const known = current.retroItems.find((x) => x.id === id);
+    if (known && known.authorId !== userId && role !== 'lead' && role !== 'admin')
+      deny('Чужие записи ретроспективы удаляют тимлид и администратор');
+  }
 
   // Участники проекта: администратор или владелец этого проекта (ADR-016)
   const memberProjects = new Set<string>();

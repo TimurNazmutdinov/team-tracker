@@ -19,8 +19,10 @@ export async function importDataset(db: Db, ds: Dataset): Promise<void> {
     await insertChunks((r) => tx.insert(t.people).values(r), ds.people);
     await insertChunks((r) => tx.insert(t.projectMembers).values(r), ds.members);
     await insertChunks((r) => tx.insert(t.issueTemplates).values(r), ds.templates);
+    await insertChunks((r) => tx.insert(t.absences).values(r), ds.absences);
     await insertChunks((r) => tx.insert(t.sprints).values(r), ds.sprints);
     await insertChunks((r) => tx.insert(t.issues).values(r), ds.issues);
+    await insertChunks((r) => tx.insert(t.retroItems).values(r), ds.retroItems);
     await insertChunks((r) => tx.insert(t.links).values(r), ds.links);
     await insertChunks((r) => tx.insert(t.comments).values(r), ds.comments);
     await insertChunks((r) => tx.insert(t.history).values(r), ds.history);

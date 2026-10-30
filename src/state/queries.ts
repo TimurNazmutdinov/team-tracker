@@ -52,6 +52,19 @@ export function useTemplates() {
   return useQuery({ queryKey: ['templates'], queryFn: () => storage.getTemplates() });
 }
 
+export function useAbsences() {
+  const storage = useStorage();
+  return useQuery({ queryKey: ['absences'], queryFn: () => storage.getAbsences() });
+}
+
+export function useRetroItems(projectId: string) {
+  const storage = useStorage();
+  return useQuery({
+    queryKey: ['retro', projectId],
+    queryFn: () => storage.getRetroItems(projectId),
+  });
+}
+
 export function useLinks(projectId: string) {
   const storage = useStorage();
   return useQuery({ queryKey: ['links', projectId], queryFn: () => storage.getLinks(projectId) });
@@ -81,6 +94,8 @@ export function useView(projectId: string): View | undefined {
   const people = usePeople();
   const members = useMembers();
   const templates = useTemplates();
+  const absences = useAbsences();
+  const retro = useRetroItems(projectId);
   const sprints = useSprints(projectId);
   const issues = useIssues(projectId);
   const links = useLinks(projectId);
@@ -90,6 +105,8 @@ export function useView(projectId: string): View | undefined {
     !people.data ||
     !members.data ||
     !templates.data ||
+    !absences.data ||
+    !retro.data ||
     !sprints.data ||
     !issues.data ||
     !links.data
@@ -101,6 +118,8 @@ export function useView(projectId: string): View | undefined {
     people: people.data,
     members: members.data,
     templates: templates.data,
+    absences: absences.data,
+    retroItems: retro.data,
     sprints: sprints.data,
     issues: issues.data,
     links: links.data,
@@ -116,6 +135,7 @@ export function useProjectViews(projects: Project[]): View[] | undefined {
   const people = usePeople();
   const members = useMembers();
   const templates = useTemplates();
+  const absences = useAbsences();
   const results = useQueries({
     queries: projects.flatMap((p) => [
       { queryKey: ['sprints', p.id], queryFn: () => storage.getSprints(p.id) },
@@ -123,7 +143,7 @@ export function useProjectViews(projects: Project[]): View[] | undefined {
       { queryKey: ['links', p.id], queryFn: () => storage.getLinks(p.id) },
     ]),
   });
-  if (!people.data || !members.data || !templates.data) return undefined;
+  if (!people.data || !members.data || !templates.data || !absences.data) return undefined;
   const views: View[] = [];
   for (const [n, project] of projects.entries()) {
     const sprints = results[n * 3]?.data;
@@ -136,6 +156,9 @@ export function useProjectViews(projects: Project[]): View[] | undefined {
       people: people.data,
       members: members.data,
       templates: templates.data,
+      absences: absences.data,
+      // ретроспективы нужны только экранам одного проекта (useView)
+      retroItems: [],
       sprints: sprints as View['sprints'],
       issues: issues as View['issues'],
       links: links as View['links'],

@@ -5,7 +5,14 @@ import { DEFAULT_PALETTE, PALETTE_LABELS, isPalette } from '../../../src/domain/
 import { PROJECT_ROLE_LABELS } from '../../../src/domain/members';
 import { ROLE_LABELS, isRole } from '../../../src/domain/permissions';
 import { velocity } from '../../../src/domain/reports';
-import type { Issue, Link, ProjectRole, Sprint } from '../../../src/domain/schema';
+import type {
+  Absence,
+  Issue,
+  Link,
+  ProjectRole,
+  RetroItem,
+  Sprint,
+} from '../../../src/domain/schema';
 import { FORMAT, countsOf, type AccountRecord, type Entities, type Snapshot } from './types';
 
 // tracker.xlsx — копия для чтения человеком и запасной путь восстановления (ADR-012).
@@ -46,6 +53,8 @@ export const SHEETS = {
   people: 'Люди',
   members: 'Участники проектов',
   templates: 'Шаблоны задач',
+  absences: 'Отсутствия',
+  retro: 'Ретроспективы',
   sprints: 'Спринты',
   issues: 'Задачи',
   links: 'Связи',
@@ -145,6 +154,7 @@ function specs(snapshot: Snapshot, meta: XlsxMeta): SheetSpec[] {
         'Владелец продукта',
         'WIP-лимиты включены',
         'WIP-лимиты колонок',
+        'Definition of Done',
         '~id',
         '~ownerId',
         '~wipEnabled',
@@ -162,12 +172,13 @@ function specs(snapshot: Snapshot, meta: XlsxMeta): SheetSpec[] {
         Object.entries(p.wipLimits)
           .map(([column, n]) => `${column}: ${n}`)
           .join(', '),
+        p.dod,
         p.id,
         p.ownerId,
         p.wipEnabled ? 'true' : 'false',
         JSON.stringify(p.wipLimits),
       ]),
-      widths: [10, 30, 14, 16, 14, 16, 26, 14, 28, 36, 36, 12, 24],
+      widths: [10, 30, 14, 16, 14, 16, 26, 14, 28, 40, 36, 36, 12, 24],
     },
     {
       name: SHEETS.people,
@@ -223,6 +234,51 @@ function specs(snapshot: Snapshot, meta: XlsxMeta): SheetSpec[] {
         x.projectId,
       ]),
       widths: [10, 24, 12, 50, 40, 36, 36],
+    },
+    {
+      name: SHEETS.absences,
+      headers: ['Человек', 'С', 'По', 'Вид', '~id', '~personId'],
+      rows: data.absences.map((a) => [
+        nameOf(a.personId),
+        a.start,
+        a.end,
+        a.kind,
+        a.id,
+        a.personId,
+      ]),
+      widths: [24, 12, 12, 12, 36, 36],
+    },
+    {
+      name: SHEETS.retro,
+      headers: [
+        'Проект',
+        'Спринт',
+        'Вид',
+        'Текст',
+        'Автор',
+        'Создано',
+        'Задача (ключ)',
+        '~id',
+        '~projectId',
+        '~sprintId',
+        '~authorId',
+        '~issueId',
+      ],
+      rows: data.retroItems.map((r) => [
+        project.get(r.projectId)?.key,
+        sprint.get(r.sprintId)?.name,
+        r.kind,
+        r.text,
+        nameOf(r.authorId),
+        r.createdAt,
+        keyOf(r.issueId ? issue.get(r.issueId) : undefined),
+        r.id,
+        r.projectId,
+        r.sprintId,
+        r.authorId,
+        r.issueId,
+      ]),
+      widths: [10, 18, 10, 60, 22, 21, 14, 36, 36, 36, 36, 36],
     },
     {
       name: SHEETS.sprints,
@@ -544,6 +600,8 @@ export async function readXlsx(buffer: Uint8Array): Promise<ReadXlsx> {
     // колонок WIP в файлах до ADR-017 нет — лимиты выключены
     wipEnabled: str(r['wipEnabled']) === 'true',
     wipLimits: parseLimits(r['wipLimits']),
+    // колонки Definition of Done в файлах до ADR-018 нет
+    dod: r['Definition of Done'] === undefined ? '' : str(r['Definition of Done']),
   }));
 
   // листа шаблонов в старых файлах нет
@@ -555,6 +613,29 @@ export async function readXlsx(buffer: Uint8Array): Promise<ReadXlsx> {
         type: str(need(r, 'Тип', S.templates)) as Issue['type'],
         description: str(need(r, 'Описание', S.templates)),
         acceptance: str(need(r, 'Критерии приёмки', S.templates)),
+      }))
+    : [];
+
+  // листов отсутствий и ретроспектив в файлах до ADR-018 нет
+  const absences = sheets.some((sheet) => sheet.sheet === S.absences)
+    ? sheetRows(sheets, S.absences).map((r) => ({
+        id: str(need(r, 'id', S.absences)),
+        personId: str(need(r, 'personId', S.absences)),
+        start: str(need(r, 'С', S.absences)),
+        end: str(need(r, 'По', S.absences)),
+        kind: str(need(r, 'Вид', S.absences)) as Absence['kind'],
+      }))
+    : [];
+  const retroItems = sheets.some((sheet) => sheet.sheet === S.retro)
+    ? sheetRows(sheets, S.retro).map((r) => ({
+        id: str(need(r, 'id', S.retro)),
+        projectId: str(need(r, 'projectId', S.retro)),
+        sprintId: str(need(r, 'sprintId', S.retro)),
+        kind: str(need(r, 'Вид', S.retro)) as RetroItem['kind'],
+        text: str(need(r, 'Текст', S.retro)),
+        authorId: str(need(r, 'authorId', S.retro)),
+        createdAt: str(need(r, 'Создано', S.retro)),
+        issueId: strOrNull(need(r, 'issueId', S.retro)),
       }))
     : [];
 
@@ -653,7 +734,19 @@ export async function readXlsx(buffer: Uint8Array): Promise<ReadXlsx> {
   const created = summary.get('Дата копии');
   return {
     snapshot: {
-      data: { projects, people, members, templates, sprints, issues, links, comments, history },
+      data: {
+        projects,
+        people,
+        members,
+        templates,
+        absences,
+        retroItems,
+        sprints,
+        issues,
+        links,
+        comments,
+        history,
+      },
       accounts,
     },
     createdAt: created ? str(created) : null,

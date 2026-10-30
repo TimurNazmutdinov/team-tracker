@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "projects": [
     {
       "id": "p1",
@@ -11,7 +11,8 @@
       "nextSprintStart": null,
       "ownerId": "u1",
       "wipEnabled": false,
-      "wipLimits": {}
+      "wipLimits": {},
+      "dod": "- [ ] Код проверен другим разработчиком\n- [ ] Тесты написаны и проходят\n- [ ] Документация обновлена"
     }
   ],
   "people": [
@@ -80,6 +81,64 @@
       "type": "Task",
       "description": "## Что нужно сделать\nКоротко опишите работу",
       "acceptance": "- [ ] Работа выполнена"
+    }
+  ],
+  "absences": [
+    {
+      "id": "ab1",
+      "personId": "u3",
+      "start": "2026-11-12",
+      "end": "2026-11-20",
+      "kind": "vacation"
+    },
+    {
+      "id": "ab2",
+      "personId": "u2",
+      "start": "2026-11-16",
+      "end": "2026-11-16",
+      "kind": "sick"
+    }
+  ],
+  "retroItems": [
+    {
+      "id": "r1",
+      "projectId": "p1",
+      "sprintId": "s1",
+      "kind": "good",
+      "text": "Быстро закрыли блокирующий баг",
+      "authorId": "u1",
+      "createdAt": "2026-10-23T16:00:00Z",
+      "issueId": null
+    },
+    {
+      "id": "r2",
+      "projectId": "p1",
+      "sprintId": "s1",
+      "kind": "good",
+      "text": "Демо прошло без замечаний",
+      "authorId": "u2",
+      "createdAt": "2026-10-23T16:05:00Z",
+      "issueId": null
+    },
+    {
+      "id": "r3",
+      "projectId": "p1",
+      "sprintId": "s1",
+      "kind": "improve",
+      "text": "Поздно нашли расхождения в API",
+      "authorId": "u3",
+      "createdAt": "2026-10-23T16:10:00Z",
+      "issueId": null
+    },
+    {
+      "id": "r4",
+      "projectId": "p1",
+      "sprintId": "s1",
+      "kind": "action",
+      "text": "Договориться об окне ревью",
+      "authorId": "u1",
+      "createdAt": "2026-10-23T16:20:00Z",
+      "issueId": null
     }
   ],
   "sprints": [

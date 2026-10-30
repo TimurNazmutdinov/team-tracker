@@ -12,6 +12,8 @@ import {
   type HistoryField,
   type Issue,
   type IssueTemplate,
+  type Absence,
+  type RetroItem,
   type IssueType,
   type Link,
   type LinkType,
@@ -41,6 +43,8 @@ export interface View {
   members: ProjectMember[];
   /** Шаблоны задач проектов (ADR-017). */
   templates: IssueTemplate[];
+  absences: Absence[];
+  retroItems: RetroItem[];
   sprints: Sprint[];
   issues: Issue[];
   links: Link[];
@@ -504,6 +508,7 @@ export function createProject(
         ownerId: null,
         wipEnabled: false,
         wipLimits: {},
+        dod: '',
         ...DEFAULT_SPRINT_SETTINGS,
       },
     ],
