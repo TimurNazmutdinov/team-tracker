@@ -26,8 +26,10 @@ export function addDays(date: string, days: number): string {
   return d.toISOString().slice(0, 10);
 }
 
-function validDate(value: string): boolean {
-  return DATE.test(value) && new Date(`${value}T00:00:00Z`).toISOString().startsWith(value);
+export function validDate(value: string): boolean {
+  if (!DATE.test(value)) return false;
+  const d = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(d.getTime()) && d.toISOString().startsWith(value);
 }
 
 export function sprintSettingsOf(project: Project): SprintSettings {

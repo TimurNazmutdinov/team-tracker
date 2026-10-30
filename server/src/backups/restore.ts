@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { sql } from 'drizzle-orm';
 import type { BackupCounts } from '../../../src/domain/backups';
+import { insertChunks } from '../bulk';
 import { schema, type Db } from '../db';
 import { hashPassword, temporaryPassword } from '../passwords';
 import { lockWrites } from '../repo';
@@ -148,14 +149,6 @@ export interface RestoreResult {
   temporaryPasswords: { email: string; password: string }[];
 }
 
-async function insertChunks<T extends object>(
-  insert: (rows: T[]) => PromiseLike<unknown>,
-  rows: T[],
-  size = 500,
-): Promise<void> {
-  for (let i = 0; i < rows.length; i += size) await insert(rows.slice(i, i + size));
-}
-
 /** Заменяет ВСЕ данные трекера данными из снимка в одной транзакции; сессии входа закрываются. */
 export async function applyRestore(db: Db, snapshot: Snapshot): Promise<RestoreResult> {
   const temporaryPasswords: RestoreResult['temporaryPasswords'] = [];
@@ -196,6 +189,10 @@ export async function applyRestore(db: Db, snapshot: Snapshot): Promise<RestoreR
       t.links,
       t.issues,
       t.sprints,
+      t.projectMembers,
+      t.issueTemplates,
+      t.absences,
+      t.retroItems,
       t.users,
       t.people,
       t.projects,
@@ -205,8 +202,12 @@ export async function applyRestore(db: Db, snapshot: Snapshot): Promise<RestoreR
     await insertChunks((r) => tx.insert(t.projects).values(r), data.projects);
     await insertChunks((r) => tx.insert(t.people).values(r), data.people);
     await insertChunks((r) => tx.insert(t.users).values(r), users);
+    await insertChunks((r) => tx.insert(t.projectMembers).values(r), data.members);
+    await insertChunks((r) => tx.insert(t.issueTemplates).values(r), data.templates);
+    await insertChunks((r) => tx.insert(t.absences).values(r), data.absences);
     await insertChunks((r) => tx.insert(t.sprints).values(r), data.sprints);
     await insertChunks((r) => tx.insert(t.issues).values(r), data.issues);
+    await insertChunks((r) => tx.insert(t.retroItems).values(r), data.retroItems);
     await insertChunks((r) => tx.insert(t.links).values(r), data.links);
     await insertChunks((r) => tx.insert(t.comments).values(r), data.comments);
     await insertChunks((r) => tx.insert(t.history).values(r), data.history, 1000);

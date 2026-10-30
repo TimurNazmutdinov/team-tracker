@@ -29,10 +29,40 @@ jobs:
       - run: npm run build
       - run: python3 scripts/check_seed.py
 
+  # Сквозные тесты и проверка доступности: браузер ставится только здесь (часть 2 доработок, ADR-015).
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            e2e/package-lock.json
+      - run: npm ci
+      - run: npm ci
+        working-directory: e2e
+      - run: npx tsc -p e2e
+      - run: npx playwright install --with-deps chromium
+        working-directory: e2e
+      - run: npx playwright test
+        working-directory: e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            e2e/playwright-report
+            e2e/test-results
+          retention-days: 7
+
   # Публикация демо — только из main и только после успешных проверок (ADR-005).
   deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: check
+    needs: [check, e2e]
     runs-on: ubuntu-latest
     permissions:
       contents: read

@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="700" viewBox="0 0 900 700" font-family="Helvetica, Arial, 'Segoe UI', 'DejaVu Sans', sans-serif" role="img" aria-label="Создание задачи с шаблоном">
+<title>Создание задачи с шаблоном</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker></defs>
+<rect width="900" height="700" fill="#ffffff"/>
+<rect x="0.6" y="0.6" width="898.8" height="698.8" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="0.6" y="0.6" width="898.8" height="34" rx="10" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="1" y="20" width="898" height="15" rx="0" fill="#f3f4f6"/>
+<circle cx="18" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="36" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="54" cy="17" r="5" fill="#cbd5e1"/>
+<rect x="84" y="6" width="732" height="23" rx="11.5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="98" y="22" text-anchor="start" font-size="12" fill="#6b7280">team-tracker.app/projects/DEMO/backlog</text>
+<line x1="1" y1="86" x2="899" y2="86" stroke="#cbd5e1" stroke-width="1.2"/>
+<g transform="translate(18 47) scale(0.4375)"><path d="M52.78 20 A24 24 0 1 1 35.34 8.23" fill="none" stroke="#2B4ACB" stroke-width="7" stroke-linecap="round"/><polygon points="45.24,9.62 36.31,1.30 34.37,15.16" fill="#2B4ACB" stroke="#2B4ACB" stroke-width="2" stroke-linejoin="round"/><polyline points="23,33 29.5,39.5 41,27" fill="none" stroke="#F08C00" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="52" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#2B4ACB">Team</text>
+<text x="94" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#F08C00">Tracker</text>
+<rect x="158" y="52" width="59.68000000000001" height="26" rx="13.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="187.84" y="69.68" text-anchor="middle" font-size="13" fill="#1f2937">DEMO ▾</text>
+<text x="230" y="67" text-anchor="start" font-size="14" font-weight="bold" fill="#2563eb">Бэклог</text>
+<rect x="228" y="80" width="58.4" height="4" rx="2" fill="#2563eb"/>
+<text x="298.4" y="67" text-anchor="start" font-size="14" fill="#1f2937">Доска</text>
+<text x="355.59999999999997" y="67" text-anchor="start" font-size="14" fill="#1f2937">Спринты</text>
+<text x="428.47999999999996" y="67" text-anchor="start" font-size="14" fill="#1f2937">Отчёты</text>
+<text x="493.52" y="67" text-anchor="start" font-size="14" fill="#1f2937">Люди</text>
+<text x="542.88" y="67" text-anchor="start" font-size="14" fill="#1f2937">Настройки</text>
+<rect x="640" y="50" width="130" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="650" y="70" text-anchor="start" font-size="13" fill="#6b7280">Поиск</text>
+<rect x="740" y="55" width="24" height="20" rx="4" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="752" y="70" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">/</text>
+<circle cx="844" cy="65" r="15" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="844" y="69" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">АК</text>
+<text x="866" y="70" text-anchor="middle" font-size="13" fill="#6b7280">▾</text>
+<rect x="1" y="35" width="898" height="664" rx="0" fill="#000000" fill-opacity="0.45"/>
+<rect x="130" y="108" width="640" height="560" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="154" y="146" text-anchor="start" font-size="20" font-weight="bold" fill="#1f2937">Создать задачу</text>
+<text x="154" y="174" text-anchor="start" font-size="12" fill="#6b7280">Шаблон</text>
+<rect x="154" y="180" width="300" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="164" y="202" text-anchor="start" font-size="14" fill="#1f2937">Баг</text>
+<text x="436" y="202.0" text-anchor="middle" font-size="14" fill="#6b7280">▾</text>
+<circle cx="140" cy="174" r="11" fill="#b91c1c"/>
+<text x="140" y="179" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">1</text>
+<rect x="154" y="216" width="300" height="130" rx="6" fill="#ffffff" stroke="#2563eb" stroke-width="1.6"/>
+<rect x="158" y="220" width="292" height="28" rx="4" fill="#ffffff"/>
+<text x="168" y="239" text-anchor="start" font-size="13" fill="#1f2937">Без шаблона</text>
+<rect x="158" y="250" width="292" height="28" rx="4" fill="#dbeafe"/>
+<text x="168" y="269" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">Баг</text>
+<rect x="158" y="280" width="292" height="28" rx="4" fill="#ffffff"/>
+<text x="168" y="299" text-anchor="start" font-size="13" fill="#1f2937">Story</text>
+<rect x="158" y="310" width="292" height="28" rx="4" fill="#ffffff"/>
+<text x="168" y="329" text-anchor="start" font-size="13" fill="#1f2937">Задача</text>
+<text x="484" y="174" text-anchor="start" font-size="12" fill="#6b7280">Тип *</text>
+<rect x="484" y="180" width="262" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="494" y="202" text-anchor="start" font-size="14" fill="#1f2937">Bug</text>
+<text x="728" y="202.0" text-anchor="middle" font-size="14" fill="#6b7280">▾</text>
+<text x="484" y="228" text-anchor="start" font-size="11" fill="#6b7280">подставлен шаблоном</text>
+<text x="154" y="366" text-anchor="start" font-size="12" fill="#6b7280">Название *</text>
+<rect x="154" y="372" width="592" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="164" y="394" text-anchor="start" font-size="14" fill="#1f2937">Не открывается страница заказа</text>
+<text x="154" y="438" text-anchor="start" font-size="12" fill="#6b7280">Описание</text>
+<rect x="154" y="444" width="592" height="150" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="166" y="470" text-anchor="start" font-size="13" fill="#6b7280">## Шаги воспроизведения</text>
+<text x="166" y="492" text-anchor="start" font-size="13" fill="#6b7280">1. Открыть «Заказы»</text>
+<text x="166" y="514" text-anchor="start" font-size="13" fill="#6b7280">## Ожидалось</text>
+<text x="166" y="536" text-anchor="start" font-size="13" fill="#6b7280">## Получилось</text>
+<text x="166" y="558" text-anchor="start" font-size="13" fill="#6b7280">## Окружение</text>
+<circle cx="140" cy="448" r="11" fill="#b91c1c"/>
+<text x="140" y="453" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">2</text>
+<rect x="440" y="614" width="200" height="36" rx="6" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="540.0" y="636.68" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">Создать  (Ctrl+Enter)</text>
+<rect x="656" y="614" width="90" height="36" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="701.0" y="637.04" text-anchor="middle" font-size="14" fill="#1f2937">Отмена</text>
+<text x="154" y="638" text-anchor="start" font-size="11.5" fill="#6b7280">Шаблон только подставляет текст: его можно править; смена шаблона просит подтверждение, если текст изменён.</text>
+<circle cx="144" cy="634" r="11" fill="#b91c1c"/>
+<text x="144" y="639" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">3</text>
+</svg>

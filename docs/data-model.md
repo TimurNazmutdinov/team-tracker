@@ -2,13 +2,16 @@
 
 ## Сущности
 
-- **Project** — проект; `key` (например, `DEMO`) формирует номера задач вида `DEMO-12`; настройки спринтов: длительность, префикс и следующий номер названия, дата старта следующего спринта.
+- **Project** — проект; `key` (например, `DEMO`) формирует номера задач вида `DEMO-12`; настройки спринтов: длительность, префикс и следующий номер названия, дата старта следующего спринта; владелец — продакт `ownerId` (может быть не задан).
+- **ProjectMember** — участник проекта с ролью в нём `product | lead | developer`; владелец проекта хранится в `Project.ownerId` и среди участников не повторяется ([ADR-016](adr/016-projects-portfolio.md)).
+- **IssueTemplate** — шаблон задач проекта: название, тип, текст описания и критериев (Markdown); по умолчанию «Баг», «Story», «Задача» ([ADR-017](adr/017-speed.md)). У **Project** есть `wipEnabled` (по умолчанию `false`) и `wipLimits` — лимит задач на колонку доски.
+- **Absence** — отсутствие человека (`personId`, даты, вид `vacation | sick | other`); общее для всех проектов, уменьшает ёмкость спринтов ([ADR-018](adr/018-planning-scrum.md)). **RetroItem** — запись ретроспективы спринта (`good | improve | action`, автор, ссылка на созданную задачу); у **Project** есть `dod` — Definition of Done, чек-лист Markdown.
 - **Person** — участник команды с должностью. Вне набора данных приложения, только на сервере: **User** (учётка: почта, хэш пароля, роль доступа `developer | product | lead | admin`, привязана к Person) и **Session** (хэш токена, срок) — [ADR-010](adr/010-server-auth-roles.md).
 - **Sprint** — спринт проекта с целью, плановыми датами, состоянием `planned | active | closed` и фактическим временем закрытия `closedAt`.
 - **Issue** — задача любого типа (Epic, Story, Task, Bug, Sub-task); `parentId` задаёт иерархию, `sprintId = null` означает бэклог, `order` — ручной порядок.
 - **Link** — связь между двумя задачами: `blocks | relates | duplicates`.
 - **Comment** — комментарий к задаче.
-- Вне набора данных приложения, только на сервере: **Setting** (ключ и значение настроек, которые администратор задаёт в интерфейсе, — например, папка резервных копий; [ADR-012](adr/012-backups.md)). У **User** есть цветовая гамма профиля `palette` (`beige | blue`, по умолчанию `beige`; [ADR-013](adr/013-logo-and-palettes.md)).
+- Вне набора данных приложения, только на сервере: **Setting** (ключ и значение настроек, которые администратор задаёт в интерфейсе, — например, папка резервных копий; [ADR-012](adr/012-backups.md)). У **User** есть цветовая гамма профиля `palette` (`beige | blue`, по умолчанию `beige`; [ADR-013](adr/013-logo-and-palettes.md)) и сохранённый выбор проектов `projectFilter` (JSON `{mode, keys}` или пусто; [ADR-016](adr/016-projects-portfolio.md)).
 - **History** — запись о событии с задачей: создание, смена статуса, исполнителя, points или спринта (кто, что, было → стало, когда).
 
 Итоги по людям и спринтам не хранятся — считаются из задач и истории. Бакеты доски — это группировка по полю, отдельной сущности для них нет.
@@ -27,6 +30,7 @@
 - Статус задачи — любой из пяти; допустим любой переход, каждая смена пишется в History. Статус Epic задаётся вручную.
 - `Sprint.closedAt` — дата и время фактического закрытия (UTC); задано только у закрытого спринта. Velocity считается на этот момент.
 - Настройки спринтов проекта подставляются в форму нового спринта: название «префикс номер», длительность в днях (конец = старт + длительность − 1), дата старта; номер растёт, когда создаётся спринт с предложенным названием ([ADR-008](adr/008-sprints.md)).
+- Владелец проекта — человек из справочника; участник проекта уникален в проекте (`projectId + personId`) и не совпадает с владельцем. Продакт меняет порядок, приоритеты и состав спринтов только в проектах, где он владелец или участник ([ADR-016](adr/016-projects-portfolio.md)).
 - Закрытый спринт — только чтение: после `closedAt` его задачи не меняются (кроме переноса незавершённых в момент закрытия).
 - Прогресс Epic вычисляется из points его потомков Story, Task и Bug (всего, в Done, %), не хранится и не входит в velocity и burndown.
 - Связь не ссылается на саму себя и не повторяется.
@@ -55,7 +59,8 @@ History только добавляется. Поле `field` принимает
 
 | Сущность | Поля |
 |----------|------|
-| Project | id, key, name, sprintDurationDays (1–90), sprintPrefix, nextSprintNumber, nextSprintStart (дата или null) |
+| Project | id, key, name, sprintDurationDays (1–90), sprintPrefix, nextSprintNumber, nextSprintStart (дата или null), ownerId (id человека или null) |
+| ProjectMember | id, projectId, personId, role (product\|lead\|developer) |
 | Person | id, name, role |
 | Sprint | id, projectId, name, goal, start, end, state (planned\|active\|closed), closedAt (дата и время или null) |
 | Issue | id, projectId, number, type, title, description, acceptance, status, priority (Highest\|High\|Medium\|Low), points, assigneeId, reporterId, parentId, sprintId, labels[], order, dueDate, createdAt, updatedAt |
@@ -69,6 +74,9 @@ History только добавляется. Поле `field` принимает
 erDiagram
     Project ||--o{ Sprint : has
     Project ||--o{ Issue : has
+    Project ||--o{ ProjectMember : "участники"
+    Person ||--o{ ProjectMember : "участвует"
+    Person |o--o{ Project : "владелец"
     Sprint |o--o{ Issue : contains
     Person |o--o{ Issue : "assigned to"
     Person ||--o{ Issue : reports
@@ -88,6 +96,13 @@ erDiagram
         string sprintPrefix
         int nextSprintNumber
         date nextSprintStart "null если не задана"
+        string ownerId "null если не назначен"
+    }
+    ProjectMember {
+        string id
+        string projectId
+        string personId
+        string role "product, lead или developer"
     }
     Person {
         string id

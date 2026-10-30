@@ -20,6 +20,13 @@ export const projects = pgTable('projects', {
   sprintPrefix: text('sprint_prefix').notNull(),
   nextSprintNumber: integer('next_sprint_number').notNull(),
   nextSprintStart: text('next_sprint_start'),
+  /** Продакт-владелец проекта (ADR-016); без внешнего ключа: проекты и люди загружаются в любом порядке. */
+  ownerId: text('owner_id'),
+  /** WIP-лимиты колонок доски (ADR-017). */
+  wipEnabled: boolean('wip_enabled').notNull().default(false),
+  wipLimits: jsonb('wip_limits').$type<Record<string, number>>().notNull().default({}),
+  /** Definition of Done проекта (ADR-018). */
+  dod: text('dod').notNull().default(''),
 });
 
 export const people = pgTable('people', {
@@ -27,6 +34,69 @@ export const people = pgTable('people', {
   name: text('name').notNull(),
   role: text('role').notNull(),
 });
+
+/** Отсутствия людей (ADR-018); без внешнего ключа на человека, как owner_id. */
+export const absences = pgTable(
+  'absences',
+  {
+    id: text('id').primaryKey(),
+    personId: text('person_id').notNull(),
+    start: text('start').notNull(),
+    end: text('end').notNull(),
+    kind: text('kind').notNull(),
+  },
+  (t) => [index('absences_person_idx').on(t.personId)],
+);
+
+/** Записи ретроспектив спринтов (ADR-018). */
+export const retroItems = pgTable(
+  'retro_items',
+  {
+    id: text('id').primaryKey(),
+    projectId: text('project_id')
+      .notNull()
+      .references(() => projects.id),
+    sprintId: text('sprint_id').notNull(),
+    kind: text('kind').notNull(),
+    text: text('text').notNull(),
+    authorId: text('author_id').notNull(),
+    createdAt: text('created_at').notNull(),
+    issueId: text('issue_id'),
+  },
+  (t) => [index('retro_items_project_idx').on(t.projectId)],
+);
+
+/** Шаблоны задач проекта (ADR-017). */
+export const issueTemplates = pgTable(
+  'issue_templates',
+  {
+    id: text('id').primaryKey(),
+    projectId: text('project_id')
+      .notNull()
+      .references(() => projects.id),
+    name: text('name').notNull(),
+    type: text('type').notNull(),
+    description: text('description').notNull(),
+    acceptance: text('acceptance').notNull(),
+  },
+  (t) => [index('issue_templates_project_idx').on(t.projectId)],
+);
+
+/** Участники проекта с ролью в нём (ADR-016); владелец хранится в projects.owner_id. */
+export const projectMembers = pgTable(
+  'project_members',
+  {
+    id: text('id').primaryKey(),
+    projectId: text('project_id')
+      .notNull()
+      .references(() => projects.id),
+    personId: text('person_id')
+      .notNull()
+      .references(() => people.id),
+    role: text('role').notNull(),
+  },
+  (t) => [uniqueIndex('project_members_unique').on(t.projectId, t.personId)],
+);
 
 export const sprints = pgTable(
   'sprints',
@@ -132,6 +202,8 @@ export const users = pgTable('users', {
   mustChangePassword: boolean('must_change_password').notNull().default(false),
   /** Цветовая гамма интерфейса (ADR-013): хранится в профиле, видна с любого компьютера. */
   palette: text('palette').notNull().default('beige'),
+  /** Выбор проектов для фильтра (ADR-016): JSON {mode, keys}; пусто — выбор не сохранён. */
+  projectFilter: text('project_filter'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 

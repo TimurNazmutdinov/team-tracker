@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { Palette } from '../domain/palettes';
 import type { Role } from '../domain/permissions';
+import type { ScopePref } from '../domain/projectScope';
 
 // Сессия входа (ADR-010). В демо-режиме (без сервера) входа нет: account всегда null, а права не
 // ограничиваются — всё как до этапа 8.
@@ -14,6 +15,8 @@ export interface Account {
   mustChangePassword: boolean;
   /** Цветовая гамма из профиля (ADR-013). */
   palette: Palette;
+  /** Сохранённый выбор проектов для фильтра (ADR-016); null — не выбирался. */
+  projectFilter: ScopePref | null;
 }
 
 export type SessionStatus = 'unknown' | 'signedOut' | 'signedIn';

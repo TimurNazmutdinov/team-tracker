@@ -9,3 +9,6 @@ Thumbs.db
 local-data
 local-data.lock
 local-data.before-restore-*
+
+e2e/test-results
+e2e/playwright-report

@@ -1280,7 +1280,7 @@ a.pill:hover {
   min-width: 12rem;
 }
 
-.planning-filters label.check {
+.board-toolbar label.check {
   flex-direction: row;
   align-items: center;
   gap: 0.35rem;
@@ -1403,11 +1403,11 @@ main:has(.planning-page) {
   overflow: hidden;
 }
 
-.planning-filters label.check input {
+.board-toolbar label.check input {
   width: auto;
 }
 
-.planning-filters label.check {
+.board-toolbar label.check {
   white-space: nowrap;
 }
 
@@ -1437,4 +1437,763 @@ main:has(.planning-page) {
   .planning-row .row-meta {
     display: none;
   }
+}
+
+/* ---- «О программе» ---- */
+.about-block {
+  margin-bottom: 1.25rem;
+  padding: 0.75rem 1rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.about-block h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.about-list {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.25rem 1.5rem;
+  margin: 0;
+}
+
+.about-list dt {
+  color: var(--muted);
+}
+
+.about-list dd {
+  margin: 0;
+}
+
+.log-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.log-list li {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.log-list time {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ---- фильтр по проектам (ADR-016) ---- */
+.project-filter {
+  position: relative;
+  align-self: flex-end;
+}
+
+.filter-button {
+  border-radius: 999px;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent);
+  font-weight: 600;
+}
+
+.filter-pop {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  width: 22rem;
+  max-width: 90vw;
+  padding: 0.75rem;
+  background: var(--panel);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px var(--shadow);
+}
+
+.filter-pop fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  border: 0;
+}
+
+.filter-pop legend {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.filter-pop label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.filter-pop input {
+  width: auto;
+}
+
+.filter-list {
+  list-style: none;
+  margin: 0 0 0.5rem;
+  padding: 0.5rem 0 0;
+  border-top: 1px solid var(--line);
+}
+
+.filter-list li {
+  padding: 0.15rem 0;
+}
+
+/* ---- проекты и портфель (ADR-016) ---- */
+.project-tag {
+  background: var(--accent-bg);
+  font-weight: 700;
+}
+
+.project-heading {
+  margin: 1.25rem 0 0.5rem;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(26rem, 1fr));
+  gap: 1rem;
+}
+
+.overview-card {
+  padding: 0.75rem 1rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.overview-card.risky {
+  border-color: var(--danger);
+  border-width: 2px;
+}
+
+.overview-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.6rem;
+}
+
+.overview-head h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.risk-text {
+  color: var(--danger);
+}
+
+.overview-sprint {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0.5rem 0 0.15rem;
+}
+
+.overview-progress {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.overview-progress > div:first-child {
+  flex: 1;
+}
+
+.overview-progress p {
+  margin: 0.25rem 0;
+}
+
+.meter {
+  height: 0.5rem;
+  background: var(--bg);
+  border: 1px solid var(--control-line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.meter span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.spark {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.spark polyline {
+  fill: none;
+}
+
+.spark-ideal {
+  stroke: var(--muted);
+  stroke-width: 1.4;
+  stroke-dasharray: 4 3;
+}
+
+.spark-real {
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.status-bar {
+  display: flex;
+  height: 0.9rem;
+  margin: 0.6rem 0 0.25rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.status-bar span {
+  display: block;
+  border-right: 1px solid var(--line);
+}
+
+.overview-flags {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.6rem 0 0.25rem;
+}
+
+.overview-list,
+.overview-epics {
+  list-style: none;
+  margin: 0.25rem 0;
+  padding: 0;
+  font-size: 0.9rem;
+}
+
+.overview-epics li {
+  display: grid;
+  grid-template-columns: 1fr 7rem 3rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.15rem 0;
+}
+
+.overview-links {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  font-weight: 700;
+}
+
+.portfolio-nav {
+  display: flex;
+}
+
+.owner-field {
+  display: flex;
+  flex-direction: column;
+  max-width: 22rem;
+  margin-bottom: 0.75rem;
+}
+
+.member-add {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.member-add label {
+  display: flex;
+  flex-direction: column;
+}
+
+.status-bar .status-backlog {
+  background: var(--st-backlog);
+}
+
+.status-bar .status-to-do {
+  background: var(--st-todo);
+}
+
+.status-bar .status-in-progress {
+  background: var(--st-progress);
+}
+
+.status-bar .status-review {
+  background: var(--st-review);
+}
+
+.status-bar .status-done {
+  background: var(--st-done);
+}
+
+/* Markdown */
+.md > :first-child {
+  margin-top: 0.25rem;
+}
+.md p,
+.md ul,
+.md ol,
+.md pre,
+.md blockquote,
+.md table {
+  margin: 0.25rem 0 0.75rem;
+}
+.md ul,
+.md ol {
+  padding-left: 1.4rem;
+}
+.md li.task {
+  list-style: none;
+  margin-left: -1.2rem;
+}
+.md li.task .done {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+.md code {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 0 0.25rem;
+  font-size: 0.9em;
+}
+.md pre {
+  overflow-x: auto;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+.md pre code {
+  border: 0;
+  padding: 0;
+  background: none;
+}
+.md blockquote {
+  border-left: 3px solid var(--line);
+  padding-left: 0.75rem;
+  color: var(--muted);
+}
+.md table {
+  border-collapse: collapse;
+}
+.md th,
+.md td {
+  border: 1px solid var(--line);
+  padding: 0.2rem 0.5rem;
+}
+.md h3,
+.md h4,
+.md h5,
+.md h6 {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 1rem;
+}
+.md-tabs {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+.md-tabs button.on {
+  font-weight: 700;
+  border-color: var(--accent);
+}
+.md-help {
+  margin-left: auto;
+  font-size: 0.8rem;
+}
+.md-preview {
+  min-height: 4rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px dashed var(--line);
+  border-radius: 4px;
+}
+
+/* Командная палитра */
+.palette input[role='combobox'] {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+.palette-list {
+  max-height: 55vh;
+  overflow-y: auto;
+}
+.palette-group {
+  margin: 0.5rem 0 0.15rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.palette-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.palette-item.active {
+  background: var(--accent-bg);
+  outline: 1px solid var(--accent);
+}
+.palette-foot {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+}
+
+/* Массовые действия */
+.bulk-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: end;
+  margin: 0.5rem 0;
+  padding: 0.5rem 0.75rem;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+}
+.bulk-bar label {
+  display: grid;
+  gap: 0.15rem;
+  font-size: 0.85rem;
+}
+.bulk-bar .field-error {
+  flex-basis: 100%;
+  margin: 0;
+}
+.pick {
+  margin-right: 0.25rem;
+}
+.wip-over {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.template-row {
+  margin: 0.5rem 0;
+}
+.template-form {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+/* Definition of Done */
+.dod-list {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0.5rem 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.absences {
+  border-collapse: collapse;
+  margin: 0.5rem 0 1rem;
+}
+.absences th,
+.absences td {
+  padding: 0.3rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: end;
+}
+
+/* Ретроспектива */
+.retro-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+.retro-column {
+  padding: 0.5rem 0.75rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.retro-column h3 {
+  margin-top: 0.25rem;
+}
+.retro-item {
+  margin-bottom: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.retro-item p {
+  margin: 0 0 0.2rem;
+}
+@media (max-width: 52rem) {
+  .retro-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Отчёт спринта */
+.report-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0.5rem 0;
+}
+.report-cards > div {
+  padding: 0.5rem 0.75rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.report-cards dt {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.report-cards dd {
+  margin: 0;
+  font-weight: 700;
+}
+@media (max-width: 52rem) {
+  .report-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media print {
+  .app-bar,
+  .skip-link,
+  .no-print,
+  .notices,
+  nav,
+  button {
+    display: none !important;
+  }
+  main {
+    max-width: none;
+    padding: 0;
+  }
+}
+
+a.button {
+  display: inline-block;
+  color: inherit;
+  background: var(--bg);
+  border: 1px solid var(--control-line);
+  border-radius: 6px;
+  padding: 0.3rem 0.75rem;
+  text-decoration: none;
+}
+
+/* Аналитика */
+.tabs button.on {
+  color: var(--accent);
+  font-weight: 700;
+  border-bottom-color: var(--accent);
+}
+.board-toolbar .tabs {
+  margin: 0;
+  border-bottom: 0;
+}
+.chart .cfd-band {
+  stroke: var(--muted);
+  stroke-width: 1;
+}
+.cfd-backlog {
+  fill: var(--st-backlog);
+  background: var(--st-backlog);
+}
+.cfd-to-do {
+  fill: var(--st-todo);
+  background: var(--st-todo);
+}
+.cfd-in-progress {
+  fill: var(--st-progress);
+  background: var(--st-progress);
+}
+.cfd-review {
+  fill: var(--st-review);
+  background: var(--st-review);
+}
+.cfd-done {
+  fill: var(--st-done);
+  background: var(--st-done);
+}
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-right: 1rem;
+}
+.legend .swatch {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+  border: 1px solid var(--muted);
+  border-radius: 3px;
+}
+.chart-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.workload-row {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+.workload-bar {
+  position: relative;
+  display: flex;
+  height: 1.5rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+.workload-bar .seg {
+  height: 100%;
+  border-right: 1px solid var(--muted);
+}
+.p0 {
+  background: var(--st-progress);
+}
+.p1 {
+  background: var(--st-review);
+}
+.p2 {
+  background: var(--st-done);
+}
+.p3 {
+  background: var(--st-todo);
+}
+.p4 {
+  background: var(--accent-bg);
+}
+.avg-mark {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  border-left: 2px dashed var(--muted);
+}
+.roadmap {
+  position: relative;
+}
+.roadmap-axis {
+  position: relative;
+  height: 1.4rem;
+  margin-left: 14rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.roadmap-axis span {
+  position: absolute;
+}
+.roadmap-row {
+  display: grid;
+  grid-template-columns: 14rem minmax(0, 1fr);
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.roadmap-track {
+  position: relative;
+  height: 1.8rem;
+  border-left: 1px solid var(--line);
+}
+.roadmap-bar {
+  position: absolute;
+  top: 0.15rem;
+  height: 1.5rem;
+  overflow: hidden;
+  background: var(--panel);
+  border: 1.5px solid var(--accent);
+  border-radius: 5px;
+}
+.roadmap-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--st-done);
+}
+.roadmap-label {
+  position: relative;
+  padding-left: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.roadmap-today {
+  position: absolute;
+  top: -0.2rem;
+  bottom: -0.2rem;
+  border-left: 2px dashed var(--danger);
+}
+@media (max-width: 52rem) {
+  .chart-pair {
+    grid-template-columns: 1fr;
+  }
+  .workload-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Справка и мастер первого запуска */
+.help-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.5rem 0;
+}
+.help-table th,
+.help-table td {
+  padding: 0.3rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+.help-table td:not(:first-child),
+.help-table thead th:not(:first-child) {
+  text-align: center;
+}
+.help-rules dt {
+  font-weight: 700;
+  margin-top: 0.6rem;
+}
+.help-rules dd {
+  margin: 0.1rem 0 0;
+}
+.help-button {
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  font-weight: 700;
+}
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+.steps button.on {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+.wizard-nav {
+  margin-top: 1rem;
 }

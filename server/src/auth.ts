@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { and, eq, gt, sql } from 'drizzle-orm';
 import { DEFAULT_PALETTE, isPalette, type Palette } from '../../src/domain/palettes';
+import { parseStoredPref, type ScopePref } from '../../src/domain/projectScope';
 import { ROLE_LABELS, isRole, type Role } from '../../src/domain/permissions';
 import { schema, type Db } from './db';
 import { HttpError } from './errors';
@@ -21,6 +22,8 @@ export interface Account {
   mustChangePassword: boolean;
   /** Цветовая гамма интерфейса из профиля (ADR-013). */
   palette: Palette;
+  /** Сохранённый выбор проектов для фильтра (ADR-016); null — не выбирался. */
+  projectFilter: ScopePref | null;
 }
 
 /** Гамма из базы; незнакомое значение (например, после отката версии) — по умолчанию. */
@@ -82,7 +85,15 @@ export async function createAccount(db: Db, input: NewAccount): Promise<Account>
     await tx.insert(users).values({ id, email, passwordHash, accessRole, mustChangePassword });
     return accessRole;
   });
-  return { id, name, email, role, mustChangePassword, palette: DEFAULT_PALETTE };
+  return {
+    id,
+    name,
+    email,
+    role,
+    mustChangePassword,
+    palette: DEFAULT_PALETTE,
+    projectFilter: null,
+  };
 }
 
 /** Самостоятельная регистрация (только при ALLOW_REGISTRATION=true). */
@@ -117,6 +128,7 @@ export async function login(
       role: users.accessRole,
       mustChange: users.mustChangePassword,
       palette: users.palette,
+      projectFilter: users.projectFilter,
       name: people.name,
     })
     .from(users)
@@ -138,6 +150,7 @@ export async function login(
       role: row.role,
       mustChangePassword: row.mustChange,
       palette: paletteOf(row.palette),
+      projectFilter: parseStoredPref(row.projectFilter),
     },
     token,
   };
@@ -157,6 +170,7 @@ export async function accountByToken(db: Db, token: string | undefined): Promise
       role: users.accessRole,
       mustChange: users.mustChangePassword,
       palette: users.palette,
+      projectFilter: users.projectFilter,
       name: people.name,
     })
     .from(sessions)
@@ -172,6 +186,7 @@ export async function accountByToken(db: Db, token: string | undefined): Promise
     role: row.role,
     mustChangePassword: row.mustChange,
     palette: paletteOf(row.palette),
+    projectFilter: parseStoredPref(row.projectFilter),
   };
 }
 
@@ -183,6 +198,7 @@ export async function listAccounts(db: Db): Promise<Account[]> {
       role: users.accessRole,
       mustChange: users.mustChangePassword,
       palette: users.palette,
+      projectFilter: users.projectFilter,
       name: people.name,
     })
     .from(users)
@@ -197,6 +213,7 @@ export async function listAccounts(db: Db): Promise<Account[]> {
             role: r.role,
             mustChangePassword: r.mustChange,
             palette: paletteOf(r.palette),
+            projectFilter: parseStoredPref(r.projectFilter),
           },
         ]
       : [],
@@ -274,6 +291,20 @@ export async function setPalette(db: Db, userId: string, palette: Palette): Prom
   const updated = await db
     .update(users)
     .set({ palette })
+    .where(eq(users.id, userId))
+    .returning({ id: users.id });
+  if (updated.length === 0) throw new HttpError(404, 'not_found', 'Учётка не найдена');
+}
+
+/** Сохраняет выбор проектов для фильтра; null — сбросить сохранённый выбор (ADR-016). */
+export async function setProjectFilter(
+  db: Db,
+  userId: string,
+  pref: ScopePref | null,
+): Promise<void> {
+  const updated = await db
+    .update(users)
+    .set({ projectFilter: pref ? JSON.stringify(pref) : null })
     .where(eq(users.id, userId))
     .returning({ id: users.id });
   if (updated.length === 0) throw new HttpError(404, 'not_found', 'Учётка не найдена');

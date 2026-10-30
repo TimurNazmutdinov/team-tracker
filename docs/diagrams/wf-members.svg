@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="700" viewBox="0 0 900 700" font-family="Helvetica, Arial, 'Segoe UI', 'DejaVu Sans', sans-serif" role="img" aria-label="Настройки проекта: владелец и участники">
+<title>Настройки проекта: владелец и участники</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker></defs>
+<rect width="900" height="700" fill="#ffffff"/>
+<rect x="0.6" y="0.6" width="898.8" height="698.8" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="0.6" y="0.6" width="898.8" height="34" rx="10" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="1" y="20" width="898" height="15" rx="0" fill="#f3f4f6"/>
+<circle cx="18" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="36" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="54" cy="17" r="5" fill="#cbd5e1"/>
+<rect x="84" y="6" width="732" height="23" rx="11.5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="98" y="22" text-anchor="start" font-size="12" fill="#6b7280">team-tracker.app/projects/DEMO/settings</text>
+<line x1="1" y1="86" x2="899" y2="86" stroke="#cbd5e1" stroke-width="1.2"/>
+<g transform="translate(18 47) scale(0.4375)"><path d="M52.78 20 A24 24 0 1 1 35.34 8.23" fill="none" stroke="#2B4ACB" stroke-width="7" stroke-linecap="round"/><polygon points="45.24,9.62 36.31,1.30 34.37,15.16" fill="#2B4ACB" stroke="#2B4ACB" stroke-width="2" stroke-linejoin="round"/><polyline points="23,33 29.5,39.5 41,27" fill="none" stroke="#F08C00" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="52" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#2B4ACB">Team</text>
+<text x="94" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#F08C00">Tracker</text>
+<rect x="158" y="52" width="59.68000000000001" height="26" rx="13.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="187.84" y="69.68" text-anchor="middle" font-size="13" fill="#1f2937">DEMO ▾</text>
+<text x="230" y="67" text-anchor="start" font-size="14" fill="#1f2937">Бэклог</text>
+<text x="295.04" y="67" text-anchor="start" font-size="14" fill="#1f2937">Доска</text>
+<text x="352.24" y="67" text-anchor="start" font-size="14" fill="#1f2937">Спринты</text>
+<text x="425.12" y="67" text-anchor="start" font-size="14" fill="#1f2937">Отчёты</text>
+<text x="490.16" y="67" text-anchor="start" font-size="14" fill="#1f2937">Люди</text>
+<text x="539.52" y="67" text-anchor="start" font-size="14" font-weight="bold" fill="#2563eb">Настройки</text>
+<rect x="537.52" y="80" width="83.6" height="4" rx="2" fill="#2563eb"/>
+<rect x="640" y="50" width="130" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="650" y="70" text-anchor="start" font-size="13" fill="#6b7280">Поиск</text>
+<rect x="740" y="55" width="24" height="20" rx="4" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="752" y="70" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">/</text>
+<circle cx="844" cy="65" r="15" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="844" y="69" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">АК</text>
+<text x="866" y="70" text-anchor="middle" font-size="13" fill="#6b7280">▾</text>
+<text x="20" y="130" text-anchor="start" font-size="24" font-weight="bold" fill="#1f2937">Настройки проекта</text>
+<text x="20" y="176" text-anchor="start" font-size="18" font-weight="bold" fill="#1f2937">Участники проекта</text>
+<text x="220" y="176" text-anchor="start" font-size="12" fill="#6b7280">владелец и администратор</text>
+<text x="20" y="206" text-anchor="start" font-size="12" fill="#6b7280">Владелец продукта</text>
+<rect x="20" y="212" width="300" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<circle cx="40" cy="229" r="10" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="40" y="233" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">АК</text>
+<text x="58" y="234" text-anchor="start" font-size="14" fill="#1f2937">Анна Ковалёва</text>
+<text x="300" y="234" text-anchor="middle" font-size="14" fill="#6b7280">▾</text>
+<text x="336" y="234" text-anchor="start" font-size="12" fill="#6b7280">меняет только администратор</text>
+<circle cx="12" cy="226" r="11" fill="#b91c1c"/>
+<text x="12" y="231" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">1</text>
+<rect x="20" y="268" width="860" height="30" rx="4" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="34" y="288" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">Участник</text>
+<text x="360" y="288" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">Роль в проекте</text>
+<text x="660" y="288" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937"></text>
+<rect x="20" y="298" width="860" height="38" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<circle cx="40" cy="317" r="10" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="40" y="321" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">ИС</text>
+<text x="58" y="322" text-anchor="start" font-size="14" fill="#1f2937">Игорь Смирнов</text>
+<rect x="350" y="303" width="200" height="28" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="362" y="322" text-anchor="start" font-size="13" fill="#1f2937">Разработчик</text>
+<text x="536" y="322" text-anchor="middle" font-size="13" fill="#6b7280">▾</text>
+<rect x="760" y="303" width="108" height="28" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="814.0" y="321.68" text-anchor="middle" font-size="13" fill="#1f2937">Убрать</text>
+<rect x="20" y="336" width="860" height="38" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<circle cx="40" cy="355" r="10" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="40" y="359" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">МО</text>
+<text x="58" y="360" text-anchor="start" font-size="14" fill="#1f2937">Мария Орлова</text>
+<rect x="350" y="341" width="200" height="28" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="362" y="360" text-anchor="start" font-size="13" fill="#1f2937">Разработчик</text>
+<text x="536" y="360" text-anchor="middle" font-size="13" fill="#6b7280">▾</text>
+<rect x="760" y="341" width="108" height="28" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="814.0" y="359.68" text-anchor="middle" font-size="13" fill="#1f2937">Убрать</text>
+<rect x="20" y="374" width="860" height="38" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<circle cx="40" cy="393" r="10" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="40" y="397" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">ДВ</text>
+<text x="58" y="398" text-anchor="start" font-size="14" fill="#1f2937">Дмитрий Васильев</text>
+<rect x="350" y="379" width="200" height="28" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="362" y="398" text-anchor="start" font-size="13" fill="#1f2937">Тимлид</text>
+<text x="536" y="398" text-anchor="middle" font-size="13" fill="#6b7280">▾</text>
+<rect x="760" y="379" width="108" height="28" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="814.0" y="397.68" text-anchor="middle" font-size="13" fill="#1f2937">Убрать</text>
+<circle cx="12" cy="312" r="11" fill="#b91c1c"/>
+<text x="12" y="317" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">2</text>
+<rect x="20" y="426" width="860" height="46" rx="6" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="6 4"/>
+<rect x="34" y="434" width="290" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="46" y="454" text-anchor="start" font-size="13" fill="#6b7280">Выберите человека</text>
+<text x="310" y="454" text-anchor="middle" font-size="13" fill="#6b7280">▾</text>
+<rect x="340" y="434" width="210" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="352" y="454" text-anchor="start" font-size="13" fill="#1f2937">Разработчик</text>
+<text x="536" y="454" text-anchor="middle" font-size="13" fill="#6b7280">▾</text>
+<rect x="760" y="434" width="108" height="30" rx="6" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="814.0" y="453.68" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">+ Добавить</text>
+<circle cx="12" cy="448" r="11" fill="#b91c1c"/>
+<text x="12" y="453" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">3</text>
+<text x="30" y="502" text-anchor="start" font-size="12.5" fill="#6b7280">«Мои проекты» — те, где вы владелец или участник; администратор может выбрать «Все проекты».</text>
+<text x="30" y="522" text-anchor="start" font-size="12.5" fill="#6b7280">Продакт меняет состав и порядок задач, приоритеты и спринты только в своих проектах (владелец или участник).</text>
+<text x="30" y="542" text-anchor="start" font-size="12.5" fill="#6b7280">Тимлид, администратор и разработчик (статусы своих задач) работают, как раньше.</text>
+<text x="30" y="562" text-anchor="start" font-size="12.5" fill="#6b7280">Владельца и участников меняют администратор и владелец проекта. Макет, не готовый экран.</text>
+<circle cx="10" cy="497" r="11" fill="#b91c1c"/>
+<text x="10" y="502" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">4</text>
+</svg>

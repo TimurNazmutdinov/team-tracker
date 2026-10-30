@@ -29,6 +29,27 @@
       "when": 1793247211437,
       "tag": "0003_palette",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793275048348,
+      "tag": "0004_project-members",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793340127984,
+      "tag": "0005_templates-wip",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793342216917,
+      "tag": "0006_planning-scrum",
+      "breakpoints": true
     }
   ]
 }

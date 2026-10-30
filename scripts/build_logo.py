@@ -56,13 +56,20 @@ def wordmark(colors):
     )
 
 
-def plate_icon(p, scale, stroke, rx=16):
-    """Знак на плашке 64×64 со скруглением rx; знак уменьшен, чтобы не касаться краёв."""
-    offset = round(32 * (1 - scale), 2)
+# Границы знака в его системе координат (с учётом толщины линий и наконечника стрелки)
+BBOX = (5.0, 0.3, 59.0, 59.0)
+
+
+def plate_icon(p, fraction, stroke, rx=16):
+    """Знак на плашке 64×64: большая сторона знака занимает долю fraction плашки, поля одинаковые."""
+    x0, y0, x1, y1 = BBOX
+    scale = round(fraction * 64 / max(x1 - x0, y1 - y0), 4)
+    tx = round(32 - scale * (x0 + x1) / 2, 3)
+    ty = round(32 - scale * (y0 + y1) / 2, 3)
     c = p["light"]
     return (
         f'<rect width="64" height="64" rx="{rx}" fill="{p["plate"]}"/>'
-        f'<g transform="translate({offset} {offset}) scale({scale})">{mark(c["ring"], c["check"], stroke)}</g>'
+        f'<g transform="translate({tx} {ty}) scale({scale})">{mark(c["ring"], c["check"], stroke)}</g>'
     )
 
 
@@ -79,9 +86,9 @@ def build():
             "logo-dark.svg": svg(
                 340, 64, mark(dark["ring"], dark["check"]) + wordmark(dark), "Team Tracker (для тёмного фона)"
             ),
-            "app-icon.svg": svg(64, 64, plate_icon(p, 0.78, 7), "Team Tracker — значок приложения"),
+            "app-icon.svg": svg(64, 64, plate_icon(p, 0.65, 7), "Team Tracker — значок приложения"),
             # для 16–32 px линии толще (эффективно ≈ 7)
-            "favicon.svg": svg(64, 64, plate_icon(p, 0.82, 9), "Team Tracker — favicon"),
+            "favicon.svg": svg(64, 64, plate_icon(p, 0.72, 9), "Team Tracker — favicon"),
         }
         for fname, content in files.items():
             (d / fname).write_text(content, encoding="utf-8")

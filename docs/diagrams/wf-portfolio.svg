@@ -1,0 +1,205 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1120" viewBox="0 0 900 1120" font-family="Helvetica, Arial, 'Segoe UI', 'DejaVu Sans', sans-serif" role="img" aria-label="Экран «Портфель»: проекты продакта одним охватом">
+<title>Экран «Портфель»: проекты продакта одним охватом</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker></defs>
+<rect width="900" height="1120" fill="#ffffff"/>
+<rect x="0.6" y="0.6" width="898.8" height="1118.8" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="0.6" y="0.6" width="898.8" height="34" rx="10" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="1" y="20" width="898" height="15" rx="0" fill="#f3f4f6"/>
+<circle cx="18" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="36" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="54" cy="17" r="5" fill="#cbd5e1"/>
+<rect x="84" y="6" width="732" height="23" rx="11.5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="98" y="22" text-anchor="start" font-size="12" fill="#6b7280">team-tracker.app/portfolio</text>
+<line x1="1" y1="86" x2="899" y2="86" stroke="#cbd5e1" stroke-width="1.2"/>
+<g transform="translate(18 47) scale(0.4375)"><path d="M52.78 20 A24 24 0 1 1 35.34 8.23" fill="none" stroke="#2B4ACB" stroke-width="7" stroke-linecap="round"/><polygon points="45.24,9.62 36.31,1.30 34.37,15.16" fill="#2B4ACB" stroke="#2B4ACB" stroke-width="2" stroke-linejoin="round"/><polyline points="23,33 29.5,39.5 41,27" fill="none" stroke="#F08C00" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="52" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#2B4ACB">Team</text>
+<text x="94" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#F08C00">Tracker</text>
+<rect x="158" y="52" width="59.68000000000001" height="26" rx="13.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="187.84" y="69.68" text-anchor="middle" font-size="13" fill="#1f2937">DEMO ▾</text>
+<text x="230" y="67" text-anchor="start" font-size="14" fill="#1f2937">Бэклог</text>
+<text x="295.04" y="67" text-anchor="start" font-size="14" fill="#1f2937">Доска</text>
+<text x="352.24" y="67" text-anchor="start" font-size="14" fill="#1f2937">Спринты</text>
+<text x="425.12" y="67" text-anchor="start" font-size="14" fill="#1f2937">Отчёты</text>
+<text x="490.16" y="67" text-anchor="start" font-size="14" fill="#1f2937">Люди</text>
+<text x="539.52" y="67" text-anchor="start" font-size="14" fill="#1f2937">Настройки</text>
+<rect x="640" y="50" width="130" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="650" y="70" text-anchor="start" font-size="13" fill="#6b7280">Поиск</text>
+<rect x="740" y="55" width="24" height="20" rx="4" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="752" y="70" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">/</text>
+<circle cx="844" cy="65" r="15" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="844" y="69" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">АК</text>
+<text x="866" y="70" text-anchor="middle" font-size="13" fill="#6b7280">▾</text>
+<text x="20" y="130" text-anchor="start" font-size="24" font-weight="bold" fill="#1f2937">Портфель</text>
+<text x="190" y="130" text-anchor="start" font-size="13" fill="#6b7280">активные спринты ваших проектов</text>
+<rect x="20" y="148" width="188" height="30" rx="15" fill="#dbeafe" stroke="#2563eb" stroke-width="1.6"/>
+<text x="34" y="168" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">Проекты: Мои (4) ▾</text>
+<circle cx="14" cy="148" r="11" fill="#b91c1c"/>
+<text x="14" y="153" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">1</text>
+<rect x="222" y="150" width="170.00000000000003" height="28" rx="14.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="307.0" y="168.5" text-anchor="middle" font-size="12.5" fill="#1f2937">Сортировка: по риску ▾</text>
+<rect x="396" y="150" width="135.0" height="28" rx="14.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="463.5" y="168.5" text-anchor="middle" font-size="12.5" fill="#1f2937">☐ Только с риском</text>
+<circle cx="216" cy="148" r="11" fill="#b91c1c"/>
+<text x="216" y="153" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">2</text>
+<rect x="20" y="196" width="420" height="424" rx="8" fill="#f3f4f6" stroke="#b91c1c" stroke-width="1.8"/>
+<rect x="34" y="208" width="46.0" height="24" rx="12.0" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="57.0" y="224.5" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#1f2937">DEMO</text>
+<text x="92" y="226" text-anchor="start" font-size="15" font-weight="bold" fill="#1f2937">Демо-проект</text>
+<circle cx="416" cy="220" r="12" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="416" y="224" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">АК</text>
+<text x="394" y="225" text-anchor="end" font-size="12" font-weight="bold" fill="#b91c1c">⚠ перегруз</text>
+<text x="34" y="254" text-anchor="start" font-size="12.5" font-weight="bold" fill="#1f2937">Спринт 3 · 09.11 – 20.11</text>
+<text x="426" y="254" text-anchor="end" font-size="12.5" fill="#6b7280">осталось 8 дн.</text>
+<text x="34" y="272" text-anchor="start" font-size="12" fill="#6b7280">Цель: заказы: просмотр, фильтр, экспорт</text>
+<text x="34" y="298" text-anchor="start" font-size="12.5" fill="#1f2937">Выполнено 13 из 21 sp · 62 %</text>
+<rect x="34" y="306" width="200" height="8" rx="4" fill="#ffffff" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="34" y="306" width="123.80952380952381" height="8" rx="4" fill="#2563eb"/>
+<rect x="290" y="286" width="136" height="48" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<polyline points="296.0,292.0 313.7,297.1 331.4,302.3 349.1,307.4 366.9,312.6 384.6,317.7 402.3,322.9 420.0,328.0" fill="none" stroke="#6b7280" stroke-width="1.4" stroke-dasharray="7 5"/>
+<polyline points="296.0,292.0 313.7,292.0 331.4,295.4 349.1,298.9 366.9,298.9 384.6,302.3 402.3,305.7 420.0,309.1" fill="none" stroke="#2563eb" stroke-width="2"/>
+<text x="358.0" y="347" text-anchor="middle" font-size="10" fill="#6b7280">burndown</text>
+<rect x="34" y="354" width="156.8" height="14" rx="2" fill="#e0e7ff" stroke="#cbd5e1" stroke-width="1"/>
+<rect x="190.8" y="354" width="78.4" height="14" rx="2" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1"/>
+<rect x="269.20000000000005" y="354" width="78.4" height="14" rx="2" fill="#fef3c7" stroke="#cbd5e1" stroke-width="1"/>
+<rect x="347.6" y="354" width="78.4" height="14" rx="2" fill="#dcfce7" stroke="#cbd5e1" stroke-width="1"/>
+<text x="34" y="386" text-anchor="start" font-size="11.5" fill="#6b7280">To Do 2  ·  In Progress 1  ·  Review 1  ·  Done 1</text>
+<text x="34" y="412" text-anchor="start" font-size="12.5" fill="#1f2937">Заполнение 21 / 17 sp · 124 %</text>
+<rect x="34" y="420" width="200" height="8" rx="4" fill="#ffffff" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="34" y="420" width="197.64705882352942" height="8" rx="4" fill="#b91c1c"/>
+<text x="246" y="428" text-anchor="start" font-size="12" font-weight="bold" fill="#b91c1c">⚠ перегруз на 4 sp</text>
+<rect x="34" y="452" width="109.6" height="24" rx="12.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="88.8" y="468.32" text-anchor="middle" font-size="12" font-weight="bold" fill="#b91c1c">Просрочено: 2</text>
+<rect x="160" y="452" width="131.2" height="24" rx="12.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="225.6" y="468.32" text-anchor="middle" font-size="12" font-weight="bold" fill="#b91c1c">Заблокировано: 1</text>
+<text x="34" y="494" text-anchor="start" font-size="11.5" fill="#6b7280">DEMO-19 срок 05.11 · DEMO-20 срок 06.11</text>
+<text x="34" y="510" text-anchor="start" font-size="11.5" fill="#6b7280">DEMO-22 заблокирована задачей DEMO-19</text>
+<text x="34" y="554" text-anchor="start" font-size="11.5" fill="#1f2937">Личный кабинет клиента</text>
+<rect x="190" y="546" width="110" height="8" rx="4" fill="#ffffff" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="190" y="546" width="44.0" height="8" rx="4" fill="#2563eb"/>
+<text x="310" y="554" text-anchor="start" font-size="11.5" fill="#6b7280">40 %</text>
+<text x="34" y="574" text-anchor="start" font-size="11.5" fill="#1f2937">Заказы</text>
+<rect x="190" y="566" width="110" height="8" rx="4" fill="#ffffff" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="190" y="566" width="27.5" height="8" rx="4" fill="#2563eb"/>
+<text x="310" y="574" text-anchor="start" font-size="11.5" fill="#6b7280">25 %</text>
+<text x="426" y="606" text-anchor="end" font-size="12.5" font-weight="bold" fill="#2563eb">Доска →   Планирование →</text>
+<rect x="460" y="196" width="420" height="424" rx="8" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<rect x="474" y="208" width="46.0" height="24" rx="12.0" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="497.0" y="224.5" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#1f2937">SHOP</text>
+<text x="532" y="226" text-anchor="start" font-size="15" font-weight="bold" fill="#1f2937">Интернет-магазин</text>
+<circle cx="856" cy="220" r="12" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="856" y="224" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">ИС</text>
+<text x="474" y="254" text-anchor="start" font-size="12.5" font-weight="bold" fill="#1f2937">Спринт 5 · 02.11 – 13.11</text>
+<text x="866" y="254" text-anchor="end" font-size="12.5" fill="#6b7280">осталось 4 дн.</text>
+<text x="474" y="272" text-anchor="start" font-size="12" fill="#6b7280">Цель: корзина и промокоды</text>
+<text x="474" y="298" text-anchor="start" font-size="12.5" fill="#1f2937">Выполнено 14 из 20 sp · 70 %</text>
+<rect x="474" y="306" width="200" height="8" rx="4" fill="#ffffff" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="474" y="306" width="140.0" height="8" rx="4" fill="#2563eb"/>
+<rect x="730" y="286" width="136" height="48" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<polyline points="736.0,292.0 753.7,297.1 771.4,302.3 789.1,307.4 806.9,312.6 824.6,317.7 842.3,322.9 860.0,328.0" fill="none" stroke="#6b7280" stroke-width="1.4" stroke-dasharray="7 5"/>
+<polyline points="736.0,292.0 753.7,293.8 771.4,299.2 789.1,302.8 806.9,308.2 824.6,311.8 842.3,315.4 860.0,317.2" fill="none" stroke="#2563eb" stroke-width="2"/>
+<text x="798.0" y="347" text-anchor="middle" font-size="10" fill="#6b7280">burndown</text>
+<rect x="474" y="354" width="49.0" height="14" rx="2" fill="#e0e7ff" stroke="#cbd5e1" stroke-width="1"/>
+<rect x="523.0" y="354" width="98.0" height="14" rx="2" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1"/>
+<rect x="621.0" y="354" width="49.0" height="14" rx="2" fill="#fef3c7" stroke="#cbd5e1" stroke-width="1"/>
+<rect x="670.0" y="354" width="196.0" height="14" rx="2" fill="#dcfce7" stroke="#cbd5e1" stroke-width="1"/>
+<text x="474" y="386" text-anchor="start" font-size="11.5" fill="#6b7280">To Do 1  ·  In Progress 2  ·  Review 1  ·  Done 4</text>
+<text x="474" y="412" text-anchor="start" font-size="12.5" fill="#1f2937">Заполнение 20 / 22 sp · 91 %</text>
+<rect x="474" y="420" width="200" height="8" rx="4" fill="#ffffff" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="474" y="420" width="145.45454545454544" height="8" rx="4" fill="#2563eb"/>
+<rect x="474" y="452" width="103.36000000000001" height="24" rx="12.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="525.6800000000001" y="468.32" text-anchor="middle" font-size="12" fill="#1f2937">Просрочено: 0</text>
+<rect x="600" y="452" width="123.52000000000001" height="24" rx="12.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="661.76" y="468.32" text-anchor="middle" font-size="12" fill="#1f2937">Заблокировано: 0</text>
+<text x="474" y="494" text-anchor="start" font-size="11.5" fill="#6b7280">Просроченных и заблокированных задач нет</text>
+<text x="474" y="554" text-anchor="start" font-size="11.5" fill="#1f2937">Оплата</text>
+<rect x="630" y="546" width="110" height="8" rx="4" fill="#ffffff" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="630" y="546" width="77.0" height="8" rx="4" fill="#2563eb"/>
+<text x="750" y="554" text-anchor="start" font-size="11.5" fill="#6b7280">70 %</text>
+<text x="474" y="574" text-anchor="start" font-size="11.5" fill="#1f2937">Каталог</text>
+<rect x="630" y="566" width="110" height="8" rx="4" fill="#ffffff" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="630" y="566" width="60.5" height="8" rx="4" fill="#2563eb"/>
+<text x="750" y="574" text-anchor="start" font-size="11.5" fill="#6b7280">55 %</text>
+<text x="866" y="606" text-anchor="end" font-size="12.5" font-weight="bold" fill="#2563eb">Доска →   Планирование →</text>
+<rect x="20" y="634" width="420" height="424" rx="8" fill="#f3f4f6" stroke="#b91c1c" stroke-width="1.8"/>
+<rect x="34" y="646" width="38.5" height="24" rx="12.0" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="53.25" y="662.5" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#1f2937">CRM</text>
+<text x="92" y="664" text-anchor="start" font-size="15" font-weight="bold" fill="#1f2937">Клиентская база</text>
+<circle cx="416" cy="658" r="12" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="416" y="662" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">МО</text>
+<text x="394" y="663" text-anchor="end" font-size="12" font-weight="bold" fill="#b91c1c">⚠ блокировки</text>
+<text x="34" y="692" text-anchor="start" font-size="12.5" font-weight="bold" fill="#1f2937">Спринт 2 · 26.10 – 06.11</text>
+<text x="426" y="692" text-anchor="end" font-size="12.5" fill="#6b7280">спринт закончился 2 дн. назад</text>
+<text x="34" y="710" text-anchor="start" font-size="12" fill="#6b7280">Цель: импорт контактов</text>
+<text x="34" y="736" text-anchor="start" font-size="12.5" fill="#1f2937">Выполнено 8 из 19 sp · 42 %</text>
+<rect x="34" y="744" width="200" height="8" rx="4" fill="#ffffff" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="34" y="744" width="84.21052631578947" height="8" rx="4" fill="#2563eb"/>
+<rect x="290" y="724" width="136" height="48" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<polyline points="296.0,730.0 313.7,735.1 331.4,740.3 349.1,745.4 366.9,750.6 384.6,755.7 402.3,760.9 420.0,766.0" fill="none" stroke="#6b7280" stroke-width="1.4" stroke-dasharray="7 5"/>
+<polyline points="296.0,730.0 313.7,730.0 331.4,731.9 349.1,731.9 366.9,733.8 384.6,737.6 402.3,741.4 420.0,745.2" fill="none" stroke="#2563eb" stroke-width="2"/>
+<text x="358.0" y="785" text-anchor="middle" font-size="10" fill="#6b7280">burndown</text>
+<rect x="34" y="792" width="168.0" height="14" rx="2" fill="#e0e7ff" stroke="#cbd5e1" stroke-width="1"/>
+<rect x="202.0" y="792" width="112.0" height="14" rx="2" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1"/>
+<rect x="314.0" y="792" width="112.0" height="14" rx="2" fill="#dcfce7" stroke="#cbd5e1" stroke-width="1"/>
+<text x="34" y="824" text-anchor="start" font-size="11.5" fill="#6b7280">To Do 3  ·  In Progress 2  ·  Review 0  ·  Done 2</text>
+<text x="34" y="850" text-anchor="start" font-size="12.5" fill="#1f2937">Заполнение 19 / 20 sp · 95 %</text>
+<rect x="34" y="858" width="200" height="8" rx="4" fill="#ffffff" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="34" y="858" width="152.0" height="8" rx="4" fill="#2563eb"/>
+<rect x="34" y="890" width="109.6" height="24" rx="12.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="88.8" y="906.32" text-anchor="middle" font-size="12" font-weight="bold" fill="#b91c1c">Просрочено: 1</text>
+<rect x="160" y="890" width="131.2" height="24" rx="12.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="225.6" y="906.32" text-anchor="middle" font-size="12" font-weight="bold" fill="#b91c1c">Заблокировано: 3</text>
+<text x="34" y="932" text-anchor="start" font-size="11.5" fill="#6b7280">CRM-12 срок 03.11</text>
+<text x="34" y="948" text-anchor="start" font-size="11.5" fill="#6b7280">CRM-15, CRM-16, CRM-18 ждут CRM-9</text>
+<text x="34" y="992" text-anchor="start" font-size="11.5" fill="#1f2937">Импорт</text>
+<rect x="190" y="984" width="110" height="8" rx="4" fill="#ffffff" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="190" y="984" width="38.5" height="8" rx="4" fill="#2563eb"/>
+<text x="310" y="992" text-anchor="start" font-size="11.5" fill="#6b7280">35 %</text>
+<text x="34" y="1012" text-anchor="start" font-size="11.5" fill="#1f2937">Поиск дублей</text>
+<rect x="190" y="1004" width="110" height="8" rx="4" fill="#ffffff" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="190" y="1004" width="11.0" height="8" rx="4" fill="#2563eb"/>
+<text x="310" y="1012" text-anchor="start" font-size="11.5" fill="#6b7280">10 %</text>
+<text x="426" y="1044" text-anchor="end" font-size="12.5" font-weight="bold" fill="#2563eb">Доска →   Планирование →</text>
+<rect x="460" y="634" width="420" height="424" rx="8" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<rect x="474" y="646" width="38.5" height="24" rx="12.0" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="493.25" y="662.5" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#1f2937">API</text>
+<text x="532" y="664" text-anchor="start" font-size="15" font-weight="bold" fill="#1f2937">Публичный API</text>
+<circle cx="856" cy="658" r="12" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="856" y="662" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">АК</text>
+<text x="474" y="692" text-anchor="start" font-size="12.5" font-weight="bold" fill="#1f2937">Спринт 7 · 09.11 – 20.11</text>
+<text x="866" y="692" text-anchor="end" font-size="12.5" fill="#6b7280">осталось 8 дн.</text>
+<text x="474" y="710" text-anchor="start" font-size="12" fill="#6b7280">Цель: версия 2: ключи доступа</text>
+<text x="474" y="736" text-anchor="start" font-size="12.5" fill="#1f2937">Выполнено 5 из 16 sp · 31 %</text>
+<rect x="474" y="744" width="200" height="8" rx="4" fill="#ffffff" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="474" y="744" width="62.5" height="8" rx="4" fill="#2563eb"/>
+<rect x="730" y="724" width="136" height="48" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<polyline points="736.0,730.0 753.7,735.1 771.4,740.3 789.1,745.4 806.9,750.6 824.6,755.7 842.3,760.9 860.0,766.0" fill="none" stroke="#6b7280" stroke-width="1.4" stroke-dasharray="7 5"/>
+<polyline points="736.0,730.0 753.7,730.0 771.4,732.2 789.1,734.5 806.9,736.8 824.6,739.0 842.3,741.2 860.0,741.2" fill="none" stroke="#2563eb" stroke-width="2"/>
+<text x="798.0" y="785" text-anchor="middle" font-size="10" fill="#6b7280">burndown</text>
+<rect x="474" y="792" width="147.0" height="14" rx="2" fill="#e0e7ff" stroke="#cbd5e1" stroke-width="1"/>
+<rect x="621.0" y="792" width="98.0" height="14" rx="2" fill="#dbeafe" stroke="#cbd5e1" stroke-width="1"/>
+<rect x="719.0" y="792" width="49.0" height="14" rx="2" fill="#fef3c7" stroke="#cbd5e1" stroke-width="1"/>
+<rect x="768.0" y="792" width="98.0" height="14" rx="2" fill="#dcfce7" stroke="#cbd5e1" stroke-width="1"/>
+<text x="474" y="824" text-anchor="start" font-size="11.5" fill="#6b7280">To Do 3  ·  In Progress 2  ·  Review 1  ·  Done 2</text>
+<text x="474" y="850" text-anchor="start" font-size="12.5" fill="#1f2937">Заполнение 16 / 18 sp · 89 %</text>
+<rect x="474" y="858" width="200" height="8" rx="4" fill="#ffffff" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="474" y="858" width="142.22222222222223" height="8" rx="4" fill="#2563eb"/>
+<rect x="474" y="890" width="103.36000000000001" height="24" rx="12.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="525.6800000000001" y="906.32" text-anchor="middle" font-size="12" fill="#1f2937">Просрочено: 0</text>
+<rect x="600" y="890" width="123.52000000000001" height="24" rx="12.0" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="661.76" y="906.32" text-anchor="middle" font-size="12" fill="#1f2937">Заблокировано: 0</text>
+<text x="474" y="932" text-anchor="start" font-size="11.5" fill="#6b7280">Просроченных и заблокированных задач нет</text>
+<text x="474" y="992" text-anchor="start" font-size="11.5" fill="#1f2937">Версия 2</text>
+<rect x="630" y="984" width="110" height="8" rx="4" fill="#ffffff" stroke="#6b7280" stroke-width="1.2"/>
+<rect x="630" y="984" width="34.1" height="8" rx="4" fill="#2563eb"/>
+<text x="750" y="992" text-anchor="start" font-size="11.5" fill="#6b7280">31 %</text>
+<text x="866" y="1044" text-anchor="end" font-size="12.5" font-weight="bold" fill="#2563eb">Доска →   Планирование →</text>
+<circle cx="14" cy="206" r="11" fill="#b91c1c"/>
+<text x="14" y="211" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">3</text>
+<circle cx="454" cy="206" r="11" fill="#b91c1c"/>
+<text x="454" y="211" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">4</text>
+<circle cx="400" cy="266" r="11" fill="#b91c1c"/>
+<text x="400" y="271" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">5</text>
+<circle cx="416" cy="496" r="11" fill="#b91c1c"/>
+<text x="416" y="501" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">6</text>
+<text x="20" y="1098" text-anchor="start" font-size="12" fill="#6b7280">Клик по проекту — на его доску или планирование. Риск: перегруз, просрочки, блокировки. Макет, не готовый экран.</text>
+</svg>

@@ -1,17 +1,14 @@
-/* eslint-disable react-hooks/refs -- правило ошибочно срабатывает на ссылки и атрибуты dnd-kit (useDraggable) */
 import {
   DndContext,
   DragOverlay,
   KeyboardSensor,
   PointerSensor,
-  useDraggable,
-  useDroppable,
   useSensor,
   useSensors,
   type DragEndEvent,
 } from '@dnd-kit/core';
 import { useState, type ReactNode } from 'react';
-import { Link, useSearchParams } from 'react-router';
+import { Link, useParams, useSearchParams } from 'react-router';
 import {
   BOARD_COLUMNS,
   GROUP_FIELDS,
@@ -25,131 +22,37 @@ import {
   groupLanes,
   hiddenBacklogCards,
   isGroupField,
-  statsOf,
   type BoardColumn,
   type BoardFilters,
-  type Lane,
 } from '../../domain/board';
 import {
   ISSUE_TYPES,
   PRIORITIES,
-  STATUSES,
-  type Issue,
   type IssueType,
   type Person,
   type Priority,
+  type Project,
   type Status,
 } from '../../domain/schema';
+import type { BulkPatch } from '../../domain/bulk';
+import { wipAfterMove, wipLimit, wipMessage } from '../../domain/wip';
 import { useActions } from '../../state/actions';
 import { usePermissions } from '../../state/current-user';
 import { useBoardPrefs } from '../../state/board-prefs';
 import { useNotices } from '../../state/notices';
+import { useProjectScope } from '../../state/project-scope';
 import { useView } from '../../state/queries';
+import { ProjectFilter } from '../../ui/ProjectFilter';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
-import { useCurrentProject } from '../projects/ProjectRoute';
-import { Avatar, PointsBadge, PriorityChip, TypeIcon } from '../tasks/IssueBits';
+import { useDodGate } from '../tasks/DodGate';
+import { BulkBar } from '../tasks/BulkBar';
 import { BoardNav } from './BoardNav';
+import { BoardCard, LaneView, plural } from './BoardParts';
+import { MultiBoard } from './MultiBoard';
 
-const cellId = (laneKey: string, column: BoardColumn) => `cell:${laneKey}:${column}`;
-
-interface CardProps {
-  issue: Issue;
-  projectKey: string;
-  parentKey: string | null;
-  readOnly: boolean;
-  onStatus: (issueId: string, status: Status) => void;
-}
-
-function BoardCard({ issue, projectKey, parentKey, readOnly, onStatus }: CardProps) {
-  const drag = useDraggable({ id: issue.id, disabled: readOnly });
-  const key = `${projectKey}-${issue.number}`;
-  return (
-    <article
-      ref={drag.setNodeRef}
-      className={`board-card${drag.isDragging ? ' dragging' : ''}`}
-      aria-label={`${key} ${issue.title}`}
-    >
-      <header>
-        {!readOnly && (
-          <button
-            type="button"
-            className="handle"
-            aria-label={`Перетащить ${key}`}
-            ref={drag.setActivatorNodeRef}
-            {...drag.attributes}
-            {...drag.listeners}
-          >
-            ⋮⋮
-          </button>
-        )}
-        <TypeIcon type={issue.type} />
-        <Link to={`/projects/${projectKey}/issues/${issue.number}`} className="issue-key">
-          {key}
-        </Link>
-        {issue.type === 'Sub-task' && parentKey && (
-          <Link
-            className="chip"
-            to={`/projects/${projectKey}/issues/${parentKey.split('-')[1] ?? ''}`}
-            title="Родитель"
-          >
-            ↑ {parentKey}
-          </Link>
-        )}
-        <span className="spacer" />
-        <PointsBadge points={issue.points} />
-      </header>
-      <p className="card-title">{issue.title}</p>
-      <footer>
-        <PriorityChip priority={issue.priority} />
-        <select
-          className="status-select"
-          aria-label={`Статус ${key}`}
-          value={issue.status}
-          disabled={readOnly}
-          onChange={(e) => onStatus(issue.id, e.target.value as Status)}
-        >
-          {STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-      </footer>
-    </article>
-  );
-}
-
-function Cell({
-  laneKey,
-  column,
-  children,
-  hint,
-}: {
-  laneKey: string;
-  column: BoardColumn;
-  children: ReactNode;
-  hint?: boolean;
-}) {
-  const drop = useDroppable({ id: cellId(laneKey, column) });
-  return (
-    <div ref={drop.setNodeRef} className={`board-cell${drop.isOver ? ' over' : ''}`}>
-      {children}
-      {hint && <p className="drop-hint plain">Перетащите сюда</p>}
-    </div>
-  );
-}
-
-const plural = (n: number) =>
-  n % 10 === 1 && n % 100 !== 11
-    ? 'задача'
-    : 2 <= n % 10 && n % 10 <= 4 && !(12 <= n % 100 && n % 100 <= 14)
-      ? 'задачи'
-      : 'задач';
-
-/** Экран «Доска» (wireframes.md, раздел 5): колонки статусов, группировка по полю, перенос карточек. */
-export function BoardPage() {
-  const project = useCurrentProject();
+/** Доска одного проекта (wireframes.md, раздел 5): колонки статусов, группировка по полю, перенос карточек. */
+function SingleBoard({ project, filter }: { project: Project; filter: ReactNode }) {
   const view = useView(project.id);
   const actions = useActions(project.id);
   const push = useNotices((s) => s.push);
@@ -159,6 +62,8 @@ export function BoardPage() {
   const [filters, setFilters] = useState<BoardFilters>(NO_BOARD_FILTERS);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [activeId, setActiveId] = useState<string | null>(null);
+  const dod = useDodGate();
+  const [picked, setPicked] = useState<Set<string>>(new Set());
   const perms = usePermissions();
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -203,9 +108,44 @@ export function BoardPage() {
   const people = new Map<string, Person>(view.people.map((p) => [p.id, p]));
   const activeIssue = view.issues.find((i) => i.id === activeId);
 
+  const unfiltered = columnStats(all);
+  const counts = Object.fromEntries(BOARD_COLUMNS.map((c) => [c, unfiltered[c].count]));
+  const warnWip = (status: string, adding: number) => {
+    const over = wipAfterMove(project, counts, status, adding);
+    if (over) push(wipMessage(over));
+  };
+
   const changeStatus = async (issueId: string, status: Status) => {
+    const before = view.issues.find((i) => i.id === issueId);
+    if (before && !(await dod.ask(project, [before], status, project.key))) return;
     const result = await actions.updateIssue(issueId, { status });
     if (!result.ok) push(Object.values(result.errors).join('. '));
+    else if (before && before.status !== status) warnWip(status, 1);
+  };
+
+  const pickedIssues = cards.filter((i) => picked.has(i.id));
+  const togglePick = (id: string) =>
+    setPicked((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  const applyBulk = async (patch: BulkPatch) => {
+    const ids = pickedIssues.map((i) => i.id);
+    if (patch.status && !(await dod.ask(project, pickedIssues, patch.status, project.key)))
+      return { ok: false, errors: { form: 'Перевод в Done отменён' } } as const;
+    const result = await actions.bulkUpdate(ids, patch);
+    if (result.ok) {
+      push(`Изменено задач: ${ids.length}`);
+      if (patch.status)
+        warnWip(
+          patch.status,
+          ids.filter((id) => view.issues.find((i) => i.id === id)?.status !== patch.status).length,
+        );
+      setPicked(new Set());
+    }
+    return result;
   };
 
   const onDragEnd = (e: DragEndEvent) => {
@@ -238,19 +178,22 @@ export function BoardPage() {
 
   return (
     <>
+      {dod.dialog}
       <PageHeader title="Доска" />
       <BoardNav projectKey={project.key} sprint={sprint} />
       <div className="board-toolbar">
+        {filter}
         <label>
           Спринт
           <select
             value={sprint.id}
             onChange={(e) =>
-              setParams(
-                e.target.value === defaultSprint(view.sprints)?.id
-                  ? {}
-                  : { sprint: e.target.value },
-              )
+              setParams((prev) => {
+                const next = new URLSearchParams(prev);
+                if (e.target.value === defaultSprint(view.sprints)?.id) next.delete('sprint');
+                else next.set('sprint', e.target.value);
+                return next;
+              })
             }
           >
             {sprints.map((s) => (
@@ -320,6 +263,16 @@ export function BoardPage() {
         </button>
       </div>
 
+      {!readOnly && pickedIssues.length > 0 && (
+        <BulkBar
+          count={pickedIssues.length}
+          people={view.people}
+          sprints={view.sprints.filter((s) => s.state !== 'closed')}
+          statusAllowed={pickedIssues.every((i) => perms.canChangeStatus(i))}
+          onApply={applyBulk}
+          onClear={() => setPicked(new Set())}
+        />
+      )}
       {readOnly && (
         <p className="warn" role="status">
           Спринт закрыт: доска только для чтения.
@@ -365,6 +318,12 @@ export function BoardPage() {
                   <span className="muted">
                     {stats[c].count} · {stats[c].points} sp
                   </span>
+                  {wipLimit(project, c) !== undefined &&
+                    (counts[c] ?? 0) > (wipLimit(project, c) ?? 0) && (
+                      <span className="wip-over" role="status">
+                        ⚠ WIP {counts[c]} из {wipLimit(project, c)}
+                      </span>
+                    )}
                 </div>
               ))}
             </div>
@@ -383,6 +342,7 @@ export function BoardPage() {
                     parentKey={issueKey(issue.parentId)}
                     readOnly={readOnly || !perms.canChangeStatus(issue)}
                     onStatus={(id, status) => void changeStatus(id, status)}
+                    {...(readOnly ? {} : { selected: picked.has(issue.id), onSelect: togglePick })}
                   />
                 )}
                 person={lane.person ?? people.get(lane.key)}
@@ -409,52 +369,34 @@ export function BoardPage() {
   );
 }
 
-function LaneView({
-  lane,
-  first,
-  collapsed,
-  onToggle,
-  renderCard,
-  person,
-}: {
-  lane: Lane;
-  first: boolean;
-  collapsed: boolean;
-  onToggle: () => void;
-  renderCard: (issue: Issue) => ReactNode;
-  person: Person | undefined;
-}) {
-  const total = statsOf(lane.issues);
-  return (
-    <section className="lane" aria-label={lane.title}>
-      <header className="lane-head">
-        <button type="button" className="plain" aria-expanded={!collapsed} onClick={onToggle}>
-          {collapsed ? '▸' : '▾'}
-        </button>
-        {person && <Avatar person={person} />}
-        <strong>{lane.title}</strong>
-        <span className="spacer" />
-        <span className="muted">
-          {total.count} {plural(total.count)} · {total.points} sp
-        </span>
-      </header>
-      {!collapsed && (
-        <div className="board-columns">
-          {BOARD_COLUMNS.map((c) => {
-            const items = lane.issues.filter((i) => i.status === c);
-            return (
-              <Cell
-                key={c}
-                laneKey={lane.key}
-                column={c}
-                hint={first && c === 'Done' && items.length === 0}
-              >
-                {items.map(renderCard)}
-              </Cell>
-            );
-          })}
-        </div>
-      )}
-    </section>
-  );
+/**
+ * Экран «Доска»: один выбранный проект — обычная доска; несколько — дорожки-проекты с общими
+ * колонками статусов (wireframes.md, 19.1, ADR-016).
+ */
+export function BoardPage() {
+  const { ready, scope } = useProjectScope();
+  const { key = '' } = useParams();
+  if (!ready) {
+    return (
+      <>
+        <PageHeader title="Доска" />
+        <Loading />
+      </>
+    );
+  }
+  const filter = <ProjectFilter />;
+  const projects = scope.projects;
+  const [only] = projects;
+  if (projects.length === 0) {
+    return (
+      <>
+        <PageHeader title="Доска" />
+        <div className="board-toolbar">{filter}</div>
+        <p className="empty">Не выбрано ни одного проекта: выберите проекты в фильтре.</p>
+      </>
+    );
+  }
+  if (only && projects.length === 1)
+    return <SingleBoard key={only.id} project={only} filter={filter} />;
+  return <MultiBoard projects={projects} routeKey={key || (only?.key ?? '')} filter={filter} />;
 }

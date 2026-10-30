@@ -16,6 +16,10 @@ STATUSES = ["Backlog", "To Do", "In Progress", "Review", "Done"]
 PRIORITIES = {"Highest", "High", "Medium", "Low"}
 SPRINT_STATES = {"planned", "active", "closed"}
 LINK_TYPES = {"blocks", "relates", "duplicates"}
+PROJECT_ROLES = {"product", "lead", "developer"}
+ABSENCE_KINDS = {"vacation", "sick", "other"}
+RETRO_KINDS = {"good", "improve", "action"}
+WIP_COLUMNS = {"To Do", "In Progress", "Review", "Done"}
 FIELDS = {
     "created", "status", "assigneeId", "points", "sprintId",
     "title", "description", "acceptance", "priority", "parentId", "labels", "dueDate",
@@ -34,6 +38,10 @@ def main():
     if not isinstance(seed.get("version"), int) or isinstance(seed.get("version"), bool) or seed["version"] < 1:
         err("version: ожидается целое число >= 1 (при изменении seed его нужно увеличить)")
     seed = {k: v for k, v in seed.items() if k != "version"}
+    seed.setdefault("members", [])
+    seed.setdefault("templates", [])
+    seed.setdefault("absences", [])
+    seed.setdefault("retroItems", [])
     ids = {k: {x["id"] for x in seed[k]} for k in seed}
     for k, v in seed.items():
         if len(ids[k]) != len(v):
@@ -61,6 +69,63 @@ def main():
             err(f"{w}: sprintPrefix не может быть пустым")
         if pr.get("nextSprintStart") is not None and not isinstance(pr["nextSprintStart"], str):
             err(f"{w}: nextSprintStart — дата или null")
+        ref(pr.get("ownerId"), "people", w + " (ownerId)", True)
+        if not isinstance(pr.get("wipEnabled", False), bool):
+            err(f"{w}: wipEnabled — true или false")
+        for col, lim in (pr.get("wipLimits") or {}).items():
+            if col not in WIP_COLUMNS:
+                err(f"{w}: WIP-лимит для неизвестной колонки {col}")
+            elif not isinstance(lim, int) or isinstance(lim, bool) or not 1 <= lim <= 999:
+                err(f"{w}: WIP-лимит колонки {col} — целое 1–999")
+    for pr in seed["projects"]:
+        if not isinstance(pr.get("dod", ""), str) or len(pr.get("dod", "")) > 5000:
+            err(f"project {pr['id']}: dod — строка до 5000 символов")
+    for a in seed["absences"]:
+        w = f"absence {a['id']}"
+        ref(a["personId"], "people", w)
+        if a["kind"] not in ABSENCE_KINDS:
+            err(f"{w}: вид {a['kind']}")
+        if a["end"] < a["start"]:
+            err(f"{w}: конец раньше начала")
+    for r in seed["retroItems"]:
+        w = f"retroItem {r['id']}"
+        ref(r["projectId"], "projects", w)
+        ref(r["sprintId"], "sprints", w)
+        ref(r["authorId"], "people", w)
+        ref(r.get("issueId"), "issues", w, True)
+        if r["kind"] not in RETRO_KINDS:
+            err(f"{w}: вид {r['kind']}")
+        if not r["text"].strip() or len(r["text"]) > 500:
+            err(f"{w}: текст 1–500 символов")
+        spr = sprints.get(r["sprintId"])
+        if spr and spr["projectId"] != r["projectId"]:
+            err(f"{w}: спринт другого проекта")
+    seen_names = set()
+    for tpl in seed.get("templates", []):
+        w = f"template {tpl['id']}"
+        ref(tpl["projectId"], "projects", w)
+        if tpl["type"] not in TYPES or tpl["type"] == "Epic":
+            err(f"{w}: тип {tpl['type']}")
+        if not tpl["name"].strip() or len(tpl["name"]) > 60:
+            err(f"{w}: название 1–60 символов")
+        key = (tpl["projectId"], tpl["name"].lower())
+        if key in seen_names:
+            err(f"{w}: название шаблона повторяется в проекте")
+        seen_names.add(key)
+    seen_members = set()
+    for m in seed.get("members", []):
+        w = f"member {m['id']}"
+        ref(m["projectId"], "projects", w)
+        ref(m["personId"], "people", w)
+        if m["role"] not in PROJECT_ROLES:
+            err(f"{w}: роль {m['role']}")
+        key = (m["projectId"], m["personId"])
+        if key in seen_members:
+            err(f"{w}: человек уже участник проекта")
+        seen_members.add(key)
+        owner = next((p.get("ownerId") for p in seed["projects"] if p["id"] == m["projectId"]), None)
+        if owner == m["personId"]:
+            err(f"{w}: владелец проекта не должен повторяться среди участников")
     for s in seed["sprints"]:
         w = f"sprint {s['id']}"
         ref(s["projectId"], "projects", w)

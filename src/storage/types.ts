@@ -7,6 +7,10 @@ import type {
   Link,
   Person,
   Project,
+  ProjectMember,
+  IssueTemplate,
+  Absence,
+  RetroItem,
   Sprint,
 } from '../domain/schema';
 
@@ -18,6 +22,14 @@ export interface TrackerStorage {
   getProjects(): Promise<Project[]>;
   getProject(key: string): Promise<Project | null>;
   getPeople(): Promise<Person[]>;
+  /** Участники всех проектов (ADR-016): их немного, поэтому отдаются разом. */
+  getMembers(): Promise<ProjectMember[]>;
+  /** Шаблоны задач всех проектов (ADR-017). */
+  getTemplates(): Promise<IssueTemplate[]>;
+  /** Отсутствия людей (ADR-018): общие для всех проектов. */
+  getAbsences(): Promise<Absence[]>;
+  /** Записи ретроспектив спринтов проекта (ADR-018). */
+  getRetroItems(projectId: string): Promise<RetroItem[]>;
   getSprints(projectId: string): Promise<Sprint[]>;
   getIssues(projectId: string): Promise<Issue[]>;
   getIssue(projectId: string, number: number): Promise<Issue | null>;

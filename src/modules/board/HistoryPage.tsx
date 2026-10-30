@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useParams } from 'react-router';
 import { HISTORY_PAGE, closedSprints, totalPoints, type ClosedSprint } from '../../domain/planning';
 import type { Issue, IssueType } from '../../domain/schema';
 import { ISSUE_TYPES } from '../../domain/schema';
-import { useProjectHistory, useView } from '../../state/queries';
+import { useProjectScope } from '../../state/project-scope';
+import { useProjectHistories, useProjectViews } from '../../state/queries';
+import { ProjectFilter } from '../../ui/ProjectFilter';
 import { dateRange, num, shortDate, taskWord } from '../../ui/format';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
-import { useCurrentProject } from '../projects/ProjectRoute';
+import { RetroSection } from '../sprints/RetroSection';
 import { Avatar, PointsBadge, PriorityChip, TypeIcon } from '../tasks/IssueBits';
 
 interface Filters {
@@ -21,6 +23,7 @@ function SprintBlock({
   issues,
   projectKey,
   people,
+  showProject,
   open,
   onToggle,
 }: {
@@ -28,6 +31,7 @@ function SprintBlock({
   issues: Issue[];
   projectKey: string;
   people: { id: string; name: string; role: string }[];
+  showProject: boolean;
   open: boolean;
   onToggle: () => void;
 }) {
@@ -39,9 +43,11 @@ function SprintBlock({
           <button type="button" className="plain" aria-expanded={open} onClick={onToggle}>
             {open ? '▾' : '▸'} <strong>{sprint.name}</strong>
           </button>
+          {showProject && <span className="chip project-tag">{projectKey}</span>}
           <span className="chip">закрыт</span>
           <span className="muted">{dateRange(sprint.start, sprint.end)}</span>
           <span className="spacer" />
+          <Link to={`/projects/${projectKey}/sprints/${sprint.id}/report`}>Отчёт спринта</Link>
           <Link to={`/projects/${projectKey}/reports`}>Отчёты спринтов</Link>
         </div>
         <span className="muted">
@@ -69,20 +75,32 @@ function SprintBlock({
           {issues.length === 0 && <li className="drop-hint">Нет задач под фильтры</li>}
         </ul>
       )}
+      {open && (
+        <>
+          <h3>Ретроспектива</h3>
+          <RetroSection
+            projectId={sprint.projectId}
+            projectKey={projectKey}
+            sprint={sprint}
+            readOnly
+          />
+        </>
+      )}
     </section>
   );
 }
 
 /** Вкладка «Прошлые спринты» (wireframes.md, 17.4а, ADR-014): закрытые спринты, только чтение. */
 export function HistoryPage() {
-  const project = useCurrentProject();
-  const view = useView(project.id);
-  const history = useProjectHistory(project.id);
+  const { ready, scope } = useProjectScope();
+  const { key: routeKey = '' } = useParams();
+  const views = useProjectViews(scope.projects);
+  const histories = useProjectHistories(scope.projects);
   const [filters, setFilters] = useState<Filters>({ search: '', assigneeId: '', type: '' });
   const [limit, setLimit] = useState(HISTORY_PAGE);
   const [opened, setOpened] = useState<Set<string> | null>(null);
 
-  if (!view || !history.data) {
+  if (!ready || !views || !histories) {
     return (
       <>
         <PageHeader title="Прошлые спринты" />
@@ -91,15 +109,25 @@ export function HistoryPage() {
     );
   }
 
-  const all = closedSprints(view.sprints, view.issues, history.data);
+  const multi = scope.projects.length > 1;
+  const people = views[0]?.people ?? [];
+  // Закрытые спринты всех выбранных проектов одним списком, новые первыми
+  const all = views
+    .flatMap((v) =>
+      closedSprints(v.sprints, v.issues, histories.get(v.projectId) ?? []).map((item) => ({
+        item,
+        projectKey: v.project.key,
+      })),
+    )
+    .sort((a, b) => b.item.sprint.end.localeCompare(a.item.sprint.end));
   // По умолчанию раскрыт самый свежий закрытый спринт
-  const expanded = opened ?? new Set(all.slice(0, 1).map((c) => c.sprint.id));
+  const expanded = opened ?? new Set(all.slice(0, 1).map((c) => c.item.sprint.id));
   const q = filters.search.trim().toLowerCase();
-  const match = (i: Issue) =>
-    (q === '' || `${project.key}-${i.number} ${i.title}`.toLowerCase().includes(q)) &&
+  const match = (projectKey: string) => (i: Issue) =>
+    (q === '' || `${projectKey}-${i.number} ${i.title}`.toLowerCase().includes(q)) &&
     (filters.assigneeId === '' || i.assigneeId === filters.assigneeId) &&
     (filters.type === '' || i.type === filters.type);
-  const rows = all.map((c) => ({ item: c, issues: c.done.filter(match) }));
+  const rows = all.map((c) => ({ ...c, issues: c.item.done.filter(match(c.projectKey)) }));
   const filtering = q !== '' || filters.assigneeId !== '' || filters.type !== '';
   const visible = rows.filter((r) => !filtering || r.issues.length > 0);
   const shown = visible.slice(0, limit);
@@ -118,6 +146,7 @@ export function HistoryPage() {
       <PageHeader title="Прошлые спринты" />
       <p className="muted">История закрытых спринтов: только чтение.</p>
       <div className="board-toolbar planning-filters" role="search" aria-label="Фильтры истории">
+        <ProjectFilter />
         <label>
           Поиск
           <input
@@ -134,7 +163,7 @@ export function HistoryPage() {
             onChange={(e) => setFilters({ ...filters, assigneeId: e.target.value })}
           >
             <option value="">Все</option>
-            {view.people.map((p) => (
+            {people.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
               </option>
@@ -170,8 +199,9 @@ export function HistoryPage() {
             key={r.item.sprint.id}
             item={r.item}
             issues={r.issues}
-            projectKey={project.key}
-            people={view.people}
+            projectKey={r.projectKey}
+            showProject={multi}
+            people={people}
             open={expanded.has(r.item.sprint.id) || (filtering && r.issues.length > 0)}
             onToggle={() => toggle(r.item.sprint.id)}
           />
@@ -185,7 +215,7 @@ export function HistoryPage() {
         </p>
       )}
       <p>
-        <Link to={`/projects/${project.key}/board`}>← К доске</Link>
+        <Link to={`/projects/${routeKey || scope.projects[0]?.key || ''}/board`}>← К доске</Link>
       </p>
     </>
   );

@@ -8,6 +8,14 @@ export const ISSUE_TYPES = ['Epic', 'Story', 'Task', 'Bug', 'Sub-task'] as const
 export const STATUSES = ['Backlog', 'To Do', 'In Progress', 'Review', 'Done'] as const;
 export const PRIORITIES = ['Highest', 'High', 'Medium', 'Low'] as const;
 export const SPRINT_STATES = ['planned', 'active', 'closed'] as const;
+/** Роли в проекте: продакт, тимлид, разработчик (ADR-016). */
+export const PROJECT_ROLES = ['product', 'lead', 'developer'] as const;
+/** Колонки доски, для которых задаётся WIP-лимит (ADR-017). */
+export const WIP_COLUMNS = ['To Do', 'In Progress', 'Review', 'Done'] as const;
+/** Виды отсутствия человека (ADR-018). */
+export const ABSENCE_KINDS = ['vacation', 'sick', 'other'] as const;
+/** Списки ретроспективы: что хорошо, что улучшить, действия (ADR-018). */
+export const RETRO_KINDS = ['good', 'improve', 'action'] as const;
 export const LINK_TYPES = ['blocks', 'relates', 'duplicates'] as const;
 export const HISTORY_FIELDS = [
   'created',
@@ -36,6 +44,53 @@ export const projectSchema = z.object({
   sprintPrefix: z.string().min(1).max(30),
   nextSprintNumber: z.number().int().min(1).max(9999),
   nextSprintStart: z.iso.date().nullable(),
+  /** Продакт-владелец проекта (ADR-016); у проектов, созданных раньше, не задан. */
+  ownerId: nullableId.default(null),
+  /** WIP-лимиты колонок доски (ADR-017): по умолчанию выключены. */
+  wipEnabled: z.boolean().default(false),
+  /** Лимит задач на колонку; нет записи — без лимита. */
+  wipLimits: z.partialRecord(z.enum(WIP_COLUMNS), z.number().int().min(1).max(999)).default({}),
+  /** Definition of Done проекта (ADR-018): чек-лист Markdown, строки «- [ ] …»; пусто — без подтверждения. */
+  dod: z.string().max(5000).default(''),
+});
+
+/** Участник проекта с ролью в нём; владелец проекта хранится в Project.ownerId и здесь не повторяется. */
+export const memberSchema = z.object({
+  id,
+  projectId: id,
+  personId: id,
+  role: z.enum(PROJECT_ROLES),
+});
+
+/** Шаблон задачи проекта (ADR-017): подставляет тип, описание и критерии при создании. */
+export const templateSchema = z.object({
+  id,
+  projectId: id,
+  name: z.string().min(1).max(60),
+  type: z.enum(ISSUE_TYPES),
+  description: z.string().max(10000),
+  acceptance: z.string().max(10000),
+});
+
+/** Отсутствие человека (отпуск, больничный): уменьшает ёмкость спринтов, на которые приходится (ADR-018). */
+export const absenceSchema = z.object({
+  id,
+  personId: id,
+  start: z.iso.date(),
+  end: z.iso.date(),
+  kind: z.enum(ABSENCE_KINDS),
+});
+
+/** Запись ретроспективы спринта; у действия `issueId` — задача, созданная из него. */
+export const retroItemSchema = z.object({
+  id,
+  projectId: id,
+  sprintId: id,
+  kind: z.enum(RETRO_KINDS),
+  text: z.string().min(1).max(500),
+  authorId: id,
+  createdAt: z.iso.datetime(),
+  issueId: nullableId.default(null),
 });
 
 export const personSchema = z.object({
@@ -107,6 +162,13 @@ export const datasetSchema = z.object({
   version: z.number().int().min(1),
   projects: z.array(projectSchema),
   people: z.array(personSchema),
+  /** Участники проектов; в старых наборах данных поля нет. */
+  members: z.array(memberSchema).default([]),
+  /** Шаблоны задач проектов; в старых наборах данных поля нет. */
+  templates: z.array(templateSchema).default([]),
+  /** Отсутствия и записи ретроспектив; в старых наборах данных полей нет. */
+  absences: z.array(absenceSchema).default([]),
+  retroItems: z.array(retroItemSchema).default([]),
   sprints: z.array(sprintSchema),
   issues: z.array(issueSchema),
   links: z.array(linkSchema),
@@ -122,7 +184,15 @@ export type LinkType = (typeof LINK_TYPES)[number];
 export type HistoryField = (typeof HISTORY_FIELDS)[number];
 
 export type Project = z.infer<typeof projectSchema>;
+export type ProjectRole = (typeof PROJECT_ROLES)[number];
 export type Person = z.infer<typeof personSchema>;
+export type ProjectMember = z.infer<typeof memberSchema>;
+export type Absence = z.infer<typeof absenceSchema>;
+export type RetroItem = z.infer<typeof retroItemSchema>;
+export type AbsenceKind = (typeof ABSENCE_KINDS)[number];
+export type RetroKind = (typeof RETRO_KINDS)[number];
+export type IssueTemplate = z.infer<typeof templateSchema>;
+export type WipColumn = (typeof WIP_COLUMNS)[number];
 export type Sprint = z.infer<typeof sprintSchema>;
 export type Issue = z.infer<typeof issueSchema>;
 export type Link = z.infer<typeof linkSchema>;

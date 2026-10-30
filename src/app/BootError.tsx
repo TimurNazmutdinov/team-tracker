@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { StorageError } from '../storage';
+import { reportError } from './error-log';
 import { Logo } from '../ui/Logo';
 import { clearSavedData } from './create-storage';
 
@@ -6,6 +8,7 @@ import { clearSavedData } from './create-storage';
 export function BootError({ error }: { error: unknown }) {
   const message = error instanceof Error ? error.message : 'неизвестная ошибка';
   const details = error instanceof StorageError ? error.details : [];
+  useEffect(() => reportError(error, 'запуск'), [error]);
   const onClear = () => {
     clearSavedData();
     window.location.reload();

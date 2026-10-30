@@ -7,6 +7,10 @@ import {
   historySchema,
   issueSchema,
   linkSchema,
+  memberSchema,
+  templateSchema,
+  absenceSchema,
+  retroItemSchema,
   personSchema,
   projectSchema,
   sprintSchema,
@@ -82,6 +86,13 @@ export const backupJsonSchema = z.object({
   data: z.object({
     projects: z.array(projectSchema),
     people: z.array(personSchema),
+    // в копиях до ADR-016 участников проектов нет
+    members: z.array(memberSchema).default([]),
+    // в копиях до ADR-017 шаблонов задач нет
+    templates: z.array(templateSchema).default([]),
+    // в копиях до ADR-018 отсутствий и записей ретроспектив нет
+    absences: z.array(absenceSchema).default([]),
+    retroItems: z.array(retroItemSchema).default([]),
     sprints: z.array(sprintSchema),
     issues: z.array(issueSchema),
     links: z.array(linkSchema),
@@ -109,6 +120,10 @@ export function snapshotProblems(snapshot: Snapshot): string[] {
   for (const key of [
     'projects',
     'people',
+    'members',
+    'templates',
+    'absences',
+    'retroItems',
     'sprints',
     'issues',
     'links',

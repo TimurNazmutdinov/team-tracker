@@ -37,6 +37,10 @@ const sortById = <T extends { id: string }>(rows: T[]) =>
 const normalized = (e: Entities): Entities => ({
   projects: sortById(e.projects),
   people: sortById(e.people),
+  members: sortById(e.members),
+  templates: sortById(e.templates),
+  absences: sortById(e.absences),
+  retroItems: sortById(e.retroItems),
   sprints: sortById(e.sprints),
   issues: sortById(e.issues),
   links: sortById(e.links),
@@ -138,6 +142,9 @@ describe('экспорт, проверка и восстановление', () 
     first.description = 'Строка 1\nСтрока 2\n\n🎉 <b>&amp;</b> "кавычки" =SUM(A1:A2) +1 @cmd';
     first.acceptance = '- [ ] первое\n- [ ] второе';
     first.labels = ['бэкенд', 'срочно'];
+    // Definition of Done с переносами строк должен пройти оба круга (json и Excel)
+    const demo = seed.projects[0];
+    if (demo) demo.dod = '- [ ] Тесты проходят\n- [ ] Ревью сделано';
     await importDataset(source.db, seed);
     await createAccount(source.db, {
       email: 'admin@example.com',
@@ -200,6 +207,10 @@ describe('экспорт, проверка и восстановление', () 
       'Сводка',
       'Проекты',
       'Люди',
+      'Участники проектов',
+      'Шаблоны задач',
+      'Отсутствия',
+      'Ретроспективы',
       'Спринты',
       'Задачи',
       'Связи',
@@ -345,6 +356,21 @@ describe('экспорт, проверка и восстановление', () 
     writeFileSync(join(d, JSON_FILE), JSON.stringify(raw));
     const loaded = await loadBundle(d, 'json');
     expect(loaded.ok && loaded.snapshot.accounts.map((a) => a.palette)).toEqual(['beige', 'beige']);
+  });
+
+  it('копия до ADR-016 без владельцев и участников проектов восстанавливается без них', async () => {
+    const d = join(root, 'before-members');
+    mkdirSync(d, { recursive: true });
+    const raw = JSON.parse(readFileSync(join(folder, JSON_FILE), 'utf8')) as {
+      data: { members?: unknown; projects: Record<string, unknown>[] };
+    };
+    delete raw.data.members;
+    for (const p of raw.data.projects) delete p.ownerId;
+    writeFileSync(join(d, JSON_FILE), JSON.stringify(raw));
+    const loaded = await loadBundle(d, 'json');
+    expect(loaded.ok).toBe(true);
+    expect(loaded.ok && loaded.snapshot.data.members).toEqual([]);
+    expect(loaded.ok && loaded.snapshot.data.projects.map((p) => p.ownerId)).toEqual([null]);
   });
 
   it('автовыбор: json, а если он повреждён, — Excel с пометкой; оба повреждены — отказ', async () => {

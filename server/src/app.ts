@@ -6,14 +6,17 @@ import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest }
 import { z } from 'zod';
 import { PALETTES } from '../../src/domain/palettes';
 import { ROLES, can } from '../../src/domain/permissions';
+import { scopePrefSchema } from '../../src/domain/projectScope';
 import * as auth from './auth';
 import { changesSchema } from './changes-schema';
 import type { Db } from './db';
 import { HttpError } from './errors';
 import { checkBackupDir, listFolders } from './backups/folders';
 import type { BackupService } from './backups/service';
+import { buildDiagnostics, type AboutInfo } from './about';
+import type { LogStore } from './logs';
 import { commit, findIssueByNumber, readers } from './repo';
-import { BACKUP_DIR_KEY, setSetting } from './settings';
+import { BACKUP_DIR_KEY, ONBOARDING_KEY, getSetting, setSetting } from './settings';
 
 const COOKIE = 'tt_session';
 
@@ -27,6 +30,12 @@ export interface AppOptions {
   dataDir?: string;
   /** Открыта ли самостоятельная регистрация; по умолчанию закрыта (ADR-011). */
   allowRegistration?: boolean;
+  /** Журналы ошибок в DATA_DIR/logs; без них журнал и диагностика недоступны. */
+  logs?: LogStore;
+  /** Сведения о программе для экрана «О программе» и диагностики. */
+  about?: AboutInfo;
+  /** Настройки без секретов для архива диагностики. */
+  settings?: Record<string, string | number | boolean>;
   /** Ставить cookie только по HTTPS (включать за HTTPS-прокси). */
   secureCookies?: boolean;
   logger?: boolean;
@@ -35,7 +44,12 @@ export interface AppOptions {
 const credentials = z.object({ email: z.string(), password: z.string() });
 const registration = credentials.extend({ name: z.string() });
 const roleBody = z.object({ role: z.enum(ROLES) });
-const preferencesBody = z.object({ palette: z.enum(PALETTES) });
+const preferencesBody = z
+  .object({ palette: z.enum(PALETTES), projectFilter: scopePrefSchema.nullable() })
+  .partial()
+  .refine((b) => b.palette !== undefined || b.projectFilter !== undefined, {
+    message: 'Нужно хотя бы одно поле',
+  });
 const newAccountBody = registration.extend({ role: z.enum(ROLES).optional() });
 const passwordBody = z.object({ password: z.string() });
 const changePasswordBody = z.object({ current: z.string(), next: z.string() });
@@ -64,6 +78,13 @@ export function buildApp(options: AppOptions): FastifyInstance {
         .send({ error: { code: 'bad_request', message: 'Некорректный запрос', details: [] } });
     }
     app.log.error(error);
+    const path = `${_req.method} ${_req.url.split('?')[0] ?? ''}`;
+    const err = error instanceof Error ? error : new Error(String(error));
+    options.logs?.write('server', {
+      message: `${path}: ${err.message}`,
+      stack: err.stack,
+      where: path,
+    });
     return reply
       .status(500)
       .send({ error: { code: 'server_error', message: 'Ошибка сервера', details: [] } });
@@ -165,9 +186,17 @@ export function buildApp(options: AppOptions): FastifyInstance {
   // Настройки профиля (цветовая гамма): доступны и до смены временного пароля
   app.patch('/api/auth/preferences', async (req) => {
     const me = await requireUser(req, true);
-    const { palette } = parse(preferencesBody, req.body);
-    await auth.setPalette(db, me.id, palette);
-    return { ...me, palette };
+    const body = parse(preferencesBody, req.body);
+    let next = me;
+    if (body.palette !== undefined) {
+      await auth.setPalette(db, me.id, body.palette);
+      next = { ...next, palette: body.palette };
+    }
+    if (body.projectFilter !== undefined) {
+      await auth.setProjectFilter(db, me.id, body.projectFilter);
+      next = { ...next, projectFilter: body.projectFilter };
+    }
+    return next;
   });
 
   app.post('/api/auth/password', async (req, reply) => {
@@ -175,6 +204,23 @@ export function buildApp(options: AppOptions): FastifyInstance {
     const body = parse(changePasswordBody, req.body);
     setSession(reply, await auth.changePassword(db, me.id, body.current, body.next));
     return reply.status(204).send();
+  });
+
+  // ---------------------------------------------------------------- мастер первого запуска (ADR-020)
+
+  app.get('/api/onboarding', async (req) => {
+    await requireUser(req);
+    return { done: (await getSetting(db, ONBOARDING_KEY)) === 'done' };
+  });
+
+  app.put('/api/onboarding', async (req) => {
+    const me = await requireUser(req);
+    if (!can(me.role, 'users.manage')) {
+      throw new HttpError(403, 'forbidden', 'Мастер первого запуска настраивает администратор');
+    }
+    const body = parse(z.object({ done: z.boolean() }), req.body);
+    await setSetting(db, ONBOARDING_KEY, body.done ? 'done' : 'pending');
+    return { done: body.done };
   });
 
   // ---------------------------------------------------------------- учётки (администратор)
@@ -281,10 +327,74 @@ export function buildApp(options: AppOptions): FastifyInstance {
     });
   }
 
+  // ---------------------------------------------------------------- о программе и журнал ошибок (ADR-015)
+
+  app.get('/api/about', async (req) => {
+    await requireUser(req);
+    return options.about ?? null;
+  });
+
+  // Ошибки клиента: принимаются и до входа, но ограничены по размеру и частоте
+  const clientErrorBody = z.object({
+    message: z.string().max(2000),
+    stack: z.string().max(6000).optional(),
+    where: z.string().max(300).optional(),
+  });
+  const clientErrorTimes: number[] = [];
+  app.post('/api/client-errors', async (req, reply) => {
+    const body = parse(clientErrorBody, req.body);
+    const now = Date.now();
+    while (clientErrorTimes.length > 0 && now - (clientErrorTimes[0] ?? 0) > 60_000) {
+      clientErrorTimes.shift();
+    }
+    if (clientErrorTimes.length >= 60) return reply.status(429).send();
+    clientErrorTimes.push(now);
+    options.logs?.write('client', body);
+    return reply.status(204).send();
+  });
+
+  const diagnoseOnly = async (req: FastifyRequest) => {
+    const me = await requireUser(req);
+    if (!can(me.role, 'system.diagnose')) {
+      throw new HttpError(403, 'forbidden', 'Журнал и диагностика доступны только администратору');
+    }
+    return me;
+  };
+
+  app.get<{ Querystring: { limit?: string } }>('/api/admin/log', async (req) => {
+    await diagnoseOnly(req);
+    const limit = Math.min(Math.max(Number(req.query.limit) || 50, 1), 200);
+    return options.logs?.recent(limit) ?? [];
+  });
+
+  app.get('/api/admin/diagnostics', async (req, reply) => {
+    await diagnoseOnly(req);
+    if (!options.about) throw new HttpError(404, 'not_found', 'Диагностика недоступна');
+    const zip = buildDiagnostics({
+      about: options.about,
+      settings: options.settings ?? {},
+      backups: options.backups?.status() ?? null,
+      logs: options.logs ?? null,
+    });
+    const day = new Date().toISOString().slice(0, 10);
+    return reply
+      .header('content-type', 'application/zip')
+      .header('content-disposition', `attachment; filename="diagnostics-${day}.zip"`)
+      .send(Buffer.from(zip));
+  });
+
   // ---------------------------------------------------------------- данные
 
   app.get('/api/projects', async (req) => (await requireUser(req), readers.projects(db)));
   app.get('/api/people', async (req) => (await requireUser(req), readers.people(db)));
+  app.get('/api/templates', async (req) => (await requireUser(req), readers.templates(db)));
+  app.get('/api/absences', async (req) => (await requireUser(req), readers.absences(db)));
+  app.get('/api/members', async (req) => (await requireUser(req), readers.members(db)));
+
+  app.get<{ Params: { id: string } }>('/api/projects/:id/retro', async (req) => {
+    await requireUser(req);
+    return readers.retroItems(db, req.params.id);
+  });
 
   app.get<{ Params: { id: string } }>('/api/projects/:id/sprints', async (req) => {
     await requireUser(req);

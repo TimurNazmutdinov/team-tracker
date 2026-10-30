@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="760" viewBox="0 0 900 760" font-family="Helvetica, Arial, 'Segoe UI', 'DejaVu Sans', sans-serif" role="img" aria-label="Definition of Done: настройка и подтверждение при переносе в Done">
+<title>Definition of Done: настройка и подтверждение при переносе в Done</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker></defs>
+<rect width="900" height="760" fill="#ffffff"/>
+<rect x="0.6" y="0.6" width="898.8" height="758.8" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="0.6" y="0.6" width="898.8" height="34" rx="10" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="1" y="20" width="898" height="15" rx="0" fill="#f3f4f6"/>
+<circle cx="18" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="36" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="54" cy="17" r="5" fill="#cbd5e1"/>
+<rect x="84" y="6" width="732" height="23" rx="11.5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="98" y="22" text-anchor="start" font-size="12" fill="#6b7280">team-tracker.app/projects/DEMO/settings</text>
+<line x1="1" y1="86" x2="899" y2="86" stroke="#cbd5e1" stroke-width="1.2"/>
+<g transform="translate(18 47) scale(0.4375)"><path d="M52.78 20 A24 24 0 1 1 35.34 8.23" fill="none" stroke="#2B4ACB" stroke-width="7" stroke-linecap="round"/><polygon points="45.24,9.62 36.31,1.30 34.37,15.16" fill="#2B4ACB" stroke="#2B4ACB" stroke-width="2" stroke-linejoin="round"/><polyline points="23,33 29.5,39.5 41,27" fill="none" stroke="#F08C00" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="52" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#2B4ACB">Team</text>
+<text x="94" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#F08C00">Tracker</text>
+<rect x="158" y="52" width="59.68000000000001" height="26" rx="13.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="187.84" y="69.68" text-anchor="middle" font-size="13" fill="#1f2937">DEMO ▾</text>
+<text x="230" y="67" text-anchor="start" font-size="14" fill="#1f2937">Бэклог</text>
+<text x="295.04" y="67" text-anchor="start" font-size="14" fill="#1f2937">Доска</text>
+<text x="352.24" y="67" text-anchor="start" font-size="14" fill="#1f2937">Спринты</text>
+<text x="425.12" y="67" text-anchor="start" font-size="14" fill="#1f2937">Отчёты</text>
+<text x="490.16" y="67" text-anchor="start" font-size="14" fill="#1f2937">Люди</text>
+<text x="539.52" y="67" text-anchor="start" font-size="14" font-weight="bold" fill="#2563eb">Настройки</text>
+<rect x="537.52" y="80" width="83.6" height="4" rx="2" fill="#2563eb"/>
+<rect x="640" y="50" width="130" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="650" y="70" text-anchor="start" font-size="13" fill="#6b7280">Поиск</text>
+<rect x="740" y="55" width="24" height="20" rx="4" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="752" y="70" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">/</text>
+<circle cx="844" cy="65" r="15" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="844" y="69" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">АК</text>
+<text x="866" y="70" text-anchor="middle" font-size="13" fill="#6b7280">▾</text>
+<text x="20" y="130" text-anchor="start" font-size="24" font-weight="bold" fill="#1f2937">Настройки проекта</text>
+<text x="20" y="170" text-anchor="start" font-size="18" font-weight="bold" fill="#1f2937">Definition of Done</text>
+<text x="220" y="170" text-anchor="start" font-size="12" fill="#6b7280">тимлид и администратор</text>
+<rect x="20" y="184" width="470" height="130" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="34" y="212" text-anchor="start" font-size="13" fill="#6b7280">- [ ] Код проверен другим разработчиком</text>
+<text x="34" y="236" text-anchor="start" font-size="13" fill="#6b7280">- [ ] Тесты написаны и проходят</text>
+<text x="34" y="260" text-anchor="start" font-size="13" fill="#6b7280">- [ ] Документация обновлена</text>
+<text x="34" y="284" text-anchor="start" font-size="13" fill="#6b7280">- [ ] Проверено на тестовом стенде</text>
+<circle cx="14" cy="184" r="11" fill="#b91c1c"/>
+<text x="14" y="189" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">1</text>
+<text x="510" y="204" text-anchor="start" font-size="12.5" fill="#6b7280">Пункты — строки «- [ ] …» (Markdown).</text>
+<text x="510" y="224" text-anchor="start" font-size="12.5" fill="#6b7280">Пустой список — подтверждения нет.</text>
+<rect x="20" y="328" width="120" height="32" rx="6" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="80.0" y="348.68" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">Сохранить</text>
+<rect x="1" y="35" width="898" height="724" rx="0" fill="#000000" fill-opacity="0.45"/>
+<rect x="190" y="300" width="520" height="330" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.6"/>
+<text x="214" y="338" text-anchor="start" font-size="20" font-weight="bold" fill="#1f2937">Перевести в Done?</text>
+<text x="214" y="362" text-anchor="start" font-size="13" fill="#6b7280">DEMO-5 История заказов</text>
+<rect x="214" y="386" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="223" y="400" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<text x="244" y="400" text-anchor="start" font-size="14" fill="#1f2937">Код проверен другим разработчиком</text>
+<rect x="214" y="420" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="223" y="434" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<text x="244" y="434" text-anchor="start" font-size="14" fill="#1f2937">Тесты написаны и проходят</text>
+<rect x="214" y="454" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<text x="244" y="468" text-anchor="start" font-size="14" fill="#1f2937">Документация обновлена</text>
+<rect x="214" y="488" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<text x="244" y="502" text-anchor="start" font-size="14" fill="#1f2937">Проверено на тестовом стенде</text>
+<circle cx="196" cy="386" r="11" fill="#b91c1c"/>
+<text x="196" y="391" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">2</text>
+<text x="214" y="552" text-anchor="start" font-size="12.5" fill="#6b7280">Отмечено 2 из 4: «Подтвердить» станет доступна, когда отмечены все пункты.</text>
+<rect x="214" y="574" width="150" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="289.0" y="595.68" text-anchor="middle" font-size="13" fill="#1f2937">Подтвердить</text>
+<rect x="380" y="574" width="110" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="435.0" y="595.68" text-anchor="middle" font-size="13" fill="#1f2937">Отмена</text>
+<circle cx="196" cy="574" r="11" fill="#b91c1c"/>
+<text x="196" y="579" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">3</text>
+</svg>

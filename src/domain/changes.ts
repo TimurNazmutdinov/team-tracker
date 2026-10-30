@@ -1,12 +1,32 @@
-import type { Comment, History, Issue, Link, Person, Project, Sprint } from './schema';
+import type {
+  Absence,
+  RetroItem,
+  Comment,
+  History,
+  Issue,
+  IssueTemplate,
+  Link,
+  Person,
+  Project,
+  ProjectMember,
+  Sprint,
+} from './schema';
 
 /**
- * Набор изменений, который логика отдаёт хранилищу. Записи projects, people, sprints, issues и
+ * Набор изменений, который логика отдаёт хранилищу. Записи projects, people, members, sprints, issues и
  * links добавляются или заменяются по id; comments и history только добавляются.
  */
 export interface Changes {
   projects?: Project[];
   people?: Person[];
+  members?: ProjectMember[];
+  deleteMemberIds?: string[];
+  absences?: Absence[];
+  deleteAbsenceIds?: string[];
+  retroItems?: RetroItem[];
+  deleteRetroItemIds?: string[];
+  templates?: IssueTemplate[];
+  deleteTemplateIds?: string[];
   sprints?: Sprint[];
   issues?: Issue[];
   links?: Link[];

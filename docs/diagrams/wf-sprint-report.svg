@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="860" viewBox="0 0 900 860" font-family="Helvetica, Arial, 'Segoe UI', 'DejaVu Sans', sans-serif" role="img" aria-label="Отчёт спринта: Excel и печать">
+<title>Отчёт спринта: Excel и печать</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker></defs>
+<rect width="900" height="860" fill="#ffffff"/>
+<rect x="0.6" y="0.6" width="898.8" height="858.8" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="0.6" y="0.6" width="898.8" height="34" rx="10" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="1" y="20" width="898" height="15" rx="0" fill="#f3f4f6"/>
+<circle cx="18" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="36" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="54" cy="17" r="5" fill="#cbd5e1"/>
+<rect x="84" y="6" width="732" height="23" rx="11.5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="98" y="22" text-anchor="start" font-size="12" fill="#6b7280">team-tracker.app/projects/DEMO/sprints/s1/report</text>
+<line x1="1" y1="86" x2="899" y2="86" stroke="#cbd5e1" stroke-width="1.2"/>
+<g transform="translate(18 47) scale(0.4375)"><path d="M52.78 20 A24 24 0 1 1 35.34 8.23" fill="none" stroke="#2B4ACB" stroke-width="7" stroke-linecap="round"/><polygon points="45.24,9.62 36.31,1.30 34.37,15.16" fill="#2B4ACB" stroke="#2B4ACB" stroke-width="2" stroke-linejoin="round"/><polyline points="23,33 29.5,39.5 41,27" fill="none" stroke="#F08C00" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="52" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#2B4ACB">Team</text>
+<text x="94" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#F08C00">Tracker</text>
+<rect x="158" y="52" width="59.68000000000001" height="26" rx="13.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="187.84" y="69.68" text-anchor="middle" font-size="13" fill="#1f2937">DEMO ▾</text>
+<text x="230" y="67" text-anchor="start" font-size="14" fill="#1f2937">Бэклог</text>
+<text x="295.04" y="67" text-anchor="start" font-size="14" fill="#1f2937">Доска</text>
+<text x="352.24" y="67" text-anchor="start" font-size="14" font-weight="bold" fill="#2563eb">Спринты</text>
+<rect x="350.24" y="80" width="66.8" height="4" rx="2" fill="#2563eb"/>
+<text x="429.04" y="67" text-anchor="start" font-size="14" fill="#1f2937">Отчёты</text>
+<text x="494.08000000000004" y="67" text-anchor="start" font-size="14" fill="#1f2937">Люди</text>
+<text x="543.44" y="67" text-anchor="start" font-size="14" fill="#1f2937">Настройки</text>
+<rect x="640" y="50" width="130" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="650" y="70" text-anchor="start" font-size="13" fill="#6b7280">Поиск</text>
+<rect x="740" y="55" width="24" height="20" rx="4" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="752" y="70" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">/</text>
+<circle cx="844" cy="65" r="15" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="844" y="69" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">АК</text>
+<text x="866" y="70" text-anchor="middle" font-size="13" fill="#6b7280">▾</text>
+<text x="20" y="130" text-anchor="start" font-size="22" font-weight="bold" fill="#1f2937">Отчёт: Спринт 2</text>
+<text x="20" y="154" text-anchor="start" font-size="13" fill="#6b7280">26.10 – 06.11 · закрыт 06.11</text>
+<rect x="540" y="112" width="150" height="32" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="615.0" y="132.68" text-anchor="middle" font-size="13" fill="#1f2937">Скачать Excel</text>
+<rect x="702" y="112" width="178" height="32" rx="6" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="791.0" y="132.68" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">Печать / PDF</text>
+<circle cx="530" cy="112" r="11" fill="#b91c1c"/>
+<text x="530" y="117" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">1</text>
+<rect x="20" y="172" width="860" height="52" rx="8" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="34" y="194" text-anchor="start" font-size="12" fill="#6b7280">Цель</text>
+<text x="34" y="214" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">Смена пароля и начало истории заказов</text>
+<circle cx="14" cy="172" r="11" fill="#b91c1c"/>
+<text x="14" y="177" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">2</text>
+<rect x="20" y="240" width="204" height="62" rx="8" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="32" y="262" text-anchor="start" font-size="12" fill="#6b7280">Выполнено</text>
+<text x="32" y="288" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">18 sp · 6 задач</text>
+<rect x="238" y="240" width="204" height="62" rx="8" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="250" y="262" text-anchor="start" font-size="12" fill="#6b7280">Перенесено</text>
+<text x="250" y="288" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">3 sp · 1 задача</text>
+<rect x="456" y="240" width="204" height="62" rx="8" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="468" y="262" text-anchor="start" font-size="12" fill="#6b7280">Velocity</text>
+<text x="468" y="288" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">18 sp</text>
+<rect x="674" y="240" width="204" height="62" rx="8" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="686" y="262" text-anchor="start" font-size="12" fill="#6b7280">Ёмкость</text>
+<text x="686" y="288" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">16 sp · доступность 90 %</text>
+<circle cx="14" cy="240" r="11" fill="#b91c1c"/>
+<text x="14" y="245" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">3</text>
+<rect x="20" y="320" width="420" height="200" rx="8" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="34" y="346" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">Burndown</text>
+<polyline points="50.0,380.0 130.0,400.0 210.0,430.0 290.0,450.0 370.0,482.0 420.0,500.0" fill="none" stroke="#2563eb" stroke-width="2.5"/>
+<polyline points="50.0,380.0 420.0,500.0" fill="none" stroke="#6b7280" stroke-width="2.5" stroke-dasharray="7 5"/>
+<circle cx="14" cy="320" r="11" fill="#b91c1c"/>
+<text x="14" y="325" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">4</text>
+<rect x="460" y="320" width="420" height="200" rx="8" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="474" y="346" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">Итоги по людям</text>
+<circle cx="486" cy="368" r="11" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="486" y="372" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">АК</text>
+<text x="508" y="373" text-anchor="start" font-size="13" fill="#1f2937">Анна Ковалёва</text>
+<text x="700" y="373" text-anchor="start" font-size="13" fill="#1f2937">5 sp · 2 задачи</text>
+<circle cx="486" cy="404" r="11" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="486" y="408" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">ИС</text>
+<text x="508" y="409" text-anchor="start" font-size="13" fill="#1f2937">Игорь Смирнов</text>
+<text x="700" y="409" text-anchor="start" font-size="13" fill="#1f2937">6 sp · 2 задачи</text>
+<circle cx="486" cy="440" r="11" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="486" y="444" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">МО</text>
+<text x="508" y="445" text-anchor="start" font-size="13" fill="#1f2937">Мария Орлова</text>
+<text x="700" y="445" text-anchor="start" font-size="13" fill="#1f2937">4 sp · 1 задача</text>
+<circle cx="486" cy="476" r="11" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="486" y="480" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">ДВ</text>
+<text x="508" y="481" text-anchor="start" font-size="13" fill="#1f2937">Дмитрий Васильев</text>
+<text x="700" y="481" text-anchor="start" font-size="13" fill="#1f2937">3 sp · 1 задача</text>
+<circle cx="454" cy="320" r="11" fill="#b91c1c"/>
+<text x="454" y="325" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">5</text>
+<rect x="20" y="536" width="860" height="150" rx="8" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="34" y="562" text-anchor="start" font-size="14" font-weight="bold" fill="#1f2937">Выполненные и перенесённые задачи · ретроспектива</text>
+<text x="34" y="590" text-anchor="start" font-size="13" fill="#1f2937">DEMO-6 Спроектировать таблицу пользователей — Done — Анна К. — 5 sp</text>
+<text x="34" y="614" text-anchor="start" font-size="13" fill="#1f2937">DEMO-4 Смена пароля — Done — Игорь С. — 5 sp</text>
+<text x="34" y="638" text-anchor="start" font-size="13" fill="#1f2937">DEMO-5 История заказов — перенесена в Спринт 3 — 8 sp</text>
+<text x="34" y="662" text-anchor="start" font-size="13" fill="#6b7280">Ретро: 2 «хорошо», 2 «улучшить», 2 действия</text>
+<text x="20" y="722" text-anchor="start" font-size="12.5" fill="#6b7280">Excel: листы «Сводка», «Задачи», «Люди», «Burndown», «Ретроспектива». Печать: кнопки и меню скрыты, остаётся только отчёт.</text>
+<text x="20" y="742" text-anchor="start" font-size="12.5" fill="#6b7280">Отчёт доступен у закрытого спринта и у идущего (тогда цифры на сегодня).</text>
+</svg>

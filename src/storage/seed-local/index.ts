@@ -111,6 +111,24 @@ export class SeedLocalStorage implements TrackerStorage {
     return Promise.resolve(structuredClone(this.data.people));
   }
 
+  getMembers() {
+    return Promise.resolve(structuredClone(this.data.members));
+  }
+
+  getTemplates() {
+    return Promise.resolve(structuredClone(this.data.templates));
+  }
+
+  getAbsences() {
+    return Promise.resolve(structuredClone(this.data.absences));
+  }
+
+  getRetroItems(projectId: string) {
+    return Promise.resolve(
+      structuredClone(this.data.retroItems.filter((r) => r.projectId === projectId)),
+    );
+  }
+
   getSprints(projectId: string) {
     return Promise.resolve(
       structuredClone(this.data.sprints.filter((s) => s.projectId === projectId)),
@@ -153,6 +171,18 @@ export class SeedLocalStorage implements TrackerStorage {
       const next = structuredClone(this.data);
       upsert(next.projects, changes.projects);
       upsert(next.people, changes.people);
+      upsert(next.members, changes.members);
+      upsert(next.templates, changes.templates);
+      upsert(next.absences, changes.absences);
+      const removedAbsences = new Set(changes.deleteAbsenceIds ?? []);
+      next.absences = next.absences.filter((a) => !removedAbsences.has(a.id));
+      upsert(next.retroItems, changes.retroItems);
+      const removedRetro = new Set(changes.deleteRetroItemIds ?? []);
+      next.retroItems = next.retroItems.filter((r) => !removedRetro.has(r.id));
+      const removedTemplates = new Set(changes.deleteTemplateIds ?? []);
+      next.templates = next.templates.filter((t) => !removedTemplates.has(t.id));
+      const removedMembers = new Set(changes.deleteMemberIds ?? []);
+      next.members = next.members.filter((m) => !removedMembers.has(m.id));
       upsert(next.sprints, changes.sprints);
       upsert(next.issues, changes.issues);
       upsert(next.links, changes.links);

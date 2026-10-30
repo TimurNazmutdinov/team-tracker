@@ -1,0 +1,17 @@
+{
+  "name": "team-tracker-e2e",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Сквозные тесты (Playwright) и проверка доступности (axe). Ставится и запускается только в CI: npm ci внутри этой папки.",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.11.3",
+    "@playwright/test": "1.63.0"
+  },
+  "overrides": {
+    "playwright-core": "1.63.0"
+  }
+}

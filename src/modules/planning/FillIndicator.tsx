@@ -1,4 +1,6 @@
+import { ABSENCE_LABELS, type AdjustedCapacity } from '../../domain/availability';
 import type { Capacity, Fill } from '../../domain/planning';
+import type { Person } from '../../domain/schema';
 import { num } from '../../ui/format';
 
 // Индикатор заполнения спринта (wireframes.md, 17.4): points против ёмкости. Состояние выражено
@@ -27,7 +29,26 @@ export function capacityNote(capacity: Capacity): string {
     : `Ёмкость ${num(capacity.value)} sp = среднее velocity последних ${capacity.sprints} спринтов (${list})`;
 }
 
-export function FillIndicator({ fill, capacity }: { fill: Fill; capacity: Capacity }) {
+/** Строка про доступность: ёмкость = velocity × доступность; пусто, пока все на месте. */
+function availabilityNote(capacity: AdjustedCapacity): string | null {
+  const a = capacity.availability;
+  if (capacity.base === null || a.ratio >= 1) return null;
+  return `Ёмкость ${num(capacity.value ?? 0)} sp = velocity ${num(capacity.base)} sp × доступность ${Math.round(a.ratio * 100)} % (${a.availableDays} из ${a.totalDays} человеко-дней)`;
+}
+
+const short = (iso: string) => `${iso.slice(8, 10)}.${iso.slice(5, 7)}`;
+
+export function FillIndicator({
+  fill,
+  capacity,
+  names = [],
+}: {
+  fill: Fill;
+  capacity: Capacity | AdjustedCapacity;
+  names?: Person[];
+}) {
+  const adjusted = 'availability' in capacity ? capacity : null;
+  const availability = adjusted ? availabilityNote(adjusted) : null;
   const width = Math.min((fill.percent ?? 0) / 100 / SCALE, 1) * 100;
   const summary =
     fill.percent === null
@@ -45,7 +66,20 @@ export function FillIndicator({ fill, capacity }: { fill: Fill; capacity: Capaci
         <strong>{summary}</strong>
       </div>
       <span className="fill-note">{note(fill)}</span>
-      <span className="muted small">{capacityNote(capacity)}</span>
+      <span className="muted small">{availability ?? capacityNote(capacity)}</span>
+      {adjusted && adjusted.availability.absences.length > 0 && (
+        <span className="muted small">
+          Отсутствуют:{' '}
+          {adjusted.availability.absences
+            .map((x) => {
+              const who = names.find((p) => p.id === x.absence.personId)?.name ?? '?';
+              const range =
+                x.start === x.end ? short(x.start) : `${short(x.start)}–${short(x.end)}`;
+              return `${who} ${range} (${ABSENCE_LABELS[x.absence.kind].toLowerCase()})`;
+            })
+            .join(' · ')}
+        </span>
+      )}
     </div>
   );
 }

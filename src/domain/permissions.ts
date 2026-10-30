@@ -1,4 +1,5 @@
 import type { Changes } from './changes';
+import { isParticipant } from './members';
 import type { Dataset, Issue, Project } from './schema';
 
 // Права по ролям (docs/capabilities.md §2, ADR-010). Один источник для сервера, который проверяет
@@ -26,7 +27,11 @@ export type Action =
   | 'sprint.manage' // создавать, запускать, закрывать спринты, настройки спринтов
   | 'project.create' // создавать проекты и управлять людьми
   | 'users.manage' // менять роли учёток
-  | 'backups.manage'; // резервные копии: состояние, копия сейчас, Excel
+  | 'backups.manage' // резервные копии: состояние, копия сейчас, Excel
+  | 'system.diagnose' // журнал ошибок и диагностика (ADR-015)
+  | 'project.members' // владелец и участники проекта: администратор и владелец проекта (ADR-016)
+  | 'project.templates' // шаблоны задач проекта (ADR-017)
+  | 'people.availability'; // отсутствия людей (ADR-018)
 
 const MATRIX: Record<Action, readonly Role[]> = {
   'status.own': ROLES,
@@ -37,6 +42,10 @@ const MATRIX: Record<Action, readonly Role[]> = {
   'project.create': ['admin'],
   'users.manage': ['admin'],
   'backups.manage': ['admin'],
+  'system.diagnose': ['admin'],
+  'project.members': ['admin', 'product'],
+  'project.templates': ['lead', 'admin'],
+  'people.availability': ['lead', 'admin'],
 };
 
 export function can(role: Role, action: Action): boolean {
@@ -54,6 +63,11 @@ const SPRINT_SETTING_FIELDS = [
   'sprintPrefix',
   'nextSprintNumber',
   'nextSprintStart',
+  // WIP-лимиты настраивает тот же, кто настраивает спринты (ADR-017)
+  'wipEnabled',
+  'wipLimits',
+  // Definition of Done правит тот же, кто настраивает спринты (ADR-018)
+  'dod',
 ] as const;
 
 function differs<T extends object>(a: T, b: T, fields: readonly (keyof T)[]): boolean {
@@ -97,6 +111,42 @@ export function violations(
       deny('Настройки спринтов меняют тимлид и администратор');
   }
 
+  if (
+    ((changes.templates ?? []).length > 0 || (changes.deleteTemplateIds ?? []).length > 0) &&
+    !can(role, 'project.templates')
+  )
+    deny('Шаблоны задач меняют тимлид и администратор');
+
+  if (
+    ((changes.absences ?? []).length > 0 || (changes.deleteAbsenceIds ?? []).length > 0) &&
+    !can(role, 'people.availability')
+  )
+    deny('Отсутствия людей меняют тимлид и администратор');
+
+  for (const r of changes.retroItems ?? []) {
+    if (r.authorId !== userId && !current.retroItems.some((x) => x.id === r.id))
+      deny('Автор записи ретроспективы — только текущий пользователь');
+  }
+  for (const id of changes.deleteRetroItemIds ?? []) {
+    const known = current.retroItems.find((x) => x.id === id);
+    if (known && known.authorId !== userId && role !== 'lead' && role !== 'admin')
+      deny('Чужие записи ретроспективы удаляют тимлид и администратор');
+  }
+
+  // Участники проекта: администратор или владелец этого проекта (ADR-016)
+  const memberProjects = new Set<string>();
+  for (const m of changes.members ?? []) memberProjects.add(m.projectId);
+  for (const id of changes.deleteMemberIds ?? []) {
+    const known = current.members.find((m) => m.id === id);
+    if (known) memberProjects.add(known.projectId);
+  }
+  for (const projectId of memberProjects) {
+    const project = current.projects.find((p) => p.id === projectId);
+    const own = role === 'product' && project?.ownerId === userId;
+    if (role !== 'admin' && !own)
+      deny('Участников проекта меняют администратор и владелец проекта');
+  }
+
   if ((changes.people ?? []).length > 0 && !can(role, 'project.create'))
     deny('Управлять людьми может только администратор');
 
@@ -108,9 +158,18 @@ export function violations(
     }
   }
 
+  // Продакт меняет состав и порядок задач только в своих проектах (ADR-016)
+  const foreign = (projectId: string): boolean => {
+    if (role !== 'product') return false;
+    const project = current.projects.find((p) => p.id === projectId);
+    return !project || !isParticipant(project, current.members, userId);
+  };
+  const FOREIGN = 'Продакт меняет состав и порядок задач только в своих проектах';
+
   for (const issue of changes.issues ?? []) {
     const before = current.issues.find((x) => x.id === issue.id);
     if (!before) {
+      if (issue.sprintId !== null && foreign(issue.projectId)) deny(FOREIGN);
       if (issue.reporterId !== userId) deny('Автор задачи — только текущий пользователь');
       if (issue.sprintId !== null && !can(role, 'sprint.items'))
         deny('Добавлять задачи в спринт могут продакт, тимлид и администратор');
@@ -125,6 +184,13 @@ export function violations(
       deny('Менять приоритет и порядок задач разработчик не может');
     if (before.sprintId !== issue.sprintId && !can(role, 'sprint.items'))
       deny('Добавлять и убирать задачи в спринте разработчик не может');
+    if (
+      (before.sprintId !== issue.sprintId ||
+        before.priority !== issue.priority ||
+        before.order !== issue.order) &&
+      foreign(issue.projectId)
+    )
+      deny(FOREIGN);
   }
 
   for (const c of changes.comments ?? [])

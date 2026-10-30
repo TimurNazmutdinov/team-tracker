@@ -11,6 +11,8 @@ import { ErrorMessage } from '../../ui/ErrorMessage';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
 import { TextField } from '../../ui/fields';
+import { DodSettingsForm, TemplatesSection, WipSettingsForm } from './ProjectTools';
+import { ProjectMembers } from './ProjectMembers';
 import { useCurrentProject } from './ProjectRoute';
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -24,7 +26,20 @@ export function SettingsPage() {
   return (
     <>
       <PageHeader title="Настройки проекта" />
-      {view ? <SprintSettingsForm view={view} /> : <Loading />}
+      {view ? (
+        <>
+          <SprintSettingsForm view={view} />
+          <WipSettingsForm
+            key={JSON.stringify(view.project.wipLimits) + view.project.wipEnabled}
+            view={view}
+          />
+          <DodSettingsForm key={view.project.dod} view={view} />
+          <TemplatesSection view={view} />
+          <ProjectMembers view={view} />
+        </>
+      ) : (
+        <Loading />
+      )}
       {SERVER_MODE && canBackup && <BackupsPanel />}
     </>
   );

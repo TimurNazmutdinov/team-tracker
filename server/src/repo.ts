@@ -7,9 +7,13 @@ import type {
   Dataset,
   History,
   Issue,
+  IssueTemplate,
+  Absence,
+  RetroItem,
   Link,
   Person,
   Project,
+  ProjectMember,
   Sprint,
 } from '../../src/domain/schema';
 import { schema, type Db } from './db';
@@ -27,6 +31,13 @@ const DATASET_VERSION = 1;
 export const readers = {
   projects: (db: Db) => db.select().from(t.projects) as unknown as Promise<Project[]>,
   people: (db: Db) => db.select().from(t.people) as Promise<Person[]>,
+  members: (db: Db) => db.select().from(t.projectMembers) as Promise<ProjectMember[]>,
+  templates: (db: Db) => db.select().from(t.issueTemplates) as Promise<IssueTemplate[]>,
+  absences: (db: Db) => db.select().from(t.absences) as Promise<Absence[]>,
+  retroItems: (db: Db, projectId: string) =>
+    db.select().from(t.retroItems).where(eq(t.retroItems.projectId, projectId)) as Promise<
+      RetroItem[]
+    >,
   sprints: (db: Db, projectId: string) =>
     db.select().from(t.sprints).where(eq(t.sprints.projectId, projectId)) as Promise<Sprint[]>,
   issues: (db: Db, projectId: string) =>
@@ -53,26 +64,136 @@ export const readers = {
 
 type Tx = Parameters<Parameters<Db['transaction']>[0]>[0];
 
-async function loadDataset(db: Db | Tx): Promise<Dataset> {
-  const [projects, people, sprints, issues, links, comments, history] = await Promise.all([
-    db.select().from(t.projects),
+/**
+ * Набор данных для проверки изменений. С `projectIds` — только эти проекты (их спринты, задачи, связи,
+ * комментарии, история) и все люди: проверки целостности и прав не выходят за границы проекта, а
+ * загрузка и разбор всей базы на каждую запись замедляют работу на тысячах задач (ADR-015).
+ */
+async function loadDataset(db: Db | Tx, projectIds?: string[]): Promise<Dataset> {
+  const scoped = projectIds !== undefined;
+  const ids = projectIds ?? [];
+  const issueIds = scoped
+    ? db.select({ id: t.issues.id }).from(t.issues).where(inArray(t.issues.projectId, ids))
+    : null;
+  const [
+    projects,
+    people,
+    members,
+    templates,
+    absences,
+    retroItems,
+    sprints,
+    issues,
+    links,
+    comments,
+    history,
+  ] = await Promise.all([
+    scoped
+      ? db.select().from(t.projects).where(inArray(t.projects.id, ids))
+      : db.select().from(t.projects),
     db.select().from(t.people),
-    db.select().from(t.sprints),
-    db.select().from(t.issues),
-    db.select().from(t.links),
-    db.select().from(t.comments),
-    db.select().from(t.history),
+    scoped
+      ? db.select().from(t.projectMembers).where(inArray(t.projectMembers.projectId, ids))
+      : db.select().from(t.projectMembers),
+    scoped
+      ? db.select().from(t.issueTemplates).where(inArray(t.issueTemplates.projectId, ids))
+      : db.select().from(t.issueTemplates),
+    db.select().from(t.absences),
+    scoped
+      ? db.select().from(t.retroItems).where(inArray(t.retroItems.projectId, ids))
+      : db.select().from(t.retroItems),
+    scoped
+      ? db.select().from(t.sprints).where(inArray(t.sprints.projectId, ids))
+      : db.select().from(t.sprints),
+    scoped
+      ? db.select().from(t.issues).where(inArray(t.issues.projectId, ids))
+      : db.select().from(t.issues),
+    issueIds
+      ? db.select().from(t.links).where(inArray(t.links.fromId, issueIds))
+      : db.select().from(t.links),
+    issueIds
+      ? db.select().from(t.comments).where(inArray(t.comments.issueId, issueIds))
+      : db.select().from(t.comments),
+    issueIds
+      ? db.select().from(t.history).where(inArray(t.history.issueId, issueIds))
+      : db.select().from(t.history),
   ]);
   return {
     version: DATASET_VERSION,
     projects,
     people,
+    members,
+    templates,
+    absences,
+    retroItems,
     sprints,
     issues,
     links,
     comments,
     history,
   } as Dataset;
+}
+
+/** Проекты, которых касается набор изменений: свои и те, где лежат упомянутые задачи и связи. */
+async function touchedProjects(tx: Tx, changes: Changes): Promise<string[]> {
+  const out = new Set<string>();
+  for (const p of changes.projects ?? []) out.add(p.id);
+  for (const s of changes.sprints ?? []) out.add(s.projectId);
+  for (const m of changes.members ?? []) out.add(m.projectId);
+  for (const x of changes.templates ?? []) out.add(x.projectId);
+  for (const x of changes.retroItems ?? []) out.add(x.projectId);
+  const retroIds = changes.deleteRetroItemIds ?? [];
+  if (retroIds.length > 0) {
+    const rows = await tx
+      .select({ projectId: t.retroItems.projectId })
+      .from(t.retroItems)
+      .where(inArray(t.retroItems.id, retroIds));
+    for (const r of rows) out.add(r.projectId);
+  }
+  const templateIds = changes.deleteTemplateIds ?? [];
+  if (templateIds.length > 0) {
+    const rows = await tx
+      .select({ projectId: t.issueTemplates.projectId })
+      .from(t.issueTemplates)
+      .where(inArray(t.issueTemplates.id, templateIds));
+    for (const r of rows) out.add(r.projectId);
+  }
+  const memberIds = changes.deleteMemberIds ?? [];
+  if (memberIds.length > 0) {
+    const rows = await tx
+      .select({ projectId: t.projectMembers.projectId })
+      .from(t.projectMembers)
+      .where(inArray(t.projectMembers.id, memberIds));
+    for (const r of rows) out.add(r.projectId);
+  }
+  for (const i of changes.issues ?? []) out.add(i.projectId);
+  const issueIds = new Set<string>();
+  for (const i of changes.issues ?? []) issueIds.add(i.id);
+  for (const l of changes.links ?? []) {
+    issueIds.add(l.fromId);
+    issueIds.add(l.toId);
+  }
+  for (const c of changes.comments ?? []) issueIds.add(c.issueId);
+  for (const h of changes.history ?? []) issueIds.add(h.issueId);
+  const removed = changes.deleteLinkIds ?? [];
+  if (removed.length > 0) {
+    const rows = await tx
+      .select({ fromId: t.links.fromId, toId: t.links.toId })
+      .from(t.links)
+      .where(inArray(t.links.id, removed));
+    for (const r of rows) {
+      issueIds.add(r.fromId);
+      issueIds.add(r.toId);
+    }
+  }
+  if (issueIds.size > 0) {
+    const rows = await tx
+      .select({ projectId: t.issues.projectId })
+      .from(t.issues)
+      .where(inArray(t.issues.id, [...issueIds]));
+    for (const r of rows) out.add(r.projectId);
+  }
+  return [...out];
 }
 
 function upsert<T extends { id: string }>(target: T[], items: T[] | undefined): void {
@@ -97,11 +218,23 @@ function applied(current: Dataset, changes: Changes): Dataset {
   const next = structuredClone(current);
   upsert(next.projects, changes.projects);
   upsert(next.people, changes.people);
+  upsert(next.members, changes.members);
+  upsert(next.templates, changes.templates);
+  upsert(next.absences, changes.absences);
+  upsert(next.retroItems, changes.retroItems);
   upsert(next.sprints, changes.sprints);
   upsert(next.issues, changes.issues);
   upsert(next.links, changes.links);
   const removed = new Set(changes.deleteLinkIds ?? []);
   next.links = next.links.filter((l) => !removed.has(l.id));
+  const removedMembers = new Set(changes.deleteMemberIds ?? []);
+  next.members = next.members.filter((m) => !removedMembers.has(m.id));
+  const removedAbsences = new Set(changes.deleteAbsenceIds ?? []);
+  next.absences = next.absences.filter((x) => !removedAbsences.has(x.id));
+  const removedRetro = new Set(changes.deleteRetroItemIds ?? []);
+  next.retroItems = next.retroItems.filter((x) => !removedRetro.has(x.id));
+  const removedTemplates = new Set(changes.deleteTemplateIds ?? []);
+  next.templates = next.templates.filter((x) => !removedTemplates.has(x.id));
   append('comments', next.comments, changes.comments);
   append('history', next.history, changes.history);
   return next;
@@ -133,7 +266,7 @@ export async function commit(
   try {
     await db.transaction(async (tx) => {
       await lockWrites(tx);
-      const current = await loadDataset(tx);
+      const current = await loadDataset(tx, await touchedProjects(tx, changes));
 
       const denied = violations(user.role, user.id, current, changes);
       if (denied.length > 0) {
@@ -151,6 +284,45 @@ export async function commit(
       }
       for (const p of changes.people ?? []) {
         await tx.insert(t.people).values(p).onConflictDoUpdate({ target: t.people.id, set: p });
+      }
+      for (const m of changes.members ?? []) {
+        await tx
+          .insert(t.projectMembers)
+          .values(m)
+          .onConflictDoUpdate({ target: t.projectMembers.id, set: m });
+      }
+      if ((changes.deleteMemberIds ?? []).length > 0) {
+        await tx
+          .delete(t.projectMembers)
+          .where(inArray(t.projectMembers.id, changes.deleteMemberIds ?? []));
+      }
+      for (const x of changes.templates ?? []) {
+        await tx
+          .insert(t.issueTemplates)
+          .values(x)
+          .onConflictDoUpdate({ target: t.issueTemplates.id, set: x });
+      }
+      if ((changes.deleteTemplateIds ?? []).length > 0) {
+        await tx
+          .delete(t.issueTemplates)
+          .where(inArray(t.issueTemplates.id, changes.deleteTemplateIds ?? []));
+      }
+      for (const x of changes.absences ?? []) {
+        await tx.insert(t.absences).values(x).onConflictDoUpdate({ target: t.absences.id, set: x });
+      }
+      if ((changes.deleteAbsenceIds ?? []).length > 0) {
+        await tx.delete(t.absences).where(inArray(t.absences.id, changes.deleteAbsenceIds ?? []));
+      }
+      for (const x of changes.retroItems ?? []) {
+        await tx
+          .insert(t.retroItems)
+          .values(x)
+          .onConflictDoUpdate({ target: t.retroItems.id, set: x });
+      }
+      if ((changes.deleteRetroItemIds ?? []).length > 0) {
+        await tx
+          .delete(t.retroItems)
+          .where(inArray(t.retroItems.id, changes.deleteRetroItemIds ?? []));
       }
       for (const s of changes.sprints ?? []) {
         await tx.insert(t.sprints).values(s).onConflictDoUpdate({ target: t.sprints.id, set: s });

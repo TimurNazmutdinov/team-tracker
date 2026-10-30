@@ -6,6 +6,7 @@ import {
   type View,
 } from '../../domain/actions';
 import { canHavePoints } from '../../domain/hierarchy';
+import { templatesOf } from '../../domain/templates';
 import type { IssueType, Priority } from '../../domain/schema';
 import { useActions } from '../../state/actions';
 import { usePermissions } from '../../state/current-user';
@@ -15,7 +16,7 @@ import { useView } from '../../state/queries';
 import { Dialog } from '../../ui/Dialog';
 import { ErrorMessage } from '../../ui/ErrorMessage';
 import { Loading } from '../../ui/Loading';
-import { SelectField, TextArea, TextField } from '../../ui/fields';
+import { MarkdownField, SelectField, TextField } from '../../ui/fields';
 import { PRIORITY_OPTIONS, TYPE_OPTIONS } from './IssueBits';
 
 interface Props {
@@ -69,6 +70,29 @@ function CreateForm({
   const [errors, setErrors] = useState<FieldErrors>({});
   const [busy, setBusy] = useState(false);
 
+  const [templateId, setTemplateId] = useState('');
+  const templates = templatesOf(view);
+
+  const applyTemplate = (id: string) => {
+    const tpl = templates.find((t) => t.id === id);
+    const current = templates.find((t) => t.id === templateId);
+    const touched =
+      (description !== '' && description !== (current?.description ?? '')) ||
+      (acceptance !== '' && acceptance !== (current?.acceptance ?? ''));
+    if (tpl && touched && !window.confirm('Заменить уже введённые описание и критерии шаблоном?')) {
+      return;
+    }
+    setTemplateId(id);
+    if (!tpl) {
+      if (current && description === current.description) setDescription('');
+      if (current && acceptance === current.acceptance) setAcceptance('');
+      return;
+    }
+    setType(tpl.type);
+    setDescription(tpl.description);
+    setAcceptance(tpl.acceptance);
+  };
+
   const candidates = parentCandidates(view, type);
   const parentValid = candidates.some((i) => i.id === parentId);
   const effectiveParent = parentValid ? parentId : '';
@@ -114,6 +138,19 @@ function CreateForm({
 
   return (
     <form className="form-grid" onSubmit={(e) => void submit(e)} onKeyDown={onKeyDown} noValidate>
+      {templates.length > 0 && (
+        <SelectField
+          name="template"
+          label="Шаблон"
+          className="wide"
+          value={templateId}
+          options={[
+            { value: '', label: 'Без шаблона' },
+            ...templates.map((t) => ({ value: t.id, label: `${t.name} (${t.type})` })),
+          ]}
+          onChange={applyTemplate}
+        />
+      )}
       <SelectField
         name="type"
         label="Тип"
@@ -149,7 +186,7 @@ function CreateForm({
         onChange={setTitle}
         error={errors.title}
       />
-      <TextArea
+      <MarkdownField
         name="description"
         label="Описание"
         className="wide"
@@ -157,7 +194,7 @@ function CreateForm({
         value={description}
         onChange={setDescription}
       />
-      <TextArea
+      <MarkdownField
         name="acceptance"
         label="Критерии приёмки"
         className="wide"
