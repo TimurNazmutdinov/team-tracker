@@ -55,6 +55,7 @@ import {
   sprintAvailability,
   type AdjustedCapacity,
 } from '../../domain/availability';
+import { ProjectFilter } from '../../ui/ProjectFilter';
 import { useDodGate } from '../tasks/DodGate';
 import { BulkBar } from '../tasks/BulkBar';
 import { useCreateDialog } from '../../state/create-dialog';
@@ -870,7 +871,7 @@ export function BacklogPage() {
       )
     );
   }, 0);
-  const projectFilter = null;
+  const projectFilter = <ProjectFilter />;
   const toolbar = (
     <FiltersBar
       projectFilter={projectFilter}

@@ -27,7 +27,7 @@ export function SettingsPage() {
   const canBackup = perms.can('backups.manage');
   return (
     <>
-      <PageHeader title="Настройки проекта" />
+      <PageHeader title="Настройки проекта" scope />
       {view ? (
         <>
           <SprintSettingsForm view={view} />
