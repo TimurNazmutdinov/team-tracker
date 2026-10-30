@@ -23,6 +23,7 @@ export function AppBar() {
       </Link>
       <nav aria-label="Портфель" className="portfolio-nav">
         <NavLink to="/portfolio">Портфель</NavLink>
+        <NavLink to="/analytics">Аналитика</NavLink>
       </nav>
       {key && (
         <>

@@ -100,6 +100,7 @@ function Palette({ onClose }: { onClose: () => void }) {
     const projectKey = routeKey ?? scope.scope.projects[0]?.key;
     const screens: Item[] = [
       { id: 'portfolio', group: 'Экраны', label: 'Портфель', run: go('/portfolio') },
+      { id: 'analytics', group: 'Экраны', label: 'Аналитика', run: go('/analytics') },
       { id: 'projects', group: 'Экраны', label: 'Проекты', run: go('/projects') },
       ...(projectKey
         ? [

@@ -1999,3 +1999,154 @@ a.button {
   padding: 0.3rem 0.75rem;
   text-decoration: none;
 }
+
+/* Аналитика */
+.tabs button.on {
+  color: var(--accent);
+  font-weight: 700;
+  border-bottom-color: var(--accent);
+}
+.board-toolbar .tabs {
+  margin: 0;
+  border-bottom: 0;
+}
+.chart .cfd-band {
+  stroke: var(--muted);
+  stroke-width: 1;
+}
+.cfd-backlog {
+  fill: var(--st-backlog);
+  background: var(--st-backlog);
+}
+.cfd-to-do {
+  fill: var(--st-todo);
+  background: var(--st-todo);
+}
+.cfd-in-progress {
+  fill: var(--st-progress);
+  background: var(--st-progress);
+}
+.cfd-review {
+  fill: var(--st-review);
+  background: var(--st-review);
+}
+.cfd-done {
+  fill: var(--st-done);
+  background: var(--st-done);
+}
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-right: 1rem;
+}
+.legend .swatch {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+  border: 1px solid var(--muted);
+  border-radius: 3px;
+}
+.chart-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.workload-row {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+.workload-bar {
+  position: relative;
+  display: flex;
+  height: 1.5rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+.workload-bar .seg {
+  height: 100%;
+  border-right: 1px solid var(--muted);
+}
+.p0 {
+  background: var(--st-progress);
+}
+.p1 {
+  background: var(--st-review);
+}
+.p2 {
+  background: var(--st-done);
+}
+.p3 {
+  background: var(--st-todo);
+}
+.p4 {
+  background: var(--accent-bg);
+}
+.avg-mark {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  border-left: 2px dashed var(--muted);
+}
+.roadmap {
+  position: relative;
+}
+.roadmap-axis {
+  position: relative;
+  height: 1.4rem;
+  margin-left: 14rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.roadmap-axis span {
+  position: absolute;
+}
+.roadmap-row {
+  display: grid;
+  grid-template-columns: 14rem minmax(0, 1fr);
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+.roadmap-track {
+  position: relative;
+  height: 1.8rem;
+  border-left: 1px solid var(--line);
+}
+.roadmap-bar {
+  position: absolute;
+  top: 0.15rem;
+  height: 1.5rem;
+  overflow: hidden;
+  background: var(--panel);
+  border: 1.5px solid var(--accent);
+  border-radius: 5px;
+}
+.roadmap-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--st-done);
+}
+.roadmap-label {
+  position: relative;
+  padding-left: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.roadmap-today {
+  position: absolute;
+  top: -0.2rem;
+  bottom: -0.2rem;
+  border-left: 2px dashed var(--danger);
+}
+@media (max-width: 52rem) {
+  .chart-pair {
+    grid-template-columns: 1fr;
+  }
+  .workload-row {
+    grid-template-columns: 1fr;
+  }
+}

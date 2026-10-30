@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { containerItems, type View } from './actions';
+import { cfd, roadmap, timedIssues, workload } from './analytics';
 import { boardCards, columnStats, filterCards, groupLanes, NO_BOARD_FILTERS } from './board';
 import { parseDataset } from './dataset';
 import { generateLoadData, LOAD_DEFAULTS } from './loadgen';
@@ -101,5 +102,17 @@ describe('скорость расчётов на 10 000 задач', () => {
       summarize(sprintSnapshots(active, v.issues, history), v.people);
     });
     expect(ms).toBeLessThan(BUDGET_MS);
+  });
+
+  it('аналитика: CFD за 90 дней, время цикла, нагрузка и дорожная карта по всем проектам', () => {
+    const views = ds.projects.map((p) => viewOf(ds, p.id));
+    expect(elapsed(() => cfd(ds.issues, ds.history, '2026-08-01', '2026-10-29'))).toBeLessThan(
+      BUDGET_MS,
+    );
+    expect(
+      elapsed(() => timedIssues(ds.issues, ds.history, '2026-01-01', '2026-12-31')),
+    ).toBeLessThan(BUDGET_MS);
+    expect(elapsed(() => workload(views))).toBeLessThan(BUDGET_MS);
+    expect(elapsed(() => roadmap(views))).toBeLessThan(BUDGET_MS);
   });
 });

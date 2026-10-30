@@ -9,6 +9,7 @@ import { HomePage, ProjectsPage } from '../modules/projects/ProjectsPage';
 import { ProjectRoute } from '../modules/projects/ProjectRoute';
 import { SettingsPage } from '../modules/projects/SettingsPage';
 import { ReportsPage } from '../modules/reports/ReportsPage';
+import { AnalyticsPage } from '../modules/analytics/AnalyticsPage';
 import { SprintReportPage } from '../modules/sprints/SprintReportPage';
 import { SprintsPage } from '../modules/sprints/SprintsPage';
 import { IssuePage } from '../modules/tasks/IssuePage';
@@ -27,6 +28,7 @@ export const routes: RouteObject[] = [
       { path: 'projects', element: <ProjectsPage /> },
       { path: 'about', element: <AboutPage /> },
       { path: 'portfolio', element: <PortfolioPage /> },
+      { path: 'analytics', element: <AnalyticsPage /> },
       {
         path: 'projects/:key',
         element: <ProjectRoute />,
