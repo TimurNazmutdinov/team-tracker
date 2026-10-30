@@ -42,7 +42,9 @@ test('создание задачи попадает в общий бэклог'
 test('планирование: задача переносится в идущий спринт пакетным переносом', async () => {
   const row = page.locator('.planning-row', { hasText: TITLE });
   await row.getByRole('checkbox').check();
-  await page.getByLabel('Спринт', { exact: true }).selectOption({ label: 'Спринт 2' });
+  await page
+    .getByRole('combobox', { name: 'Спринт', exact: true })
+    .selectOption({ label: 'Спринт 2' });
   await page.getByRole('button', { name: 'Применить' }).click();
   const sprint = page.getByRole('region', { name: 'Спринт 2' });
   await expect(sprint.getByText(TITLE)).toBeVisible();
