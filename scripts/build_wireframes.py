@@ -2537,6 +2537,81 @@ def screen_roadmap():
     return wf
 
 
+def screen_wizard():
+    wf = WF(700, "Мастер первого запуска (администратор)")
+    t = wf.t
+    wf.shell("team-tracker.app/projects", "Портфель", tabs=False)
+    wf.overlay()
+    mx, my, mw, mh = 120, 96, 660, 560
+    wf.rect(mx, my, mw, mh, fill=t["bg"], stroke=t["line"], r=10, sw=1.6)
+    wf.text(mx + 24, my + 38, "Добро пожаловать в Team Tracker", 20, bold=True)
+    wf.text(mx + 24, my + 62, "Четыре шага — и можно работать. Любой шаг можно пропустить.", 13, fill=t["muted"])
+    steps = ("1 Проект", "2 Владелец", "3 Люди", "4 Гамма")
+    x = mx + 24
+    for n, name in enumerate(steps):
+        cur = n == 1
+        w = wf.est(name, 13, cur) + 24
+        wf.rect(x, my + 80, w, 28, fill=t["accent_bg"] if cur else t["bg"], stroke=t["accent"] if cur else t["line"], r=14, sw=1.8 if cur else 1.2)
+        wf.text(x + w / 2, my + 99, name, 13, "middle", cur)
+        x += w + 8
+    wf.callout(1, mx + 10, my + 80)
+    wf.text(mx + 24, my + 148, "Кто владелец проекта DEMO?", 16, bold=True)
+    wf.text(mx + 24, my + 170, "Владелец — продакт, который отвечает за проект; его видно в «Портфеле».", 13, fill=t["muted"])
+    wf.field(mx + 24, my + 190, 320, "Владелец", "Админ Тестов", dropdown=True)
+    wf.callout(2, mx + 10, my + 190)
+    wf.rect(mx + 24, my + 262, 612, 150, fill=t["panel"], stroke=t["line"], r=8)
+    wf.text(mx + 40, my + 288, "Что уже сделано", 13, bold=True)
+    for k, line in enumerate(("✓ Шаг 1. Проект DEMO «Демо-проект» создан", "○ Шаг 2. Владелец — выберите и нажмите «Далее»", "○ Шаг 3. Люди: добавьте участников (им выдаётся временный пароль)", "○ Шаг 4. Цветовая гамма")):
+        wf.text(mx + 40, my + 314 + k * 24, line, 13, fill=t["muted"] if k else None)
+    wf.callout(3, mx + 10, my + 262)
+    wf.button(mx + 24, my + 460, 110, 34, "← Назад", size=13)
+    wf.button(mx + 150, my + 460, 110, 34, "Далее →", True, 13)
+    wf.button(mx + 440, my + 460, 196, 34, "Пропустить мастер", size=13)
+    wf.callout(4, mx + 430, my + 460)
+    wf.text(mx + 24, my + 530, "Мастер откроется один раз; позже его можно запустить из «Справки» (клавиша ?).", 12, fill=t["muted"])
+    return wf
+
+
+def screen_help():
+    wf = WF(780, "Встроенная справка по «?»")
+    t = wf.t
+    wf.shell(f"team-tracker.app/projects/{KEY}/board", "Доска")
+    wf.overlay()
+    mx, my, mw, mh = 90, 90, 720, 640
+    wf.rect(mx, my, mw, mh, fill=t["bg"], stroke=t["line"], r=10, sw=1.6)
+    wf.text(mx + 24, my + 38, "Справка", 20, bold=True)
+    wf.text(mx + mw - 30, my + 38, "Esc", 13, "end", fill=t["muted"])
+    x = mx + 24
+    for n, name in enumerate(("Клавиши", "Правила", "Кто что может")):
+        sel = n == 0
+        w = wf.est(name, 14, sel) + 28
+        wf.rect(x, my + 56, w, 32, fill=t["accent_bg"] if sel else t["bg"], stroke=t["accent"] if sel else t["line"], r=6, sw=1.8 if sel else 1.2)
+        wf.text(x + w / 2, my + 77, name, 14, "middle", sel)
+        x += w + 8
+    wf.callout(1, mx + 10, my + 56)
+    rows = (("Ctrl+K  ·  /", "Поиск и команды"), ("C", "Создать задачу"), ("G, затем D / B / H / S / R / P", "Доска, планирование, прошлые спринты, спринты, отчёты, люди"), ("?", "Эта справка"), ("Ctrl+Enter", "Сохранить форму или отправить комментарий"), ("Esc", "Закрыть окно"))
+    y = my + 120
+    for k, d in rows:
+        wf.rect(mx + 24, y - 18, 220, 28, fill=t["panel"], stroke=t["line"], r=5)
+        wf.text(mx + 34, y + 1, k, 12.5, bold=True)
+        wf.text(mx + 260, y + 1, wf.fit(d, 410, 13), 13)
+        y += 38
+    wf.callout(2, mx + 10, my + 104)
+    wf.text(mx + 24, y + 6, "Клавиши не срабатывают, пока фокус в поле ввода.", 12, fill=t["muted"])
+    wf.line(mx + 24, y + 30, mx + mw - 24, y + 30)
+    wf.text(mx + 24, y + 60, "Вкладка «Правила» — коротко и простым языком:", 13, bold=True)
+    for k, line in enumerate(("Статусы: Backlog → To Do → In Progress → Review → Done; допустим любой переход.", "Story points — целое число; у Epic и подзадач их нет.", "Спринт: один идущий; закрытие переносит незавершённое по выбору.", "Перенос: с доски за ручку ⋮⋮, в планировании — между спринтами.", "WIP-лимит: превышение — предупреждение, запрета нет.", "Definition of Done: перед Done подтверждаются пункты проекта.")):
+        wf.text(mx + 24, y + 86 + k * 24, wf.fit("• " + line, mw - 48, 12.5), 12.5, fill=t["muted"])
+    wf.callout(3, mx + 10, y + 46)
+    wf.line(mx + 24, y + 244, mx + mw - 24, y + 244)
+    wf.text(mx + 24, y + 274, "Вкладка «Кто что может» — таблица прав по ролям (из той же проверки, что на сервере).", 13, fill=t["muted"])
+    wf.callout(4, mx + 10, y + 258)
+    wf.button(mx + 24, my + mh - 56, 230, 34, "Запустить мастер первого запуска", size=12.5)
+    wf.callout(5, mx + 10, my + mh - 56)
+    wf.text(mx + 270, my + mh - 34, "только администратор", 12, fill=t["muted"])
+    return wf
+
+
 SCREENS = {
     "wf-map": screen_map,
     "wf-projects": screen_projects,
@@ -2565,6 +2640,8 @@ SCREENS = {
     "wf-templates": screen_templates,
     "wf-create-template": screen_create_template,
     "wf-availability": screen_availability,
+    "wf-wizard": screen_wizard,
+    "wf-help": screen_help,
     "wf-cfd": screen_cfd,
     "wf-cycle": screen_cycle,
     "wf-workload": screen_workload,
