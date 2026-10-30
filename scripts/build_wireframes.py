@@ -2573,11 +2573,11 @@ def screen_wizard():
 
 
 def screen_help():
-    wf = WF(780, "Встроенная справка по «?»")
+    wf = WF(860, "Встроенная справка по «?»")
     t = wf.t
     wf.shell(f"team-tracker.app/projects/{KEY}/board", "Доска")
     wf.overlay()
-    mx, my, mw, mh = 90, 90, 720, 640
+    mx, my, mw, mh = 90, 90, 720, 720
     wf.rect(mx, my, mw, mh, fill=t["bg"], stroke=t["line"], r=10, sw=1.6)
     wf.text(mx + 24, my + 38, "Справка", 20, bold=True)
     wf.text(mx + mw - 30, my + 38, "Esc", 13, "end", fill=t["muted"])
