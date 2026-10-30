@@ -2400,6 +2400,143 @@ def screen_sprint_report():
     return wf
 
 
+def analytics_head(wf, tab, period="Период: 60 дней ▾"):
+    t = wf.t
+    wf.shell("team-tracker.app/analytics?projects=DEMO,SHOP", "Портфель")
+    wf.text(20, 130, "Аналитика", 24, bold=True)
+    wf.rect(20, 148, 188, 30, fill=t["accent_bg"], stroke=t["accent"], r=15, sw=1.6)
+    wf.text(34, 168, "Проекты: DEMO, SHOP ▾", 13, bold=True)
+    wf.callout(1, 14, 148)
+    wf.chip(222, 150, period, 12.5, h=28)
+    wf.callout(2, 216, 148)
+    x = 20
+    for name in ("Поток (CFD)", "Время цикла", "Нагрузка", "Дорожная карта"):
+        sel = name == tab
+        w = wf.est(name, 14, sel) + 28
+        wf.rect(x, 192, w, 34, fill=t["accent_bg"] if sel else t["bg"], stroke=t["accent"] if sel else t["line"], r=6, sw=1.8 if sel else 1.2)
+        wf.text(x + w / 2, 214, name, 14, "middle", sel)
+        x += w + 8
+    wf.callout(3, 14, 192)
+
+
+def screen_cfd():
+    wf = WF(700, "Аналитика: кумулятивная диаграмма потока (CFD)")
+    t = wf.t
+    analytics_head(wf, "Поток (CFD)")
+    x0, y0, w, h = 60, 262, 800, 300
+    wf.rect(20, 244, 860, 380, fill=t["panel"], stroke=t["line"], r=8)
+    wf.line(x0, y0 + h, x0 + w, y0 + h)
+    wf.line(x0, y0, x0, y0 + h)
+    bands = [("Done", [0, 6, 14, 24, 34, 48, 60, 72], "Done"), ("Review", [2, 5, 8, 10, 12, 12, 14, 14], "Review"), ("In Progress", [4, 7, 9, 10, 12, 14, 14, 15], "In Progress"), ("To Do", [10, 12, 14, 14, 15, 16, 16, 17], "To Do"), ("Backlog", [20, 21, 22, 24, 25, 26, 28, 30], "Backlog")]
+    n = 8
+    scale = h / 150
+    cum = [0] * n
+    for name, vals, status in bands:
+        lower = list(cum)
+        cum = [c + v for c, v in zip(cum, vals)]
+        top = [(x0 + i * w / (n - 1), y0 + h - c * scale) for i, c in enumerate(cum)]
+        bot = [(x0 + i * w / (n - 1), y0 + h - c * scale) for i, c in enumerate(lower)]
+        pts = " ".join(f"{x:.1f},{y:.1f}" for x, y in top + bot[::-1])
+        wf.p.append(f'<polygon points="{pts}" fill="{t["status"][status]}" stroke="{t["muted"]}" stroke-width="1"/>')
+    wf.callout(4, 66, 276)
+    for i, d in enumerate(("01.09", "08.09", "15.09", "22.09", "29.09", "06.10", "13.10", "20.10")):
+        wf.text(x0 + i * w / (n - 1), y0 + h + 18, d, 11, "middle", fill=t["muted"])
+    lx = 60
+    for name, _, status in bands[::-1]:
+        wf.rect(lx, 596, 14, 14, fill=t["status"][status], stroke=t["muted"], r=3)
+        wf.text(lx + 20, 608, name, 12)
+        lx += 120
+    wf.callout(5, 640, 600)
+    wf.text(20, 650, "Высота полосы — число задач в статусе на конец дня. Расширяющаяся полоса «In Progress» — затор: задачи начинают, но не заканчивают.", 12, fill=t["muted"])
+    wf.text(20, 672, "Таблица данных под графиком (для чтецов экрана и для печати). Считается из истории задач, ничего не хранится.", 12, fill=t["muted"])
+    return wf
+
+
+def screen_cycle():
+    wf = WF(700, "Аналитика: cycle time и lead time")
+    t = wf.t
+    analytics_head(wf, "Время цикла")
+    wf.rect(20, 244, 420, 270, fill=t["panel"], stroke=t["line"], r=8)
+    wf.text(34, 270, "Время цикла: распределение", 14, bold=True)
+    wf.text(34, 288, "от «In Progress» до «Done», дни", 11.5, fill=t["muted"])
+    for i, v in enumerate((12, 34, 28, 17, 9, 5, 2)):
+        wf.rect(50 + i * 52, 490 - v * 5, 40, v * 5, fill=t["status"]["In Progress"], stroke=t["accent"], r=3)
+        wf.text(70 + i * 52, 506, ("0–1", "1–2", "2–3", "3–5", "5–8", "8–13", "13+")[i], 10.5, "middle", fill=t["muted"])
+    wf.callout(4, 14, 244)
+    wf.rect(460, 244, 420, 270, fill=t["panel"], stroke=t["line"], r=8)
+    wf.text(474, 270, "Время выполнения: распределение", 14, bold=True)
+    wf.text(474, 288, "от создания до «Done», дни", 11.5, fill=t["muted"])
+    for i, v in enumerate((3, 8, 14, 24, 22, 14, 9)):
+        wf.rect(490 + i * 52, 490 - v * 5, 40, v * 5, fill=t["status"]["Review"], stroke=t["accent"], r=3)
+        wf.text(510 + i * 52, 506, ("0–2", "2–5", "5–8", "8–13", "13–21", "21–34", "34+")[i], 10.5, "middle", fill=t["muted"])
+    wf.callout(5, 454, 244)
+    wf.rect(20, 530, 860, 130, fill=t["panel"], stroke=t["line"], r=8)
+    for k, h in enumerate(("Тип", "Задач", "Цикл: среднее", "Цикл: медиана", "85 %", "Выполнение: среднее")):
+        wf.text(34 + k * 140, 556, h, 12, fill=t["muted"])
+    for r, row in enumerate((("Все", "107", "3,4 дн.", "3 дн.", "6 дн.", "9,8 дн."), ("Story", "31", "4,9 дн.", "4 дн.", "8 дн.", "12,1 дн."), ("Bug", "22", "1,8 дн.", "1 дн.", "3 дн.", "5,2 дн."))):
+        for k, v in enumerate(row):
+            wf.text(34 + k * 140, 582 + r * 24, v, 13, bold=(r == 0))
+    wf.callout(6, 14, 530)
+    wf.text(20, 690, "Считаются задачи, завершённые за период: цикл — с последнего входа в In Progress до Done, выполнение — с создания до Done.", 12, fill=t["muted"])
+    return wf
+
+
+def screen_workload():
+    wf = WF(700, "Аналитика: нагрузка по людям")
+    t = wf.t
+    analytics_head(wf, "Нагрузка", "Активные спринты")
+    wf.rect(20, 244, 860, 330, fill=t["panel"], stroke=t["line"], r=8)
+    people = (("Анна Ковалёва", 13, 5, 8), ("Игорь Смирнов", 18, 3, 5), ("Мария Орлова", 9, 2, 6), ("Дмитрий Васильев", 5, 2, 0), ("Не назначено", 6, 4, 0))
+    for r, (name, demo, shop, tasks) in enumerate(people):
+        y = 280 + r * 54
+        wf.avatar(44, y, name, 12)
+        wf.text(66, y + 5, name, 13)
+        wf.rect(230, y - 12, demo * 20, 24, fill=t["status"]["In Progress"], stroke=t["accent"], r=3)
+        wf.rect(230 + demo * 20, y - 12, shop * 20, 24, fill=t["status"]["Review"], stroke=t["accent"], r=3)
+        wf.text(230 + (demo + shop) * 20 + 10, y + 5, f"{demo + shop} sp · {demo // 3 + shop // 3 + 1} задач", 12, fill=t["muted"])
+    wf.line(230 + 16 * 20, 262, 230 + 16 * 20, 560, dash=True)
+    wf.text(230 + 16 * 20 + 6, 270, "среднее 10,2", 11, fill=t["muted"])
+    wf.callout(4, 14, 262)
+    wf.rect(60, 596, 14, 14, fill=t["status"]["In Progress"], stroke=t["muted"], r=3)
+    wf.text(80, 608, "DEMO", 12)
+    wf.rect(160, 596, 14, 14, fill=t["status"]["Review"], stroke=t["muted"], r=3)
+    wf.text(180, 608, "SHOP", 12)
+    wf.callout(5, 40, 600)
+    wf.text(20, 650, "Story points и задачи, не завершённые, в активных спринтах выбранных проектов — по каждому человеку сразу по всем проектам.", 12, fill=t["muted"])
+    wf.text(20, 672, "Полоса разбита по проектам; пунктир — среднее по людям. Клик по имени — их задачи на экране «Люди».", 12, fill=t["muted"])
+    return wf
+
+
+def screen_roadmap():
+    wf = WF(700, "Аналитика: дорожная карта эпиков")
+    t = wf.t
+    analytics_head(wf, "Дорожная карта", "Период: 6 месяцев ▾")
+    wf.rect(20, 244, 860, 380, fill=t["panel"], stroke=t["line"], r=8)
+    months = ("Сен", "Окт", "Ноя", "Дек", "Янв", "Фев")
+    for i, m in enumerate(months):
+        wf.text(300 + i * 96, 268, m, 12, "middle", fill=t["muted"])
+        wf.line(252 + i * 96, 276, 252 + i * 96, 604, color=t["line"])
+    wf.line(300 + 1.6 * 96 + 20, 276, 300 + 1.6 * 96 + 20, 604, dash=True)
+    wf.text(300 + 1.6 * 96 + 26, 290, "сегодня", 11, fill=t["warn"])
+    rows = (("DEMO", "Личный кабинет клиента", 0.0, 3.4, 40), ("DEMO", "Заказы", 1.2, 4.6, 25), ("SHOP", "Оплата", 0.4, 2.4, 70), ("SHOP", "Каталог", 1.6, 5.2, 55), ("SHOP", "Промокоды", None, None, 0))
+    for r, (key, name, a, b, pr) in enumerate(rows):
+        y = 316 + r * 60
+        wf.chip(30, y - 14, key, 11.5, h=22)
+        wf.text(76, y + 2, wf.fit(name, 168, 13), 13, bold=True)
+        if a is None:
+            wf.text(262, y + 4, "без дат: нет задач в спринтах", 12, fill=t["muted"])
+            continue
+        x1, x2 = 252 + a * 96, 252 + b * 96
+        wf.rect(x1, y - 14, x2 - x1, 26, fill=t["bg"], stroke=t["accent"], r=5, sw=1.6)
+        wf.rect(x1, y - 14, (x2 - x1) * pr / 100, 26, fill=t["status"]["Done"], stroke=t["accent"], r=5, sw=1.6)
+        wf.text(x1 + 8, y + 4, f"{pr} %", 12, bold=True)
+    wf.callout(4, 14, 302)
+    wf.callout(5, 252 + 1.6 * 96 + 14, 290)
+    wf.text(20, 650, "Полоса эпика — от начала первого до конца последнего спринта его задач (или срока эпика, если он позже); закрашено — прогресс эпика.", 12, fill=t["muted"])
+    wf.text(20, 672, "Эпики сгруппированы по проектам выбранного набора; эпик без задач в спринтах показан без полосы.", 12, fill=t["muted"])
+    return wf
+
+
 SCREENS = {
     "wf-map": screen_map,
     "wf-projects": screen_projects,
@@ -2428,6 +2565,10 @@ SCREENS = {
     "wf-templates": screen_templates,
     "wf-create-template": screen_create_template,
     "wf-availability": screen_availability,
+    "wf-cfd": screen_cfd,
+    "wf-cycle": screen_cycle,
+    "wf-workload": screen_workload,
+    "wf-roadmap": screen_roadmap,
     "wf-dod": screen_dod,
     "wf-retro": screen_retro,
     "wf-sprint-report": screen_sprint_report,

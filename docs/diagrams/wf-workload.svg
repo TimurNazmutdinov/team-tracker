@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="700" viewBox="0 0 900 700" font-family="Helvetica, Arial, 'Segoe UI', 'DejaVu Sans', sans-serif" role="img" aria-label="Аналитика: нагрузка по людям">
+<title>Аналитика: нагрузка по людям</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker></defs>
+<rect width="900" height="700" fill="#ffffff"/>
+<rect x="0.6" y="0.6" width="898.8" height="698.8" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="0.6" y="0.6" width="898.8" height="34" rx="10" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="1" y="20" width="898" height="15" rx="0" fill="#f3f4f6"/>
+<circle cx="18" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="36" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="54" cy="17" r="5" fill="#cbd5e1"/>
+<rect x="84" y="6" width="732" height="23" rx="11.5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="98" y="22" text-anchor="start" font-size="12" fill="#6b7280">team-tracker.app/analytics?projects=DEMO,SHOP</text>
+<line x1="1" y1="86" x2="899" y2="86" stroke="#cbd5e1" stroke-width="1.2"/>
+<g transform="translate(18 47) scale(0.4375)"><path d="M52.78 20 A24 24 0 1 1 35.34 8.23" fill="none" stroke="#2B4ACB" stroke-width="7" stroke-linecap="round"/><polygon points="45.24,9.62 36.31,1.30 34.37,15.16" fill="#2B4ACB" stroke="#2B4ACB" stroke-width="2" stroke-linejoin="round"/><polyline points="23,33 29.5,39.5 41,27" fill="none" stroke="#F08C00" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="52" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#2B4ACB">Team</text>
+<text x="94" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#F08C00">Tracker</text>
+<rect x="158" y="52" width="59.68000000000001" height="26" rx="13.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="187.84" y="69.68" text-anchor="middle" font-size="13" fill="#1f2937">DEMO ▾</text>
+<text x="230" y="67" text-anchor="start" font-size="14" fill="#1f2937">Бэклог</text>
+<text x="295.04" y="67" text-anchor="start" font-size="14" fill="#1f2937">Доска</text>
+<text x="352.24" y="67" text-anchor="start" font-size="14" fill="#1f2937">Спринты</text>
+<text x="425.12" y="67" text-anchor="start" font-size="14" fill="#1f2937">Отчёты</text>
+<text x="490.16" y="67" text-anchor="start" font-size="14" fill="#1f2937">Люди</text>
+<text x="539.52" y="67" text-anchor="start" font-size="14" fill="#1f2937">Настройки</text>
+<rect x="640" y="50" width="130" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="650" y="70" text-anchor="start" font-size="13" fill="#6b7280">Поиск</text>
+<rect x="740" y="55" width="24" height="20" rx="4" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="752" y="70" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">/</text>
+<circle cx="844" cy="65" r="15" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="844" y="69" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">АК</text>
+<text x="866" y="70" text-anchor="middle" font-size="13" fill="#6b7280">▾</text>
+<text x="20" y="130" text-anchor="start" font-size="24" font-weight="bold" fill="#1f2937">Аналитика</text>
+<rect x="20" y="148" width="188" height="30" rx="15" fill="#dbeafe" stroke="#2563eb" stroke-width="1.6"/>
+<text x="34" y="168" text-anchor="start" font-size="13" font-weight="bold" fill="#1f2937">Проекты: DEMO, SHOP ▾</text>
+<circle cx="14" cy="148" r="11" fill="#b91c1c"/>
+<text x="14" y="153" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">1</text>
+<rect x="222" y="150" width="128.0" height="28" rx="14.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="286.0" y="168.5" text-anchor="middle" font-size="12.5" fill="#1f2937">Активные спринты</text>
+<circle cx="216" cy="148" r="11" fill="#b91c1c"/>
+<text x="216" y="153" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">2</text>
+<rect x="20" y="192" width="114.24000000000001" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="77.12" y="214" text-anchor="middle" font-size="14" fill="#1f2937">Поток (CFD)</text>
+<rect x="142.24" y="192" width="114.24000000000001" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="199.36" y="214" text-anchor="middle" font-size="14" fill="#1f2937">Время цикла</text>
+<rect x="264.48" y="192" width="95.2" height="34" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="1.8"/>
+<text x="312.08000000000004" y="214" text-anchor="middle" font-size="14" font-weight="bold" fill="#1f2937">Нагрузка</text>
+<rect x="367.68" y="192" width="137.76" height="34" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="436.56" y="214" text-anchor="middle" font-size="14" fill="#1f2937">Дорожная карта</text>
+<circle cx="14" cy="192" r="11" fill="#b91c1c"/>
+<text x="14" y="197" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">3</text>
+<rect x="20" y="244" width="860" height="330" rx="8" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<circle cx="44" cy="280" r="12" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="44" y="284" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">АК</text>
+<text x="66" y="285" text-anchor="start" font-size="13" fill="#1f2937">Анна Ковалёва</text>
+<rect x="230" y="268" width="260" height="24" rx="3" fill="#dbeafe" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="490" y="268" width="100" height="24" rx="3" fill="#fef3c7" stroke="#2563eb" stroke-width="1.2"/>
+<text x="600" y="285" text-anchor="start" font-size="12" fill="#6b7280">18 sp · 6 задач</text>
+<circle cx="44" cy="334" r="12" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="44" y="338" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">ИС</text>
+<text x="66" y="339" text-anchor="start" font-size="13" fill="#1f2937">Игорь Смирнов</text>
+<rect x="230" y="322" width="360" height="24" rx="3" fill="#dbeafe" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="590" y="322" width="60" height="24" rx="3" fill="#fef3c7" stroke="#2563eb" stroke-width="1.2"/>
+<text x="660" y="339" text-anchor="start" font-size="12" fill="#6b7280">21 sp · 8 задач</text>
+<circle cx="44" cy="388" r="12" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="44" y="392" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">МО</text>
+<text x="66" y="393" text-anchor="start" font-size="13" fill="#1f2937">Мария Орлова</text>
+<rect x="230" y="376" width="180" height="24" rx="3" fill="#dbeafe" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="410" y="376" width="40" height="24" rx="3" fill="#fef3c7" stroke="#2563eb" stroke-width="1.2"/>
+<text x="460" y="393" text-anchor="start" font-size="12" fill="#6b7280">11 sp · 4 задач</text>
+<circle cx="44" cy="442" r="12" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="44" y="446" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">ДВ</text>
+<text x="66" y="447" text-anchor="start" font-size="13" fill="#1f2937">Дмитрий Васильев</text>
+<rect x="230" y="430" width="100" height="24" rx="3" fill="#dbeafe" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="330" y="430" width="40" height="24" rx="3" fill="#fef3c7" stroke="#2563eb" stroke-width="1.2"/>
+<text x="380" y="447" text-anchor="start" font-size="12" fill="#6b7280">7 sp · 2 задач</text>
+<circle cx="44" cy="496" r="12" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="44" y="500" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">Нн</text>
+<text x="66" y="501" text-anchor="start" font-size="13" fill="#1f2937">Не назначено</text>
+<rect x="230" y="484" width="120" height="24" rx="3" fill="#dbeafe" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="350" y="484" width="80" height="24" rx="3" fill="#fef3c7" stroke="#2563eb" stroke-width="1.2"/>
+<text x="440" y="501" text-anchor="start" font-size="12" fill="#6b7280">10 sp · 4 задач</text>
+<line x1="550" y1="262" x2="550" y2="560" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="556" y="270" text-anchor="start" font-size="11" fill="#6b7280">среднее 10,2</text>
+<circle cx="14" cy="262" r="11" fill="#b91c1c"/>
+<text x="14" y="267" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">4</text>
+<rect x="60" y="596" width="14" height="14" rx="3" fill="#dbeafe" stroke="#6b7280" stroke-width="1.2"/>
+<text x="80" y="608" text-anchor="start" font-size="12" fill="#1f2937">DEMO</text>
+<rect x="160" y="596" width="14" height="14" rx="3" fill="#fef3c7" stroke="#6b7280" stroke-width="1.2"/>
+<text x="180" y="608" text-anchor="start" font-size="12" fill="#1f2937">SHOP</text>
+<circle cx="40" cy="600" r="11" fill="#b91c1c"/>
+<text x="40" y="605" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">5</text>
+<text x="20" y="650" text-anchor="start" font-size="12" fill="#6b7280">Story points и задачи, не завершённые, в активных спринтах выбранных проектов — по каждому человеку сразу по всем проектам.</text>
+<text x="20" y="672" text-anchor="start" font-size="12" fill="#6b7280">Полоса разбита по проектам; пунктир — среднее по людям. Клик по имени — их задачи на экране «Люди».</text>
+</svg>
