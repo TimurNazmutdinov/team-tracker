@@ -2244,6 +2244,162 @@ def screen_search():
     return wf
 
 
+PEOPLE5 = ("Анна Ковалёва", "Игорь Смирнов", "Мария Орлова", "Дмитрий Васильев")
+
+
+def screen_availability():
+    wf = WF(780, "Доступность людей и ёмкость спринта")
+    t = wf.t
+    wf.shell(f"team-tracker.app/projects/{KEY}/backlog", "Бэклог")
+    wf.text(20, 130, "Планирование будущих спринтов", 22, bold=True)
+    # заголовок спринта + индикатор
+    wf.rect(20, 150, 860, 150, fill=t["panel"], stroke=t["line"], r=8)
+    wf.text(34, 178, "▾ Спринт 3", 15, bold=True)
+    wf.chip(130, 163, "запланирован", 12)
+    wf.text(250, 179, "09.11 – 20.11", 13, fill=t["muted"])
+    wf.rect(34, 192, 520, 14, fill=t["bg"], stroke=t["line"], r=7)
+    wf.rect(34, 192, 380, 14, fill=t["status"]["In Progress"], stroke=t["accent"], r=7)
+    wf.text(566, 204, "12 / 13 sp · 92 %", 13, bold=True)
+    wf.text(34, 232, "✓ Почти полон: 1 sp в запасе", 13, fill=t["muted"])
+    wf.text(34, 254, "Ёмкость 13 sp = velocity 16 sp × доступность 82 % (41 из 50 человеко-дней)", 13, fill=t["muted"])
+    wf.text(34, 280, "Отсутствуют: Анна К. 12–20.11 (отпуск) · Игорь С. 16.11 (больничный)", 13, fill=t["muted"])
+    wf.callout(1, 14, 192)
+    wf.callout(2, 14, 254)
+    wf.callout(3, 14, 280)
+    # блок «Отсутствия» на экране «Люди»
+    wf.line(20, 322, 880, 322)
+    wf.text(20, 352, "Люди → «Отсутствия»", 18, bold=True)
+    wf.text(230, 352, "правят тимлид и администратор", 12, fill=t["muted"])
+    hdr = (("Человек", 20), ("С", 250), ("По", 350), ("Вид", 450), ("Рабочих дней", 560))
+    for label, x in hdr:
+        wf.text(x, 388, label, 12, fill=t["muted"])
+    rows = (("Анна Ковалёва", "12.11.2026", "20.11.2026", "Отпуск", "7"), ("Игорь Смирнов", "16.11.2026", "16.11.2026", "Больничный", "1"))
+    for n, (a, b, c, d, e) in enumerate(rows):
+        y = 400 + n * 40
+        wf.rect(20, y, 860, 34, fill=t["panel"], stroke=t["line"], r=6)
+        for val, x in zip((a, b, c, d, e), (30, 250, 350, 450, 560)):
+            wf.text(x, y + 22, val, 13)
+        wf.button(740, y + 4, 60, 26, "Изм.", size=12)
+        wf.button(806, y + 4, 66, 26, "Удалить", size=12)
+    wf.callout(4, 14, 400)
+    wf.field(20, 500, 220, "Человек", "Мария Орлова", dropdown=True)
+    wf.field(256, 500, 130, "С", "23.11.2026")
+    wf.field(398, 500, 130, "По", "27.11.2026")
+    wf.field(540, 500, 150, "Вид", "Отпуск", dropdown=True)
+    wf.button(706, 506, 174, 34, "+ Добавить отсутствие", True, 13)
+    wf.callout(5, 14, 506)
+    wf.text(20, 584, "Рабочие дни — понедельник–пятница без праздников; пересекающиеся отсутствия одного человека не считаются дважды.", 12.5, fill=t["muted"])
+    wf.text(20, 606, "Команда — участники проекта и владелец. Без отсутствий доступность 100 %, индикатор остаётся как в ADR-014.", 12.5, fill=t["muted"])
+    return wf
+
+
+def screen_dod():
+    wf = WF(760, "Definition of Done: настройка и подтверждение при переносе в Done")
+    t = wf.t
+    wf.shell(f"team-tracker.app/projects/{KEY}/settings", "Настройки")
+    wf.text(20, 130, "Настройки проекта", 24, bold=True)
+    wf.text(20, 170, "Definition of Done", 18, bold=True)
+    wf.text(220, 170, "тимлид и администратор", 12, fill=t["muted"])
+    wf.rect(20, 184, 470, 130, fill=t["bg"], stroke=t["line"], r=6)
+    for n, line in enumerate(("- [ ] Код проверен другим разработчиком", "- [ ] Тесты написаны и проходят", "- [ ] Документация обновлена", "- [ ] Проверено на тестовом стенде")):
+        wf.text(34, 212 + n * 24, line, 13, fill=t["muted"])
+    wf.callout(1, 14, 184)
+    wf.text(510, 204, "Пункты — строки «- [ ] …» (Markdown).", 12.5, fill=t["muted"])
+    wf.text(510, 224, "Пустой список — подтверждения нет.", 12.5, fill=t["muted"])
+    wf.button(20, 328, 120, 32, "Сохранить", True, 13)
+    # диалог
+    wf.overlay()
+    mx, my, mw, mh = 190, 300, 520, 330
+    wf.rect(mx, my, mw, mh, fill=t["bg"], stroke=t["line"], r=10, sw=1.6)
+    wf.text(mx + 24, my + 38, "Перевести в Done?", 20, bold=True)
+    wf.text(mx + 24, my + 62, "DEMO-5 История заказов", 13, fill=t["muted"])
+    for n, (line, on) in enumerate((("Код проверен другим разработчиком", True), ("Тесты написаны и проходят", True), ("Документация обновлена", False), ("Проверено на тестовом стенде", False))):
+        yy = my + 100 + n * 34
+        wf.rect(mx + 24, yy - 14, 18, 18, fill=t["accent"] if on else t["bg"], stroke=t["accent"], r=4)
+        if on:
+            wf.text(mx + 33, yy, "✓", 13, "middle", True, t["accent_ink"])
+        wf.text(mx + 54, yy, line, 14)
+    wf.callout(2, mx + 6, my + 86)
+    wf.text(mx + 24, my + 252, "Отмечено 2 из 4: «Подтвердить» станет доступна, когда отмечены все пункты.", 12.5, fill=t["muted"])
+    wf.button(mx + 24, my + 274, 150, 34, "Подтвердить", False, 13)
+    wf.button(mx + 190, my + 274, 110, 34, "Отмена", size=13)
+    wf.callout(3, mx + 6, my + 274)
+    return wf
+
+
+def screen_retro():
+    wf = WF(780, "Ретроспектива спринта")
+    t = wf.t
+    wf.shell(f"team-tracker.app/projects/{KEY}/sprints", "Спринты")
+    wf.text(20, 130, "Спринт 2 · ретроспектива", 22, bold=True)
+    wf.chip(330, 112, "закрыт 06.11", 12)
+    wf.button(660, 112, 220, 32, "Отчёт спринта →", size=13)
+    cols = (("Что хорошо", ("Быстро закрыли блокирующий баг", "Демо прошло без замечаний"), "+ Добавить"), ("Что улучшить", ("Поздно нашли расхождения в API", "Мало времени на ревью"), "+ Добавить"), ("Действия", ("Договориться об окне ревью (Мария)", "Описать контракт API до старта"), "+ Добавить"))
+    gap = 14
+    cw = (W - 40 - 2 * gap) / 3
+    for n, (title, items, add) in enumerate(cols):
+        x = 20 + n * (cw + gap)
+        wf.rect(x, 164, cw, 400, fill=t["panel"], stroke=t["line"], r=8)
+        wf.text(x + 14, 192, title, 15, bold=True)
+        for k, item in enumerate(items):
+            yy = 208 + k * 78
+            wf.rect(x + 10, yy, cw - 20, 66, fill=t["bg"], stroke=t["line"], r=6)
+            wf.text(x + 20, yy + 24, wf.fit(item, cw - 40, 13), 13)
+            wf.text(x + 20, yy + 48, PEOPLE5[k], 11.5, fill=t["muted"])
+            if n == 2:
+                wf.button(x + cw - 150, yy + 36, 134, 24, "→ в задачу" if k == 0 else "DEMO-18", size=11.5)
+        wf.button(x + 10, 380, cw - 20, 30, add, size=13)
+    wf.callout(1, 14, 164)
+    wf.callout(2, 20 + 2 * (cw + gap) + 6, 164)
+    wf.callout(3, 20 + 2 * (cw + gap) + cw - 162, 258)
+    wf.text(34, 590, "Записи может добавлять любой, у кого есть доступ; удаляет автор, тимлид и администратор. Закрытый спринт тоже можно дополнять.", 12.5, fill=t["muted"])
+    wf.text(34, 610, "«→ в задачу» создаёт задачу в бэклоге (тип Task, название — текст действия) и ставит ссылку DEMO-18 на самой записи.", 12.5, fill=t["muted"])
+    wf.text(34, 630, "Во вкладке «Прошлые спринты» у раскрытого спринта те же три списка — только чтение, со ссылками на задачи.", 12.5, fill=t["muted"])
+    wf.callout(4, 20, 606)
+    return wf
+
+
+def screen_sprint_report():
+    wf = WF(860, "Отчёт спринта: Excel и печать")
+    t = wf.t
+    wf.shell(f"team-tracker.app/projects/{KEY}/sprints/s1/report", "Спринты")
+    wf.text(20, 130, "Отчёт: Спринт 2", 22, bold=True)
+    wf.text(20, 154, "26.10 – 06.11 · закрыт 06.11", 13, fill=t["muted"])
+    wf.button(540, 112, 150, 32, "Скачать Excel", size=13)
+    wf.button(702, 112, 178, 32, "Печать / PDF", True, 13)
+    wf.callout(1, 530, 112)
+    wf.rect(20, 172, 860, 52, fill=t["panel"], stroke=t["line"], r=8)
+    wf.text(34, 194, "Цель", 12, fill=t["muted"])
+    wf.text(34, 214, "Смена пароля и начало истории заказов", 14, bold=True)
+    wf.callout(2, 14, 172)
+    for n, (a, b) in enumerate((("Выполнено", "18 sp · 6 задач"), ("Перенесено", "3 sp · 1 задача"), ("Velocity", "18 sp"), ("Ёмкость", "16 sp · доступность 90 %"))):
+        x = 20 + n * 218
+        wf.rect(x, 240, 204, 62, fill=t["panel"], stroke=t["line"], r=8)
+        wf.text(x + 12, 262, a, 12, fill=t["muted"])
+        wf.text(x + 12, 288, b, 14, bold=True)
+    wf.callout(3, 14, 240)
+    wf.rect(20, 320, 420, 200, fill=t["panel"], stroke=t["line"], r=8)
+    wf.text(34, 346, "Burndown", 14, bold=True)
+    wf.poly([(50, 380), (130, 400), (210, 430), (290, 450), (370, 482), (420, 500)], t["accent"])
+    wf.poly([(50, 380), (420, 500)], t["muted"], dash=True)
+    wf.callout(4, 14, 320)
+    wf.rect(460, 320, 420, 200, fill=t["panel"], stroke=t["line"], r=8)
+    wf.text(474, 346, "Итоги по людям", 14, bold=True)
+    for k, name in enumerate(PEOPLE5):
+        yy = 368 + k * 36
+        wf.avatar(486, yy, name, 11)
+        wf.text(508, yy + 5, name, 13)
+        wf.text(700, yy + 5, ("5 sp · 2 задачи", "6 sp · 2 задачи", "4 sp · 1 задача", "3 sp · 1 задача")[k], 13)
+    wf.callout(5, 454, 320)
+    wf.rect(20, 536, 860, 150, fill=t["panel"], stroke=t["line"], r=8)
+    wf.text(34, 562, "Выполненные и перенесённые задачи · ретроспектива", 14, bold=True)
+    for k, line in enumerate(("DEMO-6 Спроектировать таблицу пользователей — Done — Анна К. — 5 sp", "DEMO-4 Смена пароля — Done — Игорь С. — 5 sp", "DEMO-5 История заказов — перенесена в Спринт 3 — 8 sp", "Ретро: 2 «хорошо», 2 «улучшить», 2 действия")):
+        wf.text(34, 590 + k * 24, line, 13, fill=t["muted"] if k == 3 else None)
+    wf.text(20, 722, "Excel: листы «Сводка», «Задачи», «Люди», «Burndown», «Ретроспектива». Печать: кнопки и меню скрыты, остаётся только отчёт.", 12.5, fill=t["muted"])
+    wf.text(20, 742, "Отчёт доступен у закрытого спринта и у идущего (тогда цифры на сегодня).", 12.5, fill=t["muted"])
+    return wf
+
+
 SCREENS = {
     "wf-map": screen_map,
     "wf-projects": screen_projects,
@@ -2271,6 +2427,10 @@ SCREENS = {
     "wf-markdown": screen_markdown,
     "wf-templates": screen_templates,
     "wf-create-template": screen_create_template,
+    "wf-availability": screen_availability,
+    "wf-dod": screen_dod,
+    "wf-retro": screen_retro,
+    "wf-sprint-report": screen_sprint_report,
     "wf-retro-board": screen_retro_board,
     "wf-board-beige": lambda: screen_retro_board(BEIGE),
     "wf-backlog-new": screen_backlog_new,
