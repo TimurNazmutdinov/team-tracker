@@ -1,4 +1,5 @@
-import { useId, type ChangeEvent, type ReactNode } from 'react';
+import { useId, useState, type ChangeEvent, type ReactNode } from 'react';
+import { Markdown } from './Markdown';
 
 interface BaseProps {
   label: string;
@@ -94,6 +95,56 @@ export function TextArea(
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
+    </Wrapper>
+  );
+}
+
+/** Текстовое поле с Markdown: вкладки «Правка» и «Предпросмотр». */
+export function MarkdownField(
+  props: BaseProps & {
+    name: string;
+    value: string;
+    onChange: (value: string) => void;
+    rows?: number;
+  },
+) {
+  const id = useId();
+  const [preview, setPreview] = useState(false);
+  const { name, value, onChange, rows = 3 } = props;
+  return (
+    <Wrapper {...props} id={id}>
+      <div className="md-tabs" role="group" aria-label={`${props.label}: режим`}>
+        <button
+          type="button"
+          aria-pressed={!preview}
+          className={preview ? undefined : 'on'}
+          onClick={() => setPreview(false)}
+        >
+          Правка
+        </button>
+        <button
+          type="button"
+          aria-pressed={preview}
+          className={preview ? 'on' : undefined}
+          onClick={() => setPreview(true)}
+        >
+          Предпросмотр
+        </button>
+        <span className="muted md-help">Markdown: **жирный**, - списки, - [ ] пункты</span>
+      </div>
+      {preview ? (
+        <div className="md-preview" aria-live="polite">
+          {value.trim() ? <Markdown text={value} /> : <span className="muted">Пока пусто</span>}
+        </div>
+      ) : (
+        <textarea
+          {...describe(id, props.error, props.hint)}
+          name={name}
+          rows={rows}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      )}
     </Wrapper>
   );
 }

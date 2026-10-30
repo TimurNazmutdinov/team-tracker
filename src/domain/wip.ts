@@ -1,4 +1,4 @@
-import type { Ctx, FieldErrors, Result, View } from './actions';
+import type { FieldErrors, Result, View } from './actions';
 import { WIP_COLUMNS, type Project, type WipColumn } from './schema';
 
 // WIP-лимиты колонок доски (ADR-017): настройка проекта, по умолчанию выключена. Превышение —
@@ -58,7 +58,7 @@ export function wipMessage(o: WipOverflow): string {
 }
 
 /** Сохраняет настройки WIP проекта; пустое поле лимита — колонка без лимита. */
-export function updateWipSettings(view: View, input: WipInput, _ctx?: Ctx): Result {
+export function updateWipSettings(view: View, input: WipInput): Result {
   const errors: FieldErrors = {};
   const limits: WipLimits = {};
   for (const column of WIP_COLUMNS) {

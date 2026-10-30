@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import type { FieldErrors, View } from '../../domain/actions';
 import { canHavePoints } from '../../domain/hierarchy';
+import { checklistProgress, toggleChecklistItem } from '../../domain/checklist';
 import { epicProgress } from '../../domain/progress';
 import type { Issue } from '../../domain/schema';
 import { useActions } from '../../state/actions';
@@ -10,7 +11,8 @@ import { useView } from '../../state/queries';
 import { Loading } from '../../ui/Loading';
 import { NotFound } from '../../ui/NotFound';
 import { PageHeader } from '../../ui/PageHeader';
-import { TextArea, TextField } from '../../ui/fields';
+import { MarkdownField, TextField } from '../../ui/fields';
+import { Markdown } from '../../ui/Markdown';
 import { useCurrentProject } from '../projects/ProjectRoute';
 import { Avatar, EpicProgressView, StatusChip, TypeIcon } from './IssueBits';
 import { IssueActivity } from './IssueActivity';
@@ -142,6 +144,13 @@ function TextBlocks({ issue, view, readOnly }: { issue: Issue; view: View; readO
   const [acceptance, setAcceptance] = useState(issue.acceptance);
   const [errors, setErrors] = useState<FieldErrors>({});
 
+  const progress = checklistProgress(issue.acceptance);
+  const toggle = async (index: number) => {
+    await actions.updateIssue(issue.id, {
+      acceptance: toggleChecklistItem(issue.acceptance, index),
+    });
+  };
+
   const save = async () => {
     const result = await actions.updateIssue(issue.id, { title, description, acceptance });
     if (result.ok) {
@@ -168,14 +177,14 @@ function TextBlocks({ issue, view, readOnly }: { issue: Issue; view: View; readO
           onChange={setTitle}
           error={errors.title}
         />
-        <TextArea
+        <MarkdownField
           name="description"
           label="Описание"
           rows={4}
           value={description}
           onChange={setDescription}
         />
-        <TextArea
+        <MarkdownField
           name="acceptance"
           label="Критерии приёмки"
           rows={3}
@@ -214,11 +223,30 @@ function TextBlocks({ issue, view, readOnly }: { issue: Issue; view: View; readO
       )}
       <section aria-labelledby="desc-title">
         <h2 id="desc-title">Описание</h2>
-        <p className="pre">{issue.description || <span className="muted">Описания нет</span>}</p>
+        {issue.description ? (
+          <Markdown text={issue.description} />
+        ) : (
+          <p className="muted">Описания нет</p>
+        )}
       </section>
       <section aria-labelledby="acc-title">
-        <h2 id="acc-title">Критерии приёмки</h2>
-        <p className="pre">{issue.acceptance || <span className="muted">Критериев нет</span>}</p>
+        <h2 id="acc-title">
+          Критерии приёмки
+          {progress.total > 0 && (
+            <span className="muted checklist-progress">
+              {' '}
+              — выполнено {progress.done} из {progress.total}
+            </span>
+          )}
+        </h2>
+        {issue.acceptance ? (
+          <Markdown
+            text={issue.acceptance}
+            {...(readOnly ? {} : { onToggle: (i: number) => void toggle(i) })}
+          />
+        ) : (
+          <p className="muted">Критериев нет</p>
+        )}
       </section>
     </>
   );

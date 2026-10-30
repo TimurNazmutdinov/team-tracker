@@ -4,7 +4,8 @@ import type { History, Issue, Status } from '../../domain/schema';
 import { useActions } from '../../state/actions';
 import { useComments, useHistory } from '../../state/queries';
 import { Async } from '../../ui/Async';
-import { TextArea } from '../../ui/fields';
+import { MarkdownField } from '../../ui/fields';
+import { Markdown } from '../../ui/Markdown';
 import { Avatar, StatusChip } from './IssueBits';
 
 const fmtDateTime = (iso: string) =>
@@ -49,7 +50,7 @@ function Comments({ issue, view }: { issue: Issue; view: View }) {
                           <strong>{author?.name ?? 'Неизвестный'}</strong>{' '}
                           <span className="muted">{fmtDateTime(c.createdAt)}</span>
                         </p>
-                        <p className="pre">{c.text}</p>
+                        <Markdown text={c.text} />
                       </div>
                     </li>
                   );
@@ -59,7 +60,7 @@ function Comments({ issue, view }: { issue: Issue; view: View }) {
         }
       </Async>
       <form onSubmit={(e) => void send(e)} onKeyDown={onKeyDown} noValidate>
-        <TextArea
+        <MarkdownField
           name="comment"
           label="Новый комментарий"
           rows={3}

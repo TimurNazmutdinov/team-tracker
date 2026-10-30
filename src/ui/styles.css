@@ -1737,3 +1737,87 @@ main:has(.planning-page) {
 .status-bar .status-done {
   background: var(--st-done);
 }
+
+/* Markdown */
+.md > :first-child {
+  margin-top: 0.25rem;
+}
+.md p,
+.md ul,
+.md ol,
+.md pre,
+.md blockquote,
+.md table {
+  margin: 0.25rem 0 0.75rem;
+}
+.md ul,
+.md ol {
+  padding-left: 1.4rem;
+}
+.md li.task {
+  list-style: none;
+  margin-left: -1.2rem;
+}
+.md li.task .done {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+.md code {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 0 0.25rem;
+  font-size: 0.9em;
+}
+.md pre {
+  overflow-x: auto;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+.md pre code {
+  border: 0;
+  padding: 0;
+  background: none;
+}
+.md blockquote {
+  border-left: 3px solid var(--line);
+  padding-left: 0.75rem;
+  color: var(--muted);
+}
+.md table {
+  border-collapse: collapse;
+}
+.md th,
+.md td {
+  border: 1px solid var(--line);
+  padding: 0.2rem 0.5rem;
+}
+.md h3,
+.md h4,
+.md h5,
+.md h6 {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 1rem;
+}
+.md-tabs {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+.md-tabs button.on {
+  font-weight: 700;
+  border-color: var(--accent);
+}
+.md-help {
+  margin-left: auto;
+  font-size: 0.8rem;
+}
+.md-preview {
+  min-height: 4rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px dashed var(--line);
+  border-radius: 4px;
+}
