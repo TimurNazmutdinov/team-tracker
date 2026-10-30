@@ -38,6 +38,7 @@ import {
 import type { BulkPatch } from '../../domain/bulk';
 import { wipAfterMove, wipLimit, wipMessage } from '../../domain/wip';
 import { ancestors } from '../../domain/tree';
+import { ProjectFilter } from '../../ui/ProjectFilter';
 import { useActions } from '../../state/actions';
 import { usePermissions } from '../../state/current-user';
 import { useBoardPrefs } from '../../state/board-prefs';
@@ -390,7 +391,7 @@ export function BoardPage() {
       </>
     );
   }
-  const filter = null;
+  const filter = <ProjectFilter />;
   const projects = scope.projects;
   const [only] = projects;
   if (projects.length === 0) {

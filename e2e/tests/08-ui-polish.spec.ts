@@ -48,23 +48,20 @@ test('фильтр проектов в шапке на всех вкладках
     '/projects/DEMO/reports',
   ]) {
     await page.goto(url);
-    await expect(page.locator('.app-bar').getByRole('button', { name: /Проекты:/ })).toBeVisible();
-    await expect(page.locator('main .page-header .project-tags')).toBeVisible();
+    await expect(page.locator('main .project-filter').first()).toBeVisible();
   }
-  // чипа проекта в шапке больше нет
+  // в верхней панели фильтра и чипа проекта нет: фильтр стоит в строке фильтров экрана
+  await expect(page.locator('.app-bar .project-filter')).toHaveCount(0);
   await expect(page.locator('.app-bar .project-chip')).toHaveCount(0);
 });
 
 test('на экране одного проекта выбор другого проекта в фильтре переводит в него', async () => {
   await page.goto('/projects/DEMO/people?projects=all');
-  await page
-    .locator('.app-bar')
-    .getByRole('button', { name: /Проекты:/ })
-    .click();
+  await page.locator('main .project-filter button').first().click();
   const pop = page.getByRole('dialog', { name: 'Выбор проектов' });
   await pop.getByLabel(/DEMO/).click();
   await page.waitForURL('**/projects/SHOP/people**');
-  await expect(page.locator('main .project-tags')).toContainText('SHOP');
+  await expect(page.locator('main .project-filter button').first()).toContainText('SHOP');
   await audit('фильтр проектов в шапке');
 });
 

@@ -13,6 +13,7 @@ import {
 import { useProjectScope } from '../../state/project-scope';
 import { useProjectHistories, useProjectViews } from '../../state/queries';
 import { Loading } from '../../ui/Loading';
+import { ProjectFilter } from '../../ui/ProjectFilter';
 import { PageHeader } from '../../ui/PageHeader';
 import { CfdChart, Histogram, RoadmapChart, WorkloadChart } from './charts';
 
@@ -120,6 +121,7 @@ export function AnalyticsPage() {
     <>
       {header}
       <div className="board-toolbar">
+        <ProjectFilter />
         <nav className="tabs" aria-label="Вид аналитики">
           {TABS.map((t) => (
             <button

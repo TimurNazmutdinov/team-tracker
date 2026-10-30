@@ -53,7 +53,10 @@ export function ProjectFilter() {
         aria-expanded={open}
         onClick={() => setOpen(!open)}
       >
-        Проекты: {label} ▾
+        {scope.projects.length === 1 && scope.projects[0]
+          ? `${scope.projects[0].key} · ${scope.projects[0].name}`
+          : `Проекты: ${label}`}{' '}
+        ▾
       </button>
       {open && (
         <div className="filter-pop" role="dialog" aria-label="Выбор проектов">

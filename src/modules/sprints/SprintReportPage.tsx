@@ -57,7 +57,7 @@ export function SprintReportPage() {
   const capacity = report.capacity;
   return (
     <div className="sprint-report">
-      <PageHeader title={`Отчёт: ${sprint.name}`}>
+      <PageHeader title={`Отчёт: ${sprint.name}`} scope>
         <span className="no-print">
           <button
             type="button"

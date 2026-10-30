@@ -66,7 +66,7 @@ function IssueView({ issue, view, projectKey }: { issue: Issue; view: View; proj
           {projectKey}-{issue.number}
         </span>
       </nav>
-      <PageHeader title={`${projectKey}-${issue.number} ${issue.title}`}>
+      <PageHeader title={`${projectKey}-${issue.number} ${issue.title}`} scope>
         <p className="issue-meta">
           <TypeIcon type={issue.type} /> {issue.type} · <StatusChip status={issue.status} />
         </p>
