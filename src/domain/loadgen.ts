@@ -1,3 +1,4 @@
+import { DEFAULT_ROLES } from './roles';
 import type {
   Comment,
   Dataset,
@@ -272,6 +273,7 @@ export function generateLoadData(options: Partial<LoadOptions> = {}): Dataset {
     people,
     members,
     templates,
+    roles: structuredClone(DEFAULT_ROLES),
     absences: [],
     retroItems: [],
     sprints,

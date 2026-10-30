@@ -1,6 +1,5 @@
 import { sql } from 'drizzle-orm';
 import { DEFAULT_PALETTE, isPalette } from '../../../src/domain/palettes';
-import { isRole } from '../../../src/domain/permissions';
 import { schema, type Db } from '../db';
 import type { AccountRecord, Entities, Snapshot } from './types';
 
@@ -37,6 +36,7 @@ export function takeSnapshot(db: Db): Promise<TakenSnapshot> {
         people,
         members,
         templates,
+        roles,
         absences,
         retroItems,
         sprints,
@@ -50,6 +50,7 @@ export function takeSnapshot(db: Db): Promise<TakenSnapshot> {
         tx.select().from(t.people),
         tx.select().from(t.projectMembers),
         tx.select().from(t.issueTemplates),
+        tx.select().from(t.roles),
         tx.select().from(t.absences),
         tx.select().from(t.retroItems),
         tx.select().from(t.sprints),
@@ -65,6 +66,7 @@ export function takeSnapshot(db: Db): Promise<TakenSnapshot> {
         people,
         members,
         templates,
+        roles,
         absences,
         retroItems,
         sprints,
@@ -73,21 +75,15 @@ export function takeSnapshot(db: Db): Promise<TakenSnapshot> {
         comments,
         history,
       } as Entities;
-      const accounts: AccountRecord[] = users.flatMap((u) =>
-        isRole(u.accessRole)
-          ? [
-              {
-                id: u.id,
-                email: u.email,
-                passwordHash: u.passwordHash,
-                accessRole: u.accessRole,
-                mustChangePassword: u.mustChangePassword,
-                palette: isPalette(u.palette) ? u.palette : DEFAULT_PALETTE,
-                createdAt: u.createdAt.toISOString(),
-              },
-            ]
-          : [],
-      );
+      const accounts: AccountRecord[] = users.map((u) => ({
+        id: u.id,
+        email: u.email,
+        passwordHash: u.passwordHash,
+        accessRole: u.accessRole,
+        mustChangePassword: u.mustChangePassword,
+        palette: isPalette(u.palette) ? u.palette : DEFAULT_PALETTE,
+        createdAt: u.createdAt.toISOString(),
+      }));
       return { data, accounts, schemaVersion };
     },
     { isolationLevel: 'repeatable read', accessMode: 'read only' },

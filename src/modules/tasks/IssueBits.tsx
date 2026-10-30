@@ -21,14 +21,21 @@ export function TypeIcon({ type }: { type: IssueType }) {
 export function PriorityChip({ priority }: { priority: Priority }) {
   const hot = priority === 'Highest' || priority === 'High';
   return (
-    <span className={`chip${hot ? ' hot' : ''}`}>
+    <span className={`chip${hot ? ' hot' : ''}`} title={`Приоритет: ${priority}`}>
       <span aria-hidden="true">{PRIORITY_MARK[priority]}</span> {priority}
     </span>
   );
 }
 
 export function StatusChip({ status }: { status: Status }) {
-  return <span className={`chip status-${status.toLowerCase().replace(' ', '-')}`}>{status}</span>;
+  return (
+    <span
+      className={`chip status-${status.toLowerCase().replace(' ', '-')}`}
+      title={`Статус: ${status}`}
+    >
+      {status}
+    </span>
+  );
 }
 
 export function PointsBadge({ points }: { points: number | null }) {

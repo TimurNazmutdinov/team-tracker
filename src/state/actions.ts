@@ -26,7 +26,8 @@ import { addRetroItem, deleteRetroItem, retroToIssue, type RetroInput } from '..
 import { bulkUpdate, type BulkPatch } from '../domain/bulk';
 import type { Changes } from '../domain/changes';
 import { addMember, removeMember, setMemberRole, setOwner } from '../domain/members';
-import type { LinkType, ProjectRole } from '../domain/schema';
+import { rolesChanges, type RolesResult } from '../domain/roles';
+import type { LinkType, ProjectRole, RoleDef } from '../domain/schema';
 import { updateSprintSettings, type SprintSettings } from '../domain/settings';
 import {
   closeSprint,
@@ -173,6 +174,34 @@ export function useActionsFor() {
   return useMemo(
     () => (projectId: string) => makeActions(storage, queryClient, userId, projectId),
     [storage, queryClient, userId],
+  );
+}
+
+/** Роли и права (ADR-021): сохранение таблицы ролей одним набором изменений. */
+export function useRoleActions() {
+  const storage = useStorage();
+  const queryClient = useQueryClient();
+  return useMemo(
+    () => ({
+      saveRoles: async (current: RoleDef[], draft: RoleDef[]): Promise<RolesResult> => {
+        const result = rolesChanges(current, draft, () => browserCtx.newId());
+        if (!result.ok) return result;
+        const { roles, deleteRoleIds } = result.changes;
+        if (roles.length === 0 && deleteRoleIds.length === 0) return result;
+        try {
+          await storage.commit({ roles, deleteRoleIds });
+          await queryClient.invalidateQueries();
+          return result;
+        } catch (e) {
+          const message = errorResult(e);
+          return {
+            ok: false,
+            errors: { form: message.ok ? 'Неизвестная ошибка' : (message.errors['form'] ?? '') },
+          };
+        }
+      },
+    }),
+    [storage, queryClient],
   );
 }
 

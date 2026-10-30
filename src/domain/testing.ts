@@ -42,6 +42,7 @@ export function applyChanges(ds: Dataset, c: Changes): Dataset {
   upsert(next.projects, c.projects);
   upsert(next.members, c.members);
   upsert(next.templates, c.templates);
+  upsert(next.roles, c.roles);
   upsert(next.absences, c.absences);
   upsert(next.retroItems, c.retroItems);
   upsert(next.sprints, c.sprints);
@@ -53,6 +54,8 @@ export function applyChanges(ds: Dataset, c: Changes): Dataset {
   next.members = next.members.filter((m) => !removedMembers.has(m.id));
   const removedTemplates = new Set(c.deleteTemplateIds ?? []);
   next.templates = next.templates.filter((x) => !removedTemplates.has(x.id));
+  const removedRoles = new Set(c.deleteRoleIds ?? []);
+  next.roles = next.roles.filter((x) => !removedRoles.has(x.id));
   const removedAbsences = new Set(c.deleteAbsenceIds ?? []);
   next.absences = next.absences.filter((x) => !removedAbsences.has(x.id));
   const removedRetro = new Set(c.deleteRetroItemIds ?? []);

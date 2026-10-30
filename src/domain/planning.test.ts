@@ -6,6 +6,7 @@ import {
   allLabels,
   closedSprints,
   fillOf,
+  hierarchyRows,
   matchesFilters,
   sprintCapacity,
   totalPoints,
@@ -179,5 +180,31 @@ describe('возврат из идущего спринта в бэклог', ()
         )
       : toPlanned;
     expect(back.ok && back.changes.history?.map((h) => h.field)).toEqual(['sprintId']);
+  });
+});
+
+describe('hierarchyRows', () => {
+  const mk = (id: string, type: Issue['type'], parentId: string | null = null): Issue =>
+    ({ id, type, parentId, order: 0 }) as Issue;
+  const epic = mk('e1', 'Epic');
+  const a = mk('a', 'Task', 'e1');
+  const b = mk('b', 'Story', 'e1');
+  const solo = mk('s', 'Bug');
+  const foreign = mk('f', 'Task', 'e-elsewhere');
+  const ids = (rows: { issue: Issue; depth: number }[]) =>
+    rows.map((r) => `${r.depth}${r.issue.id}`);
+
+  it('задачи эпика идут под ним, остальные на своих местах', () => {
+    const rows = hierarchyRows([solo, a, epic, foreign, b], new Set());
+    expect(ids(rows)).toEqual(['0s', '0e1', '1a', '1b', '0f']);
+    expect(rows[1]?.children).toBe(2);
+  });
+  it('свёрнутый эпик прячет вложенные, но число помнит', () => {
+    const rows = hierarchyRows([epic, a, b], new Set(['e1']));
+    expect(ids(rows)).toEqual(['0e1']);
+    expect(rows[0]?.children).toBe(2);
+  });
+  it('без эпика в списке задача остаётся обычной строкой', () => {
+    expect(ids(hierarchyRows([a, b], new Set()))).toEqual(['0a', '0b']);
   });
 });

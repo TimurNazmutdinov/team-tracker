@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { ROLES, ROLE_LABELS } from '../../domain/permissions';
+import { DEFAULT_ROLES } from '../../domain/permissions';
 import { useHelp } from '../../state/help';
 import { useOnboarding } from '../../state/onboarding';
+import { useRoles } from '../../state/queries';
 import { Dialog } from '../../ui/Dialog';
 import { HOTKEYS, RULES, permissionRows } from './content';
 
@@ -27,6 +28,7 @@ export function HelpDialog() {
 function HelpBody({ onClose }: { onClose: () => void }) {
   const [tab, setTab] = useState<TabId>('keys');
   const onboarding = useOnboarding();
+  const roles = useRoles().data ?? DEFAULT_ROLES;
   return (
     <div className="help">
       <div className="md-tabs" role="group" aria-label="Разделы справки">
@@ -83,21 +85,21 @@ function HelpBody({ onClose }: { onClose: () => void }) {
             <thead>
               <tr>
                 <th scope="col">Действие</th>
-                {ROLES.map((r) => (
-                  <th key={r} scope="col">
-                    {ROLE_LABELS[r]}
+                {roles.map((r) => (
+                  <th key={r.id} scope="col">
+                    {r.name}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {permissionRows().map((row) => (
+              {permissionRows(roles).map((row) => (
                 <tr key={row.action}>
                   <th scope="row">{row.label}</th>
-                  {ROLES.map((r) => (
-                    <td key={r}>
-                      <span aria-label={row.allowed[r] ? 'можно' : 'нельзя'}>
-                        {row.allowed[r] ? '✓' : '—'}
+                  {roles.map((r) => (
+                    <td key={r.id}>
+                      <span aria-label={row.allowed[r.id] ? 'можно' : 'нельзя'}>
+                        {row.allowed[r.id] ? '✓' : '—'}
                       </span>
                     </td>
                   ))}

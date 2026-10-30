@@ -47,6 +47,7 @@ export function BoardCard({
             type="checkbox"
             className="pick"
             aria-label={`Выбрать ${key}`}
+            title="Отметить для массового изменения"
             checked={selected ?? false}
             onChange={() => onSelect(issue.id)}
           />
@@ -56,6 +57,7 @@ export function BoardCard({
             type="button"
             className="handle"
             aria-label={`Перетащить ${key}`}
+            title="Перетащить в другую колонку"
             ref={drag.setActivatorNodeRef}
             {...drag.attributes}
             {...drag.listeners}
@@ -86,6 +88,7 @@ export function BoardCard({
         <select
           className="status-select"
           aria-label={`Статус ${key}`}
+          title="Статус задачи: допустим любой переход"
           value={issue.status}
           disabled={readOnly}
           onChange={(e) => onStatus(issue.id, e.target.value as Status)}
@@ -153,7 +156,13 @@ export function LaneView({
   return (
     <section className="lane" aria-label={lane.title}>
       <header className="lane-head">
-        <button type="button" className="plain" aria-expanded={!collapsed} onClick={onToggle}>
+        <button
+          type="button"
+          className="plain"
+          title={collapsed ? 'Развернуть группу' : 'Свернуть группу'}
+          aria-expanded={!collapsed}
+          onClick={onToggle}
+        >
           {collapsed ? '▸' : '▾'}
         </button>
         {person && <Avatar person={person} />}

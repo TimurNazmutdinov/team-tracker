@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { checkIntegrity } from '../../../src/domain/integrity';
 import { DEFAULT_PALETTE, PALETTES, type Palette } from '../../../src/domain/palettes';
-import { ROLES, type Role } from '../../../src/domain/permissions';
+import { DEFAULT_ROLES, roleSchema } from '../../../src/domain/roles';
+import type { Role } from '../../../src/domain/permissions';
 import {
   commentSchema,
   historySchema,
@@ -68,7 +69,7 @@ const accountSchema = z.object({
   id: z.string().min(1),
   email: z.string().min(1),
   passwordHash: z.string().min(1).nullable(),
-  accessRole: z.enum(ROLES),
+  accessRole: z.string().min(1),
   mustChangePassword: z.boolean(),
   // в копиях до ADR-013 поля нет — тогда гамма по умолчанию
   palette: z.enum(PALETTES).default(DEFAULT_PALETTE),
@@ -90,6 +91,8 @@ export const backupJsonSchema = z.object({
     members: z.array(memberSchema).default([]),
     // в копиях до ADR-017 шаблонов задач нет
     templates: z.array(templateSchema).default([]),
+    // в копиях до ADR-021 ролей нет — тогда четыре роли по умолчанию
+    roles: z.array(roleSchema).default(() => structuredClone(DEFAULT_ROLES)),
     // в копиях до ADR-018 отсутствий и записей ретроспектив нет
     absences: z.array(absenceSchema).default([]),
     retroItems: z.array(retroItemSchema).default([]),
@@ -110,9 +113,11 @@ const MAX_PROBLEMS = 20;
 export function snapshotProblems(snapshot: Snapshot): string[] {
   const problems = checkIntegrity({ version: 1, ...snapshot.data });
   const people = new Set(snapshot.data.people.map((p) => p.id));
+  const roleIds = new Set(snapshot.data.roles.map((r) => r.id));
   const emails = new Set<string>();
   for (const a of snapshot.accounts) {
     if (!people.has(a.id)) problems.push(`учётка ${a.email}: нет человека с id ${a.id}`);
+    if (!roleIds.has(a.accessRole)) problems.push(`учётка ${a.email}: нет роли ${a.accessRole}`);
     if (emails.has(a.email.toLowerCase())) problems.push(`почта ${a.email} повторяется`);
     emails.add(a.email.toLowerCase());
   }
@@ -122,6 +127,7 @@ export function snapshotProblems(snapshot: Snapshot): string[] {
     'people',
     'members',
     'templates',
+    'roles',
     'absences',
     'retroItems',
     'sprints',

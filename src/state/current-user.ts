@@ -1,7 +1,14 @@
 import { create } from 'zustand';
-import { can, canChangeStatus, type Action, type Role } from '../domain/permissions';
+import {
+  DEFAULT_ROLES,
+  can,
+  canChangeStatus,
+  type Action,
+  type Role,
+  type RoleDef,
+} from '../domain/permissions';
 import type { Issue, Person } from '../domain/schema';
-import { usePeople } from './queries';
+import { usePeople, useRoles } from './queries';
 import { useSession } from './session';
 
 // Кто выполняет действия. С сервером (ADR-010) — вошедший пользователь; в демо-режиме без входа —
@@ -66,9 +73,10 @@ export interface Permissions {
 export function usePermissions(): Permissions {
   const role = useRole();
   const user = useCurrentUser();
+  const roles: readonly RoleDef[] = useRoles().data ?? DEFAULT_ROLES;
   return {
     role,
-    can: (action) => can(role, action),
-    canChangeStatus: (issue) => canChangeStatus(role, user?.id ?? '', issue),
+    can: (action) => can(roles, role, action),
+    canChangeStatus: (issue) => canChangeStatus(roles, role, user?.id ?? '', issue),
   };
 }

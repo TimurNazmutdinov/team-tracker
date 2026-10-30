@@ -31,7 +31,7 @@ export const GROUP_LABELS: Record<GroupField, string> = {
   parent: 'Родитель',
 };
 
-/** Название группы для задач без значения поля. */
+/** Ключ группы для задач без значения поля; название зависит от поля группировки. */
 export const UNSET = 'Не задано';
 
 export interface Lane {
@@ -71,7 +71,7 @@ export function filterCards(cards: Issue[], filters: BoardFilters): Issue[] {
   );
 }
 
-/** Группировка карточек по полю: только непустые группы; задачи без значения — в «Не задано» в конце. */
+/** Группировка карточек по полю: только непустые группы; задачи без значения — в «Не назначен» (исполнитель) или «Без родителя» в конце. */
 export function groupLanes(
   cards: Issue[],
   field: GroupField,
@@ -92,7 +92,7 @@ export function groupLanes(
       for (const c of cards) {
         const person = ctx.people.find((p) => p.id === c.assigneeId);
         if (person) add(person.id, person.name, c, person);
-        else add(UNSET, UNSET, c);
+        else add(UNSET, 'Не назначен', c);
       }
       break;
     case 'type':
@@ -114,7 +114,7 @@ export function groupLanes(
       for (const c of cards) {
         const parent = c.parentId === null ? undefined : byId.get(c.parentId);
         if (parent) add(parent.id, `${ctx.projectKey}-${parent.number} ${parent.title}`, c);
-        else add(UNSET, UNSET, c);
+        else add(UNSET, 'Без родителя', c);
       }
       break;
     }

@@ -49,6 +49,7 @@ export function ProjectFilter() {
         type="button"
         className="filter-button"
         aria-haspopup="dialog"
+        title="Какие проекты показывать на экране: свои, все или выбранные"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
       >

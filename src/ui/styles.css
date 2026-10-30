@@ -1380,7 +1380,7 @@ main:has(.planning-page) {
 }
 
 .planning-row {
-  grid-template-columns: 1.4rem 1.6rem 1.4rem 5rem minmax(0, 1fr) 6.5rem 6.5rem 6.5rem 10rem;
+  grid-template-columns: 1.4rem 1.6rem 2.8rem 5rem minmax(0, 1fr) 6.5rem 6.5rem 6.5rem 10rem;
 }
 
 .planning-row .chip,
@@ -2196,4 +2196,187 @@ a.button {
 }
 .wizard-nav {
   margin-top: 1rem;
+}
+
+/* Переключатель проектов в шапке */
+.project-switcher {
+  position: relative;
+}
+.switcher-pop {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  min-width: 16rem;
+  padding: 0.25rem;
+  background: var(--panel);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px var(--shadow);
+}
+.switcher-pop a {
+  display: block;
+  padding: 0.35rem 0.6rem;
+  border-radius: 4px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.switcher-pop a:hover,
+.switcher-pop a:focus-visible,
+.switcher-pop a[aria-current='true'] {
+  background: var(--accent-bg);
+}
+.switcher-sep {
+  margin-top: 0.25rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--line);
+}
+
+/* Планирование: спринт и его задачи в общей рамке, иерархия эпик → задачи (wireframes.md, 24.2) */
+.backlog-section {
+  overflow: hidden;
+  border: 1.5px solid var(--control-line);
+  border-radius: 10px;
+  background: var(--bg);
+}
+.backlog-section > .section-head {
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+}
+.backlog-section > .goal {
+  margin: 0.4rem 0.75rem 0;
+}
+.backlog-section > .issue-list {
+  margin: 0;
+  padding: 0.5rem;
+}
+.type-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+.epic-toggle {
+  padding: 0 0.2rem;
+}
+.planning-row.child {
+  position: relative;
+  margin-left: 1.9rem;
+}
+.planning-row.child::before {
+  content: '';
+  position: absolute;
+  left: -1.1rem;
+  top: -0.5rem;
+  bottom: 50%;
+  width: 0.9rem;
+  border-left: 1.5px solid var(--muted);
+  border-bottom: 1.5px solid var(--muted);
+  border-bottom-left-radius: 6px;
+}
+.epic-row {
+  background: var(--accent-bg);
+}
+.chip.where {
+  white-space: nowrap;
+}
+
+/* Настройки: каждая настройка — отдельная тонкая рамка (wireframes.md, 24.3) */
+.settings-card,
+.accounts,
+.backups {
+  max-width: 62rem;
+  margin: 0 0 1rem;
+  padding: 0.9rem 1.1rem;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.settings-card h2,
+.accounts h2,
+.backups h2 {
+  margin-top: 0;
+  font-size: 1.1rem;
+}
+.settings-card .form-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: none;
+}
+.roles-matrix {
+  max-width: none;
+}
+.table-scroll {
+  overflow-x: auto;
+}
+.matrix {
+  border-collapse: collapse;
+  min-width: 100%;
+}
+.matrix th,
+.matrix td {
+  padding: 0.35rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+  text-align: center;
+  vertical-align: top;
+}
+.matrix th[scope='row'],
+.matrix thead th:first-child {
+  text-align: left;
+  font-weight: 400;
+}
+.matrix thead th {
+  min-width: 9rem;
+  font-weight: 400;
+}
+.matrix thead th input[type='text'] {
+  width: 100%;
+  font-weight: 700;
+}
+.matrix .matrix-group th {
+  background: var(--panel);
+  text-align: left;
+  font-weight: 700;
+}
+.matrix-actions {
+  display: flex;
+  gap: 0.25rem;
+  justify-content: center;
+  margin-top: 0.3rem;
+}
+.matrix-actions button {
+  padding: 0.1rem 0.5rem;
+  font-size: 0.8rem;
+}
+.templates-layout {
+  display: grid;
+  grid-template-columns: 14rem minmax(0, 1fr);
+  gap: 1rem;
+}
+.templates-list {
+  padding: 0.5rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.templates-list button {
+  display: block;
+  width: 100%;
+  margin-bottom: 0.3rem;
+  text-align: left;
+}
+.templates-list button.on,
+.templates-list button[aria-pressed='true'] {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+.templates-editor {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+@media (max-width: 52rem) {
+  .templates-layout {
+    grid-template-columns: 1fr;
+  }
 }

@@ -5,12 +5,12 @@ import { useStorage } from '../app/storage-context';
 import { SERVER_MODE } from '../app/create-storage';
 import { authClient } from '../app/auth-client';
 import { PALETTES, PALETTE_LABELS, type Palette } from '../domain/palettes';
-import { ROLE_LABELS } from '../domain/permissions';
+import { DEFAULT_ROLES, roleName } from '../domain/permissions';
 import { usePalette } from '../state/palette';
 import { resolveAuthor, useUserStore } from '../state/current-user';
 import { useSession } from '../state/session';
 import { useNotices } from '../state/notices';
-import { usePeople } from '../state/queries';
+import { usePeople, useRoles } from '../state/queries';
 
 /** Выбор цветовой гаммы (ADR-013): применяется сразу; с сервером сохраняется в профиле. */
 export function PaletteField() {
@@ -64,6 +64,7 @@ export function UserMenu() {
   const queryClient = useQueryClient();
   const push = useNotices((s) => s.push);
   const people = usePeople();
+  const roles = useRoles();
   const userId = useUserStore((s) => s.userId);
   const setUser = useUserStore((s) => s.setUser);
   const account = useSession((s) => s.account);
@@ -114,6 +115,7 @@ export function UserMenu() {
       <button
         type="button"
         aria-haspopup="menu"
+        title="Профиль: гамма, смена пароля, выход"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
       >
@@ -125,7 +127,7 @@ export function UserMenu() {
             <p className="muted">
               {account.email}
               <br />
-              {ROLE_LABELS[account.role]}
+              {roleName(roles.data ?? DEFAULT_ROLES, account.role)}
             </p>
           )}
           {!SERVER_MODE && people.data && (

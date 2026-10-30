@@ -70,7 +70,7 @@ function RetroColumn({
 }) {
   const actions = useActions(projectId);
   const me = useCurrentUser();
-  const role = usePermissions().role;
+  const perms = usePermissions();
   const push = useNotices((s) => s.push);
   const [text, setText] = useState('');
   const [error, setError] = useState<string | undefined>();
@@ -103,8 +103,7 @@ function RetroColumn({
       <ul className="plain-list">
         {items.map((item) => {
           const number = item.issueId ? numbers.get(item.issueId) : undefined;
-          const canDelete =
-            !readOnly && (item.authorId === me?.id || role === 'lead' || role === 'admin');
+          const canDelete = !readOnly && (item.authorId === me?.id || perms.can('sprint.manage'));
           return (
             <li key={item.id} className="retro-item">
               <p>{item.text}</p>
@@ -114,11 +113,14 @@ function RetroColumn({
                   {projectKey}-{number}
                 </Link>
               )}
-              {kind === 'action' && !readOnly && item.issueId === null && (
-                <button type="button" onClick={() => void toIssue(item.id)}>
-                  → в задачу
-                </button>
-              )}{' '}
+              {kind === 'action' &&
+                !readOnly &&
+                item.issueId === null &&
+                perms.can('issue.create') && (
+                  <button type="button" onClick={() => void toIssue(item.id)}>
+                    → в задачу
+                  </button>
+                )}{' '}
               {canDelete && (
                 <button
                   type="button"
@@ -134,7 +136,7 @@ function RetroColumn({
         })}
         {items.length === 0 && <li className="muted">Пока пусто</li>}
       </ul>
-      {!readOnly && (
+      {!readOnly && perms.can('issue.comment') && (
         <form onSubmit={(e) => void add(e)} noValidate>
           <label className="visually-hidden" htmlFor={`retro-${kind}`}>
             {inputLabel}

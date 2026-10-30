@@ -59,10 +59,20 @@ export function SprintReportPage() {
     <div className="sprint-report">
       <PageHeader title={`Отчёт: ${sprint.name}`}>
         <span className="no-print">
-          <button type="button" disabled={busy} onClick={() => void excel()}>
+          <button
+            type="button"
+            title="Скачать отчёт в Excel: сводка, задачи, люди, burndown, ретроспектива"
+            disabled={busy}
+            onClick={() => void excel()}
+          >
             Скачать Excel
           </button>{' '}
-          <button type="button" className="primary" onClick={() => window.print()}>
+          <button
+            type="button"
+            className="primary"
+            title="Печать или сохранение в PDF средствами браузера"
+            onClick={() => window.print()}
+          >
             Печать / PDF
           </button>
         </span>

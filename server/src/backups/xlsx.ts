@@ -3,7 +3,8 @@ import readXlsxFile from 'read-excel-file/node';
 import writeXlsxFile from 'write-excel-file/node';
 import { DEFAULT_PALETTE, PALETTE_LABELS, isPalette } from '../../../src/domain/palettes';
 import { PROJECT_ROLE_LABELS } from '../../../src/domain/members';
-import { ROLE_LABELS, isRole } from '../../../src/domain/permissions';
+import { roleName } from '../../../src/domain/permissions';
+import { ACTIONS, DEFAULT_ROLES, type Action } from '../../../src/domain/roles';
 import { velocity } from '../../../src/domain/reports';
 import type {
   Absence,
@@ -53,6 +54,7 @@ export const SHEETS = {
   people: 'Люди',
   members: 'Участники проектов',
   templates: 'Шаблоны задач',
+  roles: 'Роли',
   absences: 'Отсутствия',
   retro: 'Ретроспективы',
   sprints: 'Спринты',
@@ -198,7 +200,7 @@ function specs(snapshot: Snapshot, meta: XlsxMeta): SheetSpec[] {
           p.name,
           p.role,
           a?.email,
-          a ? ROLE_LABELS[a.accessRole] : null,
+          a ? roleName(data.roles, a.accessRole) : null,
           a ? PALETTE_LABELS[a.palette] : null,
           p.id,
           a?.accessRole,
@@ -234,6 +236,17 @@ function specs(snapshot: Snapshot, meta: XlsxMeta): SheetSpec[] {
         x.projectId,
       ]),
       widths: [10, 24, 12, 50, 40, 36, 36],
+    },
+    {
+      name: SHEETS.roles,
+      headers: ['Название', 'Права', '~id', '~system'],
+      rows: data.roles.map((r) => [
+        r.name,
+        r.permissions.join(', '),
+        r.id,
+        r.system ? 'true' : 'false',
+      ]),
+      widths: [26, 80, 14, 10],
     },
     {
       name: SHEETS.absences,
@@ -616,6 +629,19 @@ export async function readXlsx(buffer: Uint8Array): Promise<ReadXlsx> {
       }))
     : [];
 
+  // листа ролей в файлах до ADR-021 нет — тогда роли по умолчанию
+  const roles = sheets.some((sheet) => sheet.sheet === S.roles)
+    ? sheetRows(sheets, S.roles).map((r) => ({
+        id: str(need(r, 'id', S.roles)),
+        name: str(need(r, 'Название', S.roles)),
+        permissions: str(need(r, 'Права', S.roles))
+          .split(',')
+          .map((x) => x.trim())
+          .filter((x): x is Action => (ACTIONS as readonly string[]).includes(x)),
+        system: str(r['system']) === 'true',
+      }))
+    : structuredClone(DEFAULT_ROLES);
+
   // листов отсутствий и ретроспектив в файлах до ADR-018 нет
   const absences = sheets.some((sheet) => sheet.sheet === S.absences)
     ? sheetRows(sheets, S.absences).map((r) => ({
@@ -656,7 +682,7 @@ export async function readXlsx(buffer: Uint8Array): Promise<ReadXlsx> {
     const role = strOrNull(need(r, 'accessRole', S.people));
     // в Excel-файлах до ADR-013 колонки с гаммой нет — тогда гамма по умолчанию
     const palette = strOrNull(r['palette']);
-    if (email && isRole(role)) {
+    if (email && role) {
       accounts.push({
         id,
         email,
@@ -739,6 +765,7 @@ export async function readXlsx(buffer: Uint8Array): Promise<ReadXlsx> {
         people,
         members,
         templates,
+        roles,
         absences,
         retroItems,
         sprints,

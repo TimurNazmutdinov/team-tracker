@@ -49,15 +49,16 @@ export function BulkBar({
   const [busy, setBusy] = useState(false);
 
   const showPriority = perms.can('backlog.rank');
+  const showFields = perms.can('issue.edit');
   const showSprint = sprints !== undefined && perms.can('sprint.items');
 
   const apply = async () => {
     const patch: BulkPatch = {};
     if (status !== KEEP && statusAllowed) patch.status = status as Status;
-    if (assignee !== KEEP) patch.assigneeId = assignee === NONE ? null : assignee;
+    if (assignee !== KEEP && showFields) patch.assigneeId = assignee === NONE ? null : assignee;
     if (priority !== KEEP && showPriority) patch.priority = priority as Priority;
     if (sprint !== KEEP && showSprint) patch.sprintId = sprint === BACKLOG ? null : sprint;
-    if (label.trim() !== '') patch.addLabel = label.trim();
+    if (label.trim() !== '' && showFields) patch.addLabel = label.trim();
     if (Object.keys(patch).length === 0) {
       setError('Выберите, что изменить.');
       return;
@@ -74,7 +75,7 @@ export function BulkBar({
     <section className="bulk-bar" aria-label="Массовые действия">
       <strong>{summary ?? `Выбрано: ${count}`}</strong>
       {statusAllowed && (
-        <label>
+        <label title="Новый статус для всех отмеченных">
           Статус
           <select value={status} onChange={(e) => setStatus(e.target.value)}>
             <option value={KEEP}>— не менять —</option>
@@ -86,20 +87,22 @@ export function BulkBar({
           </select>
         </label>
       )}
-      <label>
-        Исполнитель
-        <select value={assignee} onChange={(e) => setAssignee(e.target.value)}>
-          <option value={KEEP}>— не менять —</option>
-          <option value={NONE}>Не назначен</option>
-          {people.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.name}
-            </option>
-          ))}
-        </select>
-      </label>
+      {showFields && (
+        <label title="Назначить всех отмеченных на человека">
+          Исполнитель
+          <select value={assignee} onChange={(e) => setAssignee(e.target.value)}>
+            <option value={KEEP}>— не менять —</option>
+            <option value={NONE}>Не назначен</option>
+            {people.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
       {showPriority && (
-        <label>
+        <label title="Новый приоритет для всех отмеченных">
           Приоритет
           <select value={priority} onChange={(e) => setPriority(e.target.value)}>
             <option value={KEEP}>— не менять —</option>
@@ -112,7 +115,7 @@ export function BulkBar({
         </label>
       )}
       {showSprint && (
-        <label>
+        <label title="Перенести отмеченные в спринт или в бэклог">
           Спринт
           <select value={sprint} onChange={(e) => setSprint(e.target.value)}>
             <option value={KEEP}>— не менять —</option>
@@ -125,14 +128,22 @@ export function BulkBar({
           </select>
         </label>
       )}
-      <label>
-        Добавить метку
-        <input type="text" value={label} onChange={(e) => setLabel(e.target.value)} />
-      </label>
-      <button type="button" className="primary" disabled={busy} onClick={() => void apply()}>
+      {showFields && (
+        <label title="Метка добавится к каждой отмеченной задаче">
+          Добавить метку
+          <input type="text" value={label} onChange={(e) => setLabel(e.target.value)} />
+        </label>
+      )}
+      <button
+        type="button"
+        className="primary"
+        title="Изменить все отмеченные задачи одним сохранением"
+        disabled={busy}
+        onClick={() => void apply()}
+      >
         Применить
       </button>
-      <button type="button" onClick={onClear}>
+      <button type="button" title="Убрать отметки" onClick={onClear}>
         Снять выбор
       </button>
       {error && (

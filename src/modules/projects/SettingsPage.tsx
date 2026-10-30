@@ -12,6 +12,7 @@ import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
 import { TextField } from '../../ui/fields';
 import { DodSettingsForm, TemplatesSection, WipSettingsForm } from './ProjectTools';
+import { RolesMatrix } from './RolesMatrix';
 import { ProjectMembers } from './ProjectMembers';
 import { useCurrentProject } from './ProjectRoute';
 
@@ -22,7 +23,8 @@ const fmtFull = (d: string) => `${d.slice(8, 10)}.${d.slice(5, 7)}.${d.slice(0, 
 export function SettingsPage() {
   const project = useCurrentProject();
   const view = useView(project.id);
-  const canBackup = usePermissions().can('backups.manage');
+  const perms = usePermissions();
+  const canBackup = perms.can('backups.manage');
   return (
     <>
       <PageHeader title="Настройки проекта" />
@@ -40,6 +42,7 @@ export function SettingsPage() {
       ) : (
         <Loading />
       )}
+      {perms.can('users.manage') && <RolesMatrix />}
       {SERVER_MODE && canBackup && <BackupsPanel />}
     </>
   );
@@ -88,7 +91,7 @@ function SprintSettingsForm({ view }: { view: View }) {
 
   return (
     <form
-      className="settings"
+      className="settings-card"
       onSubmit={(e) => void submit(e)}
       noValidate
       aria-labelledby="sprint-settings-title"

@@ -18,7 +18,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { useState, type ReactNode } from 'react';
+import { Fragment, useState, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router';
 import { containerItems, type View } from '../../domain/actions';
 import { canHavePoints } from '../../domain/hierarchy';
@@ -26,6 +26,7 @@ import {
   NO_PLANNING_FILTERS,
   allLabels,
   fillOf,
+  hierarchyRows,
   filtersActive,
   matchesFilters,
   sprintCapacity,
@@ -97,6 +98,12 @@ interface RowProps {
   ) => void;
   showStatus: boolean;
   nested?: boolean;
+  /** Вложена под эпик этого же списка (иерархия, wireframes.md, 24.2). */
+  child?: boolean;
+  /** У эпика: сколько у него задач и свёрнут ли он. */
+  epicToggle?: { count: number; collapsed: boolean; onToggle: () => void };
+  /** У строки эпика из другого списка: где она находится («в Спринте 1», «в бэклоге»). */
+  where?: string;
 }
 
 function IssueRow({
@@ -113,6 +120,9 @@ function IssueRow({
   onEdit,
   showStatus,
   nested = false,
+  child = false,
+  epicToggle,
+  where,
 }: RowProps) {
   const [expanded, setExpanded] = useState(false);
   const sortable = useSortable({ id: issue.id, disabled: nested || !canEdit });
@@ -123,6 +133,8 @@ function IssueRow({
   const assignee = people.find((p) => p.id === issue.assigneeId);
   const key = `${projectKey}-${issue.number}`;
   const editable = canEdit && !nested;
+  // points и исполнитель — это правка задачи: нужно право «Редактировать»
+  const fieldsOk = usePermissions().can('issue.edit');
   const [draft, setDraft] = useState<string | null>(null);
 
   const commitPoints = () => {
@@ -139,7 +151,7 @@ function IssueRow({
       <li
         ref={nested ? undefined : sortable.setNodeRef}
         style={nested ? undefined : style}
-        className={`issue-row planning-row${nested ? ' nested' : ''}${sortable.isDragging ? ' dragging' : ''}`}
+        className={`issue-row planning-row${nested ? ' nested' : ''}${child ? ' child' : ''}${issue.type === 'Epic' ? ' epic-row' : ''}${sortable.isDragging ? ' dragging' : ''}`}
       >
         {nested || !canMove ? (
           <span className="handle-space" />
@@ -148,6 +160,7 @@ function IssueRow({
             type="checkbox"
             checked={selected}
             aria-label={`Выбрать ${key}`}
+            title="Отметить для массового изменения"
             onChange={(e) => onSelect(issue.id, e.target.checked)}
           />
         )}
@@ -158,6 +171,7 @@ function IssueRow({
             type="button"
             className="handle"
             aria-label={`Перетащить задачу ${key}`}
+            title="Перетащить: изменить порядок или перенести в другой спринт"
             ref={sortable.setActivatorNodeRef}
             {...sortable.attributes}
             {...sortable.listeners}
@@ -165,7 +179,21 @@ function IssueRow({
             ⋮⋮
           </button>
         )}
-        <TypeIcon type={issue.type} />
+        <span className="type-cell">
+          {epicToggle && epicToggle.count > 0 && (
+            <button
+              type="button"
+              className="plain epic-toggle"
+              aria-expanded={!epicToggle.collapsed}
+              aria-label={`${epicToggle.collapsed ? 'Развернуть' : 'Свернуть'} эпик ${key}: задач ${epicToggle.count}`}
+              title={epicToggle.collapsed ? 'Показать задачи эпика' : 'Скрыть задачи эпика'}
+              onClick={epicToggle.onToggle}
+            >
+              {epicToggle.collapsed ? '▸' : '▾'}
+            </button>
+          )}
+          <TypeIcon type={issue.type} />
+        </span>
         <Link to={`/projects/${projectKey}/issues/${issue.number}`} className="issue-key">
           {key}
         </Link>
@@ -184,8 +212,9 @@ function IssueRow({
               </button>
             )}
           </span>
-          {(epic || issue.labels.length > 0) && (
+          {(epic || where || issue.labels.length > 0) && (
             <span className="row-meta">
+              {where && <span className="chip where">{where}</span>}
               {epic && (
                 <Link
                   to={`/projects/${projectKey}/issues/${epic.number}`}
@@ -213,6 +242,7 @@ function IssueRow({
           <select
             className="row-field"
             aria-label={`Приоритет ${key}`}
+            title="Приоритет задачи"
             value={issue.priority}
             onChange={(e) => onEdit(issue.id, { priority: e.target.value as Priority })}
           >
@@ -228,13 +258,14 @@ function IssueRow({
         {showStatus ? <StatusChip status={issue.status} /> : <span />}
         {progress ? (
           <EpicProgressView progress={progress} compact />
-        ) : editable && canHavePoints(issue.type) ? (
+        ) : editable && fieldsOk && canHavePoints(issue.type) ? (
           <input
             type="number"
             min={0}
             step={1}
             className={`row-field points-input${issue.points === null ? ' unset' : ''}`}
             aria-label={`Story points ${key}`}
+            title="Story points: оценка целым числом (1, 2, 3, 5, 8, 13)"
             placeholder="—"
             value={draft ?? (issue.points === null ? '' : String(issue.points))}
             onChange={(e) => setDraft(e.target.value)}
@@ -247,10 +278,11 @@ function IssueRow({
         ) : (
           <PointsBadge points={issue.points} />
         )}
-        {editable ? (
+        {editable && fieldsOk ? (
           <select
             className={`row-field${assignee ? '' : ' unset'}`}
             aria-label={`Исполнитель ${key}`}
+            title="Исполнитель задачи"
             value={issue.assigneeId ?? ''}
             onChange={(e) => onEdit(issue.id, { assigneeId: e.target.value || null })}
           >
@@ -320,6 +352,7 @@ function Section({
   onEdit,
 }: SectionProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const [collapsedEpics, setCollapsedEpics] = useState<Set<string>>(new Set());
   const droppable = useDroppable({ id: containerId(sprint?.id ?? null) });
   const points = totalPoints(all);
   // ёмкость этого спринта: velocity с поправкой на доступность людей (ADR-018)
@@ -327,6 +360,24 @@ function Section({
     sprint && capacity ? adjustedCapacity(capacity, sprintAvailability(view, sprint)) : capacity;
   const sprintCapacityValue = sprintCapacity?.value ?? null;
   const epics = new Map(view.issues.filter((i) => i.type === 'Epic').map((i) => [i.id, i]));
+  const rows = hierarchyRows(items, collapsedEpics);
+  const inList = new Set(all.map((i) => i.id));
+  // задачи эпика из других списков показываются под ним с пометкой, где они
+  const externalKids = (epicId: string) =>
+    view.issues
+      .filter((i) => i.parentId === epicId && i.type !== 'Epic' && !inList.has(i.id))
+      .sort((a, b) => a.order - b.order);
+  const locationOf = (issue: Issue) => {
+    const s = view.sprints.find((x) => x.id === issue.sprintId);
+    return s ? `в ${s.name}` : 'в бэклоге';
+  };
+  const toggleEpic = (id: string) =>
+    setCollapsedEpics((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   return (
     <section className="backlog-section" aria-label={title}>
       <header className="section-head planning-head">
@@ -334,6 +385,7 @@ function Section({
           <button
             type="button"
             className="plain"
+            title={collapsed ? 'Развернуть список' : 'Свернуть список'}
             aria-expanded={!collapsed}
             onClick={() => setCollapsed(!collapsed)}
           >
@@ -367,27 +419,64 @@ function Section({
       </header>
       {sprint && sprint.goal && !collapsed && <p className="muted goal">Цель: {sprint.goal}</p>}
       {!collapsed && (
-        <SortableContext items={items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+        <SortableContext items={rows.map((r) => r.issue.id)} strategy={verticalListSortingStrategy}>
           <ul ref={droppable.setNodeRef} className={`issue-list${droppable.isOver ? ' over' : ''}`}>
-            {items.map((issue) => (
-              <IssueRow
-                key={issue.id}
-                issue={issue}
-                projectKey={projectKey}
-                people={view.people}
-                epic={issue.parentId ? epics.get(issue.parentId) : undefined}
-                progress={issue.type === 'Epic' ? epicProgress(view.issues, issue.id) : undefined}
-                subtasks={view.issues
-                  .filter((s) => s.type === 'Sub-task' && s.parentId === issue.id)
-                  .sort((a, b) => a.order - b.order)}
-                canEdit={canEdit}
-                canMove={canMove}
-                selected={selected.has(issue.id)}
-                onSelect={onSelect}
-                onEdit={onEdit}
-                showStatus={sprint?.state === 'active'}
-              />
-            ))}
+            {rows.map(({ issue, depth, children }) => {
+              const outside = issue.type === 'Epic' ? externalKids(issue.id) : [];
+              const folded = collapsedEpics.has(issue.id);
+              return (
+                <Fragment key={issue.id}>
+                  <IssueRow
+                    issue={issue}
+                    projectKey={projectKey}
+                    people={view.people}
+                    epic={depth === 1 || !issue.parentId ? undefined : epics.get(issue.parentId)}
+                    progress={
+                      issue.type === 'Epic' ? epicProgress(view.issues, issue.id) : undefined
+                    }
+                    subtasks={view.issues
+                      .filter((s) => s.type === 'Sub-task' && s.parentId === issue.id)
+                      .sort((a, b) => a.order - b.order)}
+                    canEdit={canEdit}
+                    canMove={canMove}
+                    selected={selected.has(issue.id)}
+                    onSelect={onSelect}
+                    onEdit={onEdit}
+                    showStatus={sprint?.state === 'active'}
+                    child={depth === 1}
+                    {...(issue.type === 'Epic'
+                      ? {
+                          epicToggle: {
+                            count: children + outside.length,
+                            collapsed: folded,
+                            onToggle: () => toggleEpic(issue.id),
+                          },
+                        }
+                      : {})}
+                  />
+                  {!folded &&
+                    outside.map((kid) => (
+                      <IssueRow
+                        key={kid.id}
+                        issue={kid}
+                        projectKey={projectKey}
+                        people={view.people}
+                        epic={undefined}
+                        subtasks={[]}
+                        canEdit={false}
+                        canMove={false}
+                        selected={false}
+                        onSelect={onSelect}
+                        onEdit={onEdit}
+                        showStatus={false}
+                        nested
+                        child
+                        where={locationOf(kid)}
+                      />
+                    ))}
+                </Fragment>
+              );
+            })}
             {items.length === 0 && (
               <li className="drop-hint">
                 {filtered && all.length > 0
@@ -427,7 +516,7 @@ function FiltersBar({
   return (
     <div className="board-toolbar planning-filters" role="search" aria-label="Фильтры бэклога">
       {projectFilter}
-      <label>
+      <label title="Найти задачу по номеру или названию">
         Поиск
         <input
           type="search"
@@ -437,7 +526,7 @@ function FiltersBar({
         />
       </label>
       {epics && (
-        <label>
+        <label title="Показать задачи одного эпика">
           Эпик
           <select
             value={filters.epicId ?? ''}
@@ -452,7 +541,7 @@ function FiltersBar({
           </select>
         </label>
       )}
-      <label>
+      <label title="Показать задачи одного исполнителя">
         Исполнитель
         <select
           value={filters.assigneeId ?? ''}
@@ -466,7 +555,7 @@ function FiltersBar({
           ))}
         </select>
       </label>
-      <label>
+      <label title="Показать задачи с этой меткой">
         Метка
         <select
           value={filters.label ?? ''}
@@ -480,7 +569,7 @@ function FiltersBar({
           ))}
         </select>
       </label>
-      <label>
+      <label title="Показать только задачи этого типа">
         Тип
         <select
           value={filters.type ?? ''}
@@ -524,7 +613,7 @@ function FiltersBar({
 }
 
 /**
- * Вкладка «Планирование будущих спринтов» (wireframes.md, 17.4, ADR-014): идущий и запланированные
+ * Вкладка «Планирование спринтов» (wireframes.md, 17.4, ADR-014): идущий и запланированные
  * спринты и общий бэклог одним списком, заполнение спринтов, фильтры, быстрая правка и перенос.
  */
 function ProjectPlanning({
@@ -650,10 +739,12 @@ function ProjectPlanning({
         <Loading />
       ) : view.issues.length === 0 ? (
         <div className="empty">
-          <p>В проекте пока нет задач. Создайте первую.</p>
-          <button type="button" className="primary" onClick={() => showCreate()}>
-            + Создать задачу
-          </button>
+          <p>В проекте пока нет задач.{perms.can('issue.create') ? ' Создайте первую.' : ''}</p>
+          {perms.can('issue.create') && (
+            <button type="button" className="primary" onClick={() => showCreate()}>
+              + Создать задачу
+            </button>
+          )}
         </div>
       ) : (
         <>
@@ -733,22 +824,25 @@ function ProjectPlanning({
 }
 
 /**
- * Вкладка «Планирование будущих спринтов» (wireframes.md, 17.4, ADR-014): идущий и запланированные
+ * Вкладка «Планирование спринтов» (wireframes.md, 17.4, ADR-014): идущий и запланированные
  * спринты и общий бэклог. Несколько выбранных проектов идут своими блоками (ADR-016).
  */
 export function BacklogPage() {
   const { ready, scope } = useProjectScope();
   const { key = '' } = useParams();
   const showCreate = useCreateDialog((s) => s.show);
+  const canCreate = usePermissions().can('issue.create');
   const views = useProjectViews(scope.projects);
   const [filters, setFilters] = useState<PlanningFilters>(NO_PLANNING_FILTERS);
   const projects = scope.projects;
   const [only] = projects;
   const header = (
-    <PageHeader title="Планирование будущих спринтов">
-      <button type="button" className="primary" onClick={() => showCreate()}>
-        + Создать задачу
-      </button>
+    <PageHeader title="Планирование спринтов">
+      {canCreate && (
+        <button type="button" className="primary" onClick={() => showCreate()}>
+          + Создать задачу
+        </button>
+      )}
     </PageHeader>
   );
 

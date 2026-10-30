@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { DEFAULT_ROLES, roleSchema, type RoleDef } from './roles';
 
 // Типы и схемы сущностей: docs/data-model.md. Типы выводятся из схем, чтобы не расходиться.
 
@@ -166,6 +167,8 @@ export const datasetSchema = z.object({
   members: z.array(memberSchema).default([]),
   /** Шаблоны задач проектов; в старых наборах данных поля нет. */
   templates: z.array(templateSchema).default([]),
+  /** Роли и права (ADR-021); в старых наборах данных — четыре роли по умолчанию. */
+  roles: z.array(roleSchema).default(() => structuredClone(DEFAULT_ROLES)),
   /** Отсутствия и записи ретроспектив; в старых наборах данных полей нет. */
   absences: z.array(absenceSchema).default([]),
   retroItems: z.array(retroItemSchema).default([]),
@@ -187,6 +190,7 @@ export type Project = z.infer<typeof projectSchema>;
 export type ProjectRole = (typeof PROJECT_ROLES)[number];
 export type Person = z.infer<typeof personSchema>;
 export type ProjectMember = z.infer<typeof memberSchema>;
+export type { RoleDef };
 export type Absence = z.infer<typeof absenceSchema>;
 export type RetroItem = z.infer<typeof retroItemSchema>;
 export type AbsenceKind = (typeof ABSENCE_KINDS)[number];

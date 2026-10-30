@@ -1,0 +1,184 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="860" viewBox="0 0 900 860" font-family="Helvetica, Arial, 'Segoe UI', 'DejaVu Sans', sans-serif" role="img" aria-label="Настройки: роли и права — таблица с галочками">
+<title>Настройки: роли и права — таблица с галочками</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker></defs>
+<rect width="900" height="860" fill="#ffffff"/>
+<rect x="0.6" y="0.6" width="898.8" height="858.8" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="0.6" y="0.6" width="898.8" height="34" rx="10" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.4"/>
+<rect x="1" y="20" width="898" height="15" rx="0" fill="#f3f4f6"/>
+<circle cx="18" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="36" cy="17" r="5" fill="#cbd5e1"/>
+<circle cx="54" cy="17" r="5" fill="#cbd5e1"/>
+<rect x="84" y="6" width="732" height="23" rx="11.5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="98" y="22" text-anchor="start" font-size="12" fill="#6b7280">team-tracker.app/settings/roles</text>
+<line x1="1" y1="86" x2="899" y2="86" stroke="#cbd5e1" stroke-width="1.2"/>
+<g transform="translate(18 47) scale(0.4375)"><path d="M52.78 20 A24 24 0 1 1 35.34 8.23" fill="none" stroke="#2B4ACB" stroke-width="7" stroke-linecap="round"/><polygon points="45.24,9.62 36.31,1.30 34.37,15.16" fill="#2B4ACB" stroke="#2B4ACB" stroke-width="2" stroke-linejoin="round"/><polyline points="23,33 29.5,39.5 41,27" fill="none" stroke="#F08C00" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="52" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#2B4ACB">Team</text>
+<text x="94" y="66" text-anchor="start" font-size="15" font-weight="bold" fill="#F08C00">Tracker</text>
+<rect x="158" y="52" width="59.68000000000001" height="26" rx="13.0" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="187.84" y="69.68" text-anchor="middle" font-size="13" fill="#1f2937">DEMO ▾</text>
+<text x="230" y="67" text-anchor="start" font-size="14" fill="#1f2937">Бэклог</text>
+<text x="295.04" y="67" text-anchor="start" font-size="14" fill="#1f2937">Доска</text>
+<text x="352.24" y="67" text-anchor="start" font-size="14" fill="#1f2937">Спринты</text>
+<text x="425.12" y="67" text-anchor="start" font-size="14" fill="#1f2937">Отчёты</text>
+<text x="490.16" y="67" text-anchor="start" font-size="14" fill="#1f2937">Люди</text>
+<text x="539.52" y="67" text-anchor="start" font-size="14" font-weight="bold" fill="#2563eb">Настройки</text>
+<rect x="537.52" y="80" width="83.6" height="4" rx="2" fill="#2563eb"/>
+<rect x="640" y="50" width="130" height="30" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="650" y="70" text-anchor="start" font-size="13" fill="#6b7280">Поиск</text>
+<rect x="740" y="55" width="24" height="20" rx="4" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="752" y="70" text-anchor="middle" font-size="13" font-weight="bold" fill="#1f2937">/</text>
+<circle cx="844" cy="65" r="15" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="844" y="69" text-anchor="middle" font-size="11" font-weight="bold" fill="#1f2937">АК</text>
+<text x="866" y="70" text-anchor="middle" font-size="13" fill="#6b7280">▾</text>
+<text x="20" y="130" text-anchor="start" font-size="24" font-weight="bold" fill="#1f2937">Роли и права</text>
+<text x="20" y="154" text-anchor="start" font-size="13" fill="#6b7280">Название роли — любое; галочки задают, что роли разрешено. Просмотр данных доступен всем ролям.</text>
+<rect x="20" y="172" width="860" height="600" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<rect x="330" y="186" width="100" height="30" rx="5" fill="#f3f4f6" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="338" y="206" text-anchor="start" font-size="12" font-weight="bold" fill="#1f2937">Администрат…</text>
+<rect x="438" y="186" width="100" height="30" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="446" y="206" text-anchor="start" font-size="12" font-weight="bold" fill="#1f2937">Тимлид</text>
+<rect x="546" y="186" width="100" height="30" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="554" y="206" text-anchor="start" font-size="12" font-weight="bold" fill="#1f2937">Продакт</text>
+<rect x="654" y="186" width="100" height="30" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="662" y="206" text-anchor="start" font-size="12" font-weight="bold" fill="#1f2937">Разработчик</text>
+<rect x="762" y="186" width="100" height="30" rx="5" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="770" y="206" text-anchor="start" font-size="12" font-weight="bold" fill="#1f2937">Наблюдатель</text>
+<text x="36" y="206" text-anchor="start" font-size="12" fill="#6b7280">Функция</text>
+<circle cx="322" cy="186" r="11" fill="#b91c1c"/>
+<text x="322" y="191" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">1</text>
+<rect x="28" y="236" width="844" height="24" rx="4" fill="#f3f4f6"/>
+<text x="38" y="253" text-anchor="start" font-size="12" font-weight="bold" fill="#1f2937">Задачи</text>
+<text x="40" y="283" text-anchor="start" font-size="13" fill="#1f2937">Создавать задачи</text>
+<rect x="371.0" y="269" width="18" height="18" rx="4" fill="#6b7280" stroke="#6b7280" stroke-width="1.2"/>
+<text x="380.0" y="283" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="479.0" y="269" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="488.0" y="283" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="587.0" y="269" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="596.0" y="283" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="695.0" y="269" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="704.0" y="283" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="803.0" y="269" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<text x="40" y="311" text-anchor="start" font-size="13" fill="#1f2937">Редактировать поля и описание</text>
+<rect x="371.0" y="297" width="18" height="18" rx="4" fill="#6b7280" stroke="#6b7280" stroke-width="1.2"/>
+<text x="380.0" y="311" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="479.0" y="297" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="488.0" y="311" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="587.0" y="297" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="596.0" y="311" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="695.0" y="297" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="704.0" y="311" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="803.0" y="297" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<text x="40" y="339" text-anchor="start" font-size="13" fill="#1f2937">Комментировать</text>
+<rect x="371.0" y="325" width="18" height="18" rx="4" fill="#6b7280" stroke="#6b7280" stroke-width="1.2"/>
+<text x="380.0" y="339" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="479.0" y="325" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="488.0" y="339" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="587.0" y="325" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="596.0" y="339" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="695.0" y="325" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="704.0" y="339" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="803.0" y="325" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<text x="40" y="367" text-anchor="start" font-size="13" fill="#1f2937">Менять статус своих задач</text>
+<rect x="371.0" y="353" width="18" height="18" rx="4" fill="#6b7280" stroke="#6b7280" stroke-width="1.2"/>
+<text x="380.0" y="367" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="479.0" y="353" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="488.0" y="367" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="587.0" y="353" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="596.0" y="367" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="695.0" y="353" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="704.0" y="367" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="803.0" y="353" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<text x="40" y="395" text-anchor="start" font-size="13" fill="#1f2937">Менять статус чужих задач</text>
+<rect x="371.0" y="381" width="18" height="18" rx="4" fill="#6b7280" stroke="#6b7280" stroke-width="1.2"/>
+<text x="380.0" y="395" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="479.0" y="381" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="488.0" y="395" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="587.0" y="381" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="596.0" y="395" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="695.0" y="381" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="803.0" y="381" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="28" y="412" width="844" height="24" rx="4" fill="#f3f4f6"/>
+<text x="38" y="429" text-anchor="start" font-size="12" font-weight="bold" fill="#1f2937">Планирование</text>
+<text x="40" y="459" text-anchor="start" font-size="13" fill="#1f2937">Приоритет и порядок задач</text>
+<rect x="371.0" y="445" width="18" height="18" rx="4" fill="#6b7280" stroke="#6b7280" stroke-width="1.2"/>
+<text x="380.0" y="459" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="479.0" y="445" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="488.0" y="459" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="587.0" y="445" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="596.0" y="459" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="695.0" y="445" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="803.0" y="445" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<text x="40" y="487" text-anchor="start" font-size="13" fill="#1f2937">Состав спринта</text>
+<rect x="371.0" y="473" width="18" height="18" rx="4" fill="#6b7280" stroke="#6b7280" stroke-width="1.2"/>
+<text x="380.0" y="487" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="479.0" y="473" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="488.0" y="487" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="587.0" y="473" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="596.0" y="487" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="695.0" y="473" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="803.0" y="473" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<text x="40" y="515" text-anchor="start" font-size="13" fill="#1f2937">Спринты и настройки проекта</text>
+<rect x="371.0" y="501" width="18" height="18" rx="4" fill="#6b7280" stroke="#6b7280" stroke-width="1.2"/>
+<text x="380.0" y="515" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="479.0" y="501" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="488.0" y="515" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="587.0" y="501" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="695.0" y="501" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="803.0" y="501" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<text x="40" y="543" text-anchor="start" font-size="13" fill="#1f2937">Шаблоны, WIP и Definition of Done</text>
+<rect x="371.0" y="529" width="18" height="18" rx="4" fill="#6b7280" stroke="#6b7280" stroke-width="1.2"/>
+<text x="380.0" y="543" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="479.0" y="529" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="488.0" y="543" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="587.0" y="529" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="695.0" y="529" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="803.0" y="529" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<text x="40" y="571" text-anchor="start" font-size="13" fill="#1f2937">Отпуска и больничные</text>
+<rect x="371.0" y="557" width="18" height="18" rx="4" fill="#6b7280" stroke="#6b7280" stroke-width="1.2"/>
+<text x="380.0" y="571" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="479.0" y="557" width="18" height="18" rx="4" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="488.0" y="571" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="587.0" y="557" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="695.0" y="557" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="803.0" y="557" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="28" y="588" width="844" height="24" rx="4" fill="#f3f4f6"/>
+<text x="38" y="605" text-anchor="start" font-size="12" font-weight="bold" fill="#1f2937">Администрирование</text>
+<text x="40" y="635" text-anchor="start" font-size="13" fill="#1f2937">Проекты, люди и участники</text>
+<rect x="371.0" y="621" width="18" height="18" rx="4" fill="#6b7280" stroke="#6b7280" stroke-width="1.2"/>
+<text x="380.0" y="635" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="479.0" y="621" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="587.0" y="621" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="695.0" y="621" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="803.0" y="621" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<text x="40" y="663" text-anchor="start" font-size="13" fill="#1f2937">Учётки и роли</text>
+<rect x="371.0" y="649" width="18" height="18" rx="4" fill="#6b7280" stroke="#6b7280" stroke-width="1.2"/>
+<text x="380.0" y="663" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="479.0" y="649" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="587.0" y="649" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="695.0" y="649" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="803.0" y="649" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<text x="40" y="691" text-anchor="start" font-size="13" fill="#1f2937">Резервные копии и диагностика</text>
+<rect x="371.0" y="677" width="18" height="18" rx="4" fill="#6b7280" stroke="#6b7280" stroke-width="1.2"/>
+<text x="380.0" y="691" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">✓</text>
+<rect x="479.0" y="677" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="587.0" y="677" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="695.0" y="677" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<rect x="803.0" y="677" width="18" height="18" rx="4" fill="#ffffff" stroke="#2563eb" stroke-width="1.2"/>
+<circle cx="28" cy="270" r="11" fill="#b91c1c"/>
+<text x="28" y="275" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">2</text>
+<text x="36" y="726" text-anchor="start" font-size="12.5" fill="#6b7280">Роль «Администратор» защищена: все права, галочки не снимаются, удалить нельзя.</text>
+<text x="36" y="748" text-anchor="start" font-size="12.5" fill="#6b7280">«Наблюдатель» — только чтение: ни одной галочки.</text>
+<circle cx="28" cy="722" r="11" fill="#b91c1c"/>
+<text x="28" y="727" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">3</text>
+<rect x="36" y="776" width="160" height="32" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="116.0" y="796.68" text-anchor="middle" font-size="13" fill="#1f2937">+ Новая роль</text>
+<rect x="206" y="776" width="150" height="32" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="281.0" y="796.68" text-anchor="middle" font-size="13" fill="#1f2937">Копировать роль</text>
+<rect x="366" y="776" width="120" height="32" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+<text x="426.0" y="796.68" text-anchor="middle" font-size="13" fill="#1f2937">Удалить роль</text>
+<rect x="700" y="776" width="160" height="32" rx="6" fill="#2563eb" stroke="#2563eb" stroke-width="1.2"/>
+<text x="780.0" y="796.68" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">Сохранить</text>
+<circle cx="28" cy="776" r="11" fill="#b91c1c"/>
+<text x="28" y="781" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">4</text>
+<text x="36" y="832" text-anchor="start" font-size="12.5" fill="#6b7280">Удалить можно роль, которой нет ни у одной учётки. Права действуют сразу после сохранения; сервер проверяет их сам.</text>
+</svg>

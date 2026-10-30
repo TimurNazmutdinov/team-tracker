@@ -5,7 +5,7 @@ import fastifyStatic from '@fastify/static';
 import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { PALETTES } from '../../src/domain/palettes';
-import { ROLES, can } from '../../src/domain/permissions';
+import { can, type Action } from '../../src/domain/permissions';
 import { scopePrefSchema } from '../../src/domain/projectScope';
 import * as auth from './auth';
 import { changesSchema } from './changes-schema';
@@ -43,14 +43,14 @@ export interface AppOptions {
 
 const credentials = z.object({ email: z.string(), password: z.string() });
 const registration = credentials.extend({ name: z.string() });
-const roleBody = z.object({ role: z.enum(ROLES) });
+const roleBody = z.object({ role: z.string().min(1) });
 const preferencesBody = z
   .object({ palette: z.enum(PALETTES), projectFilter: scopePrefSchema.nullable() })
   .partial()
   .refine((b) => b.palette !== undefined || b.projectFilter !== undefined, {
     message: 'Нужно хотя бы одно поле',
   });
-const newAccountBody = registration.extend({ role: z.enum(ROLES).optional() });
+const newAccountBody = registration.extend({ role: z.string().min(1).optional() });
 const passwordBody = z.object({ password: z.string() });
 const changePasswordBody = z.object({ current: z.string(), next: z.string() });
 
@@ -113,6 +113,11 @@ export function buildApp(options: AppOptions): FastifyInstance {
       throw new HttpError(403, 'password_change_required', 'Смените временный пароль');
     }
     return account;
+  }
+
+  /** Разрешено ли действие роли пользователя по актуальной таблице ролей (ADR-021). */
+  async function may(me: auth.Account, action: Action): Promise<boolean> {
+    return can(await readers.roles(db), me.role, action);
   }
 
   function parse<T>(schema: z.ZodType<T>, body: unknown): T {
@@ -215,7 +220,7 @@ export function buildApp(options: AppOptions): FastifyInstance {
 
   app.put('/api/onboarding', async (req) => {
     const me = await requireUser(req);
-    if (!can(me.role, 'users.manage')) {
+    if (!(await may(me, 'users.manage'))) {
       throw new HttpError(403, 'forbidden', 'Мастер первого запуска настраивает администратор');
     }
     const body = parse(z.object({ done: z.boolean() }), req.body);
@@ -229,13 +234,14 @@ export function buildApp(options: AppOptions): FastifyInstance {
     const me = await requireUser(req);
     const accounts = await auth.listAccounts(db);
     // Почты видит только администратор
-    return accounts.map((a) => ({ ...a, email: can(me.role, 'users.manage') ? a.email : null }));
+    const seesEmail = await may(me, 'users.manage');
+    return accounts.map((a) => ({ ...a, email: seesEmail ? a.email : null }));
   });
 
   // Администратор создаёт участника с временным паролем; при первом входе его нужно сменить
   app.post('/api/users', async (req, reply) => {
     const me = await requireUser(req);
-    if (!can(me.role, 'users.manage')) {
+    if (!(await may(me, 'users.manage'))) {
       throw new HttpError(403, 'forbidden', 'Создавать учётки может только администратор');
     }
     const body = parse(newAccountBody, req.body);
@@ -249,7 +255,7 @@ export function buildApp(options: AppOptions): FastifyInstance {
 
   app.post<{ Params: { id: string } }>('/api/users/:id/password', async (req, reply) => {
     const me = await requireUser(req);
-    if (!can(me.role, 'users.manage')) {
+    if (!(await may(me, 'users.manage'))) {
       throw new HttpError(403, 'forbidden', 'Выдавать пароли может только администратор');
     }
     await auth.resetPassword(db, req.params.id, parse(passwordBody, req.body).password);
@@ -258,7 +264,7 @@ export function buildApp(options: AppOptions): FastifyInstance {
 
   app.patch<{ Params: { id: string } }>('/api/users/:id', async (req, reply) => {
     const me = await requireUser(req);
-    if (!can(me.role, 'users.manage')) {
+    if (!(await may(me, 'users.manage'))) {
       throw new HttpError(403, 'forbidden', 'Менять роли может только администратор');
     }
     await auth.setRole(db, req.params.id, parse(roleBody, req.body).role);
@@ -271,7 +277,7 @@ export function buildApp(options: AppOptions): FastifyInstance {
   if (backups) {
     const adminOnly = async (req: FastifyRequest) => {
       const me = await requireUser(req);
-      if (!can(me.role, 'backups.manage')) {
+      if (!(await may(me, 'backups.manage'))) {
         throw new HttpError(403, 'forbidden', 'Резервные копии доступны только администратору');
       }
       return me;
@@ -355,7 +361,7 @@ export function buildApp(options: AppOptions): FastifyInstance {
 
   const diagnoseOnly = async (req: FastifyRequest) => {
     const me = await requireUser(req);
-    if (!can(me.role, 'system.diagnose')) {
+    if (!(await may(me, 'system.diagnose'))) {
       throw new HttpError(403, 'forbidden', 'Журнал и диагностика доступны только администратору');
     }
     return me;
@@ -388,6 +394,7 @@ export function buildApp(options: AppOptions): FastifyInstance {
   app.get('/api/projects', async (req) => (await requireUser(req), readers.projects(db)));
   app.get('/api/people', async (req) => (await requireUser(req), readers.people(db)));
   app.get('/api/templates', async (req) => (await requireUser(req), readers.templates(db)));
+  app.get('/api/roles', async (req) => (await requireUser(req), readers.roles(db)));
   app.get('/api/absences', async (req) => (await requireUser(req), readers.absences(db)));
   app.get('/api/members', async (req) => (await requireUser(req), readers.members(db)));
 

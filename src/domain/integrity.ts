@@ -24,6 +24,7 @@ export function checkIntegrity(ds: Dataset): string[] {
     ['people', ds.people.map((x) => x.id)],
     ['members', ds.members.map((x) => x.id)],
     ['templates', ds.templates.map((x) => x.id)],
+    ['roles', ds.roles.map((x) => x.id)],
     ['absences', ds.absences.map((x) => x.id)],
     ['retroItems', ds.retroItems.map((x) => x.id)],
     ['sprints', ds.sprints.map((x) => x.id)],
@@ -58,6 +59,9 @@ export function checkIntegrity(ds: Dataset): string[] {
     const w = `template ${tpl.id}`;
     if (!projects.has(tpl.projectId)) errors.push(`${w}: нет проекта ${tpl.projectId}`);
   }
+  for (const name of duplicates(ds.roles.map((r) => r.name.trim().toLowerCase())))
+    errors.push(`roles: название «${name}» повторяется`);
+  if (!ds.roles.some((r) => r.system)) errors.push('roles: нет защищённой роли администратора');
   for (const a of ds.absences) {
     const w = `absence ${a.id}`;
     if (!people.has(a.personId)) errors.push(`${w}: нет человека ${a.personId}`);

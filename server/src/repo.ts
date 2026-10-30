@@ -9,6 +9,7 @@ import type {
   Issue,
   IssueTemplate,
   Absence,
+  RoleDef,
   RetroItem,
   Link,
   Person,
@@ -33,6 +34,7 @@ export const readers = {
   people: (db: Db) => db.select().from(t.people) as Promise<Person[]>,
   members: (db: Db) => db.select().from(t.projectMembers) as Promise<ProjectMember[]>,
   templates: (db: Db) => db.select().from(t.issueTemplates) as Promise<IssueTemplate[]>,
+  roles: (db: Db) => db.select().from(t.roles) as Promise<RoleDef[]>,
   absences: (db: Db) => db.select().from(t.absences) as Promise<Absence[]>,
   retroItems: (db: Db, projectId: string) =>
     db.select().from(t.retroItems).where(eq(t.retroItems.projectId, projectId)) as Promise<
@@ -80,6 +82,7 @@ async function loadDataset(db: Db | Tx, projectIds?: string[]): Promise<Dataset>
     people,
     members,
     templates,
+    roles,
     absences,
     retroItems,
     sprints,
@@ -98,6 +101,7 @@ async function loadDataset(db: Db | Tx, projectIds?: string[]): Promise<Dataset>
     scoped
       ? db.select().from(t.issueTemplates).where(inArray(t.issueTemplates.projectId, ids))
       : db.select().from(t.issueTemplates),
+    db.select().from(t.roles),
     db.select().from(t.absences),
     scoped
       ? db.select().from(t.retroItems).where(inArray(t.retroItems.projectId, ids))
@@ -124,6 +128,7 @@ async function loadDataset(db: Db | Tx, projectIds?: string[]): Promise<Dataset>
     people,
     members,
     templates,
+    roles,
     absences,
     retroItems,
     sprints,
@@ -220,6 +225,7 @@ function applied(current: Dataset, changes: Changes): Dataset {
   upsert(next.people, changes.people);
   upsert(next.members, changes.members);
   upsert(next.templates, changes.templates);
+  upsert(next.roles, changes.roles);
   upsert(next.absences, changes.absences);
   upsert(next.retroItems, changes.retroItems);
   upsert(next.sprints, changes.sprints);
@@ -229,6 +235,8 @@ function applied(current: Dataset, changes: Changes): Dataset {
   next.links = next.links.filter((l) => !removed.has(l.id));
   const removedMembers = new Set(changes.deleteMemberIds ?? []);
   next.members = next.members.filter((m) => !removedMembers.has(m.id));
+  const removedRoles = new Set(changes.deleteRoleIds ?? []);
+  next.roles = next.roles.filter((x) => !removedRoles.has(x.id));
   const removedAbsences = new Set(changes.deleteAbsenceIds ?? []);
   next.absences = next.absences.filter((x) => !removedAbsences.has(x.id));
   const removedRetro = new Set(changes.deleteRetroItemIds ?? []);
@@ -306,6 +314,25 @@ export async function commit(
         await tx
           .delete(t.issueTemplates)
           .where(inArray(t.issueTemplates.id, changes.deleteTemplateIds ?? []));
+      }
+      if ((changes.deleteRoleIds ?? []).length > 0) {
+        // роль, назначенную учётке, удалить нельзя (ADR-021)
+        const used = await tx
+          .select({ role: t.users.accessRole })
+          .from(t.users)
+          .where(inArray(t.users.accessRole, changes.deleteRoleIds ?? []));
+        if (used.length > 0)
+          throw new HttpError(
+            409,
+            'role_in_use',
+            'Роль назначена учёткам: сначала смените им роль',
+          );
+      }
+      for (const x of changes.roles ?? []) {
+        await tx.insert(t.roles).values(x).onConflictDoUpdate({ target: t.roles.id, set: x });
+      }
+      if ((changes.deleteRoleIds ?? []).length > 0) {
+        await tx.delete(t.roles).where(inArray(t.roles.id, changes.deleteRoleIds ?? []));
       }
       for (const x of changes.absences ?? []) {
         await tx.insert(t.absences).values(x).onConflictDoUpdate({ target: t.absences.id, set: x });

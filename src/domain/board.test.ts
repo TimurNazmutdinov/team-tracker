@@ -78,14 +78,14 @@ describe('groupLanes', () => {
     ]);
   });
 
-  it('задачи без значения попадают в «Не задано» в конце', () => {
+  it('задачи без значения попадают в «Не назначен» или «Без родителя» в конце', () => {
     const noOne = cards.map((i) =>
       i.id === 'i4' ? { ...i, assigneeId: null, parentId: null } : i,
     );
     const assignee = groupLanes(noOne, 'assignee', ctx);
-    expect(assignee.at(-1)).toMatchObject({ key: UNSET, title: UNSET });
+    expect(assignee.at(-1)).toMatchObject({ key: UNSET, title: 'Не назначен' });
     expect(nums(assignee.at(-1)?.issues ?? [])).toEqual([4]);
-    expect(lanes('parent', noOne).at(-1)).toEqual([UNSET, [4]]);
+    expect(lanes('parent', noOne).at(-1)).toEqual(['Без родителя', [4]]);
   });
 
   it('пустые группы не показываются', () => {

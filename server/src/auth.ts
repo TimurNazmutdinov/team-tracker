@@ -2,13 +2,25 @@ import { randomUUID } from 'node:crypto';
 import { and, eq, gt, sql } from 'drizzle-orm';
 import { DEFAULT_PALETTE, isPalette, type Palette } from '../../src/domain/palettes';
 import { parseStoredPref, type ScopePref } from '../../src/domain/projectScope';
-import { ROLE_LABELS, isRole, type Role } from '../../src/domain/permissions';
+import type { Role } from '../../src/domain/permissions';
 import { schema, type Db } from './db';
 import { HttpError } from './errors';
 import { hashPassword, newToken, tokenHash, verifyPassword } from './passwords';
 import { lockWrites } from './repo';
 
-const { users, people, sessions } = schema;
+const { users, people, sessions, roles } = schema;
+
+/** Роль из справочника; нет такой — ошибка запроса. */
+type Tx = Parameters<Parameters<Db['transaction']>[0]>[0];
+
+async function findRole(db: Db | Tx, id: string): Promise<{ id: string; name: string }> {
+  const [row] = await db
+    .select({ id: roles.id, name: roles.name })
+    .from(roles)
+    .where(eq(roles.id, id));
+  if (!row) throw new HttpError(422, 'invalid_role', 'Такой роли нет');
+  return row;
+}
 
 export const SESSION_DAYS = 7;
 export const PASSWORD_MIN = 8;
@@ -81,7 +93,8 @@ export async function createAccount(db: Db, input: NewAccount): Promise<Account>
       .select({ count: sql<number>`count(*)::int` })
       .from(users);
     const accessRole: Role = input.role ?? (count === 0 ? 'admin' : 'developer');
-    await tx.insert(people).values({ id, name, role: ROLE_LABELS[accessRole] });
+    const roleRow = await findRole(tx, accessRole);
+    await tx.insert(people).values({ id, name, role: roleRow.name });
     await tx.insert(users).values({ id, email, passwordHash, accessRole, mustChangePassword });
     return accessRole;
   });
@@ -140,7 +153,7 @@ export async function login(
     input.password,
     row?.hash ?? 'scrypt$AAAAAAAAAAAAAAAAAAAAAA==$AAAA',
   );
-  if (!row || !ok || !isRole(row.role)) throw new HttpError(401, 'bad_credentials', WRONG);
+  if (!row || !ok) throw new HttpError(401, 'bad_credentials', WRONG);
   const token = await startSession(db, row.id);
   return {
     account: {
@@ -178,7 +191,7 @@ export async function accountByToken(db: Db, token: string | undefined): Promise
     .innerJoin(people, eq(people.id, users.id))
     .where(and(eq(sessions.tokenHash, tokenHash(token)), gt(sessions.expiresAt, new Date())));
   const row = rows[0];
-  if (!row || !isRole(row.role)) return null;
+  if (!row) return null;
   return {
     id: row.id,
     name: row.name,
@@ -203,21 +216,15 @@ export async function listAccounts(db: Db): Promise<Account[]> {
     })
     .from(users)
     .innerJoin(people, eq(people.id, users.id));
-  return rows.flatMap((r) =>
-    isRole(r.role)
-      ? [
-          {
-            id: r.id,
-            email: r.email,
-            name: r.name,
-            role: r.role,
-            mustChangePassword: r.mustChange,
-            palette: paletteOf(r.palette),
-            projectFilter: parseStoredPref(r.projectFilter),
-          },
-        ]
-      : [],
-  );
+  return rows.map((r) => ({
+    id: r.id,
+    email: r.email,
+    name: r.name,
+    role: r.role,
+    mustChangePassword: r.mustChange,
+    palette: paletteOf(r.palette),
+    projectFilter: parseStoredPref(r.projectFilter),
+  }));
 }
 
 /** Меняет роль учётки; последнего администратора понизить нельзя. */
@@ -227,6 +234,7 @@ export async function setRole(db: Db, userId: string, role: Role): Promise<void>
     const rows = await tx.select().from(users).where(eq(users.id, userId));
     const user = rows[0];
     if (!user) throw new HttpError(404, 'not_found', 'Учётка не найдена');
+    const roleRow = await findRole(tx, role);
     if (user.accessRole === 'admin' && role !== 'admin') {
       const admins = await tx
         .select({ id: users.id })
@@ -238,7 +246,7 @@ export async function setRole(db: Db, userId: string, role: Role): Promise<void>
     }
     await tx.update(users).set({ accessRole: role }).where(eq(users.id, userId));
     // Должность в списке людей следует за ролью доступа
-    await tx.update(people).set({ role: ROLE_LABELS[role] }).where(eq(people.id, userId));
+    await tx.update(people).set({ role: roleRow.name }).where(eq(people.id, userId));
   });
 }
 

@@ -2,6 +2,7 @@ import { useState, type FormEvent, type KeyboardEvent, type ReactNode } from 're
 import type { FieldErrors, View } from '../../domain/actions';
 import type { History, Issue, Status } from '../../domain/schema';
 import { useActions } from '../../state/actions';
+import { usePermissions } from '../../state/current-user';
 import { useComments, useHistory } from '../../state/queries';
 import { Async } from '../../ui/Async';
 import { MarkdownField } from '../../ui/fields';
@@ -13,6 +14,7 @@ const fmtDateTime = (iso: string) =>
 
 function Comments({ issue, view }: { issue: Issue; view: View }) {
   const actions = useActions(view.projectId);
+  const canComment = usePermissions().can('issue.comment');
   const comments = useComments(issue.id);
   const [text, setText] = useState('');
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -59,23 +61,25 @@ function Comments({ issue, view }: { issue: Issue; view: View }) {
           )
         }
       </Async>
-      <form onSubmit={(e) => void send(e)} onKeyDown={onKeyDown} noValidate>
-        <MarkdownField
-          name="comment"
-          label="Новый комментарий"
-          rows={3}
-          value={text}
-          onChange={setText}
-          error={errors.text}
-        />
-        {errors.form && (
-          <p className="field-error" role="alert">
-            {errors.form}
-          </p>
-        )}
-        <button type="submit">Отправить</button>{' '}
-        <span className="muted">Ctrl+Enter — отправить</span>
-      </form>
+      {canComment && (
+        <form onSubmit={(e) => void send(e)} onKeyDown={onKeyDown} noValidate>
+          <MarkdownField
+            name="comment"
+            label="Новый комментарий"
+            rows={3}
+            value={text}
+            onChange={setText}
+            error={errors.text}
+          />
+          {errors.form && (
+            <p className="field-error" role="alert">
+              {errors.form}
+            </p>
+          )}
+          <button type="submit">Отправить</button>{' '}
+          <span className="muted">Ctrl+Enter — отправить</span>
+        </form>
+      )}
     </div>
   );
 }
