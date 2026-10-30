@@ -18,6 +18,9 @@ interface CardProps {
   /** Показать метку проекта (когда на доске несколько проектов). */
   showProject?: boolean;
   onStatus: (issueId: string, status: Status) => void;
+  /** Отметка для массовых действий; без неё флажка нет. */
+  selected?: boolean | undefined;
+  onSelect?: ((issueId: string) => void) | undefined;
 }
 
 export function BoardCard({
@@ -27,6 +30,8 @@ export function BoardCard({
   readOnly,
   showProject,
   onStatus,
+  selected,
+  onSelect,
 }: CardProps) {
   const drag = useDraggable({ id: issue.id, disabled: readOnly });
   const key = `${projectKey}-${issue.number}`;
@@ -37,6 +42,15 @@ export function BoardCard({
       aria-label={`${key} ${issue.title}`}
     >
       <header>
+        {onSelect && (
+          <input
+            type="checkbox"
+            className="pick"
+            aria-label={`Выбрать ${key}`}
+            checked={selected ?? false}
+            onChange={() => onSelect(issue.id)}
+          />
+        )}
         {!readOnly && (
           <button
             type="button"

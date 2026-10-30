@@ -34,6 +34,8 @@ import {
   type Project,
   type Status,
 } from '../../domain/schema';
+import type { BulkPatch } from '../../domain/bulk';
+import { wipAfterMove, wipLimit, wipMessage } from '../../domain/wip';
 import { useActions } from '../../state/actions';
 import { usePermissions } from '../../state/current-user';
 import { useBoardPrefs } from '../../state/board-prefs';
@@ -43,6 +45,7 @@ import { useView } from '../../state/queries';
 import { ProjectFilter } from '../../ui/ProjectFilter';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
+import { BulkBar } from '../tasks/BulkBar';
 import { BoardNav } from './BoardNav';
 import { BoardCard, LaneView, plural } from './BoardParts';
 import { MultiBoard } from './MultiBoard';
@@ -58,6 +61,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
   const [filters, setFilters] = useState<BoardFilters>(NO_BOARD_FILTERS);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [picked, setPicked] = useState<Set<string>>(new Set());
   const perms = usePermissions();
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -102,9 +106,41 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
   const people = new Map<string, Person>(view.people.map((p) => [p.id, p]));
   const activeIssue = view.issues.find((i) => i.id === activeId);
 
+  const unfiltered = columnStats(all);
+  const counts = Object.fromEntries(BOARD_COLUMNS.map((c) => [c, unfiltered[c].count]));
+  const warnWip = (status: string, adding: number) => {
+    const over = wipAfterMove(project, counts, status, adding);
+    if (over) push(wipMessage(over));
+  };
+
   const changeStatus = async (issueId: string, status: Status) => {
+    const before = view.issues.find((i) => i.id === issueId);
     const result = await actions.updateIssue(issueId, { status });
     if (!result.ok) push(Object.values(result.errors).join('. '));
+    else if (before && before.status !== status) warnWip(status, 1);
+  };
+
+  const pickedIssues = cards.filter((i) => picked.has(i.id));
+  const togglePick = (id: string) =>
+    setPicked((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  const applyBulk = async (patch: BulkPatch) => {
+    const ids = pickedIssues.map((i) => i.id);
+    const result = await actions.bulkUpdate(ids, patch);
+    if (result.ok) {
+      push(`Изменено задач: ${ids.length}`);
+      if (patch.status)
+        warnWip(
+          patch.status,
+          ids.filter((id) => view.issues.find((i) => i.id === id)?.status !== patch.status).length,
+        );
+      setPicked(new Set());
+    }
+    return result;
   };
 
   const onDragEnd = (e: DragEndEvent) => {
@@ -221,6 +257,16 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
         </button>
       </div>
 
+      {!readOnly && pickedIssues.length > 0 && (
+        <BulkBar
+          count={pickedIssues.length}
+          people={view.people}
+          sprints={view.sprints.filter((s) => s.state !== 'closed')}
+          statusAllowed={pickedIssues.every((i) => perms.canChangeStatus(i))}
+          onApply={applyBulk}
+          onClear={() => setPicked(new Set())}
+        />
+      )}
       {readOnly && (
         <p className="warn" role="status">
           Спринт закрыт: доска только для чтения.
@@ -266,6 +312,12 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
                   <span className="muted">
                     {stats[c].count} · {stats[c].points} sp
                   </span>
+                  {wipLimit(project, c) !== undefined &&
+                    (counts[c] ?? 0) > (wipLimit(project, c) ?? 0) && (
+                      <span className="wip-over" role="status">
+                        ⚠ WIP {counts[c]} из {wipLimit(project, c)}
+                      </span>
+                    )}
                 </div>
               ))}
             </div>
@@ -284,6 +336,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
                     parentKey={issueKey(issue.parentId)}
                     readOnly={readOnly || !perms.canChangeStatus(issue)}
                     onStatus={(id, status) => void changeStatus(id, status)}
+                    {...(readOnly ? {} : { selected: picked.has(issue.id), onSelect: togglePick })}
                   />
                 )}
                 person={lane.person ?? people.get(lane.key)}

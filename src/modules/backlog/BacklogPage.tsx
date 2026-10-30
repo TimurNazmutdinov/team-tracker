@@ -47,6 +47,9 @@ import {
 } from '../../domain/schema';
 import { useActions } from '../../state/actions';
 import { usePermissions } from '../../state/current-user';
+import type { BulkPatch } from '../../domain/bulk';
+import type { Result } from '../../domain/actions';
+import { BulkBar } from '../tasks/BulkBar';
 import { useCreateDialog } from '../../state/create-dialog';
 import { useNotices } from '../../state/notices';
 import { useProjectScope } from '../../state/project-scope';
@@ -574,25 +577,19 @@ function ProjectPlanning({
       return next;
     });
 
-  /** Пакетный перенос: выбранные задачи встают в конец целевого списка в порядке их показа. */
-  const moveSelected = async (target: string) => {
-    if (!view || target === '') return;
-    const sprintId = target === BACKLOG ? null : target;
+  /** Массовые изменения: одним сохранением, у каждой задачи своя запись истории (ADR-017). */
+  const applyBulk = async (patch: BulkPatch) => {
+    if (!view) return { ok: true, changes: {} } as Result;
     const ids = view.issues
       .filter((i) => selected.has(i.id))
       .sort((a, b) => a.order - b.order)
       .map((i) => i.id);
-    let moved = 0;
-    for (const id of ids) {
-      const index = containerItems(view, sprintId).length + moved;
-      const result = await actions.moveIssue(id, { sprintId, index });
-      if (!result.ok) {
-        report(result.errors);
-        break;
-      }
-      moved += 1;
+    const result = await actions.bulkUpdate(ids, patch);
+    if (result.ok) {
+      push(`Изменено задач: ${ids.length}`);
+      setSelected(new Set());
     }
-    setSelected(new Set());
+    return result;
   };
 
   const sprints = (view?.sprints ?? [])
@@ -639,29 +636,18 @@ function ProjectPlanning({
         </div>
       ) : (
         <>
-          {selectedCount > 0 && (
-            <div className="bulk-bar" role="region" aria-label="Перенос выбранных задач">
-              <strong>
-                Выбрано {selectedCount} · {num(selectedPoints)} sp
-              </strong>
-              <label>
-                Перенести в
-                <select value="" onChange={(e) => void moveSelected(e.target.value)}>
-                  <option value="" disabled>
-                    выберите…
-                  </option>
-                  {sprints.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
-                  <option value={BACKLOG}>Общий бэклог</option>
-                </select>
-              </label>
-              <button type="button" onClick={() => setSelected(new Set())}>
-                Снять выбор
-              </button>
-            </div>
+          {selectedCount > 0 && view && (
+            <BulkBar
+              count={selectedCount}
+              summary={`Выбрано ${selectedCount} · ${num(selectedPoints)} sp`}
+              people={view.people}
+              sprints={sprints}
+              statusAllowed={view.issues
+                .filter((i) => selected.has(i.id))
+                .every((i) => perms.canChangeStatus(i))}
+              onApply={applyBulk}
+              onClear={() => setSelected(new Set())}
+            />
           )}
           <DndContext
             sensors={sensors}
