@@ -7,13 +7,14 @@ import {
   type PortfolioSort,
   type ProjectOverview,
 } from '../../domain/portfolio';
-import { STATUSES } from '../../domain/schema';
+import { STATUSES, type Issue } from '../../domain/schema';
+import { descendants, treeRows } from '../../domain/tree';
+import { StatusChip } from '../tasks/IssueBits';
 import { useProjectScope } from '../../state/project-scope';
 import { useProjectHistories, useProjectViews } from '../../state/queries';
 import { dateRange, num, projectWord } from '../../ui/format';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
-import { ProjectFilter } from '../../ui/ProjectFilter';
 import { Avatar } from '../tasks/IssueBits';
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -57,7 +58,23 @@ function daysText(o: ProjectOverview): string {
   return `осталось ${o.daysLeft} дн.`;
 }
 
-function OverviewCard({ o, issueKey }: { o: ProjectOverview; issueKey: (n: number) => string }) {
+function OverviewCard({
+  o,
+  issues,
+  issueKey,
+}: {
+  o: ProjectOverview;
+  issues: Issue[];
+  issueKey: (n: number) => string;
+}) {
+  const [openEpics, setOpenEpics] = useState<Set<string>>(new Set());
+  const toggleEpic = (id: string) =>
+    setOpenEpics((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   const key = o.project.key;
   const total = STATUSES.reduce((n, s) => n + o.byStatus[s], 0);
   const risky = o.risks.length > 0;
@@ -172,15 +189,52 @@ function OverviewCard({ o, issueKey }: { o: ProjectOverview; issueKey: (n: numbe
 
       {o.epics.length > 0 && (
         <ul className="overview-epics" aria-label="Прогресс эпиков">
-          {o.epics.slice(0, 3).map(({ epic, progress }) => (
-            <li key={epic.id}>
-              <Link to={`/projects/${key}/issues/${epic.number}`}>{epic.title}</Link>
-              <div className="meter" role="img" aria-label={`${epic.title}: ${progress.percent} %`}>
-                <span style={{ width: `${progress.percent}%` }} />
-              </div>
-              <span className="muted">{progress.percent} %</span>
-            </li>
-          ))}
+          {o.epics.slice(0, 3).map(({ epic, progress }) => {
+            const open = openEpics.has(epic.id);
+            const family = descendants(epic, issues);
+            return (
+              <li key={epic.id}>
+                {family.length > 0 && (
+                  <button
+                    type="button"
+                    className="plain tree-toggle"
+                    aria-expanded={open}
+                    aria-label={`${open ? 'Свернуть' : 'Развернуть'} эпик ${epic.title}: задач ${family.length}`}
+                    title={open ? 'Скрыть задачи эпика' : 'Показать задачи эпика'}
+                    onClick={() => toggleEpic(epic.id)}
+                  >
+                    {open ? '▾' : '▸'}
+                  </button>
+                )}
+                <Link to={`/projects/${key}/issues/${epic.number}`}>{epic.title}</Link>
+                <div
+                  className="meter"
+                  role="img"
+                  aria-label={`${epic.title}: ${progress.percent} %`}
+                >
+                  <span style={{ width: `${progress.percent}%` }} />
+                </div>
+                <span className="muted">{progress.percent} %</span>
+                {open && (
+                  <ul className="epic-family plain-list" aria-label={`Задачи эпика ${epic.title}`}>
+                    {treeRows(family, { all: issues }).map(({ issue, depth }) => (
+                      <li
+                        key={issue.id}
+                        className="tree-row"
+                        data-depth={depth}
+                        style={{ '--depth': depth } as React.CSSProperties}
+                      >
+                        <Link to={`/projects/${key}/issues/${issue.number}`}>
+                          {issueKey(issue.number)} {issue.title}
+                        </Link>
+                        <StatusChip status={issue.status} />
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
 
@@ -202,11 +256,7 @@ export function PortfolioPage() {
   const [sort, setSort] = useState<PortfolioSort>('risk');
   const [onlyRisk, setOnlyRisk] = useState(false);
 
-  const header = (
-    <PageHeader title="Портфель">
-      <ProjectFilter />
-    </PageHeader>
-  );
+  const header = <PageHeader title="Портфель"></PageHeader>;
   if (!ready || !views || !histories) {
     return (
       <>
@@ -271,7 +321,12 @@ export function PortfolioPage() {
       ) : (
         <div className="overview-grid">
           {shown.map((o) => (
-            <OverviewCard key={o.project.id} o={o} issueKey={(n) => `${o.project.key}-${n}`} />
+            <OverviewCard
+              key={o.project.id}
+              o={o}
+              issues={views.find((v) => v.projectId === o.project.id)?.issues ?? []}
+              issueKey={(n) => `${o.project.key}-${n}`}
+            />
           ))}
         </div>
       )}

@@ -4,6 +4,7 @@ import { boardSprints, defaultSprint } from '../../domain/board';
 import type { View } from '../../domain/actions';
 import { STATUSES, type Sprint, type Status } from '../../domain/schema';
 import { sprintSnapshots, summarize } from '../../domain/totals';
+import { treeRows } from '../../domain/tree';
 import { useActions } from '../../state/actions';
 import { usePermissions } from '../../state/current-user';
 import { useNotices } from '../../state/notices';
@@ -147,6 +148,19 @@ function SprintDetail({
   const summary = summarize(snaps, view.people);
   const readOnly = sprint.state === 'closed';
   const total = summary.total.points;
+  const snapOf = new Map(snaps.map((x) => [x.issue.id, x]));
+  const [folded, setFolded] = useState<Set<string>>(new Set());
+  const toggleFold = (id: string) =>
+    setFolded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  const rows = treeRows(
+    snaps.map((x) => x.issue),
+    { all: view.issues, collapsed: folded },
+  );
 
   const start = async () => {
     const result = await actions.startSprint(sprint.id);
@@ -304,19 +318,52 @@ function SprintDetail({
       <RetroSection projectId={view.projectId} projectKey={projectKey} sprint={sprint} />
 
       <h3>Состав спринта</h3>
-      <ul className="plain-list">
-        {snaps.map((s) => (
-          <li key={s.issue.id} className="link-row">
-            <TypeIcon type={s.issue.type} />
-            <Link to={`/projects/${projectKey}/issues/${s.issue.number}`} className="issue-key">
-              {projectKey}-{s.issue.number}
-            </Link>
-            <span className="issue-title">{s.issue.title}</span>
-            <StatusChip status={s.status} />
-            <PointsBadge points={s.points} />
-            <Avatar person={view.people.find((p) => p.id === s.assigneeId)} />
-          </li>
-        ))}
+      <ul className="plain-list" aria-label="Состав спринта">
+        {rows.map(({ issue, depth, children, context }) => {
+          const snap = snapOf.get(issue.id);
+          return (
+            <li
+              key={issue.id}
+              className={`link-row tree-row${context ? ' context' : ''}`}
+              data-depth={depth}
+              style={{ '--depth': depth } as React.CSSProperties}
+            >
+              {children > 0 && (
+                <button
+                  type="button"
+                  className="plain tree-toggle"
+                  aria-expanded={!folded.has(issue.id)}
+                  aria-label={`${folded.has(issue.id) ? 'Развернуть' : 'Свернуть'} ${projectKey}-${issue.number}: ${children}`}
+                  title={
+                    folded.has(issue.id) ? 'Показать вложенные задачи' : 'Скрыть вложенные задачи'
+                  }
+                  onClick={() => toggleFold(issue.id)}
+                >
+                  {folded.has(issue.id) ? '▸' : '▾'}
+                </button>
+              )}
+              <TypeIcon type={issue.type} />
+              <Link to={`/projects/${projectKey}/issues/${issue.number}`} className="issue-key">
+                {projectKey}-{issue.number}
+              </Link>
+              <span className="issue-title">{issue.title}</span>
+              {snap ? (
+                <>
+                  <StatusChip status={snap.status} />
+                  <PointsBadge points={snap.points} />
+                  <Avatar person={view.people.find((p) => p.id === snap.assigneeId)} />
+                </>
+              ) : (
+                <span
+                  className="muted small"
+                  title="Эта задача не входит в спринт; показана как родитель"
+                >
+                  вне спринта
+                </span>
+              )}
+            </li>
+          );
+        })}
         {snaps.length === 0 && (
           <li className="muted">В спринте нет задач. Добавьте их в бэклоге.</li>
         )}

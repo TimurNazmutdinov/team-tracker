@@ -5,10 +5,10 @@ import type { Issue, IssueType } from '../../domain/schema';
 import { ISSUE_TYPES } from '../../domain/schema';
 import { useProjectScope } from '../../state/project-scope';
 import { useProjectHistories, useProjectViews } from '../../state/queries';
-import { ProjectFilter } from '../../ui/ProjectFilter';
 import { dateRange, num, shortDate, taskWord } from '../../ui/format';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
+import { treeRows } from '../../domain/tree';
 import { RetroSection } from '../sprints/RetroSection';
 import { Avatar, PointsBadge, PriorityChip, TypeIcon } from '../tasks/IssueBits';
 
@@ -21,6 +21,7 @@ interface Filters {
 function SprintBlock({
   item,
   issues,
+  allIssues,
   projectKey,
   people,
   showProject,
@@ -29,6 +30,8 @@ function SprintBlock({
 }: {
   item: ClosedSprint;
   issues: Issue[];
+  /** Все задачи проекта: нужны, чтобы показать родителей выполненных задач. */
+  allIssues: Issue[];
   projectKey: string;
   people: { id: string; name: string; role: string }[];
   showProject: boolean;
@@ -58,8 +61,13 @@ function SprintBlock({
       </header>
       {open && (
         <ul className="issue-list">
-          {issues.map((issue) => (
-            <li key={issue.id} className="issue-row closed-row">
+          {treeRows(issues, { all: allIssues }).map(({ issue, depth, context }) => (
+            <li
+              key={issue.id}
+              className={`issue-row closed-row tree-row${context ? ' context' : ''}`}
+              data-depth={depth}
+              style={{ '--depth': depth } as React.CSSProperties}
+            >
               <TypeIcon type={issue.type} />
               <Link to={`/projects/${projectKey}/issues/${issue.number}`} className="issue-key">
                 {projectKey}-{issue.number}
@@ -67,9 +75,20 @@ function SprintBlock({
               <span className="issue-title">
                 <Link to={`/projects/${projectKey}/issues/${issue.number}`}>{issue.title}</Link>
               </span>
-              <PriorityChip priority={issue.priority} />
-              <PointsBadge points={issue.points} />
-              <Avatar person={people.find((p) => p.id === issue.assigneeId)} />
+              {context ? (
+                <span
+                  className="muted small"
+                  title="Эта задача не выполнена в спринте; показана как родитель"
+                >
+                  родитель
+                </span>
+              ) : (
+                <>
+                  <PriorityChip priority={issue.priority} />
+                  <PointsBadge points={issue.points} />
+                  <Avatar person={people.find((p) => p.id === issue.assigneeId)} />
+                </>
+              )}
             </li>
           ))}
           {issues.length === 0 && <li className="drop-hint">Нет задач под фильтры</li>}
@@ -117,6 +136,7 @@ export function HistoryPage() {
       closedSprints(v.sprints, v.issues, histories.get(v.projectId) ?? []).map((item) => ({
         item,
         projectKey: v.project.key,
+        allIssues: v.issues,
       })),
     )
     .sort((a, b) => b.item.sprint.end.localeCompare(a.item.sprint.end));
@@ -146,7 +166,6 @@ export function HistoryPage() {
       <PageHeader title="Прошлые спринты" />
       <p className="muted">История закрытых спринтов: только чтение.</p>
       <div className="board-toolbar planning-filters" role="search" aria-label="Фильтры истории">
-        <ProjectFilter />
         <label>
           Поиск
           <input
@@ -199,6 +218,7 @@ export function HistoryPage() {
             key={r.item.sprint.id}
             item={r.item}
             issues={r.issues}
+            allIssues={r.allIssues}
             projectKey={r.projectKey}
             showProject={multi}
             people={people}

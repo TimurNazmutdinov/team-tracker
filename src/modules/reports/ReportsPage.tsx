@@ -10,7 +10,6 @@ import {
   useProjectViews,
   useView,
 } from '../../state/queries';
-import { ProjectFilter } from '../../ui/ProjectFilter';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
 import { BurndownChart, VelocityChart } from './charts';
@@ -41,7 +40,6 @@ function SingleReport({ project }: { project: Project }) {
   return (
     <>
       <PageHeader title="Отчёты">
-        <ProjectFilter />
         {sprints.length > 0 && (
           <label className="inline-select" title="Спринт для burndown и итогов">
             Спринт
@@ -138,18 +136,14 @@ function MultiReports({ projects }: { projects: Project[] }) {
   if (!views || !histories) {
     return (
       <>
-        <PageHeader title="Отчёты">
-          <ProjectFilter />
-        </PageHeader>
+        <PageHeader title="Отчёты"></PageHeader>
         <Loading />
       </>
     );
   }
   return (
     <>
-      <PageHeader title="Отчёты">
-        <ProjectFilter />
-      </PageHeader>
+      <PageHeader title="Отчёты"></PageHeader>
       <p className="muted">
         Выбрано проектов: {projects.length}. Burndown и итоги по людям строятся для одного проекта:
         откройте отчёт проекта по ссылке.
@@ -203,9 +197,7 @@ export function ReportsPage() {
   if (scope.projects.length === 0) {
     return (
       <>
-        <PageHeader title="Отчёты">
-          <ProjectFilter />
-        </PageHeader>
+        <PageHeader title="Отчёты"></PageHeader>
         <p className="empty">Не выбрано ни одного проекта: выберите проекты в фильтре.</p>
       </>
     );

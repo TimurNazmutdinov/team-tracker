@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { CfdDay, HistogramBucket, RoadmapEpic, Workload } from '../../domain/analytics';
 import { STATUSES, type Status } from '../../domain/schema';
 
@@ -227,6 +228,14 @@ export function RoadmapChart({
   today: string;
   months: { label: string; date: string }[];
 }) {
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const toggle = (id: string) =>
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   const span = Math.max(at(to) - at(from), DAY);
   const pos = (iso: string) => Math.min(100, Math.max(0, ((at(iso) - at(from)) / span) * 100));
   const todayPos = ((at(today) - at(from)) / span) * 100;
@@ -242,33 +251,69 @@ export function RoadmapChart({
       <ul className="plain-list">
         {epics.map((e) => {
           const visible = e.start !== null && e.end !== null && e.end >= from && e.start <= to;
+          const open = expanded.has(e.issueId);
+          const bar = (start: string | null, end: string | null, label: string, fill?: number) =>
+            start !== null && end !== null && end >= from && start <= to ? (
+              <span
+                className="roadmap-bar"
+                style={{
+                  left: `${pos(start)}%`,
+                  width: `${Math.max(pos(end) - pos(start), 1)}%`,
+                }}
+                title={`${fmt(start)} – ${fmt(end)}${fill === undefined ? '' : `, готово ${fill} %`}`}
+              >
+                {fill !== undefined && (
+                  <span className="roadmap-fill" style={{ width: `${fill}%` }} />
+                )}
+                <span className="roadmap-label">{label}</span>
+              </span>
+            ) : null;
           return (
-            <li key={e.issueId} className="roadmap-row">
-              <span className="roadmap-name">
-                <span className="chip project-tag">{e.projectKey}</span> {e.title}
-              </span>
-              <span className="roadmap-track">
-                {visible && e.start !== null && e.end !== null ? (
-                  <span
-                    className="roadmap-bar"
-                    style={{
-                      left: `${pos(e.start)}%`,
-                      width: `${Math.max(pos(e.end) - pos(e.start), 1)}%`,
-                    }}
-                    title={`${fmt(e.start)} – ${fmt(e.end)}, готово ${e.percent} %`}
-                  >
-                    <span className="roadmap-fill" style={{ width: `${e.percent}%` }} />
-                    <span className="roadmap-label">{e.percent} %</span>
-                  </span>
-                ) : (
-                  <span className="muted small">
-                    {e.start === null ? 'без дат: нет задач в спринтах' : 'вне выбранного периода'}
-                  </span>
-                )}
-                {todayPos >= 0 && todayPos <= 100 && (
-                  <i className="roadmap-today" style={{ left: `${todayPos}%` }} />
-                )}
-              </span>
+            <li key={e.issueId}>
+              <div className="roadmap-row">
+                <span className="roadmap-name">
+                  {e.tasks.length > 0 && (
+                    <button
+                      type="button"
+                      className="plain tree-toggle"
+                      aria-expanded={open}
+                      aria-label={`${open ? 'Свернуть' : 'Развернуть'} эпик ${e.title}: задач ${e.tasks.length}`}
+                      title={open ? 'Скрыть задачи эпика' : 'Показать задачи эпика'}
+                      onClick={() => toggle(e.issueId)}
+                    >
+                      {open ? '▾' : '▸'}
+                    </button>
+                  )}
+                  <span className="chip project-tag">{e.projectKey}</span> {e.title}
+                </span>
+                <span className="roadmap-track">
+                  {visible ? (
+                    bar(e.start, e.end, `${e.percent} %`, e.percent)
+                  ) : (
+                    <span className="muted small">
+                      {e.start === null
+                        ? 'без дат: нет задач в спринтах'
+                        : 'вне выбранного периода'}
+                    </span>
+                  )}
+                  {todayPos >= 0 && todayPos <= 100 && (
+                    <i className="roadmap-today" style={{ left: `${todayPos}%` }} />
+                  )}
+                </span>
+              </div>
+              {open &&
+                e.tasks.map((t) => (
+                  <div key={t.issueId} className="roadmap-row roadmap-task tree-row" data-depth={1}>
+                    <span className="roadmap-name">
+                      {e.projectKey}-{t.issueNumber} {t.title}
+                    </span>
+                    <span className="roadmap-track">
+                      {bar(t.start, t.end, t.status) ?? (
+                        <span className="muted small">не в спринте</span>
+                      )}
+                    </span>
+                  </div>
+                ))}
             </li>
           );
         })}

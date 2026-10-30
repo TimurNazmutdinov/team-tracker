@@ -271,6 +271,16 @@ export function workload(views: View[]): Workload {
 
 // ------------------------------------------------------------------ дорожная карта
 
+export interface RoadmapTask {
+  issueNumber: number;
+  issueId: string;
+  title: string;
+  /** Спринт задачи; null — задача не в спринте. */
+  start: string | null;
+  end: string | null;
+  status: Status;
+}
+
 export interface RoadmapEpic {
   projectKey: string;
   issueNumber: number;
@@ -281,6 +291,8 @@ export interface RoadmapEpic {
   end: string | null;
   percent: number;
   status: Status;
+  /** Задачи эпика (Story, Task, Bug) со своими спринтами: раскрываются под эпиком. */
+  tasks: RoadmapTask[];
 }
 
 /** Эпики выбранных проектов с датами по спринтам их задач (включая подзадачи) и прогрессом. */
@@ -313,6 +325,20 @@ export function roadmap(views: View[]): RoadmapEpic[] {
         end,
         percent: epicProgress(view.issues, epic.id).percent,
         status: epic.status,
+        tasks: children
+          .filter((c) => c.type !== 'Sub-task')
+          .sort((a, b) => a.number - b.number)
+          .map((c) => {
+            const sprint = c.sprintId === null ? undefined : sprints.get(c.sprintId);
+            return {
+              issueNumber: c.number,
+              issueId: c.id,
+              title: c.title,
+              start: sprint?.start ?? null,
+              end: sprint?.end ?? null,
+              status: c.status,
+            };
+          }),
       });
     }
   }

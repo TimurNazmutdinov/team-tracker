@@ -14,7 +14,6 @@ import { useProjectScope } from '../../state/project-scope';
 import { useProjectHistories, useProjectViews } from '../../state/queries';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
-import { ProjectFilter } from '../../ui/ProjectFilter';
 import { CfdChart, Histogram, RoadmapChart, WorkloadChart } from './charts';
 
 const TABS = [
@@ -89,11 +88,7 @@ export function AnalyticsPage() {
     };
   }, [views, histories, days, now]);
 
-  const header = (
-    <PageHeader title="Аналитика">
-      <ProjectFilter />
-    </PageHeader>
-  );
+  const header = <PageHeader title="Аналитика"></PageHeader>;
   if (!ready || !views || !data) {
     return (
       <>

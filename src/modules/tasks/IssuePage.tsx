@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router';
 import type { FieldErrors, View } from '../../domain/actions';
 import { canHavePoints } from '../../domain/hierarchy';
 import { checklistProgress, toggleChecklistItem } from '../../domain/checklist';
+import { ancestors, descendants, treeRows } from '../../domain/tree';
 import { epicProgress } from '../../domain/progress';
 import type { Issue } from '../../domain/schema';
 import { useActions } from '../../state/actions';
@@ -36,29 +37,31 @@ export function IssuePage() {
 function IssueView({ issue, view, projectKey }: { issue: Issue; view: View; projectKey: string }) {
   const showCreate = useCreateDialog((s) => s.show);
   const perms = usePermissions();
-  const parent = view.issues.find((i) => i.id === issue.parentId);
   const sprint = view.sprints.find((s) => s.id === issue.sprintId);
   const readOnly = sprint?.state === 'closed';
   // без права «Редактировать» поля, описание и критерии только читаются
   const canEdit = !readOnly && perms.can('issue.edit');
-  const children = view.issues
-    .filter((i) => i.parentId === issue.id)
-    .sort((a, b) => a.number - b.number);
   const isEpic = issue.type === 'Epic';
+  const path = ancestors(issue, view.issues);
+  const family = descendants(issue, view.issues);
 
   return (
     <>
-      <nav aria-label="Путь" className="breadcrumbs muted">
+      <nav aria-label="Путь" className="breadcrumbs trail">
         <Link to={`/projects/${projectKey}/backlog`}>{projectKey}</Link>
-        {parent && (
-          <>
-            {' › '}
-            <Link to={`/projects/${projectKey}/issues/${parent.number}`}>
-              {projectKey}-{parent.number}
+        {path.map((a) => (
+          <span key={a.id} className="crumb">
+            <span className="sep" aria-hidden="true">
+              {' › '}
+            </span>
+            <Link to={`/projects/${projectKey}/issues/${a.number}`} title={a.title}>
+              {projectKey}-{a.number} {a.title}
             </Link>
-          </>
-        )}
-        {' › '}
+          </span>
+        ))}
+        <span className="sep" aria-hidden="true">
+          {' › '}
+        </span>
         <span aria-current="page">
           {projectKey}-{issue.number}
         </span>
@@ -89,24 +92,29 @@ function IssueView({ issue, view, projectKey }: { issue: Issue; view: View; proj
           )}
 
           <section aria-labelledby="children-title">
-            <h2 id="children-title">
-              {isEpic ? 'Задачи эпика' : `Подзадачи (${children.length})`}
-            </h2>
-            {children.length === 0 && (
+            <h2 id="children-title">{isEpic ? 'Задачи эпика' : `Подзадачи (${family.length})`}</h2>
+            {family.length === 0 && (
               <p className="muted">{isEpic ? 'Задач в эпике нет' : 'Подзадач нет'}</p>
             )}
             <ul className="plain-list">
-              {children.map((c) => (
-                <li key={c.id} className="link-row">
-                  <TypeIcon type={c.type} />
-                  <Link to={`/projects/${projectKey}/issues/${c.number}`} className="issue-key">
-                    {projectKey}-{c.number}
-                  </Link>
-                  <span className="issue-title">{c.title}</span>
-                  <StatusChip status={c.status} />
-                  <Avatar person={view.people.find((p) => p.id === c.assigneeId)} />
-                </li>
-              ))}
+              {treeRows(family, { all: view.issues })
+                .filter((r) => !r.context)
+                .map(({ issue: c, depth }) => (
+                  <li
+                    key={c.id}
+                    className="link-row tree-row"
+                    data-depth={depth}
+                    style={{ '--depth': depth } as React.CSSProperties}
+                  >
+                    <TypeIcon type={c.type} />
+                    <Link to={`/projects/${projectKey}/issues/${c.number}`} className="issue-key">
+                      {projectKey}-{c.number}
+                    </Link>
+                    <span className="issue-title">{c.title}</span>
+                    <StatusChip status={c.status} />
+                    <Avatar person={view.people.find((p) => p.id === c.assigneeId)} />
+                  </li>
+                ))}
             </ul>
             {!readOnly && perms.can('issue.create') && (isEpic || canHavePoints(issue.type)) && (
               <button

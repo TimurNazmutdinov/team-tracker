@@ -32,6 +32,7 @@ import {
   type Sprint,
   type Status,
 } from '../../domain/schema';
+import { ancestors } from '../../domain/tree';
 import { wipOverflows } from '../../domain/wip';
 import { useActionsFor } from '../../state/actions';
 import { usePermissions } from '../../state/current-user';
@@ -262,6 +263,9 @@ export function MultiBoard({
                       key={issue.id}
                       issue={issue}
                       projectKey={view.project.key}
+                      trail={ancestors(issue, view.issues)
+                        .map((a) => a.title)
+                        .join(' › ')}
                       parentKey={keyOf(
                         view,
                         view.issues.find((i) => i.id === issue.parentId),

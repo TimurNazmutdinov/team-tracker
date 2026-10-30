@@ -28,6 +28,7 @@ import {
 import {
   ISSUE_TYPES,
   PRIORITIES,
+  type Issue,
   type IssueType,
   type Person,
   type Priority,
@@ -36,13 +37,13 @@ import {
 } from '../../domain/schema';
 import type { BulkPatch } from '../../domain/bulk';
 import { wipAfterMove, wipLimit, wipMessage } from '../../domain/wip';
+import { ancestors } from '../../domain/tree';
 import { useActions } from '../../state/actions';
 import { usePermissions } from '../../state/current-user';
 import { useBoardPrefs } from '../../state/board-prefs';
 import { useNotices } from '../../state/notices';
 import { useProjectScope } from '../../state/project-scope';
 import { useView } from '../../state/queries';
-import { ProjectFilter } from '../../ui/ProjectFilter';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
 import { useDodGate } from '../tasks/DodGate';
@@ -106,6 +107,10 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
     return found ? `${project.key}-${found.number}` : null;
   };
   const people = new Map<string, Person>(view.people.map((p) => [p.id, p]));
+  const trailOf = (issue: Issue) =>
+    ancestors(issue, view.issues)
+      .map((a) => a.title)
+      .join(' › ');
   const activeIssue = view.issues.find((i) => i.id === activeId);
 
   const unfiltered = columnStats(all);
@@ -340,6 +345,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
                     issue={issue}
                     projectKey={project.key}
                     parentKey={issueKey(issue.parentId)}
+                    trail={trailOf(issue)}
                     readOnly={readOnly || !perms.canChangeStatus(issue)}
                     onStatus={(id, status) => void changeStatus(id, status)}
                     {...(readOnly ? {} : { selected: picked.has(issue.id), onSelect: togglePick })}
@@ -384,7 +390,7 @@ export function BoardPage() {
       </>
     );
   }
-  const filter = <ProjectFilter />;
+  const filter = null;
   const projects = scope.projects;
   const [only] = projects;
   if (projects.length === 0) {
