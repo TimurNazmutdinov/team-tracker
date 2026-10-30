@@ -23,6 +23,7 @@ export function checkIntegrity(ds: Dataset): string[] {
     ['projects', ds.projects.map((x) => x.id)],
     ['people', ds.people.map((x) => x.id)],
     ['members', ds.members.map((x) => x.id)],
+    ['templates', ds.templates.map((x) => x.id)],
     ['sprints', ds.sprints.map((x) => x.id)],
     ['issues', ds.issues.map((x) => x.id)],
     ['links', ds.links.map((x) => x.id)],
@@ -50,6 +51,10 @@ export function checkIntegrity(ds: Dataset): string[] {
     const key = `${m.projectId}#${m.personId}`;
     if (memberKeys.has(key)) errors.push(`${w}: человек уже участник проекта`);
     memberKeys.add(key);
+  }
+  for (const tpl of ds.templates) {
+    const w = `template ${tpl.id}`;
+    if (!projects.has(tpl.projectId)) errors.push(`${w}: нет проекта ${tpl.projectId}`);
   }
   for (const s of ds.sprints) {
     if (!projects.has(s.projectId)) errors.push(`sprint ${s.id}: нет проекта ${s.projectId}`);

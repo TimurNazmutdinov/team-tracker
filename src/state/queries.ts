@@ -47,6 +47,11 @@ export function useMembers() {
   return useQuery({ queryKey: ['members'], queryFn: () => storage.getMembers() });
 }
 
+export function useTemplates() {
+  const storage = useStorage();
+  return useQuery({ queryKey: ['templates'], queryFn: () => storage.getTemplates() });
+}
+
 export function useLinks(projectId: string) {
   const storage = useStorage();
   return useQuery({ queryKey: ['links', projectId], queryFn: () => storage.getLinks(projectId) });
@@ -75,17 +80,27 @@ export function useView(projectId: string): View | undefined {
   const projects = useProjects();
   const people = usePeople();
   const members = useMembers();
+  const templates = useTemplates();
   const sprints = useSprints(projectId);
   const issues = useIssues(projectId);
   const links = useLinks(projectId);
   const project = projects.data?.find((p) => p.id === projectId);
-  if (!project || !people.data || !members.data || !sprints.data || !issues.data || !links.data)
+  if (
+    !project ||
+    !people.data ||
+    !members.data ||
+    !templates.data ||
+    !sprints.data ||
+    !issues.data ||
+    !links.data
+  )
     return undefined;
   return {
     projectId,
     project,
     people: people.data,
     members: members.data,
+    templates: templates.data,
     sprints: sprints.data,
     issues: issues.data,
     links: links.data,
@@ -100,6 +115,7 @@ export function useProjectViews(projects: Project[]): View[] | undefined {
   const storage = useStorage();
   const people = usePeople();
   const members = useMembers();
+  const templates = useTemplates();
   const results = useQueries({
     queries: projects.flatMap((p) => [
       { queryKey: ['sprints', p.id], queryFn: () => storage.getSprints(p.id) },
@@ -107,7 +123,7 @@ export function useProjectViews(projects: Project[]): View[] | undefined {
       { queryKey: ['links', p.id], queryFn: () => storage.getLinks(p.id) },
     ]),
   });
-  if (!people.data || !members.data) return undefined;
+  if (!people.data || !members.data || !templates.data) return undefined;
   const views: View[] = [];
   for (const [n, project] of projects.entries()) {
     const sprints = results[n * 3]?.data;
@@ -119,6 +135,7 @@ export function useProjectViews(projects: Project[]): View[] | undefined {
       project,
       people: people.data,
       members: members.data,
+      templates: templates.data,
       sprints: sprints as View['sprints'],
       issues: issues as View['issues'],
       links: links as View['links'],

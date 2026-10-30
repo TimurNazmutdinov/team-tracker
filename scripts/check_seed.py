@@ -17,6 +17,7 @@ PRIORITIES = {"Highest", "High", "Medium", "Low"}
 SPRINT_STATES = {"planned", "active", "closed"}
 LINK_TYPES = {"blocks", "relates", "duplicates"}
 PROJECT_ROLES = {"product", "lead", "developer"}
+WIP_COLUMNS = {"To Do", "In Progress", "Review", "Done"}
 FIELDS = {
     "created", "status", "assigneeId", "points", "sprintId",
     "title", "description", "acceptance", "priority", "parentId", "labels", "dueDate",
@@ -36,6 +37,7 @@ def main():
         err("version: ожидается целое число >= 1 (при изменении seed его нужно увеличить)")
     seed = {k: v for k, v in seed.items() if k != "version"}
     seed.setdefault("members", [])
+    seed.setdefault("templates", [])
     ids = {k: {x["id"] for x in seed[k]} for k in seed}
     for k, v in seed.items():
         if len(ids[k]) != len(v):
@@ -64,6 +66,25 @@ def main():
         if pr.get("nextSprintStart") is not None and not isinstance(pr["nextSprintStart"], str):
             err(f"{w}: nextSprintStart — дата или null")
         ref(pr.get("ownerId"), "people", w + " (ownerId)", True)
+        if not isinstance(pr.get("wipEnabled", False), bool):
+            err(f"{w}: wipEnabled — true или false")
+        for col, lim in (pr.get("wipLimits") or {}).items():
+            if col not in WIP_COLUMNS:
+                err(f"{w}: WIP-лимит для неизвестной колонки {col}")
+            elif not isinstance(lim, int) or isinstance(lim, bool) or not 1 <= lim <= 999:
+                err(f"{w}: WIP-лимит колонки {col} — целое 1–999")
+    seen_names = set()
+    for tpl in seed.get("templates", []):
+        w = f"template {tpl['id']}"
+        ref(tpl["projectId"], "projects", w)
+        if tpl["type"] not in TYPES or tpl["type"] == "Epic":
+            err(f"{w}: тип {tpl['type']}")
+        if not tpl["name"].strip() or len(tpl["name"]) > 60:
+            err(f"{w}: название 1–60 символов")
+        key = (tpl["projectId"], tpl["name"].lower())
+        if key in seen_names:
+            err(f"{w}: название шаблона повторяется в проекте")
+        seen_names.add(key)
     seen_members = set()
     for m in seed.get("members", []):
         w = f"member {m['id']}"

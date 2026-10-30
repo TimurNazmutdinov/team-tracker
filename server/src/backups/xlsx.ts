@@ -45,6 +45,7 @@ export const SHEETS = {
   projects: 'Проекты',
   people: 'Люди',
   members: 'Участники проектов',
+  templates: 'Шаблоны задач',
   sprints: 'Спринты',
   issues: 'Задачи',
   links: 'Связи',
@@ -142,8 +143,12 @@ function specs(snapshot: Snapshot, meta: XlsxMeta): SheetSpec[] {
         'Номер следующего спринта',
         'Старт следующего спринта',
         'Владелец продукта',
+        'WIP-лимиты включены',
+        'WIP-лимиты колонок',
         '~id',
         '~ownerId',
+        '~wipEnabled',
+        '~wipLimits',
       ],
       rows: data.projects.map((p) => [
         p.key,
@@ -153,10 +158,16 @@ function specs(snapshot: Snapshot, meta: XlsxMeta): SheetSpec[] {
         p.nextSprintNumber,
         p.nextSprintStart,
         nameOf(p.ownerId),
+        p.wipEnabled ? 'да' : 'нет',
+        Object.entries(p.wipLimits)
+          .map(([column, n]) => `${column}: ${n}`)
+          .join(', '),
         p.id,
         p.ownerId,
+        p.wipEnabled ? 'true' : 'false',
+        JSON.stringify(p.wipLimits),
       ]),
-      widths: [10, 30, 14, 16, 14, 16, 26, 36, 36],
+      widths: [10, 30, 14, 16, 14, 16, 26, 14, 28, 36, 36, 12, 24],
     },
     {
       name: SHEETS.people,
@@ -198,6 +209,20 @@ function specs(snapshot: Snapshot, meta: XlsxMeta): SheetSpec[] {
         m.role,
       ]),
       widths: [10, 28, 18, 36, 36, 36, 12],
+    },
+    {
+      name: SHEETS.templates,
+      headers: ['Проект', 'Название', 'Тип', 'Описание', 'Критерии приёмки', '~id', '~projectId'],
+      rows: data.templates.map((x) => [
+        project.get(x.projectId)?.key,
+        x.name,
+        x.type,
+        x.description,
+        x.acceptance,
+        x.id,
+        x.projectId,
+      ]),
+      widths: [10, 24, 12, 50, 40, 36, 36],
     },
     {
       name: SHEETS.sprints,
@@ -468,6 +493,17 @@ const strOrNull = (v: unknown): string | null =>
 const numOrNull = (v: unknown): number | null =>
   v === null || v === undefined || v === '' ? null : Number(v);
 
+/** Лимиты WIP из служебной колонки (JSON); пусто или повреждено — без лимитов. */
+function parseLimits(value: unknown): Record<string, number> {
+  if (typeof value !== 'string' || value === '') return {};
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    return parsed && typeof parsed === 'object' ? (parsed as Record<string, number>) : {};
+  } catch {
+    return {};
+  }
+}
+
 export interface ReadXlsx {
   snapshot: Snapshot;
   createdAt: string | null;
@@ -505,7 +541,22 @@ export async function readXlsx(buffer: Uint8Array): Promise<ReadXlsx> {
     nextSprintStart: strOrNull(need(r, 'Старт следующего спринта', S.projects)),
     // в Excel-файлах до ADR-016 колонки владельца нет
     ownerId: strOrNull(r['ownerId']),
+    // колонок WIP в файлах до ADR-017 нет — лимиты выключены
+    wipEnabled: str(r['wipEnabled']) === 'true',
+    wipLimits: parseLimits(r['wipLimits']),
   }));
+
+  // листа шаблонов в старых файлах нет
+  const templates = sheets.some((sheet) => sheet.sheet === S.templates)
+    ? sheetRows(sheets, S.templates).map((r) => ({
+        id: str(need(r, 'id', S.templates)),
+        projectId: str(need(r, 'projectId', S.templates)),
+        name: str(need(r, 'Название', S.templates)),
+        type: str(need(r, 'Тип', S.templates)) as Issue['type'],
+        description: str(need(r, 'Описание', S.templates)),
+        acceptance: str(need(r, 'Критерии приёмки', S.templates)),
+      }))
+    : [];
 
   // листа участников в старых файлах нет — тогда участников нет
   const members = sheets.some((sheet) => sheet.sheet === S.members)
@@ -602,7 +653,7 @@ export async function readXlsx(buffer: Uint8Array): Promise<ReadXlsx> {
   const created = summary.get('Дата копии');
   return {
     snapshot: {
-      data: { projects, people, members, sprints, issues, links, comments, history },
+      data: { projects, people, members, templates, sprints, issues, links, comments, history },
       accounts,
     },
     createdAt: created ? str(created) : null,

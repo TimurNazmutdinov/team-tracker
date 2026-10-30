@@ -3,6 +3,7 @@ import type {
   Dataset,
   History,
   Issue,
+  IssueTemplate,
   IssueType,
   Link,
   Person,
@@ -68,6 +69,7 @@ export function generateLoadData(options: Partial<LoadOptions> = {}): Dataset {
 
   const projects: Project[] = [];
   const members: ProjectMember[] = [];
+  const templates: IssueTemplate[] = [];
   const sprints: Sprint[] = [];
   const issues: Issue[] = [];
   const links: Link[] = [];
@@ -100,6 +102,8 @@ export function generateLoadData(options: Partial<LoadOptions> = {}): Dataset {
       nextSprintNumber: sprintsPerProject + 1,
       nextSprintStart: null,
       ownerId: owner,
+      wipEnabled: false,
+      wipLimits: {},
     });
     // Участники проекта: пять человек подряд, чередуя роли
     for (let m = 0; m < Math.min(5, o.people); m += 1) {
@@ -261,5 +265,16 @@ export function generateLoadData(options: Partial<LoadOptions> = {}): Dataset {
     }
   }
 
-  return { version: 1, projects, people, members, sprints, issues, links, comments, history };
+  return {
+    version: 1,
+    projects,
+    people,
+    members,
+    templates,
+    sprints,
+    issues,
+    links,
+    comments,
+    history,
+  };
 }

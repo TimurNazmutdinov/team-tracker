@@ -29,7 +29,8 @@ export type Action =
   | 'users.manage' // менять роли учёток
   | 'backups.manage' // резервные копии: состояние, копия сейчас, Excel
   | 'system.diagnose' // журнал ошибок и диагностика (ADR-015)
-  | 'project.members'; // владелец и участники проекта: администратор и владелец проекта (ADR-016)
+  | 'project.members' // владелец и участники проекта: администратор и владелец проекта (ADR-016)
+  | 'project.templates'; // шаблоны задач проекта (ADR-017)
 
 const MATRIX: Record<Action, readonly Role[]> = {
   'status.own': ROLES,
@@ -42,6 +43,7 @@ const MATRIX: Record<Action, readonly Role[]> = {
   'backups.manage': ['admin'],
   'system.diagnose': ['admin'],
   'project.members': ['admin', 'product'],
+  'project.templates': ['lead', 'admin'],
 };
 
 export function can(role: Role, action: Action): boolean {
@@ -59,6 +61,9 @@ const SPRINT_SETTING_FIELDS = [
   'sprintPrefix',
   'nextSprintNumber',
   'nextSprintStart',
+  // WIP-лимиты настраивает тот же, кто настраивает спринты (ADR-017)
+  'wipEnabled',
+  'wipLimits',
 ] as const;
 
 function differs<T extends object>(a: T, b: T, fields: readonly (keyof T)[]): boolean {
@@ -101,6 +106,12 @@ export function violations(
     if (kind === 'sprints' && !can(role, 'sprint.manage'))
       deny('Настройки спринтов меняют тимлид и администратор');
   }
+
+  if (
+    ((changes.templates ?? []).length > 0 || (changes.deleteTemplateIds ?? []).length > 0) &&
+    !can(role, 'project.templates')
+  )
+    deny('Шаблоны задач меняют тимлид и администратор');
 
   // Участники проекта: администратор или владелец этого проекта (ADR-016)
   const memberProjects = new Set<string>();

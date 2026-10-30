@@ -10,6 +10,8 @@ export const PRIORITIES = ['Highest', 'High', 'Medium', 'Low'] as const;
 export const SPRINT_STATES = ['planned', 'active', 'closed'] as const;
 /** Роли в проекте: продакт, тимлид, разработчик (ADR-016). */
 export const PROJECT_ROLES = ['product', 'lead', 'developer'] as const;
+/** Колонки доски, для которых задаётся WIP-лимит (ADR-017). */
+export const WIP_COLUMNS = ['To Do', 'In Progress', 'Review', 'Done'] as const;
 export const LINK_TYPES = ['blocks', 'relates', 'duplicates'] as const;
 export const HISTORY_FIELDS = [
   'created',
@@ -40,6 +42,10 @@ export const projectSchema = z.object({
   nextSprintStart: z.iso.date().nullable(),
   /** Продакт-владелец проекта (ADR-016); у проектов, созданных раньше, не задан. */
   ownerId: nullableId.default(null),
+  /** WIP-лимиты колонок доски (ADR-017): по умолчанию выключены. */
+  wipEnabled: z.boolean().default(false),
+  /** Лимит задач на колонку; нет записи — без лимита. */
+  wipLimits: z.partialRecord(z.enum(WIP_COLUMNS), z.number().int().min(1).max(999)).default({}),
 });
 
 /** Участник проекта с ролью в нём; владелец проекта хранится в Project.ownerId и здесь не повторяется. */
@@ -48,6 +54,16 @@ export const memberSchema = z.object({
   projectId: id,
   personId: id,
   role: z.enum(PROJECT_ROLES),
+});
+
+/** Шаблон задачи проекта (ADR-017): подставляет тип, описание и критерии при создании. */
+export const templateSchema = z.object({
+  id,
+  projectId: id,
+  name: z.string().min(1).max(60),
+  type: z.enum(ISSUE_TYPES),
+  description: z.string().max(10000),
+  acceptance: z.string().max(10000),
 });
 
 export const personSchema = z.object({
@@ -121,6 +137,8 @@ export const datasetSchema = z.object({
   people: z.array(personSchema),
   /** Участники проектов; в старых наборах данных поля нет. */
   members: z.array(memberSchema).default([]),
+  /** Шаблоны задач проектов; в старых наборах данных поля нет. */
+  templates: z.array(templateSchema).default([]),
   sprints: z.array(sprintSchema),
   issues: z.array(issueSchema),
   links: z.array(linkSchema),
@@ -139,6 +157,8 @@ export type Project = z.infer<typeof projectSchema>;
 export type ProjectRole = (typeof PROJECT_ROLES)[number];
 export type Person = z.infer<typeof personSchema>;
 export type ProjectMember = z.infer<typeof memberSchema>;
+export type IssueTemplate = z.infer<typeof templateSchema>;
+export type WipColumn = (typeof WIP_COLUMNS)[number];
 export type Sprint = z.infer<typeof sprintSchema>;
 export type Issue = z.infer<typeof issueSchema>;
 export type Link = z.infer<typeof linkSchema>;

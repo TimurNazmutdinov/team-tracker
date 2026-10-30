@@ -370,6 +370,7 @@ export function buildApp(options: AppOptions): FastifyInstance {
 
   app.get('/api/projects', async (req) => (await requireUser(req), readers.projects(db)));
   app.get('/api/people', async (req) => (await requireUser(req), readers.people(db)));
+  app.get('/api/templates', async (req) => (await requireUser(req), readers.templates(db)));
   app.get('/api/members', async (req) => (await requireUser(req), readers.members(db)));
 
   app.get<{ Params: { id: string } }>('/api/projects/:id/sprints', async (req) => {

@@ -22,6 +22,9 @@ export const projects = pgTable('projects', {
   nextSprintStart: text('next_sprint_start'),
   /** Продакт-владелец проекта (ADR-016); без внешнего ключа: проекты и люди загружаются в любом порядке. */
   ownerId: text('owner_id'),
+  /** WIP-лимиты колонок доски (ADR-017). */
+  wipEnabled: boolean('wip_enabled').notNull().default(false),
+  wipLimits: jsonb('wip_limits').$type<Record<string, number>>().notNull().default({}),
 });
 
 export const people = pgTable('people', {
@@ -29,6 +32,22 @@ export const people = pgTable('people', {
   name: text('name').notNull(),
   role: text('role').notNull(),
 });
+
+/** Шаблоны задач проекта (ADR-017). */
+export const issueTemplates = pgTable(
+  'issue_templates',
+  {
+    id: text('id').primaryKey(),
+    projectId: text('project_id')
+      .notNull()
+      .references(() => projects.id),
+    name: text('name').notNull(),
+    type: text('type').notNull(),
+    description: text('description').notNull(),
+    acceptance: text('acceptance').notNull(),
+  },
+  (t) => [index('issue_templates_project_idx').on(t.projectId)],
+);
 
 /** Участники проекта с ролью в нём (ADR-016); владелец хранится в projects.owner_id. */
 export const projectMembers = pgTable(

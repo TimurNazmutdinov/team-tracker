@@ -2,6 +2,7 @@ import type {
   Comment,
   History,
   Issue,
+  IssueTemplate,
   Link,
   Person,
   Project,
@@ -18,6 +19,8 @@ export interface Changes {
   people?: Person[];
   members?: ProjectMember[];
   deleteMemberIds?: string[];
+  templates?: IssueTemplate[];
+  deleteTemplateIds?: string[];
   sprints?: Sprint[];
   issues?: Issue[];
   links?: Link[];

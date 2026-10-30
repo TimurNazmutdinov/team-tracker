@@ -7,6 +7,7 @@ import type {
   Dataset,
   History,
   Issue,
+  IssueTemplate,
   Link,
   Person,
   Project,
@@ -29,6 +30,7 @@ export const readers = {
   projects: (db: Db) => db.select().from(t.projects) as unknown as Promise<Project[]>,
   people: (db: Db) => db.select().from(t.people) as Promise<Person[]>,
   members: (db: Db) => db.select().from(t.projectMembers) as Promise<ProjectMember[]>,
+  templates: (db: Db) => db.select().from(t.issueTemplates) as Promise<IssueTemplate[]>,
   sprints: (db: Db, projectId: string) =>
     db.select().from(t.sprints).where(eq(t.sprints.projectId, projectId)) as Promise<Sprint[]>,
   issues: (db: Db, projectId: string) =>
@@ -66,35 +68,40 @@ async function loadDataset(db: Db | Tx, projectIds?: string[]): Promise<Dataset>
   const issueIds = scoped
     ? db.select({ id: t.issues.id }).from(t.issues).where(inArray(t.issues.projectId, ids))
     : null;
-  const [projects, people, members, sprints, issues, links, comments, history] = await Promise.all([
-    scoped
-      ? db.select().from(t.projects).where(inArray(t.projects.id, ids))
-      : db.select().from(t.projects),
-    db.select().from(t.people),
-    scoped
-      ? db.select().from(t.projectMembers).where(inArray(t.projectMembers.projectId, ids))
-      : db.select().from(t.projectMembers),
-    scoped
-      ? db.select().from(t.sprints).where(inArray(t.sprints.projectId, ids))
-      : db.select().from(t.sprints),
-    scoped
-      ? db.select().from(t.issues).where(inArray(t.issues.projectId, ids))
-      : db.select().from(t.issues),
-    issueIds
-      ? db.select().from(t.links).where(inArray(t.links.fromId, issueIds))
-      : db.select().from(t.links),
-    issueIds
-      ? db.select().from(t.comments).where(inArray(t.comments.issueId, issueIds))
-      : db.select().from(t.comments),
-    issueIds
-      ? db.select().from(t.history).where(inArray(t.history.issueId, issueIds))
-      : db.select().from(t.history),
-  ]);
+  const [projects, people, members, templates, sprints, issues, links, comments, history] =
+    await Promise.all([
+      scoped
+        ? db.select().from(t.projects).where(inArray(t.projects.id, ids))
+        : db.select().from(t.projects),
+      db.select().from(t.people),
+      scoped
+        ? db.select().from(t.projectMembers).where(inArray(t.projectMembers.projectId, ids))
+        : db.select().from(t.projectMembers),
+      scoped
+        ? db.select().from(t.issueTemplates).where(inArray(t.issueTemplates.projectId, ids))
+        : db.select().from(t.issueTemplates),
+      scoped
+        ? db.select().from(t.sprints).where(inArray(t.sprints.projectId, ids))
+        : db.select().from(t.sprints),
+      scoped
+        ? db.select().from(t.issues).where(inArray(t.issues.projectId, ids))
+        : db.select().from(t.issues),
+      issueIds
+        ? db.select().from(t.links).where(inArray(t.links.fromId, issueIds))
+        : db.select().from(t.links),
+      issueIds
+        ? db.select().from(t.comments).where(inArray(t.comments.issueId, issueIds))
+        : db.select().from(t.comments),
+      issueIds
+        ? db.select().from(t.history).where(inArray(t.history.issueId, issueIds))
+        : db.select().from(t.history),
+    ]);
   return {
     version: DATASET_VERSION,
     projects,
     people,
     members,
+    templates,
     sprints,
     issues,
     links,
@@ -109,6 +116,15 @@ async function touchedProjects(tx: Tx, changes: Changes): Promise<string[]> {
   for (const p of changes.projects ?? []) out.add(p.id);
   for (const s of changes.sprints ?? []) out.add(s.projectId);
   for (const m of changes.members ?? []) out.add(m.projectId);
+  for (const x of changes.templates ?? []) out.add(x.projectId);
+  const templateIds = changes.deleteTemplateIds ?? [];
+  if (templateIds.length > 0) {
+    const rows = await tx
+      .select({ projectId: t.issueTemplates.projectId })
+      .from(t.issueTemplates)
+      .where(inArray(t.issueTemplates.id, templateIds));
+    for (const r of rows) out.add(r.projectId);
+  }
   const memberIds = changes.deleteMemberIds ?? [];
   if (memberIds.length > 0) {
     const rows = await tx
@@ -170,6 +186,7 @@ function applied(current: Dataset, changes: Changes): Dataset {
   upsert(next.projects, changes.projects);
   upsert(next.people, changes.people);
   upsert(next.members, changes.members);
+  upsert(next.templates, changes.templates);
   upsert(next.sprints, changes.sprints);
   upsert(next.issues, changes.issues);
   upsert(next.links, changes.links);
@@ -177,6 +194,8 @@ function applied(current: Dataset, changes: Changes): Dataset {
   next.links = next.links.filter((l) => !removed.has(l.id));
   const removedMembers = new Set(changes.deleteMemberIds ?? []);
   next.members = next.members.filter((m) => !removedMembers.has(m.id));
+  const removedTemplates = new Set(changes.deleteTemplateIds ?? []);
+  next.templates = next.templates.filter((x) => !removedTemplates.has(x.id));
   append('comments', next.comments, changes.comments);
   append('history', next.history, changes.history);
   return next;
@@ -237,6 +256,17 @@ export async function commit(
         await tx
           .delete(t.projectMembers)
           .where(inArray(t.projectMembers.id, changes.deleteMemberIds ?? []));
+      }
+      for (const x of changes.templates ?? []) {
+        await tx
+          .insert(t.issueTemplates)
+          .values(x)
+          .onConflictDoUpdate({ target: t.issueTemplates.id, set: x });
+      }
+      if ((changes.deleteTemplateIds ?? []).length > 0) {
+        await tx
+          .delete(t.issueTemplates)
+          .where(inArray(t.issueTemplates.id, changes.deleteTemplateIds ?? []));
       }
       for (const s of changes.sprints ?? []) {
         await tx.insert(t.sprints).values(s).onConflictDoUpdate({ target: t.sprints.id, set: s });

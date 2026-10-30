@@ -1,6 +1,7 @@
 import { type Changes } from './changes';
 import { canHavePoints, isValidParent } from './hierarchy';
 import { DEFAULT_SPRINT_SETTINGS } from './settings';
+import { defaultTemplates } from './templates';
 import {
   ISSUE_TYPES,
   LINK_TYPES,
@@ -10,6 +11,7 @@ import {
   type History,
   type HistoryField,
   type Issue,
+  type IssueTemplate,
   type IssueType,
   type Link,
   type LinkType,
@@ -37,6 +39,8 @@ export interface View {
   people: Person[];
   /** Участники проектов (ADR-016). */
   members: ProjectMember[];
+  /** Шаблоны задач проектов (ADR-017). */
+  templates: IssueTemplate[];
   sprints: Sprint[];
   issues: Issue[];
   links: Link[];
@@ -490,7 +494,19 @@ export function createProject(
     errors.key = 'Такой ключ уже занят, выберите другой';
   if (name.length === 0 || name.length > 100) errors.name = 'Введите название (до 100 символов)';
   if (Object.keys(errors).length > 0) return fail(errors);
+  const id = ctx.newId();
   return ok({
-    projects: [{ id: ctx.newId(), key, name, ownerId: null, ...DEFAULT_SPRINT_SETTINGS }],
+    projects: [
+      {
+        id,
+        key,
+        name,
+        ownerId: null,
+        wipEnabled: false,
+        wipLimits: {},
+        ...DEFAULT_SPRINT_SETTINGS,
+      },
+    ],
+    templates: defaultTemplates(id, ctx),
   });
 }

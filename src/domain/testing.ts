@@ -21,6 +21,7 @@ export function viewOf(ds: Dataset, projectId = 'p1'): View {
     project,
     people: ds.people,
     members: ds.members,
+    templates: ds.templates,
     sprints: ds.sprints.filter((s) => s.projectId === projectId),
     issues: ds.issues.filter((i) => i.projectId === projectId),
     links: ds.links.filter((l) => ids.has(l.fromId)),
@@ -38,6 +39,7 @@ export function applyChanges(ds: Dataset, c: Changes): Dataset {
   };
   upsert(next.projects, c.projects);
   upsert(next.members, c.members);
+  upsert(next.templates, c.templates);
   upsert(next.sprints, c.sprints);
   upsert(next.issues, c.issues);
   upsert(next.links, c.links);
@@ -45,6 +47,8 @@ export function applyChanges(ds: Dataset, c: Changes): Dataset {
   next.links = next.links.filter((l) => !removed.has(l.id));
   const removedMembers = new Set(c.deleteMemberIds ?? []);
   next.members = next.members.filter((m) => !removedMembers.has(m.id));
+  const removedTemplates = new Set(c.deleteTemplateIds ?? []);
+  next.templates = next.templates.filter((x) => !removedTemplates.has(x.id));
   next.comments.push(...(c.comments ?? []));
   next.history.push(...(c.history ?? []));
   return next;

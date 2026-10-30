@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "projects": [
     {
       "id": "p1",
@@ -9,7 +9,9 @@
       "sprintPrefix": "Спринт",
       "nextSprintNumber": 4,
       "nextSprintStart": null,
-      "ownerId": "u1"
+      "ownerId": "u1",
+      "wipEnabled": false,
+      "wipLimits": {}
     }
   ],
   "people": [
@@ -52,6 +54,32 @@
       "projectId": "p1",
       "personId": "u4",
       "role": "lead"
+    }
+  ],
+  "templates": [
+    {
+      "id": "tpl1",
+      "projectId": "p1",
+      "name": "Баг",
+      "type": "Bug",
+      "description": "## Шаги воспроизведения\n1. Шаг первый\n\n## Ожидалось\nОпишите, что должно было произойти\n\n## Получилось\nОпишите, что произошло на самом деле\n\n## Окружение\nБраузер и версия: …\nРоль пользователя: …",
+      "acceptance": "- [ ] Ошибка не воспроизводится по шагам\n- [ ] Добавлен тест на этот случай"
+    },
+    {
+      "id": "tpl2",
+      "projectId": "p1",
+      "name": "Story",
+      "type": "Story",
+      "description": "## Контекст\nПочему это нужно\n\n## Цель\nКак … я хочу …, чтобы …",
+      "acceptance": "- [ ] Первый критерий приёмки\n- [ ] Второй критерий приёмки"
+    },
+    {
+      "id": "tpl3",
+      "projectId": "p1",
+      "name": "Задача",
+      "type": "Task",
+      "description": "## Что нужно сделать\nКоротко опишите работу",
+      "acceptance": "- [ ] Работа выполнена"
     }
   ],
   "sprints": [

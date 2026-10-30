@@ -20,6 +20,8 @@ const project = (id: string, key: string, ownerId: string | null = null): Projec
   nextSprintNumber: 1,
   nextSprintStart: null,
   ownerId,
+  wipEnabled: false,
+  wipLimits: {},
 });
 
 const projects = [project('p1', 'DEMO', 'u1'), project('p2', 'SHOP'), project('p3', 'CRM', 'u2')];

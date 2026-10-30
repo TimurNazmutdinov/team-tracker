@@ -32,23 +32,35 @@ export interface TakenSnapshot extends Snapshot {
 export function takeSnapshot(db: Db): Promise<TakenSnapshot> {
   return db.transaction(
     async (tx) => {
-      const [projects, people, members, sprints, issues, links, comments, history, users] =
-        await Promise.all([
-          tx.select().from(t.projects),
-          tx.select().from(t.people),
-          tx.select().from(t.projectMembers),
-          tx.select().from(t.sprints),
-          tx.select().from(t.issues),
-          tx.select().from(t.links),
-          tx.select().from(t.comments),
-          tx.select().from(t.history),
-          tx.select().from(t.users),
-        ]);
+      const [
+        projects,
+        people,
+        members,
+        templates,
+        sprints,
+        issues,
+        links,
+        comments,
+        history,
+        users,
+      ] = await Promise.all([
+        tx.select().from(t.projects),
+        tx.select().from(t.people),
+        tx.select().from(t.projectMembers),
+        tx.select().from(t.issueTemplates),
+        tx.select().from(t.sprints),
+        tx.select().from(t.issues),
+        tx.select().from(t.links),
+        tx.select().from(t.comments),
+        tx.select().from(t.history),
+        tx.select().from(t.users),
+      ]);
       const schemaVersion = await migrationCount(tx);
       const data = {
         projects,
         people,
         members,
+        templates,
         sprints,
         issues,
         links,

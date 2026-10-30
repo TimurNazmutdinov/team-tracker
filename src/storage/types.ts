@@ -8,6 +8,7 @@ import type {
   Person,
   Project,
   ProjectMember,
+  IssueTemplate,
   Sprint,
 } from '../domain/schema';
 
@@ -21,6 +22,8 @@ export interface TrackerStorage {
   getPeople(): Promise<Person[]>;
   /** Участники всех проектов (ADR-016): их немного, поэтому отдаются разом. */
   getMembers(): Promise<ProjectMember[]>;
+  /** Шаблоны задач всех проектов (ADR-017). */
+  getTemplates(): Promise<IssueTemplate[]>;
   getSprints(projectId: string): Promise<Sprint[]>;
   getIssues(projectId: string): Promise<Issue[]>;
   getIssue(projectId: string, number: number): Promise<Issue | null>;
