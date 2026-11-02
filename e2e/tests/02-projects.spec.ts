@@ -37,7 +37,7 @@ test('второй проект со своим идущим спринтом и
   await expect(page.getByRole('button', { name: 'Закрыть спринт' })).toBeVisible();
 
   await page.goto('/projects/SHOP/backlog');
-  await page.getByRole('button', { name: '+ Создать задачу' }).first().click();
+  await page.getByRole('button', { name: '+ Создать', exact: true }).first().click();
   const dialog = page.getByRole('dialog');
   await dialog.getByLabel('Название').fill('Корзина покупок');
   await dialog.getByLabel('Спринт').selectOption({ index: 1 });

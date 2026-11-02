@@ -140,7 +140,7 @@ function Palette({ onClose }: { onClose: () => void }) {
             {
               id: 'create',
               group: 'Действия' as const,
-              label: 'Создать задачу',
+              label: 'Создать (задачу, эпик, баг…)',
               hint: 'C',
               run: () => showCreate(),
             },

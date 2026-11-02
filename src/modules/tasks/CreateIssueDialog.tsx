@@ -30,7 +30,7 @@ export function CreateIssueDialog({ projectId, projectKey }: Props) {
   const view = useView(projectId);
   if (!open) return null;
   return (
-    <Dialog title="Создать задачу" onClose={hide}>
+    <Dialog title="Создать" onClose={hide}>
       {view ? (
         <CreateForm view={view} projectKey={projectKey} preset={preset} onClose={hide} />
       ) : (

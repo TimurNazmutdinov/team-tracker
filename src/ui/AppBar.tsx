@@ -14,6 +14,12 @@ const TABS = [
   { to: 'board', label: 'Доска', tip: 'Доска текущего спринта по статусам' },
   { to: 'sprints', label: 'Спринты', tip: 'Список спринтов, цели, запуск и закрытие' },
   { to: 'reports', label: 'Отчёты', tip: 'Burndown и velocity по спринтам' },
+  {
+    to: '/analytics',
+    label: 'Аналитика',
+    tip: 'Поток, время цикла, нагрузка и дорожная карта эпиков',
+    absolute: true,
+  },
   { to: 'people', label: 'Люди', tip: 'Нагрузка людей, отсутствия, учётки и роли' },
   {
     to: 'settings',
@@ -73,15 +79,16 @@ export function AppBar() {
         <NavLink to="/portfolio" title="Сводка по проектам: активные спринты и риски">
           Портфель
         </NavLink>
-        <NavLink to="/analytics" title="Поток, время цикла, нагрузка и дорожная карта эпиков">
-          Аналитика
-        </NavLink>
       </nav>
       {shown && (
         <>
           <nav aria-label="Разделы проекта">
             {TABS.map((tab) => (
-              <NavLink key={tab.to} to={`/projects/${shown}/${tab.to}`} title={tab.tip}>
+              <NavLink
+                key={tab.to}
+                to={'absolute' in tab ? tab.to : `/projects/${shown}/${tab.to}`}
+                title={tab.tip}
+              >
                 {tab.label}
               </NavLink>
             ))}
