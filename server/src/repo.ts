@@ -143,6 +143,7 @@ async function loadDataset(db: Db | Tx, projectIds?: string[]): Promise<Dataset>
 async function touchedProjects(tx: Tx, changes: Changes): Promise<string[]> {
   const out = new Set<string>();
   for (const p of changes.projects ?? []) out.add(p.id);
+  for (const id of changes.deleteProjectIds ?? []) out.add(id);
   for (const s of changes.sprints ?? []) out.add(s.projectId);
   for (const m of changes.members ?? []) out.add(m.projectId);
   for (const x of changes.templates ?? []) out.add(x.projectId);
@@ -225,6 +226,14 @@ function applied(current: Dataset, changes: Changes): Dataset {
   upsert(next.people, changes.people);
   upsert(next.members, changes.members);
   upsert(next.templates, changes.templates);
+  const removedProjects = new Set(changes.deleteProjectIds ?? []);
+  if (removedProjects.size > 0) {
+    next.projects = next.projects.filter((x) => !removedProjects.has(x.id));
+    next.members = next.members.filter((x) => !removedProjects.has(x.projectId));
+    next.templates = next.templates.filter((x) => !removedProjects.has(x.projectId));
+    next.sprints = next.sprints.filter((x) => !removedProjects.has(x.projectId));
+    next.retroItems = next.retroItems.filter((x) => !removedProjects.has(x.projectId));
+  }
   upsert(next.roles, changes.roles);
   upsert(next.absences, changes.absences);
   upsert(next.retroItems, changes.retroItems);
@@ -281,6 +290,16 @@ export async function commit(
         throw new HttpError(403, 'forbidden', 'Недостаточно прав для этого изменения', denied);
       }
 
+      // удалить можно только пустой проект (ADR-023): данные не теряются
+      const removing = new Set(changes.deleteProjectIds ?? []);
+      if (current.issues.some((i) => removing.has(i.projectId))) {
+        throw new HttpError(
+          409,
+          'project_not_empty',
+          'В проекте есть задачи: удалить можно только пустой проект',
+        );
+      }
+
       const checked = parseDataset(applied(current, changes));
       if (!checked.ok) {
         throw new HttpError(422, 'invalid_data', 'Изменения не прошли проверку', checked.errors);
@@ -314,6 +333,14 @@ export async function commit(
         await tx
           .delete(t.issueTemplates)
           .where(inArray(t.issueTemplates.id, changes.deleteTemplateIds ?? []));
+      }
+      if ((changes.deleteProjectIds ?? []).length > 0) {
+        const ids = changes.deleteProjectIds ?? [];
+        await tx.delete(t.retroItems).where(inArray(t.retroItems.projectId, ids));
+        await tx.delete(t.issueTemplates).where(inArray(t.issueTemplates.projectId, ids));
+        await tx.delete(t.projectMembers).where(inArray(t.projectMembers.projectId, ids));
+        await tx.delete(t.sprints).where(inArray(t.sprints.projectId, ids));
+        await tx.delete(t.projects).where(inArray(t.projects.id, ids));
       }
       if ((changes.deleteRoleIds ?? []).length > 0) {
         // роль, назначенную учётке, удалить нельзя (ADR-021)

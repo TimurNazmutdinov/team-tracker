@@ -10,12 +10,14 @@ import {
 import { STATUSES, type Issue } from '../../domain/schema';
 import { descendants, treeRows } from '../../domain/tree';
 import { StatusChip } from '../tasks/IssueBits';
+import { usePermissions } from '../../state/current-user';
 import { useProjectScope } from '../../state/project-scope';
 import { useProjectHistories, useProjectViews } from '../../state/queries';
 import { dateRange, num, projectWord } from '../../ui/format';
 import { Loading } from '../../ui/Loading';
 import { ProjectFilter } from '../../ui/ProjectFilter';
 import { PageHeader } from '../../ui/PageHeader';
+import { ArchiveSection, NewProjectDialog, ProjectMenu } from './ProjectManage';
 import { Avatar } from '../tasks/IssueBits';
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -95,6 +97,7 @@ function OverviewCard({
           </strong>
         )}
         <Avatar person={o.owner ?? undefined} />
+        <ProjectMenu project={o.project} />
       </header>
 
       {o.sprint ? (
@@ -242,6 +245,7 @@ function OverviewCard({
       <footer className="overview-links">
         <Link to={link('board')}>Доска →</Link>
         <Link to={link('backlog')}>Планирование →</Link>
+        <Link to={`/projects/${key}/settings`}>Настройки →</Link>
       </footer>
     </article>
   );
@@ -257,9 +261,25 @@ export function PortfolioPage() {
   const [sort, setSort] = useState<PortfolioSort>('risk');
   const [onlyRisk, setOnlyRisk] = useState(false);
 
-  const header = <PageHeader title="Портфель" />;
+  const [creating, setCreating] = useState(false);
+  const canCreate = usePermissions().can('project.create');
+  const header = (
+    <PageHeader title="Портфель">
+      {canCreate && (
+        <button
+          type="button"
+          className="primary"
+          title="Создать проект: ключ, название, владелец"
+          onClick={() => setCreating(true)}
+        >
+          + Новый проект
+        </button>
+      )}
+    </PageHeader>
+  );
   // пока данные грузятся, строки фильтров ещё нет: фильтр проектов стоит под заголовком
   const loadingHeader = <PageHeader title="Портфель" scope />;
+  const dialog = creating ? <NewProjectDialog onClose={() => setCreating(false)} /> : null;
   if (!ready || !views || !histories) {
     return (
       <>
@@ -290,6 +310,7 @@ export function PortfolioPage() {
   return (
     <>
       {header}
+      {dialog}
       <p className="muted">
         Активные спринты проектов: {projects.length}; с риском: {atRisk}. Риск — перегруз ёмкости,
         просроченные задачи, блокировки, закончившийся, но не закрытый спринт.
@@ -334,6 +355,7 @@ export function PortfolioPage() {
           ))}
         </div>
       )}
+      <ArchiveSection />
     </>
   );
 }

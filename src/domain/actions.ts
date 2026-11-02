@@ -487,7 +487,7 @@ export function addComment(
 
 export function createProject(
   existing: Project[],
-  input: { key: string; name: string },
+  input: { key: string; name: string; ownerId?: string | null },
   ctx: Ctx,
 ): Result {
   const errors: FieldErrors = {};
@@ -505,10 +505,11 @@ export function createProject(
         id,
         key,
         name,
-        ownerId: null,
+        ownerId: input.ownerId ?? null,
         wipEnabled: false,
         wipLimits: {},
         dod: '',
+        archivedAt: null,
         ...DEFAULT_SPRINT_SETTINGS,
       },
     ],

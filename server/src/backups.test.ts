@@ -146,6 +146,9 @@ describe('экспорт, проверка и восстановление', () 
     // Definition of Done с переносами строк должен пройти оба круга (json и Excel)
     const demo = seed.projects[0];
     if (demo) demo.dod = '- [ ] Тесты проходят\n- [ ] Ревью сделано';
+    // архивный проект должен пройти оба круга копий (json и Excel)
+    const archived = seed.projects[1];
+    if (archived) archived.archivedAt = '2026-11-01T10:00:00Z';
     await importDataset(source.db, seed);
     await createAccount(source.db, {
       email: 'admin@example.com',

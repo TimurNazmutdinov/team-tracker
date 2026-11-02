@@ -53,6 +53,8 @@ export const projectSchema = z.object({
   wipLimits: z.partialRecord(z.enum(WIP_COLUMNS), z.number().int().min(1).max(999)).default({}),
   /** Definition of Done проекта (ADR-018): чек-лист Markdown, строки «- [ ] …»; пусто — без подтверждения. */
   dod: z.string().max(5000).default(''),
+  /** Когда проект отправлен в архив (ADR-023); null — проект действует. */
+  archivedAt: z.iso.datetime().nullable().default(null),
 });
 
 /** Участник проекта с ролью в нём; владелец проекта хранится в Project.ownerId и здесь не повторяется. */

@@ -26,8 +26,15 @@ import { addRetroItem, deleteRetroItem, retroToIssue, type RetroInput } from '..
 import { bulkUpdate, type BulkPatch } from '../domain/bulk';
 import type { Changes } from '../domain/changes';
 import { addMember, removeMember, setMemberRole, setOwner } from '../domain/members';
+import {
+  archiveProject,
+  deleteProject,
+  restoreProject,
+  updateProject,
+  type ProjectEdit,
+} from '../domain/projects';
 import { rolesChanges, type RolesResult } from '../domain/roles';
-import type { LinkType, ProjectRole, RoleDef } from '../domain/schema';
+import type { LinkType, Project, ProjectRole, RoleDef } from '../domain/schema';
 import { updateSprintSettings, type SprintSettings } from '../domain/settings';
 import {
   closeSprint,
@@ -209,21 +216,45 @@ export function useRoleActions() {
 export function useProjectActions() {
   const storage = useStorage();
   const queryClient = useQueryClient();
-  return useMemo(
-    () => ({
-      createProject: async (input: { key: string; name: string }): Promise<Result> => {
-        try {
-          const result = createProject(await storage.getProjects(), input, browserCtx);
-          if (result.ok) {
-            await storage.commit(result.changes);
-            await queryClient.invalidateQueries();
-          }
-          return result;
-        } catch (e) {
-          return errorResult(e);
+  return useMemo(() => {
+    /** Читает проекты, строит изменения логикой и сохраняет одним набором. */
+    const commit = async (build: (projects: Project[]) => Result | Promise<Result>) => {
+      try {
+        const result = await build(await storage.getProjects());
+        if (result.ok && hasChanges(result.changes)) {
+          await storage.commit(result.changes);
+          await queryClient.invalidateQueries();
         }
-      },
-    }),
-    [storage, queryClient],
-  );
+        return result;
+      } catch (e) {
+        return errorResult(e);
+      }
+    };
+    const find = (projects: Project[], id: string): Project | undefined =>
+      projects.find((p) => p.id === id);
+    const missing: Result = { ok: false, errors: { form: 'Проект не найден' } };
+    return {
+      createProject: (input: { key: string; name: string; ownerId?: string | null }) =>
+        commit((projects) => createProject(projects, input, browserCtx)),
+      updateProject: (id: string, input: ProjectEdit) =>
+        commit((projects) => updateProject(projects, id, input)),
+      archiveProject: (id: string) =>
+        commit((projects) => {
+          const project = find(projects, id);
+          return project ? archiveProject(project, browserCtx.now()) : missing;
+        }),
+      restoreProject: (id: string) =>
+        commit((projects) => {
+          const project = find(projects, id);
+          return project ? restoreProject(project) : missing;
+        }),
+      deleteProject: (id: string) =>
+        commit(async (projects) => {
+          const project = find(projects, id);
+          if (!project) return missing;
+          const issues = await storage.getIssues(id);
+          return deleteProject(project, issues.length);
+        }),
+    };
+  }, [storage, queryClient]);
 }

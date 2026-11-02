@@ -84,6 +84,8 @@ def main():
             elif not isinstance(lim, int) or isinstance(lim, bool) or not 1 <= lim <= 999:
                 err(f"{w}: WIP-лимит колонки {col} — целое 1–999")
     for pr in seed["projects"]:
+        if pr.get("archivedAt") is not None and not isinstance(pr["archivedAt"], str):
+            err(f"project {pr['id']}: archivedAt — дата-время или null")
         if not isinstance(pr.get("dod", ""), str) or len(pr.get("dod", "")) > 5000:
             err(f"project {pr['id']}: dod — строка до 5000 символов")
     names = set()

@@ -13,6 +13,7 @@ import {
   type ScopePref,
 } from '../domain/projectScope';
 import type { Project } from '../domain/schema';
+import { activeProjects } from '../domain/projects';
 import { useCurrentUser } from './current-user';
 import { useMembers, useProjects } from './queries';
 import { useSession } from './session';
@@ -70,7 +71,8 @@ export function useProjectScope(): ProjectScopeState {
   const demoSaved = useDemoPref((s) => s.saved);
   const setDemo = useDemoPref((s) => s.set);
 
-  const all = useMemo(() => projects.data ?? [], [projects.data]);
+  // архивные проекты в выбор не попадают (ADR-023)
+  const all = useMemo(() => activeProjects(projects.data ?? []), [projects.data]);
   const urlParam = params.get('projects');
   const saved = SERVER_MODE ? (account?.projectFilter ?? null) : demoSaved;
   const current = key ? all.find((p) => p.key === key) : undefined;

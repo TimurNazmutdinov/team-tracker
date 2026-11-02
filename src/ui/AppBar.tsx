@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { customPref } from '../domain/projectScope';
 import { useProjectScope } from '../state/project-scope';
 import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router';
+import { activeProjects } from '../domain/projects';
 import { useHelp } from '../state/help';
 import { useLastProject } from '../state/last-project';
 import { useProjects } from '../state/queries';
@@ -40,7 +41,7 @@ export function AppBar() {
     if (key) setLast(key);
   }, [key, setLast]);
   // на «Портфеле» и «Аналитике» показываем вкладки последнего открытого проекта (wireframes.md, 24.1)
-  const known = projects.data ?? [];
+  const known = activeProjects(projects.data ?? []);
   const { ready, scope, choose } = useProjectScope();
   const shown =
     key ??

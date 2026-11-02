@@ -22,6 +22,7 @@ export interface Changes {
   people?: Person[];
   members?: ProjectMember[];
   deleteMemberIds?: string[];
+  deleteProjectIds?: string[];
   roles?: RoleDef[];
   deleteRoleIds?: string[];
   absences?: Absence[];

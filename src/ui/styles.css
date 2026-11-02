@@ -2474,3 +2474,45 @@ a.button {
 .scope-row {
   margin: 0 0 0.75rem;
 }
+
+/* Управление проектами на «Портфеле» (ADR-023) */
+.project-menu {
+  position: relative;
+}
+.menu-pop {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.25rem);
+  right: 0;
+  min-width: 17rem;
+  padding: 0.25rem;
+  background: var(--panel);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px var(--shadow);
+}
+.menu-pop a,
+.menu-pop button {
+  display: block;
+  width: 100%;
+  padding: 0.35rem 0.6rem;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  color: var(--ink);
+  text-align: left;
+  text-decoration: none;
+}
+.menu-pop a:hover,
+.menu-pop button:hover:not(:disabled),
+.menu-pop a:focus-visible,
+.menu-pop button:focus-visible {
+  background: var(--accent-bg);
+}
+.archived-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--line);
+}

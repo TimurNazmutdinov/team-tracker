@@ -94,6 +94,9 @@ export function violations(
   const roles = current.roles;
   const may = (action: Action) => can(roles, role, action);
 
+  if ((changes.deleteProjectIds ?? []).length > 0 && !may('project.create'))
+    deny('Удалять проекты ваша роль не позволяет');
+
   for (const p of changes.projects ?? []) {
     const before = current.projects.find((x) => x.id === p.id);
     if (!before) {
