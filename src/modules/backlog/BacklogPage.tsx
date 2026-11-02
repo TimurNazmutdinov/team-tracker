@@ -739,10 +739,13 @@ function ProjectPlanning({
         <Loading />
       ) : view.issues.length === 0 ? (
         <div className="empty">
-          <p>В проекте пока нет задач.{perms.can('issue.create') ? ' Создайте первую.' : ''}</p>
+          <p>
+            В проекте пока нет задач.
+            {perms.can('issue.create') ? ' Создайте первый элемент: задачу, эпик и др.' : ''}
+          </p>
           {perms.can('issue.create') && (
             <button type="button" className="primary" onClick={() => showCreate()}>
-              + Создать задачу
+              + Создать
             </button>
           )}
         </div>
@@ -840,7 +843,7 @@ export function BacklogPage() {
     <PageHeader title="Планирование спринтов">
       {canCreate && (
         <button type="button" className="primary" onClick={() => showCreate()}>
-          + Создать задачу
+          + Создать
         </button>
       )}
     </PageHeader>

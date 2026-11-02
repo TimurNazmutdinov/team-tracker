@@ -74,7 +74,7 @@ test('Markdown: разметка показывается, HTML не выпол�
 
 test('шаблон «Баг» подставляет тип и текст при создании задачи', async () => {
   await page.goto('/projects/DEMO/backlog');
-  await page.getByRole('button', { name: '+ Создать задачу' }).first().click();
+  await page.getByRole('button', { name: '+ Создать', exact: true }).first().click();
   const dialog = page.getByRole('dialog');
   await dialog.getByLabel('Шаблон').selectOption({ label: 'Баг (Bug)' });
   await expect(dialog.getByLabel('Тип')).toHaveValue('Bug');
