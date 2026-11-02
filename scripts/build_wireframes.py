@@ -2950,6 +2950,75 @@ def screen_project_control():
     return wf
 
 
+def screen_portfolio_manage():
+    wf = WF(820, "Портфель: создание проектов и управление созданными")
+    t = wf.t
+    wf.shell("team-tracker.app/portfolio", "Портфель")
+    wf.text(20, 130, "Портфель", 24, bold=True)
+    wf.button(700, 108, 180, 34, "+ Новый проект", True, 13)
+    wf.callout(1, 694, 108)
+    wf.rect(20, 160, 188, 30, fill=t["accent_bg"], stroke=t["accent"], r=15, sw=1.6)
+    wf.text(34, 180, "Проекты: Мои (3) ▾", 13, bold=True)
+    wf.chip(222, 162, "Сортировка: по риску ▾", 12.5, h=28)
+    wf.chip(396, 162, "☐ Только с риском", 12.5, h=28)
+    # карточка проекта с меню управления
+    wf.rect(20, 210, 420, 250, fill=t["panel"], stroke=t["line"], r=8)
+    wf.chip(34, 222, "DEMO", 12.5, h=24, bold=True)
+    wf.text(92, 240, "Демо-проект", 15, bold=True)
+    wf.text(310, 240, "владелец: Анна К.", 12, fill=t["muted"])
+    wf.button(392, 222, 38, 28, "⋯", size=14)
+    wf.callout(2, 386, 222)
+    wf.text(34, 280, "Спринт 3 · 09.11 – 20.11 · осталось 8 дн.", 13)
+    wf.text(34, 306, "Выполнено 13 из 21 sp · 62 %", 12.5, fill=t["muted"])
+    wf.text(34, 440, "Доска →      Планирование →", 13, fill=t["accent"])
+    # открытое меню
+    wf.rect(250, 256, 190, 190, fill=t["bg"], stroke=t["accent"], r=8, sw=1.6)
+    for n, (label, muted) in enumerate((("Настройки проекта", False), ("Изменить название и ключ…", False), ("Владелец и участники…", False), ("Архивировать…", False), ("Удалить (пустой проект)…", True))):
+        wf.text(264, 282 + n * 32, label, 12.5, fill=t["muted"] if muted else None)
+    wf.callout(3, 244, 256)
+    # архив
+    wf.line(20, 490, 880, 490)
+    wf.text(20, 520, "Архив проектов (1)", 16, bold=True)
+    wf.text(220, 520, "скрыты из фильтра и портфеля", 12, fill=t["muted"])
+    wf.rect(20, 536, 860, 52, fill=t["panel"], stroke=t["line"], r=8)
+    wf.chip(34, 550, "CRM", 12.5, h=24, bold=True)
+    wf.text(92, 568, "Клиентская база · архив с 01.11", 13)
+    wf.button(730, 546, 130, 32, "Вернуть", size=12.5)
+    wf.callout(4, 14, 536)
+    wf.text(20, 640, "Кнопка «+ Новый проект» и меню «⋯» — для тех, у кого есть право «Создавать проекты и управлять людьми».", 12.5, fill=t["muted"])
+    wf.text(20, 662, "Остальным показывается только ссылка «Настройки проекта» и просмотр.", 12.5, fill=t["muted"])
+    return wf
+
+
+def screen_project_dialogs():
+    wf = WF(700, "Портфель: окна «Новый проект» и «Изменить проект»")
+    t = wf.t
+    wf.shell("team-tracker.app/portfolio", "Портфель")
+    wf.overlay()
+    mx, my, mw, mh = 110, 96, 680, 520
+    wf.rect(mx, my, mw, mh, fill=t["bg"], stroke=t["line"], r=10, sw=1.6)
+    wf.text(mx + 24, my + 38, "Изменить проект DEMO", 20, bold=True)
+    wf.field(mx + 24, my + 62, 140, "Ключ", "DEMO")
+    wf.field(mx + 184, my + 62, 440, "Название", "Демо-проект")
+    wf.callout(1, mx + 10, my + 62)
+    wf.text(mx + 24, my + 134, "Ключ входит в номера задач (DEMO-12) и адреса. При смене старые адреса перестанут работать.", 12.5, fill=t["warn"])
+    wf.field(mx + 24, my + 160, 300, "Владелец", "Анна Ковалёва", dropdown=True)
+    wf.callout(2, mx + 10, my + 160)
+    wf.text(mx + 24, my + 232, "Участники проекта", 14, bold=True)
+    wf.rect(mx + 24, my + 244, 632, 150, fill=t["panel"], stroke=t["line"], r=6)
+    for n, (name, role) in enumerate((("Игорь Смирнов", "Разработчик"), ("Мария Орлова", "Разработчик"), ("Дмитрий Васильев", "Тимлид"))):
+        wf.avatar(mx + 48, my + 272 + n * 38, name, 11)
+        wf.text(mx + 70, my + 277 + n * 38, name, 13)
+        wf.text(mx + 330, my + 277 + n * 38, role + " ▾", 13, fill=t["muted"])
+        wf.text(mx + 620, my + 277 + n * 38, "✕", 14, "middle")
+    wf.button(mx + 24, my + 404, 190, 30, "+ Добавить участника", size=12.5)
+    wf.callout(3, mx + 10, my + 244)
+    wf.button(mx + 24, my + 466, 130, 34, "Сохранить", True, 13)
+    wf.button(mx + 166, my + 466, 110, 34, "Отмена", size=13)
+    wf.text(mx + 330, my + 488, "«Новый проект» — те же поля: ключ, название, владелец.", 12, fill=t["muted"])
+    return wf
+
+
 SCREENS = {
     "wf-map": screen_map,
     "wf-projects": screen_projects,
@@ -2979,6 +3048,8 @@ SCREENS = {
     "wf-create-template": screen_create_template,
     "wf-availability": screen_availability,
     "wf-nav-tabs": screen_nav_tabs,
+    "wf-portfolio-manage": screen_portfolio_manage,
+    "wf-project-dialogs": screen_project_dialogs,
     "wf-hierarchy-lists": screen_hierarchy_lists,
     "wf-hierarchy-issue": screen_hierarchy_issue,
     "wf-project-control": screen_project_control,
