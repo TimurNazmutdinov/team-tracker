@@ -26,7 +26,7 @@ function SingleReport({ project }: { project: Project }) {
   if (!view || !history.data) {
     return (
       <>
-        <PageHeader title="Отчёты" />
+        <PageHeader title="Отчёты" scope />
         <Loading />
       </>
     );
@@ -39,7 +39,7 @@ function SingleReport({ project }: { project: Project }) {
 
   return (
     <>
-      <PageHeader title="Отчёты">
+      <PageHeader title="Отчёты" scope>
         {sprints.length > 0 && (
           <label className="inline-select" title="Спринт для burndown и итогов">
             Спринт
@@ -136,14 +136,14 @@ function MultiReports({ projects }: { projects: Project[] }) {
   if (!views || !histories) {
     return (
       <>
-        <PageHeader title="Отчёты"></PageHeader>
+        <PageHeader title="Отчёты" scope></PageHeader>
         <Loading />
       </>
     );
   }
   return (
     <>
-      <PageHeader title="Отчёты"></PageHeader>
+      <PageHeader title="Отчёты" scope></PageHeader>
       <p className="muted">
         Выбрано проектов: {projects.length}. Burndown и итоги по людям строятся для одного проекта:
         откройте отчёт проекта по ссылке.
@@ -187,7 +187,7 @@ export function ReportsPage() {
   if (!ready) {
     return (
       <>
-        <PageHeader title="Отчёты" />
+        <PageHeader title="Отчёты" scope />
         <Loading />
       </>
     );
@@ -197,7 +197,7 @@ export function ReportsPage() {
   if (scope.projects.length === 0) {
     return (
       <>
-        <PageHeader title="Отчёты"></PageHeader>
+        <PageHeader title="Отчёты" scope></PageHeader>
         <p className="empty">Не выбрано ни одного проекта: выберите проекты в фильтре.</p>
       </>
     );

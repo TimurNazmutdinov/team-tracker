@@ -23,7 +23,7 @@ export function PeoplePage() {
   if (!view || !history.data) {
     return (
       <>
-        <PageHeader title="Люди" />
+        <PageHeader title="Люди" scope />
         <Loading />
       </>
     );
@@ -39,7 +39,7 @@ export function PeoplePage() {
 
   return (
     <>
-      <PageHeader title="Люди">
+      <PageHeader title="Люди" scope>
         {sprint && (
           <label className="inline-select" title="Спринт, по которому считается нагрузка">
             Спринт

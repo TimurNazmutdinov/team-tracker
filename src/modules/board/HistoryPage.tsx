@@ -7,6 +7,7 @@ import { useProjectScope } from '../../state/project-scope';
 import { useProjectHistories, useProjectViews } from '../../state/queries';
 import { dateRange, num, shortDate, taskWord } from '../../ui/format';
 import { Loading } from '../../ui/Loading';
+import { ProjectFilter } from '../../ui/ProjectFilter';
 import { PageHeader } from '../../ui/PageHeader';
 import { treeRows } from '../../domain/tree';
 import { RetroSection } from '../sprints/RetroSection';
@@ -122,7 +123,7 @@ export function HistoryPage() {
   if (!ready || !views || !histories) {
     return (
       <>
-        <PageHeader title="Прошлые спринты" />
+        <PageHeader title="Прошлые спринты" scope />
         <Loading />
       </>
     );
@@ -166,6 +167,7 @@ export function HistoryPage() {
       <PageHeader title="Прошлые спринты" />
       <p className="muted">История закрытых спринтов: только чтение.</p>
       <div className="board-toolbar planning-filters" role="search" aria-label="Фильтры истории">
+        <ProjectFilter />
         <label>
           Поиск
           <input

@@ -14,6 +14,7 @@ import { useProjectScope } from '../../state/project-scope';
 import { useProjectHistories, useProjectViews } from '../../state/queries';
 import { dateRange, num, projectWord } from '../../ui/format';
 import { Loading } from '../../ui/Loading';
+import { ProjectFilter } from '../../ui/ProjectFilter';
 import { PageHeader } from '../../ui/PageHeader';
 import { Avatar } from '../tasks/IssueBits';
 
@@ -256,11 +257,13 @@ export function PortfolioPage() {
   const [sort, setSort] = useState<PortfolioSort>('risk');
   const [onlyRisk, setOnlyRisk] = useState(false);
 
-  const header = <PageHeader title="Портфель"></PageHeader>;
+  const header = <PageHeader title="Портфель" />;
+  // пока данные грузятся, строки фильтров ещё нет: фильтр проектов стоит под заголовком
+  const loadingHeader = <PageHeader title="Портфель" scope />;
   if (!ready || !views || !histories) {
     return (
       <>
-        {header}
+        {loadingHeader}
         <Loading />
       </>
     );
@@ -292,6 +295,7 @@ export function PortfolioPage() {
         просроченные задачи, блокировки, закончившийся, но не закрытый спринт.
       </p>
       <div className="board-toolbar" role="group" aria-label="Порядок и фильтр">
+        <ProjectFilter />
         <label title="Порядок карточек: сначала проекты с риском или по названию">
           Сортировка
           <select value={sort} onChange={(e) => setSort(e.target.value as PortfolioSort)}>

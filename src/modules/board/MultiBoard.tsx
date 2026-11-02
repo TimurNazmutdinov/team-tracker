@@ -85,7 +85,7 @@ export function MultiBoard({
   if (!views) {
     return (
       <>
-        <PageHeader title="Доска" />
+        <PageHeader title="Доска" scope />
         <Loading />
       </>
     );

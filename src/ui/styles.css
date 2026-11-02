@@ -2469,3 +2469,8 @@ a.button {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
+/* Строка с фильтром проектов под заголовком экрана без своих фильтров */
+.scope-row {
+  margin: 0 0 0.75rem;
+}

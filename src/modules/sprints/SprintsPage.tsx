@@ -40,7 +40,7 @@ export function SprintsPage() {
   if (!view || !history.data) {
     return (
       <>
-        <PageHeader title="Спринты" />
+        <PageHeader title="Спринты" scope />
         <Loading />
       </>
     );
@@ -56,7 +56,7 @@ export function SprintsPage() {
 
   return (
     <>
-      <PageHeader title="Спринты" />
+      <PageHeader title="Спринты" scope />
       <div className="sprints-layout">
         <nav className="sprint-list" aria-label="Спринты проекта">
           {sprints.map((s) => (

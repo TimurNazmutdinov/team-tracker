@@ -38,6 +38,7 @@ import {
 import type { BulkPatch } from '../../domain/bulk';
 import { wipAfterMove, wipLimit, wipMessage } from '../../domain/wip';
 import { ancestors } from '../../domain/tree';
+import { ProjectFilter } from '../../ui/ProjectFilter';
 import { useActions } from '../../state/actions';
 import { usePermissions } from '../../state/current-user';
 import { useBoardPrefs } from '../../state/board-prefs';
@@ -74,7 +75,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
   if (!view) {
     return (
       <>
-        <PageHeader title="Доска" />
+        <PageHeader title="Доска" scope />
         <Loading />
       </>
     );
@@ -86,7 +87,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
   if (!sprint) {
     return (
       <>
-        <PageHeader title="Доска" />
+        <PageHeader title="Доска" scope />
         <p className="empty">В проекте нет спринтов. Спринты появятся на этапе 6.</p>
       </>
     );
@@ -390,7 +391,7 @@ export function BoardPage() {
       </>
     );
   }
-  const filter = null;
+  const filter = <ProjectFilter />;
   const projects = scope.projects;
   const [only] = projects;
   if (projects.length === 0) {

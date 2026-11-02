@@ -13,6 +13,7 @@ import {
 import { useProjectScope } from '../../state/project-scope';
 import { useProjectHistories, useProjectViews } from '../../state/queries';
 import { Loading } from '../../ui/Loading';
+import { ProjectFilter } from '../../ui/ProjectFilter';
 import { PageHeader } from '../../ui/PageHeader';
 import { CfdChart, Histogram, RoadmapChart, WorkloadChart } from './charts';
 
@@ -88,11 +89,13 @@ export function AnalyticsPage() {
     };
   }, [views, histories, days, now]);
 
-  const header = <PageHeader title="Аналитика"></PageHeader>;
+  const header = <PageHeader title="Аналитика" />;
+  // без данных строки с вкладками нет: фильтр проектов стоит под заголовком
+  const bareHeader = <PageHeader title="Аналитика" scope />;
   if (!ready || !views || !data) {
     return (
       <>
-        {header}
+        {bareHeader}
         <Loading />
       </>
     );
@@ -100,7 +103,7 @@ export function AnalyticsPage() {
   if (projects.length === 0) {
     return (
       <>
-        {header}
+        {bareHeader}
         <p className="empty">Не выбрано ни одного проекта: выберите проекты в фильтре.</p>
       </>
     );
@@ -120,6 +123,7 @@ export function AnalyticsPage() {
     <>
       {header}
       <div className="board-toolbar">
+        <ProjectFilter />
         <nav className="tabs" aria-label="Вид аналитики">
           {TABS.map((t) => (
             <button

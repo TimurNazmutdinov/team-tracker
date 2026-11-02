@@ -7,7 +7,6 @@ import { useLastProject } from '../state/last-project';
 import { useProjects } from '../state/queries';
 import { useQuick } from '../state/quick';
 import { Logo } from './Logo';
-import { ProjectFilter } from './ProjectFilter';
 import { UserMenu } from './UserMenu';
 
 const TABS = [
@@ -78,7 +77,6 @@ export function AppBar() {
           Аналитика
         </NavLink>
       </nav>
-      <ProjectFilter />
       {shown && (
         <>
           <nav aria-label="Разделы проекта">
