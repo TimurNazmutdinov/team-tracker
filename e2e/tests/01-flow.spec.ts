@@ -51,7 +51,7 @@ test('вход: первая зарегистрированная учётка �
 test('создание задачи попадает в общий бэклог', async () => {
   await page.goto('/projects/DEMO/backlog');
   await expect(page.getByRole('heading', { name: 'Планирование спринтов' })).toBeVisible();
-  await page.getByRole('button', { name: '+ Создать задачу' }).first().click();
+  await page.getByRole('button', { name: '+ Создать', exact: true }).first().click();
   const dialog = page.getByRole('dialog');
   await dialog.getByLabel('Название').fill(TITLE);
   await dialog.getByRole('button', { name: /^Создать/ }).click();

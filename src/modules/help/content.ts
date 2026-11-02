@@ -11,7 +11,7 @@ export interface Hotkey {
 
 export const HOTKEYS: Hotkey[] = [
   { keys: 'Ctrl+K  ·  /', action: 'Поиск задач, переход по экранам, команды' },
-  { keys: 'C', action: 'Создать задачу (внутри проекта)' },
+  { keys: 'C', action: 'Создать задачу, эпик и другое (внутри проекта)' },
   { keys: 'G, затем D', action: 'Перейти на доску' },
   { keys: 'G, затем B', action: 'Перейти в планирование спринтов' },
   { keys: 'G, затем H', action: 'Перейти в прошлые спринты' },
