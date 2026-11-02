@@ -89,11 +89,13 @@ export function AnalyticsPage() {
     };
   }, [views, histories, days, now]);
 
-  const header = <PageHeader title="Аналитика"></PageHeader>;
+  const header = <PageHeader title="Аналитика" />;
+  // без данных строки с вкладками нет: фильтр проектов стоит под заголовком
+  const bareHeader = <PageHeader title="Аналитика" scope />;
   if (!ready || !views || !data) {
     return (
       <>
-        {header}
+        {bareHeader}
         <Loading />
       </>
     );
@@ -101,7 +103,7 @@ export function AnalyticsPage() {
   if (projects.length === 0) {
     return (
       <>
-        {header}
+        {bareHeader}
         <p className="empty">Не выбрано ни одного проекта: выберите проекты в фильтре.</p>
       </>
     );

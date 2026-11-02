@@ -75,7 +75,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
   if (!view) {
     return (
       <>
-        <PageHeader title="Доска" />
+        <PageHeader title="Доска" scope />
         <Loading />
       </>
     );
@@ -87,7 +87,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
   if (!sprint) {
     return (
       <>
-        <PageHeader title="Доска" />
+        <PageHeader title="Доска" scope />
         <p className="empty">В проекте нет спринтов. Спринты появятся на этапе 6.</p>
       </>
     );

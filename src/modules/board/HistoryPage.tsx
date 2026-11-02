@@ -123,7 +123,7 @@ export function HistoryPage() {
   if (!ready || !views || !histories) {
     return (
       <>
-        <PageHeader title="Прошлые спринты" />
+        <PageHeader title="Прошлые спринты" scope />
         <Loading />
       </>
     );

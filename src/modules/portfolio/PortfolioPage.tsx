@@ -257,11 +257,13 @@ export function PortfolioPage() {
   const [sort, setSort] = useState<PortfolioSort>('risk');
   const [onlyRisk, setOnlyRisk] = useState(false);
 
-  const header = <PageHeader title="Портфель"></PageHeader>;
+  const header = <PageHeader title="Портфель" />;
+  // пока данные грузятся, строки фильтров ещё нет: фильтр проектов стоит под заголовком
+  const loadingHeader = <PageHeader title="Портфель" scope />;
   if (!ready || !views || !histories) {
     return (
       <>
-        {header}
+        {loadingHeader}
         <Loading />
       </>
     );

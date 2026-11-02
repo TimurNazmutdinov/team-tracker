@@ -55,8 +55,8 @@ export function ProjectFilter() {
       >
         {scope.projects.length === 1 && scope.projects[0]
           ? `${scope.projects[0].key} · ${scope.projects[0].name}`
-          : `Проекты: ${label}`}{' '}
-        ▾
+          : `Проекты: ${label}`}
+        {' ▾'}
       </button>
       {open && (
         <div className="filter-pop" role="dialog" aria-label="Выбор проектов">
