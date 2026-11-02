@@ -54,6 +54,14 @@ export function applyChanges(ds: Dataset, c: Changes): Dataset {
   next.members = next.members.filter((m) => !removedMembers.has(m.id));
   const removedTemplates = new Set(c.deleteTemplateIds ?? []);
   next.templates = next.templates.filter((x) => !removedTemplates.has(x.id));
+  const removedProjects = new Set(c.deleteProjectIds ?? []);
+  if (removedProjects.size > 0) {
+    next.projects = next.projects.filter((x) => !removedProjects.has(x.id));
+    next.members = next.members.filter((x) => !removedProjects.has(x.projectId));
+    next.templates = next.templates.filter((x) => !removedProjects.has(x.projectId));
+    next.sprints = next.sprints.filter((x) => !removedProjects.has(x.projectId));
+    next.retroItems = next.retroItems.filter((x) => !removedProjects.has(x.projectId));
+  }
   const removedRoles = new Set(c.deleteRoleIds ?? []);
   next.roles = next.roles.filter((x) => !removedRoles.has(x.id));
   const removedAbsences = new Set(c.deleteAbsenceIds ?? []);

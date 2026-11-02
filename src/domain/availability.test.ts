@@ -24,6 +24,7 @@ const project = {
   wipEnabled: false,
   wipLimits: {},
   dod: '',
+  archivedAt: null,
 };
 const members = [
   { id: 'm1', projectId: 'p1', personId: 'u2', role: 'developer' as const },

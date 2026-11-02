@@ -106,6 +106,7 @@ export function generateLoadData(options: Partial<LoadOptions> = {}): Dataset {
       wipEnabled: false,
       wipLimits: {},
       dod: '',
+      archivedAt: null,
     });
     // Участники проекта: пять человек подряд, чередуя роли
     for (let m = 0; m < Math.min(5, o.people); m += 1) {

@@ -157,6 +157,7 @@ function specs(snapshot: Snapshot, meta: XlsxMeta): SheetSpec[] {
         'WIP-лимиты включены',
         'WIP-лимиты колонок',
         'Definition of Done',
+        'В архиве с',
         '~id',
         '~ownerId',
         '~wipEnabled',
@@ -175,12 +176,13 @@ function specs(snapshot: Snapshot, meta: XlsxMeta): SheetSpec[] {
           .map(([column, n]) => `${column}: ${n}`)
           .join(', '),
         p.dod,
+        p.archivedAt,
         p.id,
         p.ownerId,
         p.wipEnabled ? 'true' : 'false',
         JSON.stringify(p.wipLimits),
       ]),
-      widths: [10, 30, 14, 16, 14, 16, 26, 14, 28, 40, 36, 36, 12, 24],
+      widths: [10, 30, 14, 16, 14, 16, 26, 14, 28, 40, 22, 36, 36, 12, 24],
     },
     {
       name: SHEETS.people,
@@ -615,6 +617,8 @@ export async function readXlsx(buffer: Uint8Array): Promise<ReadXlsx> {
     wipLimits: parseLimits(r['wipLimits']),
     // колонки Definition of Done в файлах до ADR-018 нет
     dod: r['Definition of Done'] === undefined ? '' : str(r['Definition of Done']),
+    // колонки архива в файлах до ADR-023 нет — проект действует
+    archivedAt: strOrNull(r['В архиве с']),
   }));
 
   // листа шаблонов в старых файлах нет

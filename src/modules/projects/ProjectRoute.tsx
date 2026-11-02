@@ -14,6 +14,12 @@ export function ProjectRoute() {
       {(project) =>
         project ? (
           <>
+            {project.archivedAt !== null && (
+              <p className="warn" role="status">
+                Проект в архиве: он скрыт из выбора проектов, портфеля и аналитики. Вернуть его
+                можно на вкладке «Портфель».
+              </p>
+            )}
             <Outlet context={project} />
             <CreateIssueDialog projectId={project.id} projectKey={project.key} />
           </>

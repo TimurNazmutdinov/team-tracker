@@ -177,6 +177,19 @@ export class SeedLocalStorage implements TrackerStorage {
       upsert(next.people, changes.people);
       upsert(next.members, changes.members);
       upsert(next.templates, changes.templates);
+      const removedProjects = new Set(changes.deleteProjectIds ?? []);
+      if (removedProjects.size > 0) {
+        if (next.issues.some((i) => removedProjects.has(i.projectId)))
+          throw new StorageError(
+            'conflict',
+            'В проекте есть задачи: удалить можно только пустой проект',
+          );
+        next.projects = next.projects.filter((p) => !removedProjects.has(p.id));
+        next.members = next.members.filter((m) => !removedProjects.has(m.projectId));
+        next.templates = next.templates.filter((t) => !removedProjects.has(t.projectId));
+        next.sprints = next.sprints.filter((s) => !removedProjects.has(s.projectId));
+        next.retroItems = next.retroItems.filter((r) => !removedProjects.has(r.projectId));
+      }
       upsert(next.roles, changes.roles);
       const removedRoles = new Set(changes.deleteRoleIds ?? []);
       next.roles = next.roles.filter((r) => !removedRoles.has(r.id));

@@ -27,6 +27,8 @@ export const projects = pgTable('projects', {
   wipLimits: jsonb('wip_limits').$type<Record<string, number>>().notNull().default({}),
   /** Definition of Done проекта (ADR-018). */
   dod: text('dod').notNull().default(''),
+  /** Когда проект отправлен в архив (ADR-023); null — действует. */
+  archivedAt: text('archived_at'),
 });
 
 export const people = pgTable('people', {
