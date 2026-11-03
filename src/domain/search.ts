@@ -39,14 +39,22 @@ export function scoreIssue(issue: Issue, key: string, query: string): number {
   if (k.startsWith(q) || (/^\d+$/.test(q) && number.startsWith(q))) return 80;
 
   const title = norm(issue.title);
-  const text = `${title} ${norm(issue.description)}`;
-  const words = q.split(/\s+/).filter(Boolean).map(stem);
-  if (!words.every((w) => text.includes(w) || k.includes(w))) return 0;
-  const startsWord = words.every((w) =>
+  const description = norm(issue.description);
+  // по основе слова ищется только название: в описании — точное вхождение, чтобы длинные тексты
+  // не перебивали экраны и действия палитры
+  const words = q.split(/\s+/).filter(Boolean);
+  const stems = words.map(stem);
+  if (
+    !words.every(
+      (w, i) => title.includes(stems[i] ?? w) || description.includes(w) || k.includes(w),
+    )
+  )
+    return 0;
+  const startsWord = stems.every((w) =>
     title.split(/[\s\-_/.,:;()]+/).some((t) => t.startsWith(w)),
   );
   if (startsWord) return 60;
-  if (words.every((w) => title.includes(w))) return 40;
+  if (stems.every((w) => title.includes(w))) return 40;
   return 20;
 }
 

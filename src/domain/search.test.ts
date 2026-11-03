@@ -68,3 +68,14 @@ describe('поиск по основе слова', () => {
     expect(stem('вход')).toBe('вход');
   });
 });
+
+describe('основа слова — только в названии', () => {
+  const base = viewOf(seed as unknown as Dataset).issues[0];
+  it('«пароль» находит «пароля» в названии, но не перебивает экраны совпадением в описании', () => {
+    if (!base) throw new Error('нет задач');
+    const issue = { ...base, title: 'Форма смены пароля', description: 'за прошлых периодов' };
+    expect(scoreIssue(issue, 'DEMO-1', 'пароль')).toBeGreaterThan(0);
+    expect(scoreIssue(issue, 'DEMO-1', 'Прошлые')).toBe(0);
+    expect(scoreIssue(issue, 'DEMO-1', 'прошлых')).toBe(20);
+  });
+});
