@@ -48,7 +48,7 @@ export function SprintReportPage() {
       const blob = await buildReportXlsx(reportSheets(report, { authors, issueKeys: keys }));
       saveBlob(blob, `report-${project.key}-${sprint.start}.xlsx`);
     } catch {
-      push('Не удалось создать Excel-файл');
+      push('Не удалось создать Excel-файл', 'error');
     } finally {
       setBusy(false);
     }

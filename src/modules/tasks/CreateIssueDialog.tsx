@@ -27,12 +27,15 @@ interface Props {
 /** Окно «Создать задачу» (wireframes.md, раздел 9). Монтируется только пока открыто. */
 export function CreateIssueDialog({ projectId, projectKey }: Props) {
   const { open, preset, hide } = useCreateDialog();
-  const view = useView(projectId);
+  // «+ Создать» в блоке проекта создаёт задачу в этом проекте, а не в проекте из адреса (D-3)
+  const targetId = preset.projectId ?? projectId;
+  const view = useView(targetId);
   if (!open) return null;
+  const key = view?.project.key ?? projectKey;
   return (
-    <Dialog title="Создать" onClose={hide}>
+    <Dialog title={`Создать в ${key}`} onClose={hide}>
       {view ? (
-        <CreateForm view={view} projectKey={projectKey} preset={preset} onClose={hide} />
+        <CreateForm view={view} projectKey={key} preset={preset} onClose={hide} />
       ) : (
         <Loading />
       )}

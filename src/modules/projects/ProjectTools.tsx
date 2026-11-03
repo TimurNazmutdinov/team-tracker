@@ -130,7 +130,7 @@ function TemplateForm({
     if (result.ok) {
       push('Шаблон удалён');
       onDone(null);
-    } else push(Object.values(result.errors).join('. '));
+    } else push(Object.values(result.errors).join('. '), 'error');
   };
 
   return (

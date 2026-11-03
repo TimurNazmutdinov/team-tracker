@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import type { IssueType } from '../domain/schema';
 
 export interface CreatePreset {
+  /** Проект, в котором создаётся задача; без него — проект из адреса страницы. */
+  projectId?: string;
   type?: IssueType;
   parentId?: string;
   sprintId?: string;

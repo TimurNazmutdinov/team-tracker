@@ -130,7 +130,7 @@ export function Accounts() {
       push('Роль изменена');
       await queryClient.invalidateQueries();
     },
-    onError: (e) => push(message(e, 'Не удалось изменить роль')),
+    onError: (e) => push(message(e, 'Не удалось изменить роль'), 'error'),
   });
   const reset = useMutation({
     mutationFn: ({ id, password }: { id: string; name: string; password: string }) =>
@@ -139,7 +139,7 @@ export function Accounts() {
       setIssued({ who: vars.name, password: vars.password });
       await queryClient.invalidateQueries();
     },
-    onError: (e) => push(message(e, 'Не удалось выдать пароль')),
+    onError: (e) => push(message(e, 'Не удалось выдать пароль'), 'error'),
   });
   const manage = me !== null && can(roles, me.role, 'users.manage');
 

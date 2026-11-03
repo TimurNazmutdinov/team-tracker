@@ -26,7 +26,7 @@ export function ProjectMembers({ view }: { view: View }) {
   const candidates = view.people.filter((p) => !taken.has(p.id));
 
   const report = (result: Awaited<ReturnType<typeof actions.addMember>>) => {
-    if (!result.ok) push(Object.values(result.errors).join('. '));
+    if (!result.ok) push(Object.values(result.errors).join('. '), 'error');
     return result.ok;
   };
 

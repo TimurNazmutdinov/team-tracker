@@ -80,7 +80,7 @@ export function AboutPage() {
     try {
       await downloadDiagnostics();
     } catch (e) {
-      push(e instanceof Error ? e.message : 'Не удалось собрать диагностику');
+      push(e instanceof Error ? e.message : 'Не удалось собрать диагностику', 'error');
     } finally {
       setBusy(false);
     }

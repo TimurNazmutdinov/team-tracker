@@ -118,14 +118,14 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
   const counts = Object.fromEntries(BOARD_COLUMNS.map((c) => [c, unfiltered[c].count]));
   const warnWip = (status: string, adding: number) => {
     const over = wipAfterMove(project, counts, status, adding);
-    if (over) push(wipMessage(over));
+    if (over) push(wipMessage(over), 'warn');
   };
 
   const changeStatus = async (issueId: string, status: Status) => {
     const before = view.issues.find((i) => i.id === issueId);
     if (before && !(await dod.ask(project, [before], status, project.key))) return;
     const result = await actions.updateIssue(issueId, { status });
-    if (!result.ok) push(Object.values(result.errors).join('. '));
+    if (!result.ok) push(Object.values(result.errors).join('. '), 'error');
     else if (before && before.status !== status) warnWip(status, 1);
   };
 
@@ -162,7 +162,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
     const own = lanes.find((l) => l.issues.some((i) => i.id === issueId));
     if (!own) return;
     if (own.key !== laneKey) {
-      push('Карточку можно переносить только по колонкам своей группы.');
+      push('Карточку можно переносить только по колонкам своей группы.', 'warn');
       return;
     }
     const issue = view.issues.find((i) => i.id === issueId);

@@ -642,7 +642,8 @@ function ProjectPlanning({
   const canEdit = perms.can('backlog.rank');
   const canMove = perms.can('sprint.items');
 
-  const report = (errors: Record<string, string>) => push(Object.values(errors).join('. '));
+  const report = (errors: Record<string, string>) =>
+    push(Object.values(errors).join('. '), 'error');
 
   const onDragEnd = async (e: DragEndEvent) => {
     setActiveId(null);
@@ -737,20 +738,41 @@ function ProjectPlanning({
       )}
       {!view ? (
         <Loading />
-      ) : view.issues.length === 0 ? (
+      ) : view.issues.length === 0 && sprints.length === 0 ? (
         <div className="empty">
           <p>
             В проекте пока нет задач.
             {perms.can('issue.create') ? ' Создайте первый элемент: задачу, эпик и др.' : ''}
           </p>
           {perms.can('issue.create') && (
-            <button type="button" className="primary" onClick={() => showCreate()}>
+            <button
+              type="button"
+              className="primary"
+              onClick={() => showCreate({ projectId: project.id })}
+            >
               + Создать
             </button>
           )}
         </div>
       ) : (
         <>
+          {view.issues.length === 0 && (
+            <p className="muted">
+              В проекте пока нет задач.
+              {perms.can('issue.create') && (
+                <>
+                  {' '}
+                  <button
+                    type="button"
+                    className="link"
+                    onClick={() => showCreate({ projectId: project.id })}
+                  >
+                    + Создать первый элемент
+                  </button>
+                </>
+              )}
+            </p>
+          )}
           {selectedCount > 0 && view && (
             <BulkBar
               count={selectedCount}

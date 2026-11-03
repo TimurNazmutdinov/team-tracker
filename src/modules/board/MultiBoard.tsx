@@ -118,7 +118,7 @@ export function MultiBoard({
     )
       return;
     const result = await actionsFor(projectId).updateIssue(issueId, { status });
-    if (!result.ok) push(Object.values(result.errors).join('. '));
+    if (!result.ok) push(Object.values(result.errors).join('. '), 'error');
   };
 
   const onDragEnd = (e: DragEndEvent) => {
@@ -129,7 +129,7 @@ export function MultiBoard({
     const own = lanes.find((l) => l.lane.issues.some((i) => i.id === issueId));
     if (!own) return;
     if (own.view.projectId !== projectId) {
-      push('Карточку можно переносить только по колонкам своего проекта.');
+      push('Карточку можно переносить только по колонкам своего проекта.', 'warn');
       return;
     }
     const issue = own.lane.issues.find((i) => i.id === issueId);

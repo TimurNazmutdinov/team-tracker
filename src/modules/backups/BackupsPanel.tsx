@@ -130,7 +130,7 @@ export function BackupsPanel() {
           : `Копия не создана: ${s.last?.message ?? 'ошибка'}`,
       );
     },
-    onError: (e) => push(message(e, 'Не удалось сделать копию')),
+    onError: (e) => push(message(e, 'Не удалось сделать копию'), 'error'),
   });
   const save = useMutation({
     mutationFn: (d: string) => backupsClient.setDir(d),
@@ -148,7 +148,7 @@ export function BackupsPanel() {
   });
   const excel = useMutation({
     mutationFn: backupsClient.downloadExcel,
-    onError: (e) => push(message(e, 'Не удалось скачать Excel')),
+    onError: (e) => push(message(e, 'Не удалось скачать Excel'), 'error'),
   });
 
   const s = status.data;
