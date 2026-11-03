@@ -6,6 +6,7 @@ import {
   closeSprint,
   closeSummary,
   createSprint,
+  createSprintSeries,
   startSprint,
   updateSprint,
   type SprintInput,
@@ -248,5 +249,25 @@ describe('closeSprint', () => {
     const next = applied(ds, closeSprint(viewOf(ds), 's2', { kind: 'backlog' }, 'u1', ctx()));
     expect(next.history.length).toBe(ds.history.length);
     expect(next.sprints.find((s) => s.id === 's2')?.state).toBe('closed');
+  });
+});
+
+describe('createSprintSeries (D-6)', () => {
+  it('несколько спринтов подряд по настройкам проекта', () => {
+    const r = createSprintSeries(viewOf(base), 3, '2026-11-03', testCtx());
+    if (!r.ok) throw new Error(JSON.stringify(r.errors));
+    const sprints = r.changes.sprints ?? [];
+    expect(sprints).toHaveLength(3);
+    for (let k = 1; k < sprints.length; k++) {
+      expect((sprints[k]?.start ?? '') > (sprints[k - 1]?.end ?? '')).toBe(true);
+    }
+    expect(new Set(sprints.map((x: { name: string }) => x.name)).size).toBe(3);
+    expect(r.changes.projects?.[0]?.nextSprintNumber).toBeGreaterThan(
+      base.projects[0]?.nextSprintNumber ?? 0,
+    );
+  });
+  it('от 1 до 12', () => {
+    expect(createSprintSeries(viewOf(base), 0, '2026-11-03', testCtx()).ok).toBe(false);
+    expect(createSprintSeries(viewOf(base), 13, '2026-11-03', testCtx()).ok).toBe(false);
   });
 });

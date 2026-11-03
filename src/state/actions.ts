@@ -4,7 +4,7 @@ import { useStorage } from '../app/storage-context';
 import {
   addComment,
   addLink,
-  createIssue,
+  createIssueWithLinks,
   createProject,
   moveIssue,
   removeLink,
@@ -12,6 +12,7 @@ import {
   type Ctx,
   type IssuePatch,
   type NewIssueInput,
+  type NewLink,
   type Result,
   type View,
 } from '../domain/actions';
@@ -39,6 +40,7 @@ import { updateSprintSettings, type SprintSettings } from '../domain/settings';
 import {
   closeSprint,
   createSprint,
+  createSprintSeries,
   startSprint,
   updateSprint,
   type CloseTarget,
@@ -123,7 +125,8 @@ function makeActions(
     }
   };
   return {
-    createIssue: (input: NewIssueInput) => run((v, a) => createIssue(v, input, a, browserCtx)),
+    createIssue: (input: NewIssueInput, links: NewLink[] = []) =>
+      run((v, a) => createIssueWithLinks(v, input, links, a, browserCtx)),
     updateIssue: (id: string, patch: IssuePatch) =>
       run((v, a) => updateIssue(v, id, patch, a, browserCtx)),
     moveIssue: (id: string, target: { sprintId: string | null; index: number }) =>
@@ -131,6 +134,8 @@ function makeActions(
     addLink: (fromId: string, toId: string, type: LinkType) =>
       run((v) => addLink(v, fromId, toId, type, browserCtx)),
     createSprint: (input: SprintInput) => run((v) => createSprint(v, input, browserCtx)),
+    createSprintSeries: (count: number) =>
+      run((v) => createSprintSeries(v, count, new Date().toISOString().slice(0, 10), browserCtx)),
     updateSprint: (id: string, patch: Partial<SprintInput>) =>
       run((v) => updateSprint(v, id, patch, browserCtx)),
     startSprint: (id: string) => run((v) => startSprint(v, id)),

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import seed from '../../data/seed.json';
-import { SEARCH_LIMIT, scoreIssue, searchIssues } from './search';
+import { SEARCH_LIMIT, scoreIssue, searchIssues, stem } from './search';
 import type { Dataset } from './schema';
 import { viewOf } from './testing';
 
@@ -58,5 +58,13 @@ describe('поиск задач', () => {
     };
     const hits = searchIssues([view, other], 'SHOP-1');
     expect(hits[0]?.project.key).toBe('SHOP');
+  });
+});
+
+describe('поиск по основе слова', () => {
+  it('«пароль» находит «пароля», «заказы» — «заказов»', () => {
+    expect(stem('пароль')).toBe('парол');
+    expect(stem('заказы')).toBe('заказ');
+    expect(stem('вход')).toBe('вход');
   });
 });

@@ -1,7 +1,7 @@
 import type { Ctx, FieldErrors, Result, View } from './actions';
 import type { Changes } from './changes';
 import type { History, Issue, Sprint } from './schema';
-import { projectAfterSprint } from './settings';
+import { nextSprintDefaults, projectAfterSprint } from './settings';
 
 // Спринты (F-08, F-09): создание, правка, запуск и закрытие с переносом незавершённого.
 // Правила: ADR-003 (п. 2, 4, 8, 9), ADR-008. Чистые функции: данные на входе, изменения на выходе.
@@ -79,6 +79,37 @@ export function createSprint(view: View, input: SprintInput, ctx: Ctx): Result {
   if (Object.keys(errors).length > 0) return fail(errors);
   const sprint = newSprint(view, input, ctx);
   return { ok: true, changes: { sprints: [sprint], ...projectChange(view, sprint) } };
+}
+
+/** Сколько спринтов можно создать одним действием «+ Несколько спринтов…». */
+export const SERIES_MAX = 12;
+
+/**
+ * Несколько будущих спринтов подряд одним набором изменений (D-6): названия и даты берутся из
+ * настроек проекта так же, как у «+ Новый спринт», каждый следующий начинается после предыдущего.
+ */
+export function createSprintSeries(view: View, count: number, today: string, ctx: Ctx): Result {
+  if (!Number.isInteger(count) || count < 1 || count > SERIES_MAX)
+    return fail({ count: `Сколько спринтов: от 1 до ${SERIES_MAX}` });
+  let current = view;
+  const sprints: Sprint[] = [];
+  for (let k = 0; k < count; k++) {
+    const r = createSprint(current, nextSprintDefaults(current, today), ctx);
+    if (!r.ok) return r;
+    const sprint = r.changes.sprints?.[0];
+    if (!sprint) return fail({ form: 'Не удалось подготовить спринт' });
+    sprints.push(sprint);
+    current = {
+      ...current,
+      project: r.changes.projects?.[0] ?? current.project,
+      sprints: [...current.sprints, sprint],
+    };
+  }
+  const projectChanged = JSON.stringify(current.project) !== JSON.stringify(view.project);
+  return {
+    ok: true,
+    changes: { sprints, ...(projectChanged ? { projects: [current.project] } : {}) },
+  };
 }
 
 /** Правка названия, цели и дат; закрытый спринт только для чтения. */

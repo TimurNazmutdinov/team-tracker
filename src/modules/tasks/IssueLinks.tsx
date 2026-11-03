@@ -23,7 +23,7 @@ export function IssueLinks({
   projectKey: string;
 }) {
   const actions = useActions(view.projectId);
-  const [type, setType] = useState<LinkType>('blocks');
+  const [type, setType] = useState<LinkType | 'depends'>('blocks');
   const [toId, setToId] = useState('');
   const [errors, setErrors] = useState<FieldErrors>({});
   const links = view.links.filter((l) => l.fromId === issue.id || l.toId === issue.id);
@@ -34,7 +34,11 @@ export function IssueLinks({
     .filter((i): i is Issue => i !== undefined && i.status !== 'Done');
 
   const add = async () => {
-    const result = await actions.addLink(issue.id, toId, type);
+    // «зависит от» — та же «блокирует», только от выбранной задачи к этой (D-10)
+    const result =
+      type === 'depends'
+        ? await actions.addLink(toId, issue.id, 'blocks')
+        : await actions.addLink(issue.id, toId, type);
     setErrors(result.ok ? {} : result.errors);
     if (result.ok) setToId('');
   };
@@ -79,8 +83,15 @@ export function IssueLinks({
           name="linkType"
           label="Тип связи"
           value={type}
-          options={LINK_TYPES.map((t) => ({ value: t, label: NAMES[t][0] }))}
-          onChange={(v) => setType(v as LinkType)}
+          options={[
+            { value: 'blocks', label: NAMES.blocks[0] },
+            { value: 'depends', label: 'зависит от' },
+            ...LINK_TYPES.filter((t) => t !== 'blocks').map((t) => ({
+              value: t,
+              label: NAMES[t][0],
+            })),
+          ]}
+          onChange={(v) => setType(v as LinkType | 'depends')}
           error={errors.type}
         />
         <SelectField

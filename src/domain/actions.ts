@@ -457,6 +457,46 @@ export function addLink(
   return ok({ links: [{ id: ctx.newId(), fromId, toId, type }] });
 }
 
+/** Связь в окне «Создать»: «зависит от» — та же «блокирует», только в обратную сторону (D-10). */
+export type NewLinkKind = LinkType | 'depends';
+
+export interface NewLink {
+  kind: NewLinkKind;
+  /** Другая задача того же проекта. */
+  issueId: string;
+}
+
+/**
+ * Создание задачи сразу со связями одним набором изменений (D-3): либо задача и все её связи, либо
+ * ничего. Ошибки связей возвращаются в поле `links`.
+ */
+export function createIssueWithLinks(
+  view: View,
+  input: NewIssueInput,
+  links: NewLink[],
+  authorId: string,
+  ctx: Ctx,
+): Result {
+  const created = createIssue(view, input, authorId, ctx);
+  if (!created.ok || links.length === 0) return created;
+  const issue = created.changes.issues?.[0];
+  if (!issue) return created;
+  let next: View = { ...view, issues: [...view.issues, issue] };
+  const added: Link[] = [];
+  for (const link of links) {
+    const [fromId, toId, type]: [string, string, LinkType] =
+      link.kind === 'depends'
+        ? [link.issueId, issue.id, 'blocks']
+        : [issue.id, link.issueId, link.kind];
+    const r = addLink(next, fromId, toId, type, ctx);
+    if (!r.ok) return fail({ links: Object.values(r.errors).join('. ') });
+    const made = r.changes.links ?? [];
+    added.push(...made);
+    next = { ...next, links: [...next.links, ...made] };
+  }
+  return ok({ ...created.changes, links: added });
+}
+
 export function removeLink(view: View, linkId: string): Result {
   if (!view.links.some((l) => l.id === linkId)) return fail({ form: 'Связь не найдена' });
   return ok({ deleteLinkIds: [linkId] });

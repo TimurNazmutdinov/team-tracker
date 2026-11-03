@@ -72,12 +72,17 @@ test('Markdown: разметка показывается, HTML не выпол�
   await audit('карточка с Markdown');
 });
 
-test('шаблон «Баг» подставляет тип и текст при создании задачи', async () => {
+test('шаблон «Баг» подставляет текст при создании бага', async () => {
   await page.goto('/projects/DEMO/backlog');
   await page.getByRole('button', { name: '+ Создать', exact: true }).first().click();
   const dialog = page.getByRole('dialog');
-  await dialog.getByLabel('Шаблон').selectOption({ label: 'Баг (Bug)' });
-  await expect(dialog.getByLabel('Тип')).toHaveValue('Bug');
+  // тип выбирается кнопкой, шаблоны показываются только для выбранного типа (D-3)
+  await dialog.getByRole('radio', { name: 'Bug', exact: true }).click();
+  await expect(dialog.getByRole('radio', { name: 'Bug', exact: true })).toHaveAttribute(
+    'aria-checked',
+    'true',
+  );
+  await dialog.getByLabel('Шаблон для Bug').selectOption({ label: 'Баг' });
   await expect(dialog.getByRole('textbox', { name: 'Описание' })).toHaveValue(
     /Шаги воспроизведения/,
   );

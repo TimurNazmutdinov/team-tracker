@@ -17,6 +17,14 @@ export const SEARCH_LIMIT = 8;
 const norm = (s: string) => s.toLowerCase().replace(/ё/g, 'е');
 
 /**
+ * Основа слова для поиска по-русски: у слов от пяти букв отбрасывается гласная окончания или ь/й,
+ * чтобы «пароль» находил «пароля», а «заказы» — «заказов».
+ */
+export function stem(word: string): string {
+  return word.length >= 5 && /[аеиоуыэюяйь]$/.test(word) ? word.slice(0, -1) : word;
+}
+
+/**
  * Оценка совпадения: 100 — ключ целиком (DEMO-12), 90 — только номер (12), 80 — начало ключа или
  * номера, 60 — начало слова в названии, 40 — вхождение в название, 20 — вхождение в описание.
  * 0 — не подходит. Все слова запроса должны совпасть хотя бы в названии или описании.
@@ -32,7 +40,7 @@ export function scoreIssue(issue: Issue, key: string, query: string): number {
 
   const title = norm(issue.title);
   const text = `${title} ${norm(issue.description)}`;
-  const words = q.split(/\s+/).filter(Boolean);
+  const words = q.split(/\s+/).filter(Boolean).map(stem);
   if (!words.every((w) => text.includes(w) || k.includes(w))) return 0;
   const startsWord = words.every((w) =>
     title.split(/[\s\-_/.,:;()]+/).some((t) => t.startsWith(w)),

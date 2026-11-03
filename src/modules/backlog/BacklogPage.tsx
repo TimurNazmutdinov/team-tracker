@@ -66,6 +66,8 @@ import { dateRange, num, taskWord } from '../../ui/format';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
 import { FillIndicator } from '../planning/FillIndicator';
+import { SprintSeriesDialog } from '../planning/SprintSeriesDialog';
+import { SprintFormDialog } from '../sprints/SprintFormDialog';
 import {
   Avatar,
   EpicProgressView,
@@ -339,6 +341,8 @@ interface SectionProps {
   selected: Set<string>;
   onSelect: (issueId: string, on: boolean) => void;
   onEdit: RowProps['onEdit'];
+  /** Правка названия, цели и дат спринта (✎ в шапке); нет — правка недоступна. */
+  onEditSprint?: ((sprint: Sprint) => void) | undefined;
 }
 
 function Section({
@@ -355,9 +359,19 @@ function Section({
   selected,
   onSelect,
   onEdit,
+  onEditSprint,
 }: SectionProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [collapsedEpics, setCollapsedEpics] = useState<Set<string>>(new Set());
+  // задачи эпика из других списков скрыты, пока их не раскроют (решение 4, rework.md)
+  const [shownOutside, setShownOutside] = useState<Set<string>>(new Set());
+  const toggleOutside = (id: string) =>
+    setShownOutside((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   const droppable = useDroppable({ id: containerId(sprint?.id ?? null) });
   const points = totalPoints(all);
   // ёмкость этого спринта: velocity с поправкой на доступность людей (ADR-018)
@@ -375,6 +389,12 @@ function Section({
   const locationOf = (issue: Issue) => {
     const s = view.sprints.find((x) => x.id === issue.sprintId);
     return s ? `в ${s.name}` : 'в бэклоге';
+  };
+  /** «в Спринт 1 — 6, в бэклоге — 1» */
+  const outsideSummary = (kids: Issue[]) => {
+    const counts = new Map<string, number>();
+    for (const kid of kids) counts.set(locationOf(kid), (counts.get(locationOf(kid)) ?? 0) + 1);
+    return [...counts.entries()].map(([where, n]) => `${where} — ${n}`).join(', ');
   };
   const toggleEpic = (id: string) =>
     setCollapsedEpics((prev) => {
@@ -400,6 +420,17 @@ function Section({
             <>
               <span className={`chip state-${sprint.state}`}>{STATE_LABEL[sprint.state]}</span>
               <span className="muted">{dateRange(sprint.start, sprint.end)}</span>
+              {onEditSprint && (
+                <button
+                  type="button"
+                  className="plain"
+                  aria-label={`Изменить ${sprint.name}`}
+                  title="Изменить название, цель и даты"
+                  onClick={() => onEditSprint(sprint)}
+                >
+                  ✎
+                </button>
+              )}
             </>
           ) : (
             <span className="muted">
@@ -460,7 +491,22 @@ function Section({
                         }
                       : {})}
                   />
+                  {!folded && outside.length > 0 && (
+                    <li className="outside-toggle">
+                      <button
+                        type="button"
+                        className="link"
+                        aria-expanded={shownOutside.has(issue.id)}
+                        onClick={() => toggleOutside(issue.id)}
+                      >
+                        {shownOutside.has(issue.id) ? '▾' : '▸'} ещё {outside.length}{' '}
+                        {taskWord(outside.length)} {issue.type === 'Epic' ? 'эпика' : 'под-эпика'}:{' '}
+                        {outsideSummary(outside)}
+                      </button>
+                    </li>
+                  )}
                   {!folded &&
+                    shownOutside.has(issue.id) &&
                     outside.map((kid) => (
                       <IssueRow
                         key={kid.id}
@@ -647,6 +693,11 @@ function ProjectPlanning({
   );
   const canEdit = perms.can('backlog.rank');
   const canMove = perms.can('sprint.items');
+  const canManageSprints = perms.can('sprint.manage');
+  // окна спринтов: новый, правка, несколько подряд (D-6)
+  const [sprintDialog, setSprintDialog] = useState<
+    { mode: 'new' } | { mode: 'edit'; sprint: Sprint } | { mode: 'series' } | null
+  >(null);
 
   const report = (errors: Record<string, string>) =>
     push(Object.values(errors).join('. '), 'error');
@@ -736,11 +787,52 @@ function ProjectPlanning({
       aria-label={multi ? `Проект ${project.key}` : 'Планирование'}
     >
       {dod.dialog}
-      {multi && (
-        <h2 className="project-heading">
-          <span className="chip project-tag">{project.key}</span>{' '}
-          <Link to={`/projects/${project.key}/board?projects=${project.key}`}>{project.name}</Link>
-        </h2>
+      <div className="planning-project-head">
+        {multi && (
+          <h2 className="project-heading">
+            <span className="chip project-tag">{project.key}</span>{' '}
+            <Link to={`/projects/${project.key}/board?projects=${project.key}`}>
+              {project.name}
+            </Link>
+          </h2>
+        )}
+        <span className="spacer" />
+        {view && canManageSprints && (
+          <>
+            <button
+              type="button"
+              title="Новый спринт: название и даты подставятся из настроек проекта"
+              onClick={() => setSprintDialog({ mode: 'new' })}
+            >
+              + Спринт
+            </button>
+            <button
+              type="button"
+              title="Создать сразу несколько будущих спринтов подряд"
+              onClick={() => setSprintDialog({ mode: 'series' })}
+            >
+              + Несколько спринтов…
+            </button>
+          </>
+        )}
+        {multi && perms.can('issue.create') && (
+          <button type="button" onClick={() => showCreate({ projectId: project.id })}>
+            + Создать в {project.key}
+          </button>
+        )}
+      </div>
+      {view && sprintDialog?.mode === 'new' && (
+        <SprintFormDialog view={view} onClose={() => setSprintDialog(null)} />
+      )}
+      {view && sprintDialog?.mode === 'edit' && (
+        <SprintFormDialog
+          view={view}
+          sprint={sprintDialog.sprint}
+          onClose={() => setSprintDialog(null)}
+        />
+      )}
+      {view && sprintDialog?.mode === 'series' && (
+        <SprintSeriesDialog view={view} onClose={() => setSprintDialog(null)} />
       )}
       {!view ? (
         <Loading />
@@ -814,6 +906,11 @@ function ProjectPlanning({
                 selected={selected}
                 onSelect={select}
                 onEdit={(id, patch) => void edit(id, patch)}
+                onEditSprint={
+                  canManageSprints
+                    ? (sprint) => setSprintDialog({ mode: 'edit', sprint })
+                    : undefined
+                }
               />
             ))}
             <Section
@@ -846,8 +943,10 @@ function ProjectPlanning({
       )}
       {view && view.issues.length > 0 && !view.sprints.some((s) => s.state !== 'closed') && (
         <p className="warn">
-          Нет спринтов для планирования. Создайте спринт на экране{' '}
-          <Link to={`/projects/${project.key}/sprints`}>«Спринты»</Link>.
+          Нет спринтов для планирования.{' '}
+          {canManageSprints
+            ? 'Нажмите «+ Спринт» или «+ Несколько спринтов…».'
+            : 'Спринты создаёт тимлид или администратор.'}
         </p>
       )}
     </section>

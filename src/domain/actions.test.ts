@@ -5,6 +5,7 @@ import {
   addLink,
   containerItems,
   createIssue,
+  createIssueWithLinks,
   createProject,
   moveIssue,
   parentCandidates,
@@ -392,5 +393,40 @@ describe('links, comments, projects', () => {
     expect(errors(createProject(ds.projects, { key: 'OPS', name: '' }, testCtx())).name).toContain(
       'название',
     );
+  });
+});
+
+describe('createIssueWithLinks (D-3)', () => {
+  it('задача и связи одним набором; «зависит от» — обратная «блокирует»', () => {
+    const r = createIssueWithLinks(
+      viewOf(ds),
+      baseInput,
+      [
+        { kind: 'blocks', issueId: 'i10' },
+        { kind: 'depends', issueId: 'i9' },
+        { kind: 'relates', issueId: 'i8' },
+      ],
+      'u1',
+      testCtx(),
+    );
+    const next = applied(ds, r);
+    const created = next.issues.find((i) => i.title === 'Новая задача');
+    const id = must(created).id;
+    const links = next.links.filter((l) => l.fromId === id || l.toId === id);
+    expect(links.map((l) => [l.type, l.fromId === id ? 'out' : 'in'])).toEqual([
+      ['blocks', 'out'],
+      ['blocks', 'in'],
+      ['relates', 'out'],
+    ]);
+  });
+  it('ошибка связи — ничего не создаётся', () => {
+    const r = createIssueWithLinks(
+      viewOf(ds),
+      baseInput,
+      [{ kind: 'blocks', issueId: 'нет-такой' }],
+      'u1',
+      testCtx(),
+    );
+    expect(errors(r).links).toContain('Выберите задачу');
   });
 });

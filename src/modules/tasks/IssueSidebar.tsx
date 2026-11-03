@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { labelStats } from '../../domain/labels';
+import { LabelsInput } from '../../ui/LabelsInput';
 import { parentCandidates, type FieldErrors, type View } from '../../domain/actions';
 import { canHavePoints } from '../../domain/hierarchy';
 import type { Issue, Priority, Status } from '../../domain/schema';
@@ -29,7 +31,6 @@ export function IssueSidebar({
   const dod = useDodGate();
   const [errors, setErrors] = useState<FieldErrors>({});
   const [points, setPoints] = useState(issue.points === null ? '' : String(issue.points));
-  const [labels, setLabels] = useState(issue.labels.join(', '));
   const [dueDate, setDueDate] = useState(issue.dueDate ?? '');
 
   const apply = async (patch: Parameters<typeof actions.updateIssue>[1]) => {
@@ -147,16 +148,13 @@ export function IssueSidebar({
           error={errors.parentId}
         />
       )}
-      <TextField
-        name="labels"
+      <LabelsInput
         label="Метки"
-        hint="Через запятую"
-        value={labels}
+        hint="Enter или запятая — добавить"
+        value={issue.labels}
         disabled={readOnly || !perms.can('issue.edit')}
-        onChange={setLabels}
-        onBlur={() => {
-          if (labels !== issue.labels.join(', ')) void apply({ labels: labels.split(',') });
-        }}
+        stats={labelStats(view.issues)}
+        onChange={(next) => void apply({ labels: next })}
       />
       <TextField
         name="dueDate"

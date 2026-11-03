@@ -2563,3 +2563,152 @@ a.button {
   padding: 0.4rem 0;
   border-bottom: 1px solid var(--line);
 }
+
+/* Окно «Создать» (wireframes.md, 27.4; D-3) */
+.dialog:has(.create-form) {
+  width: min(52rem, 96vw);
+}
+.create-form .type-field {
+  grid-column: span 1;
+}
+.type-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.type-buttons button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.55rem;
+}
+.type-buttons button.selected {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0 1rem;
+}
+.chips-input {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 2.3rem;
+  padding: 0.2rem 0.4rem;
+  border: 1px solid var(--control-line);
+  border-radius: 6px;
+  background: var(--bg);
+}
+.chips-input:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.chips-input input {
+  flex: 1;
+  min-width: 8rem;
+  border: 0;
+  outline: none;
+  background: transparent;
+  padding: 0.25rem 0.2rem;
+}
+.label-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+.label-chip button.plain {
+  padding: 0 0.15rem;
+  line-height: 1;
+}
+.labels-field,
+.issue-picker {
+  position: relative;
+}
+.suggest-list {
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  right: 0;
+  margin: 0.15rem 0 0;
+  padding: 0.25rem;
+  list-style: none;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: 0 6px 18px var(--shadow);
+  max-height: 14rem;
+  overflow: auto;
+}
+.suggest-list button {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: none;
+  padding: 0.3rem 0.4rem;
+}
+.suggest-list button:hover,
+.suggest-list button:focus-visible {
+  background: var(--accent-bg);
+}
+.issue-picker .picked {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.3rem;
+}
+.links-fieldset {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.4rem 0.75rem 0.6rem;
+  margin: 0.5rem 0;
+}
+.links-fieldset legend {
+  font-weight: 700;
+  padding: 0 0.3rem;
+}
+.link-draft {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr) auto;
+  gap: 0 0.75rem;
+  align-items: end;
+}
+.create-form .dialog-actions {
+  justify-content: flex-start;
+  align-items: center;
+}
+.create-form .dialog-actions .check {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* Планирование: действия проекта и задачи эпика из других спринтов (D-6, решение 4) */
+.planning-project-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0.5rem;
+}
+.planning-project-head .project-heading {
+  margin: 0;
+}
+.outside-toggle {
+  list-style: none;
+  padding: 0.2rem 0 0.35rem 2.6rem;
+  font-size: 0.9rem;
+}
+.series-preview li {
+  padding: 0.1rem 0;
+}
