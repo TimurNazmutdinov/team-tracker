@@ -37,15 +37,16 @@ const input = {
 };
 
 describe('шаблоны по умолчанию', () => {
-  it('«Баг», «Story» и «Задача» с нужными разделами', () => {
+  it('«Эпик», «Баг» и «Задача» с нужными разделами', () => {
     const names = DEFAULT_TEMPLATE_INPUTS.map((t) => t.name);
-    expect(names).toEqual(['Баг', 'Story', 'Задача']);
-    const bug = DEFAULT_TEMPLATE_INPUTS[0];
+    expect(names).toEqual(['Эпик', 'Баг', 'Задача']);
+    const bug = DEFAULT_TEMPLATE_INPUTS[1];
     for (const part of ['Шаги воспроизведения', 'Ожидалось', 'Получилось', 'Окружение'])
       expect(bug?.description).toContain(part);
-    const story = DEFAULT_TEMPLATE_INPUTS[1];
-    for (const part of ['Контекст', 'Цель']) expect(story?.description).toContain(part);
-    expect(story?.acceptance).toContain('- [ ]');
+    const epic = DEFAULT_TEMPLATE_INPUTS[0];
+    expect(epic?.type).toBe('Epic');
+    for (const part of ['Цель', 'Границы']) expect(epic?.description).toContain(part);
+    expect(epic?.acceptance).toContain('- [ ]');
   });
 
   it('новый проект получает шаблоны', () => {
@@ -58,7 +59,7 @@ describe('шаблоны по умолчанию', () => {
   });
 
   it('seed: у демо-проекта три шаблона', () => {
-    expect(templatesOf(view()).map((t) => t.name)).toEqual(['Баг', 'Story', 'Задача']);
+    expect(templatesOf(view()).map((t) => t.name)).toEqual(['Эпик', 'Баг', 'Задача']);
   });
 });
 
@@ -76,9 +77,11 @@ describe('создание, правка и удаление', () => {
     expect(errors(createTemplate(v, { ...input, name: 'баг' }, testCtx())).name).toContain(
       'уже есть',
     );
-    expect(errors(createTemplate(v, { ...input, type: 'Epic' }, testCtx())).type).toContain(
-      'Выберите',
-    );
+    // шаблон эпика разрешён (ADR-024); неизвестный тип — нет
+    expect(createTemplate(v, { ...input, name: 'Эпик 2', type: 'Epic' }, testCtx()).ok).toBe(true);
+    expect(
+      errors(createTemplate(v, { ...input, type: 'Story' as never }, testCtx())).type,
+    ).toContain('Выберите');
     expect(
       errors(createTemplate(v, { ...input, description: 'я'.repeat(10_001) }, testCtx()))
         .description,

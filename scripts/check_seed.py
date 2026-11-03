@@ -2,7 +2,7 @@
 """Проверяет data/seed.json: ссылки, иерархию, points, спринты и историю.
 
 Правила: ADR-003 (docs/adr/003-business-rules.md), в первую очередь
-- п. 6: Epic -> Story | Task | Bug -> Sub-task; points только у Story/Task/Bug;
+- п. 6 и ADR-024: Epic -> Sub-epic -> Task | Bug -> Sub-task; points только у Task/Bug;
 - п. 9: Sub-task в том же спринте, что и родитель.
 Запуск: python3 scripts/check_seed.py
 """
@@ -11,7 +11,7 @@ import pathlib
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-TYPES = {"Epic", "Story", "Task", "Bug", "Sub-task"}
+TYPES = {"Epic", "Sub-epic", "Task", "Bug", "Sub-task"}
 STATUSES = ["Backlog", "To Do", "In Progress", "Review", "Done"]
 PRIORITIES = {"Highest", "High", "Medium", "Low"}
 SPRINT_STATES = {"planned", "active", "closed"}
@@ -29,7 +29,7 @@ FIELDS = {
     "created", "status", "assigneeId", "points", "sprintId",
     "title", "description", "acceptance", "priority", "parentId", "labels", "dueDate",
 }
-ESTIMATED = {"Story", "Task", "Bug"}
+ESTIMATED = {"Task", "Bug"}
 
 errors = []
 
@@ -125,7 +125,7 @@ def main():
     for tpl in seed.get("templates", []):
         w = f"template {tpl['id']}"
         ref(tpl["projectId"], "projects", w)
-        if tpl["type"] not in TYPES or tpl["type"] == "Epic":
+        if tpl["type"] not in TYPES:
             err(f"{w}: тип {tpl['type']}")
         if not tpl["name"].strip() or len(tpl["name"]) > 60:
             err(f"{w}: название 1–60 символов")
@@ -207,10 +207,12 @@ def main():
         ptype = parent["type"] if parent else None
         if i["type"] == "Epic" and parent:
             err(f"{w}: у Epic не может быть родителя")
-        if i["type"] in ESTIMATED and ptype not in (None, "Epic"):
-            err(f"{w}: родитель {parent['id']} типа {ptype}; допустим только Epic")
+        if i["type"] == "Sub-epic" and ptype != "Epic":
+            err(f"{w}: Sub-epic вкладывается только в Epic (родитель: {ptype})")
+        if i["type"] in ESTIMATED and ptype not in (None, "Epic", "Sub-epic"):
+            err(f"{w}: родитель {parent['id']} типа {ptype}; допустимы только Epic и Sub-epic")
         if i["type"] == "Sub-task" and ptype not in ESTIMATED:
-            err(f"{w}: Sub-task вкладывается только в Story, Task или Bug (родитель: {ptype})")
+            err(f"{w}: Sub-task вкладывается только в Task или Bug (родитель: {ptype})")
         pts = i["points"]
         if i["type"] in ESTIMATED:
             if pts is not None and (not isinstance(pts, int) or isinstance(pts, bool) or pts < 0):

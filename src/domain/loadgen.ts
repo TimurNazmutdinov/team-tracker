@@ -1,3 +1,4 @@
+import { isContainer } from './hierarchy';
 import { DEFAULT_ROLES } from './roles';
 import type {
   Comment,
@@ -176,7 +177,7 @@ export function generateLoadData(options: Partial<LoadOptions> = {}): Dataset {
     ): Issue => {
       number += 1;
       const id = `i${p + 1}-${number}`;
-      const estimated = type === 'Story' || type === 'Task' || type === 'Bug';
+      const estimated = type === 'Task' || type === 'Bug';
       const issue: Issue = {
         ...base,
         id,
@@ -186,7 +187,7 @@ export function generateLoadData(options: Partial<LoadOptions> = {}): Dataset {
         status,
         priority: pick(PRIORITIES),
         points: estimated && rand() > 0.1 ? pick(POINTS) : null,
-        assigneeId: type === 'Epic' || rand() < 0.15 ? null : someone(),
+        assigneeId: isContainer(type) || rand() < 0.15 ? null : someone(),
         reporterId: someone(),
         parentId,
         sprintId: sprint?.id ?? null,
@@ -222,7 +223,7 @@ export function generateLoadData(options: Partial<LoadOptions> = {}): Dataset {
       epics.push(add('Epic', null, null, pick(['Backlog', 'In Progress'] as Status[])));
     }
     for (let n = 0; n < mainCount; n += 1) {
-      const type: IssueType = pick(['Story', 'Task', 'Bug', 'Task'] as IssueType[]);
+      const type: IssueType = pick(['Task', 'Bug', 'Task'] as IssueType[]);
       const r = rand();
       let sprint: Sprint | null = null;
       let status: Status = 'Backlog';
@@ -247,7 +248,7 @@ export function generateLoadData(options: Partial<LoadOptions> = {}): Dataset {
     }
 
     // Связи и комментарии
-    const mine = issues.filter((i) => i.projectId === projectId && i.type !== 'Epic');
+    const mine = issues.filter((i) => i.projectId === projectId && !isContainer(i.type));
     const seen = new Set<string>();
     for (let n = 0; n < Math.round(perProject * 0.1); n += 1) {
       const from = pick(mine);

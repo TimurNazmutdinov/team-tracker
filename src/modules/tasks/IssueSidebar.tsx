@@ -130,7 +130,13 @@ export function IssueSidebar({
       {issue.type !== 'Epic' && (
         <SelectField
           name="parentId"
-          label={isSub ? 'Родитель' : 'Родитель (Epic)'}
+          label={
+            isSub
+              ? 'Родитель'
+              : issue.type === 'Sub-epic'
+                ? 'Родитель (эпик)'
+                : 'Родитель (эпик или под-эпик)'
+          }
           value={issue.parentId ?? ''}
           disabled={readOnly || !perms.can('issue.edit')}
           options={[

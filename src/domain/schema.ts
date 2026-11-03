@@ -5,7 +5,13 @@ import { DEFAULT_ROLES, roleSchema, type RoleDef } from './roles';
 
 z.config(z.locales.ru());
 
-export const ISSUE_TYPES = ['Epic', 'Story', 'Task', 'Bug', 'Sub-task'] as const;
+/**
+ * Типы задач (ADR-024): Epic → Sub-epic → Task | Bug → Sub-task. Тип Story убран: старые записи
+ * со Story читаются как Task (см. `issueType`), поэтому старые копии и данные открываются без ошибок.
+ */
+export const ISSUE_TYPES = ['Epic', 'Sub-epic', 'Task', 'Bug', 'Sub-task'] as const;
+/** Типы, которые раньше были и теперь читаются как другой тип. */
+export const LEGACY_TYPES: Record<string, (typeof ISSUE_TYPES)[number]> = { Story: 'Task' };
 export const STATUSES = ['Backlog', 'To Do', 'In Progress', 'Review', 'Done'] as const;
 export const PRIORITIES = ['Highest', 'High', 'Medium', 'Low'] as const;
 export const SPRINT_STATES = ['planned', 'active', 'closed'] as const;
@@ -35,6 +41,11 @@ export const HISTORY_FIELDS = [
 
 const id = z.string().min(1);
 const nullableId = id.nullable();
+/** Тип задачи; устаревший Story читается как Task. */
+const issueType = z.preprocess(
+  (v) => (typeof v === 'string' && v in LEGACY_TYPES ? LEGACY_TYPES[v] : v),
+  z.enum(ISSUE_TYPES),
+);
 
 export const projectSchema = z.object({
   id,
@@ -70,7 +81,7 @@ export const templateSchema = z.object({
   id,
   projectId: id,
   name: z.string().min(1).max(60),
-  type: z.enum(ISSUE_TYPES),
+  type: issueType,
   description: z.string().max(10000),
   acceptance: z.string().max(10000),
 });
@@ -117,7 +128,7 @@ export const issueSchema = z.object({
   id,
   projectId: id,
   number: z.number().int().positive(),
-  type: z.enum(ISSUE_TYPES),
+  type: issueType,
   title: z.string().min(1).max(200),
   description: z.string(),
   acceptance: z.string(),

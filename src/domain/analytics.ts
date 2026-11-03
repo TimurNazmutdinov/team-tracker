@@ -1,3 +1,4 @@
+import { isContainer } from './hierarchy';
 import type { View } from './actions';
 import { epicProgress } from './progress';
 import { STATUSES, type History, type Issue, type IssueType, type Status } from './schema';
@@ -106,7 +107,7 @@ export function timedIssues(
   const end = `${to}T23:59:59Z`;
   const out: TimedIssue[] = [];
   for (const issue of issues) {
-    if (issue.type === 'Epic' || issue.status !== 'Done') continue;
+    if (isContainer(issue.type) || issue.status !== 'Done') continue;
     const events = timelines.get(issue.id) ?? [];
     let doneIndex = -1;
     events.forEach((e, i) => {
@@ -203,7 +204,7 @@ export function statsByType(items: TimedIssue[]): TypeStats[] {
     cycle: timeStats(list.flatMap((i) => (i.cycle === null ? [] : [i.cycle]))),
     lead: timeStats(list.map((i) => i.lead)),
   });
-  const types = (['Story', 'Task', 'Bug', 'Sub-task'] as const).filter((t) =>
+  const types = (['Task', 'Bug', 'Sub-task'] as const).filter((t) =>
     items.some((i) => i.type === t),
   );
   return [
@@ -237,7 +238,7 @@ export function workload(views: View[]): Workload {
   for (const view of views) {
     const active = new Set(view.sprints.filter((s) => s.state === 'active').map((s) => s.id));
     for (const issue of view.issues) {
-      if (issue.type === 'Epic' || issue.status === 'Done') continue;
+      if (isContainer(issue.type) || issue.status === 'Done') continue;
       if (issue.sprintId === null || !active.has(issue.sprintId)) continue;
       const person = view.people.find((p) => p.id === issue.assigneeId);
       const key = person ? person.id : null;
@@ -291,7 +292,7 @@ export interface RoadmapEpic {
   end: string | null;
   percent: number;
   status: Status;
-  /** Задачи эпика (Story, Task, Bug) со своими спринтами: раскрываются под эпиком. */
+  /** Задачи эпика (Task, Bug) со своими спринтами: раскрываются под эпиком. */
   tasks: RoadmapTask[];
 }
 

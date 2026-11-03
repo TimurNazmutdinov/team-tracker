@@ -166,11 +166,20 @@ function CreateForm({
       {type !== 'Epic' && (
         <SelectField
           name="parentId"
-          label={isSub ? 'Родитель (Story, Task или Bug)' : 'Родитель (Epic)'}
-          required={isSub}
+          label={
+            isSub
+              ? 'Родитель (Task или Bug)'
+              : type === 'Sub-epic'
+                ? 'Родитель (эпик)'
+                : 'Родитель (эпик или под-эпик)'
+          }
+          required={isSub || type === 'Sub-epic'}
           value={effectiveParent}
           options={[
-            { value: '', label: isSub ? 'Выберите родителя' : 'Без родителя' },
+            {
+              value: '',
+              label: isSub || type === 'Sub-epic' ? 'Выберите родителя' : 'Без родителя',
+            },
             ...candidates.map((i) => ({
               value: i.id,
               label: `${projectKey}-${i.number} ${i.title}`,

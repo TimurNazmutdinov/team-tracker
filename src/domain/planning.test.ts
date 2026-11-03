@@ -115,7 +115,7 @@ describe('фильтры планирования', () => {
     const i = issue(4);
     expect(matchesFilters(i, key(i), f({ label: 'безопасность' }))).toBe(true);
     expect(matchesFilters(i, key(i), f({ label: 'заказы' }))).toBe(false);
-    expect(matchesFilters(i, key(i), f({ type: 'Story' }))).toBe(true);
+    expect(matchesFilters(i, key(i), f({ type: 'Task' }))).toBe(true);
     expect(matchesFilters(i, key(i), f({ type: 'Bug' }))).toBe(false);
   });
 
@@ -188,7 +188,7 @@ describe('hierarchyRows', () => {
     ({ id, type, parentId, order: 0 }) as Issue;
   const epic = mk('e1', 'Epic');
   const a = mk('a', 'Task', 'e1');
-  const b = mk('b', 'Story', 'e1');
+  const b = mk('b', 'Task', 'e1');
   const solo = mk('s', 'Bug');
   const foreign = mk('f', 'Task', 'e-elsewhere');
   const ids = (rows: { issue: Issue; depth: number }[]) =>
@@ -206,5 +206,12 @@ describe('hierarchyRows', () => {
   });
   it('без эпика в списке задача остаётся обычной строкой', () => {
     expect(ids(hierarchyRows([a, b], new Set()))).toEqual(['0a', '0b']);
+  });
+  it('под-эпик вложен в эпик, его задачи — ещё на уровень глубже (ADR-024)', () => {
+    const sub = mk('se', 'Sub-epic', 'e1');
+    const t = mk('t', 'Task', 'se');
+    const rows = hierarchyRows([epic, t, sub, a], new Set());
+    expect(ids(rows)).toEqual(['0e1', '1se', '2t', '1a']);
+    expect(ids(hierarchyRows([epic, t, sub, a], new Set(['se'])))).toEqual(['0e1', '1se', '1a']);
   });
 });

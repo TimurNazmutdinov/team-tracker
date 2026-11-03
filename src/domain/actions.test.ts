@@ -105,7 +105,7 @@ describe('createIssue', () => {
   it('правило 6: иерархия и points', () => {
     expect(
       errors(createIssue(viewOf(ds), { ...baseInput, parentId: 'i4' }, 'u1', testCtx())).parentId,
-    ).toContain('Task в Story');
+    ).toContain('эпик или под-эпик');
     expect(
       errors(
         createIssue(
@@ -171,9 +171,9 @@ describe('createIssue', () => {
     const view = viewOf(ds);
     expect(parentCandidates(view, 'Task').map((i) => i.id)).toEqual(['i1']);
     expect(parentCandidates(view, 'Epic')).toEqual([]);
-    expect(
-      parentCandidates(view, 'Sub-task').every((i) => ['Story', 'Task', 'Bug'].includes(i.type)),
-    ).toBe(true);
+    expect(parentCandidates(view, 'Sub-task').every((i) => ['Task', 'Bug'].includes(i.type))).toBe(
+      true,
+    );
   });
 });
 
@@ -240,7 +240,7 @@ describe('updateIssue', () => {
   it('родитель по иерархии', () => {
     expect(
       errors(updateIssue(viewOf(ds), 'i9', { parentId: 'i4' }, 'u1', testCtx())).parentId,
-    ).toContain('Task в Story');
+    ).toContain('эпик или под-эпик');
     expect(
       errors(updateIssue(viewOf(ds), 'i14', { parentId: 'i1' }, 'u1', testCtx())).parentId,
     ).toContain('Sub-task');

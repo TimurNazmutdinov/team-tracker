@@ -165,9 +165,9 @@ describe('статистика', () => {
   it('по типам: «Все» и каждый присутствующий тип', () => {
     const s = statsByType([
       { issueId: 'a', type: 'Bug', cycle: 1, lead: 2, doneAt: '' },
-      { issueId: 'b', type: 'Story', cycle: null, lead: 6, doneAt: '' },
+      { issueId: 'b', type: 'Task', cycle: null, lead: 6, doneAt: '' },
     ]);
-    expect(s.map((x) => x.type)).toEqual(['Все', 'Story', 'Bug']);
+    expect(s.map((x) => x.type)).toEqual(['Все', 'Task', 'Bug']);
     expect(s[0]?.cycle.count).toBe(1);
     expect(s[0]?.lead.count).toBe(2);
   });

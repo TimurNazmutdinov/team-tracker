@@ -3,16 +3,25 @@ import type { IssueType, Person, Priority, Status } from '../../domain/schema';
 
 const TYPE_LETTER: Record<IssueType, string> = {
   Epic: 'E',
-  Story: 'S',
+  'Sub-epic': 'e',
   Task: 'T',
   Bug: 'B',
   'Sub-task': 's',
+};
+
+/** Одна фраза о типе: подсказка в окне «Создать» и у значка (ADR-024). */
+export const TYPE_HINTS: Record<IssueType, string> = {
+  Epic: 'Epic — крупный блок работ из нескольких задач; прогресс считается по ним.',
+  'Sub-epic': 'Sub-epic (под-эпик) — часть эпика: «проект в проекте» со своими задачами.',
+  Task: 'Task — работа: сделать, настроить, проверить. Оценивается в story points.',
+  Bug: 'Bug — ошибка: что сломано и как воспроизвести.',
+  'Sub-task': 'Sub-task — шаг внутри Task или Bug; спринт берётся у родителя.',
 };
 const PRIORITY_MARK: Record<Priority, string> = { Highest: '▲▲', High: '▲', Medium: '■', Low: '▼' };
 
 export function TypeIcon({ type }: { type: IssueType }) {
   return (
-    <span className="type-icon" role="img" aria-label={type} title={type}>
+    <span className="type-icon" role="img" aria-label={type} title={TYPE_HINTS[type]}>
       {TYPE_LETTER[type]}
     </span>
   );
@@ -69,10 +78,10 @@ export function Avatar({ person }: { person: Person | undefined }) {
   );
 }
 
-export const TYPE_OPTIONS: IssueType[] = ['Epic', 'Story', 'Task', 'Bug', 'Sub-task'];
+export const TYPE_OPTIONS: IssueType[] = ['Epic', 'Sub-epic', 'Task', 'Bug', 'Sub-task'];
 export const PRIORITY_OPTIONS: Priority[] = ['Highest', 'High', 'Medium', 'Low'];
 
-/** Вычисляемый прогресс Epic: points дочерних Story, Task и Bug (у самого Epic points нет). */
+/** Вычисляемый прогресс эпика и под-эпика: points вложенных Task и Bug (у них самих points нет). */
 export function EpicProgressView({
   progress,
   compact = false,

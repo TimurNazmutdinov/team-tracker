@@ -1,3 +1,4 @@
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { drizzle as drizzlePg } from 'drizzle-orm/node-postgres';
 import { migrate as migratePg } from 'drizzle-orm/node-postgres/migrator';
@@ -73,8 +74,10 @@ export async function openPglite(dir?: string): Promise<Connection> {
   const { PGlite } = await import('@electric-sql/pglite');
   const { drizzle: drizzlePglite } = await import('drizzle-orm/pglite');
   const { migrate: migratePglite } = await import('drizzle-orm/pglite/migrator');
+  const existed = dir !== undefined && existsSync(dir) && readdirSync(dir).length > 0;
   const client = new PGlite(dir);
   const db = drizzlePglite(client, { schema });
+  if (dir !== undefined && existed) await archiveBeforeUpdate(client, dir);
   await migratePglite(db, { migrationsFolder: MIGRATIONS });
   return {
     db,
@@ -85,6 +88,40 @@ export async function openPglite(dir?: string): Promise<Connection> {
       return { file: 'database.pglite.tar.gz', data: new Uint8Array(await archive.arrayBuffer()) };
     },
   };
+}
+
+/** Сколько миграций в комплекте программы. */
+function migrationCount(): number {
+  const journal = JSON.parse(readFileSync(`${MIGRATIONS}/meta/_journal.json`, 'utf8')) as {
+    entries: unknown[];
+  };
+  return journal.entries.length;
+}
+
+/**
+ * Перед обновлением схемы — архив папки встроенной базы рядом с ней
+ * (`local-data-before-update-ГГГГММДД-ЧЧММ.tar.gz`): из него данные возвращаются при откате на
+ * прежнюю версию программы (ADR-024). Если новых миграций нет, архив не делается.
+ */
+async function archiveBeforeUpdate(
+  client: { query<T>(sql: string): Promise<{ rows: T[] }>; dumpDataDir(c: 'gzip'): Promise<Blob> },
+  dir: string,
+): Promise<void> {
+  let applied: number;
+  try {
+    const r = await client.query<{ n: number }>(
+      'select count(*)::int as n from drizzle.__drizzle_migrations',
+    );
+    applied = r.rows[0]?.n ?? 0;
+  } catch {
+    return; // база ещё не размечена миграциями — архивировать нечего
+  }
+  if (applied === 0 || applied >= migrationCount()) return;
+  const stamp = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').slice(0, 13);
+  const file = `${dir.replace(/[\\/]+$/, '')}-before-update-${stamp}.tar.gz`;
+  const archive = await client.dumpDataDir('gzip');
+  writeFileSync(file, Buffer.from(await archive.arrayBuffer()));
+  console.log(`Перед обновлением базы сохранён архив: ${file}`);
 }
 
 export interface DatabaseOptions {

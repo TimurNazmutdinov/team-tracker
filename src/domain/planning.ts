@@ -1,3 +1,4 @@
+import { isContainer } from './hierarchy';
 import { velocity } from './reports';
 import type { History, Issue, Sprint } from './schema';
 
@@ -64,7 +65,7 @@ export function totalPoints(issues: Issue[]): number {
 }
 
 export function unestimated(issues: Issue[]): number {
-  return issues.filter((i) => i.points === null && i.type !== 'Epic').length;
+  return issues.filter((i) => i.points === null && !isContainer(i.type)).length;
 }
 
 // ------------------------------------------------------------------ фильтры
@@ -114,7 +115,7 @@ export function matchesFilters(issue: Issue, key: string, f: PlanningFilters): b
   if (f.assigneeId !== null && issue.assigneeId !== f.assigneeId) return false;
   if (f.label !== null && !issue.labels.includes(f.label)) return false;
   if (f.type !== null && issue.type !== f.type) return false;
-  if (f.noEstimate && !(issue.points === null && issue.type !== 'Epic')) return false;
+  if (f.noEstimate && !(issue.points === null && !isContainer(issue.type))) return false;
   if (f.noAssignee && issue.assigneeId !== null) return false;
   return true;
 }
@@ -158,22 +159,23 @@ export const HISTORY_PAGE = 5;
 
 export interface HierarchyRow {
   issue: Issue;
-  /** 0 — обычная строка или эпик, 1 — задача, вложенная под эпик этого же списка. */
-  depth: 0 | 1;
-  /** Для эпика — число вложенных под ним в этом списке. */
+  /** 0 — строка верхнего уровня; 1 и глубже — вложена под эпик или под-эпик этого же списка. */
+  depth: number;
+  /** Для эпика и под-эпика — число вложенных под ним в этом списке. */
   children: number;
 }
 
 /**
- * Строки списка планирования с иерархией (wireframes.md, 24.2): под эпиком идут его Story, Task и Bug,
- * находящиеся в этом же списке (спринте или бэклоге). Задачи эпика из других списков остаются на месте
- * и показываются с меткой эпика. Свёрнутый эпик прячет вложенные строки.
+ * Строки списка планирования с иерархией (wireframes.md, 24.2; ADR-024): под эпиком идут его под-эпики,
+ * Task и Bug, находящиеся в этом же списке (спринте или бэклоге), под под-эпиком — его Task и Bug. Задачи
+ * эпика из других списков остаются на месте и показываются с меткой эпика. Свёрнутый эпик или под-эпик
+ * прячет вложенные строки.
  */
 export function hierarchyRows(items: Issue[], collapsed: ReadonlySet<string>): HierarchyRow[] {
-  const epics = new Set(items.filter((i) => i.type === 'Epic').map((i) => i.id));
+  const containers = new Set(items.filter((i) => isContainer(i.type)).map((i) => i.id));
   const childrenOf = new Map<string, Issue[]>();
   for (const i of items) {
-    if (i.type !== 'Epic' && i.parentId !== null && epics.has(i.parentId)) {
+    if (i.type !== 'Epic' && i.parentId !== null && containers.has(i.parentId)) {
       const list = childrenOf.get(i.parentId) ?? [];
       list.push(i);
       childrenOf.set(i.parentId, list);
@@ -181,13 +183,11 @@ export function hierarchyRows(items: Issue[], collapsed: ReadonlySet<string>): H
   }
   const nested = new Set([...childrenOf.values()].flat().map((i) => i.id));
   const rows: HierarchyRow[] = [];
-  for (const issue of items) {
-    if (nested.has(issue.id)) continue;
-    const kids = issue.type === 'Epic' ? (childrenOf.get(issue.id) ?? []) : [];
-    rows.push({ issue, depth: 0, children: kids.length });
-    if (!collapsed.has(issue.id)) {
-      for (const kid of kids) rows.push({ issue: kid, depth: 1, children: 0 });
-    }
-  }
+  const emit = (issue: Issue, depth: number) => {
+    const kids = isContainer(issue.type) ? (childrenOf.get(issue.id) ?? []) : [];
+    rows.push({ issue, depth, children: kids.length });
+    if (!collapsed.has(issue.id)) for (const kid of kids) emit(kid, depth + 1);
+  };
+  for (const issue of items) if (!nested.has(issue.id)) emit(issue, 0);
   return rows;
 }

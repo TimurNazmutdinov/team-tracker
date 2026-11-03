@@ -1,3 +1,4 @@
+import { isContainer } from './hierarchy';
 import { epicProgress, type EpicProgress } from './progress';
 import { fillOf, sprintCapacity, type Capacity, type Fill } from './planning';
 import { burndown } from './reports';
@@ -88,7 +89,7 @@ export function projectOverview(input: OverviewInput): ProjectOverview {
     const total = summarize(snaps, []).total;
     scope = total.points;
     done = total.done;
-    for (const s of snaps) if (s.issue.type !== 'Epic') byStatus[s.status] += 1;
+    for (const s of snaps) if (!isContainer(s.issue.type)) byStatus[s.status] += 1;
     const days = burndown(sprint, issues, history, today).filter((d) => d.remaining !== null);
     if (days.length > 1) {
       chart = {
@@ -100,7 +101,7 @@ export function projectOverview(input: OverviewInput): ProjectOverview {
 
   const overdue = issues
     .filter(
-      (i) => i.type !== 'Epic' && i.status !== 'Done' && i.dueDate !== null && i.dueDate < today,
+      (i) => !isContainer(i.type) && i.status !== 'Done' && i.dueDate !== null && i.dueDate < today,
     )
     .sort((a, b) => (a.dueDate ?? '').localeCompare(b.dueDate ?? '') || a.number - b.number);
 

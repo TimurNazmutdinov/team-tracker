@@ -144,8 +144,8 @@ test('настройки: каждая настройка в своей рамк
   }
   const templates = page.getByRole('navigation', { name: 'Шаблоны' });
   await expect(templates.getByRole('button', { name: /Баг/ })).toBeVisible();
-  await templates.getByRole('button', { name: /Story/ }).click();
-  await expect(page.getByLabel('Название шаблона')).toHaveValue('Story');
+  await templates.getByRole('button', { name: /Эпик/ }).click();
+  await expect(page.getByLabel('Название шаблона')).toHaveValue('Эпик');
   await audit('настройки в рамках');
 });
 

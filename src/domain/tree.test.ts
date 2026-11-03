@@ -6,7 +6,7 @@ const mk = (id: string, type: Issue['type'], parentId: string | null = null): Is
   ({ id, type, parentId, number: Number(id.replace(/\D/g, '')) || 0, title: id }) as Issue;
 
 const epic = mk('e1', 'Epic');
-const story = mk('s1', 'Story', 'e1');
+const story = mk('s1', 'Task', 'e1');
 const task = mk('t1', 'Task', 's1');
 const sub = mk('u1', 'Sub-task', 't1');
 const bug = mk('b1', 'Bug', 'e1');

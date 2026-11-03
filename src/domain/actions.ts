@@ -140,9 +140,10 @@ function validParent(view: View, type: IssueType, parentId: string | null): stri
   const parent = parentId === null ? undefined : findIssue(view, parentId);
   if (parentId !== null && !parent) return 'Такой родительской задачи нет';
   if (!isValidParent(type, parent?.type ?? null)) {
-    if (type === 'Sub-task') return 'Sub-task создаётся внутри Story, Task или Bug';
+    if (type === 'Sub-task') return 'Sub-task создаётся внутри Task или Bug';
     if (type === 'Epic') return 'У Epic не может быть родителя';
-    return 'Родитель — только Epic (Task в Story не вкладывается)';
+    if (type === 'Sub-epic') return 'Под-эпик (Sub-epic) создаётся внутри эпика';
+    return 'Родитель — эпик или под-эпик';
   }
   return null;
 }

@@ -12,14 +12,14 @@ function issue(patch: Partial<Issue>): Issue {
 }
 
 describe('epicProgress', () => {
-  it('считает по демо-данным: Story, Task и Bug эпика DEMO-1', () => {
+  it('считает по демо-данным: Task и Bug эпика DEMO-1', () => {
     expect(epicProgress(ds.issues, 'i1')).toEqual({ count: 12, total: 40, done: 16, percent: 40 });
   });
 
   it('сумма points, из них в Done и процент', () => {
     const issues = [
       issue({ id: 'a', points: 5, status: 'Done' }),
-      issue({ id: 'b', points: 3, type: 'Story', status: 'In Progress' }),
+      issue({ id: 'b', points: 3, type: 'Task', status: 'In Progress' }),
       issue({ id: 'c', points: 2, type: 'Bug', status: 'Done' }),
     ];
     expect(epicProgress(issues, 'e1')).toEqual({ count: 3, total: 10, done: 7, percent: 70 });
@@ -51,5 +51,16 @@ describe('epicProgress', () => {
       issue({ id: 'c', points: 9, parentId: 'a', status: 'Done' }),
     ];
     expect(epicProgress(issues, 'e1')).toEqual({ count: 1, total: 5, done: 0, percent: 0 });
+  });
+
+  it('учитывает задачи под-эпиков эпика (ADR-024)', () => {
+    const issues = [
+      issue({ id: 'se', type: 'Sub-epic', parentId: 'e1', points: null }),
+      issue({ id: 'a', parentId: 'se', points: 3, status: 'Done' }),
+      issue({ id: 'b', parentId: 'e1', points: 2 }),
+      issue({ id: 'c', parentId: 'other', points: 8 }),
+    ];
+    expect(epicProgress(issues, 'e1')).toEqual({ count: 2, total: 5, done: 3, percent: 60 });
+    expect(epicProgress(issues, 'se')).toEqual({ count: 1, total: 3, done: 3, percent: 100 });
   });
 });

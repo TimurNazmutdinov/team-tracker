@@ -10,7 +10,7 @@ import { ErrorMessage } from '../../ui/ErrorMessage';
 import { dodItems } from '../../domain/dod';
 import { MarkdownField, SelectField, TextArea, TextField } from '../../ui/fields';
 
-const TEMPLATE_TYPES = ISSUE_TYPES.filter((t) => t !== 'Epic');
+const TEMPLATE_TYPES = ISSUE_TYPES;
 
 /** WIP-лимиты проекта (wireframes.md, 20.4): переключатель и лимит на колонку; по умолчанию выключено. */
 export function WipSettingsForm({ view }: { view: View }) {

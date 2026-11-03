@@ -21,7 +21,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Fragment, useState, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router';
 import { containerItems, type View } from '../../domain/actions';
-import { canHavePoints } from '../../domain/hierarchy';
+import { canHavePoints, isContainer } from '../../domain/hierarchy';
 import {
   NO_PLANNING_FILTERS,
   allLabels,
@@ -100,6 +100,8 @@ interface RowProps {
   nested?: boolean;
   /** Вложена под эпик этого же списка (иерархия, wireframes.md, 24.2). */
   child?: boolean;
+  /** Глубина вложенности: 1 — под эпиком, 2 — под под-эпиком (ADR-024). */
+  depth?: number;
   /** У эпика: сколько у него задач и свёрнут ли он. */
   epicToggle?: { count: number; collapsed: boolean; onToggle: () => void };
   /** У строки эпика из другого списка: где она находится («в Спринте 1», «в бэклоге»). */
@@ -121,6 +123,7 @@ function IssueRow({
   showStatus,
   nested = false,
   child = false,
+  depth = 0,
   epicToggle,
   where,
 }: RowProps) {
@@ -129,6 +132,8 @@ function IssueRow({
   const style = {
     transform: CSS.Transform.toString(sortable.transform),
     transition: sortable.transition,
+    // под-эпик сдвигает свои задачи ещё на один уровень
+    ...(depth > 1 ? { marginLeft: `${(depth - 1) * 1.6}rem` } : {}),
   };
   const assignee = people.find((p) => p.id === issue.assigneeId);
   const key = `${projectKey}-${issue.number}`;
@@ -151,7 +156,7 @@ function IssueRow({
       <li
         ref={nested ? undefined : sortable.setNodeRef}
         style={nested ? undefined : style}
-        className={`issue-row planning-row${nested ? ' nested' : ''}${child ? ' child' : ''}${issue.type === 'Epic' ? ' epic-row' : ''}${sortable.isDragging ? ' dragging' : ''}`}
+        className={`issue-row planning-row${nested ? ' nested' : ''}${child ? ' child' : ''}${isContainer(issue.type) ? ' epic-row' : ''}${sortable.isDragging ? ' dragging' : ''}`}
       >
         {nested || !canMove ? (
           <span className="handle-space" />
@@ -359,7 +364,7 @@ function Section({
   const sprintCapacity =
     sprint && capacity ? adjustedCapacity(capacity, sprintAvailability(view, sprint)) : capacity;
   const sprintCapacityValue = sprintCapacity?.value ?? null;
-  const epics = new Map(view.issues.filter((i) => i.type === 'Epic').map((i) => [i.id, i]));
+  const epics = new Map(view.issues.filter((i) => isContainer(i.type)).map((i) => [i.id, i]));
   const rows = hierarchyRows(items, collapsedEpics);
   const inList = new Set(all.map((i) => i.id));
   // задачи эпика из других списков показываются под ним с пометкой, где они
@@ -422,7 +427,7 @@ function Section({
         <SortableContext items={rows.map((r) => r.issue.id)} strategy={verticalListSortingStrategy}>
           <ul ref={droppable.setNodeRef} className={`issue-list${droppable.isOver ? ' over' : ''}`}>
             {rows.map(({ issue, depth, children }) => {
-              const outside = issue.type === 'Epic' ? externalKids(issue.id) : [];
+              const outside = isContainer(issue.type) ? externalKids(issue.id) : [];
               const folded = collapsedEpics.has(issue.id);
               return (
                 <Fragment key={issue.id}>
@@ -430,9 +435,9 @@ function Section({
                     issue={issue}
                     projectKey={projectKey}
                     people={view.people}
-                    epic={depth === 1 || !issue.parentId ? undefined : epics.get(issue.parentId)}
+                    epic={depth >= 1 || !issue.parentId ? undefined : epics.get(issue.parentId)}
                     progress={
-                      issue.type === 'Epic' ? epicProgress(view.issues, issue.id) : undefined
+                      isContainer(issue.type) ? epicProgress(view.issues, issue.id) : undefined
                     }
                     subtasks={view.issues
                       .filter((s) => s.type === 'Sub-task' && s.parentId === issue.id)
@@ -443,8 +448,9 @@ function Section({
                     onSelect={onSelect}
                     onEdit={onEdit}
                     showStatus={sprint?.state === 'active'}
-                    child={depth === 1}
-                    {...(issue.type === 'Epic'
+                    child={depth >= 1}
+                    depth={depth}
+                    {...(isContainer(issue.type)
                       ? {
                           epicToggle: {
                             count: children + outside.length,
