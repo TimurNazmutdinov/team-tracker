@@ -12,12 +12,15 @@ import { Link, useParams, useSearchParams } from 'react-router';
 import {
   GROUP_FIELDS,
   GROUP_LABELS,
-  NO_BOARD_FILTERS,
   boardCards,
   boardSprints,
   columnStats,
   defaultSprint,
+  epicOf,
   filterCards,
+  filtersFromParams,
+  filtersToParams,
+  openBlockers,
   groupLanes,
   hiddenBacklogCards,
   isGroupField,
@@ -40,7 +43,7 @@ import { wipAfterMove, wipLimit, wipMessage } from '../../domain/wip';
 import { ancestors } from '../../domain/tree';
 import { ProjectFilter } from '../../ui/ProjectFilter';
 import { useActions } from '../../state/actions';
-import { usePermissions } from '../../state/current-user';
+import { useCurrentUser, usePermissions } from '../../state/current-user';
 import { useBoardPrefs } from '../../state/board-prefs';
 import { useNotices } from '../../state/notices';
 import { useProjectScope } from '../../state/project-scope';
@@ -52,6 +55,10 @@ import { BulkBar } from '../tasks/BulkBar';
 import { BoardNav } from './BoardNav';
 import { BoardCard, LaneView, plural } from './BoardParts';
 import { AddColumn, ColumnHead, useCanEditColumns } from './Columns';
+import { QuickFilters } from './QuickFilters';
+import { SprintHeader } from './SprintHeader';
+import { labelStats } from '../../domain/labels';
+import { epicProgress } from '../../domain/progress';
 import { MultiBoard } from './MultiBoard';
 
 /** Доска одного проекта (wireframes.md, раздел 5): колонки статусов, группировка по полю, перенос карточек. */
@@ -62,7 +69,11 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
   const groupBy = useBoardPrefs((s) => s.groupBy);
   const setGroupBy = useBoardPrefs((s) => s.setGroupBy);
   const [params, setParams] = useSearchParams();
-  const [filters, setFilters] = useState<BoardFilters>(NO_BOARD_FILTERS);
+  // фильтры — в адресе: ссылку с выбранными чипами можно отправить коллеге (D-2)
+  const filters = filtersFromParams(params);
+  const setFilters = (next: BoardFilters) =>
+    setParams((prev) => filtersToParams(next, prev), { replace: true });
+  const me = useCurrentUser();
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [activeId, setActiveId] = useState<string | null>(null);
   const dod = useDodGate();
@@ -100,7 +111,12 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
   const columns = boardStatuses(statusList);
   const columnIds = columns.map((c) => c.id);
   const all = boardCards(view.issues, sprint.id, statusList);
-  const cards = filterCards(all, filters);
+  const blockers = openBlockers(view.issues, view.links, statusList);
+  const cards = filterCards(all, filters, {
+    meId: me?.id ?? null,
+    blockedIds: new Set(blockers.keys()),
+  });
+  const byId = new Map(view.issues.map((i) => [i.id, i]));
   const hidden = hiddenBacklogCards(view.issues, sprint.id, statusList);
   const start = startStatusId(statusList);
   const lanes = groupLanes(cards, groupBy, {
@@ -189,34 +205,28 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
   const allCollapsed = lanes.length > 0 && lanes.every((l) => collapsed.has(l.key));
 
   return (
-    <>
+    <div className="board-page">
       {dod.dialog}
       <PageHeader title="Доска" />
       <BoardNav projectKey={project.key} sprint={sprint} />
+      <SprintHeader
+        sprint={sprint}
+        sprints={sprints}
+        cards={all}
+        statuses={statusList}
+        onSelect={(id) =>
+          setParams((prev) => {
+            const next = new URLSearchParams(prev);
+            if (id === defaultSprint(view.sprints)?.id) next.delete('sprint');
+            else next.set('sprint', id);
+            return next;
+          })
+        }
+      />
       <div className="board-toolbar">
         {filter}
-        <label title="Какой спринт показать на доске">
-          Спринт
-          <select
-            value={sprint.id}
-            onChange={(e) =>
-              setParams((prev) => {
-                const next = new URLSearchParams(prev);
-                if (e.target.value === defaultSprint(view.sprints)?.id) next.delete('sprint');
-                else next.set('sprint', e.target.value);
-                return next;
-              })
-            }
-          >
-            {sprints.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label title="Разбить доску на дорожки по полю">
-          Группировать по
+        <label title="Разбить доску на дорожки: по эпикам, исполнителям и др.">
+          Дорожки
           <select
             value={groupBy}
             onChange={(e) => isGroupField(e.target.value) && setGroupBy(e.target.value)}
@@ -271,9 +281,17 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
           type="button"
           onClick={() => setCollapsed(allCollapsed ? new Set() : new Set(lanes.map((l) => l.key)))}
         >
-          {allCollapsed ? 'Развернуть группы' : 'Свернуть группы'}
+          {allCollapsed ? 'Развернуть дорожки' : 'Свернуть дорожки'}
         </button>
       </div>
+      <QuickFilters
+        filters={filters}
+        onChange={setFilters}
+        stats={labelStats(all)}
+        shown={cards.length}
+        total={all.length}
+        canMine={me !== undefined}
+      />
 
       {!readOnly && pickedIssues.length > 0 && (
         <BulkBar
@@ -364,6 +382,9 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
                 collapsed={collapsed.has(lane.key)}
                 onToggle={() => toggleLane(lane.key)}
                 columns={columns}
+                progress={
+                  lane.epic ? epicProgress(view.issues, lane.epic.id, statusList) : undefined
+                }
                 renderCard={(issue) => (
                   <BoardCard
                     key={issue.id}
@@ -371,6 +392,10 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
                     projectKey={project.key}
                     parentKey={issueKey(issue.parentId)}
                     trail={trailOf(issue)}
+                    epic={epicOf(issue, byId)}
+                    hideEpic={groupBy === 'epic'}
+                    assignee={people.get(issue.assigneeId ?? '')}
+                    blockedBy={blockers.get(issue.id)?.map((b) => `${project.key}-${b.number}`)}
                     readOnly={readOnly || !perms.canChangeStatus(issue)}
                     onStatus={(id, status) => void changeStatus(id, status)}
                     {...(readOnly ? {} : { selected: picked.has(issue.id), onSelect: togglePick })}
@@ -397,7 +422,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
         статуса; допустим любой переход, смена пишется в историю.
         {canEditColumns && ' Колонки: двойной клик — переименовать, «⋯» — меню, «+» — новая.'}
       </p>
-    </>
+    </div>
   );
 }
 

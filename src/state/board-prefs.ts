@@ -1,16 +1,16 @@
 import { create } from 'zustand';
 import { isGroupField, type GroupField } from '../domain/board';
 
-// Выбор группировки доски запоминается в браузере (wireframes.md, раздел 5).
+// Выбор дорожек доски запоминается в браузере (wireframes.md, разделы 5 и 27.1); по умолчанию — по эпикам.
 
 const KEY = 'team-tracker:board-group';
 
 function read(): GroupField {
   try {
     const stored = window.localStorage.getItem(KEY);
-    return isGroupField(stored) ? stored : 'assignee';
+    return isGroupField(stored) ? stored : 'epic';
   } catch {
-    return 'assignee';
+    return 'epic';
   }
 }
 

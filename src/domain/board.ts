@@ -3,12 +3,19 @@ import {
   PRIORITIES,
   type Issue,
   type IssueType,
+  type Link,
   type Person,
   type Priority,
   type Sprint,
   type Status,
 } from './schema';
-import { DEFAULT_STATUSES, boardStatuses, isBacklogStatus, type Statuses } from './statuses';
+import {
+  DEFAULT_STATUSES,
+  boardStatuses,
+  isBacklogStatus,
+  isDoneStatus,
+  type Statuses,
+} from './statuses';
 
 // Доска спринта (F-10, F-11): чистые функции отбора карточек, группировки и подсчёта.
 // Решения: ADR-004 (нет колонки Backlog, Sub-task — отдельные карточки), ADR-007.
@@ -21,15 +28,21 @@ export const BOARD_COLUMNS: readonly Status[] = boardStatuses(DEFAULT_STATUSES).
 /** Идентификатор колонки доски. */
 export type BoardColumn = Status;
 
-export const GROUP_FIELDS = ['assignee', 'type', 'priority', 'parent'] as const;
+/** Дорожки доски (D-5): по эпикам, исполнителям, типу, приоритету, родителю или без дорожек. */
+export const GROUP_FIELDS = ['epic', 'assignee', 'type', 'priority', 'parent', 'none'] as const;
 export type GroupField = (typeof GROUP_FIELDS)[number];
 
 export const GROUP_LABELS: Record<GroupField, string> = {
-  assignee: 'Исполнитель',
-  type: 'Тип',
-  priority: 'Приоритет',
-  parent: 'Родитель',
+  epic: 'По эпикам',
+  assignee: 'По исполнителям',
+  type: 'По типу',
+  priority: 'По приоритету',
+  parent: 'По родителю',
+  none: 'Без дорожек',
 };
+
+/** Ключ единственной дорожки «без дорожек»: её заголовок не показывается. */
+export const ALL_LANE = '__all__';
 
 /** Ключ группы для задач без значения поля; название зависит от поля группировки. */
 export const UNSET = 'Не задано';
@@ -39,15 +52,120 @@ export interface Lane {
   title: string;
   /** Для группировки по исполнителю — человек (для аватара). */
   person?: Person;
+  /** Для дорожек по эпикам — сам эпик (цвет, прогресс). */
+  epic?: Issue;
   issues: Issue[];
 }
 
+/** Как сочетать выбранные метки: любая из них (ИЛИ) или все сразу (И). */
+export type LabelMode = 'any' | 'all';
+
+/** Фильтры доски: списки и быстрые фильтры-чипы (D-2). */
 export interface BoardFilters {
   type: IssueType | null;
   priority: Priority | null;
+  /** Только задачи текущего пользователя. */
+  mine: boolean;
+  /** Только задачи, которые ждут незавершённую блокирующую задачу. */
+  blocked: boolean;
+  /** Только задачи без исполнителя. */
+  unassigned: boolean;
+  labels: string[];
+  labelMode: LabelMode;
 }
 
-export const NO_BOARD_FILTERS: BoardFilters = { type: null, priority: null };
+export const NO_BOARD_FILTERS: BoardFilters = {
+  type: null,
+  priority: null,
+  mine: false,
+  blocked: false,
+  unassigned: false,
+  labels: [],
+  labelMode: 'any',
+};
+
+/** Что нужно фильтрам, кроме самих задач. */
+export interface FilterContext {
+  /** Человек текущего пользователя для «Только мои». */
+  meId?: string | null | undefined;
+  /** Задачи, которые ждут незавершённые блокирующие. */
+  blockedIds?: ReadonlySet<string> | undefined;
+}
+
+export function filtersActive(f: BoardFilters): boolean {
+  return (
+    f.type !== null ||
+    f.priority !== null ||
+    f.mine ||
+    f.blocked ||
+    f.unassigned ||
+    f.labels.length > 0
+  );
+}
+
+/** Фильтры из адреса страницы: ссылку с выбранными чипами можно отправить коллеге. */
+export function filtersFromParams(params: URLSearchParams): BoardFilters {
+  const type = params.get('type');
+  const priority = params.get('prio');
+  const quick = new Set((params.get('q') ?? '').split(',').filter(Boolean));
+  const labels = (params.get('labels') ?? '').split('|').filter(Boolean);
+  return {
+    type: ISSUE_TYPES.includes(type as IssueType) ? (type as IssueType) : null,
+    priority: PRIORITIES.includes(priority as Priority) ? (priority as Priority) : null,
+    mine: quick.has('mine'),
+    blocked: quick.has('blocked'),
+    unassigned: quick.has('unassigned'),
+    labels,
+    labelMode: params.get('lm') === 'all' ? 'all' : 'any',
+  };
+}
+
+/** Записать фильтры в адрес; пустые значения убираются. */
+export function filtersToParams(f: BoardFilters, base: URLSearchParams): URLSearchParams {
+  const next = new URLSearchParams(base);
+  const set = (key: string, value: string | null) => {
+    if (value) next.set(key, value);
+    else next.delete(key);
+  };
+  set('type', f.type);
+  set('prio', f.priority);
+  const quick = [f.mine && 'mine', f.blocked && 'blocked', f.unassigned && 'unassigned'].filter(
+    Boolean,
+  );
+  set('q', quick.join(','));
+  set('labels', f.labels.join('|'));
+  set('lm', f.labels.length > 1 && f.labelMode === 'all' ? 'all' : null);
+  return next;
+}
+
+/** Незавершённые блокирующие задачи для каждой задачи (связь «блокирует», D-10). */
+export function openBlockers(
+  issues: readonly Issue[],
+  links: readonly Link[],
+  statuses: Statuses = DEFAULT_STATUSES,
+): Map<string, Issue[]> {
+  const byId = new Map(issues.map((i) => [i.id, i]));
+  const out = new Map<string, Issue[]>();
+  for (const l of links) {
+    if (l.type !== 'blocks') continue;
+    const from = byId.get(l.fromId);
+    const to = byId.get(l.toId);
+    if (!from || !to || isDoneStatus(statuses, from.status) || isDoneStatus(statuses, to.status))
+      continue;
+    out.set(to.id, [...(out.get(to.id) ?? []), from]);
+  }
+  return out;
+}
+
+/** Эпик верхнего уровня задачи (через под-эпик и родителя); null — задача вне эпика. */
+export function epicOf(issue: Issue, byId: ReadonlyMap<string, Issue>): Issue | null {
+  let current: Issue | undefined = issue;
+  for (let guard = 0; current && guard < 10; guard++) {
+    if (current.type === 'Epic') return current === issue ? null : current;
+    current = current.parentId ? byId.get(current.parentId) : undefined;
+  }
+  return null;
+}
 
 function byOrder(a: Issue, b: Issue): number {
   return a.order - b.order;
@@ -75,12 +193,28 @@ export function hiddenBacklogCards(
     .sort(byOrder);
 }
 
-export function filterCards(cards: Issue[], filters: BoardFilters): Issue[] {
-  return cards.filter(
-    (i) =>
-      (filters.type === null || i.type === filters.type) &&
-      (filters.priority === null || i.priority === filters.priority),
-  );
+export function filterCards(
+  cards: Issue[],
+  filters: BoardFilters,
+  ctx: FilterContext = {},
+): Issue[] {
+  const wanted = filters.labels.map((l) => l.toLocaleLowerCase('ru'));
+  return cards.filter((i) => {
+    if (filters.type !== null && i.type !== filters.type) return false;
+    if (filters.priority !== null && i.priority !== filters.priority) return false;
+    if (filters.mine && (!ctx.meId || i.assigneeId !== ctx.meId)) return false;
+    if (filters.unassigned && i.assigneeId !== null) return false;
+    if (filters.blocked && !ctx.blockedIds?.has(i.id)) return false;
+    if (wanted.length > 0) {
+      const own = new Set(i.labels.map((l) => l.toLocaleLowerCase('ru')));
+      const hit =
+        filters.labelMode === 'all'
+          ? wanted.every((l) => own.has(l))
+          : wanted.some((l) => own.has(l));
+      if (!hit) return false;
+    }
+    return true;
+  });
 }
 
 /** Группировка карточек по полю: только непустые группы; задачи без значения — в «Не назначен» (исполнитель) или «Без родителя» в конце. */
@@ -99,6 +233,28 @@ export function groupLanes(
   const order: string[] = [];
 
   switch (field) {
+    case 'none':
+      for (const c of cards) add(ALL_LANE, 'Все задачи', c);
+      break;
+    case 'epic': {
+      const epics = new Map<string, Issue>();
+      for (const c of cards) {
+        const epic = epicOf(c, byId);
+        if (epic) {
+          epics.set(epic.id, epic);
+          const lane = lanes.get(epic.id) ?? {
+            key: epic.id,
+            title: `${ctx.projectKey}-${epic.number} ${epic.title}`,
+            epic,
+            issues: [],
+          };
+          lane.issues.push(c);
+          lanes.set(epic.id, lane);
+        } else add(UNSET, 'Без эпика', c);
+      }
+      order.push(...[...epics.values()].sort(byOrder).map((e) => e.id));
+      break;
+    }
     case 'assignee':
       order.push(...ctx.people.map((p) => p.id));
       for (const c of cards) {
