@@ -5,6 +5,8 @@ import { LINK_TYPES, type Issue, type LinkType } from '../../domain/schema';
 import { useActions } from '../../state/actions';
 import { SelectField } from '../../ui/fields';
 import { StatusChip, TypeIcon } from './IssueBits';
+import { isDoneStatus } from '../../domain/statuses';
+import { useStatusList } from '../../state/queries';
 
 const NAMES: Record<LinkType, [outgoing: string, incoming: string]> = {
   blocks: ['блокирует', 'заблокирована задачей'],
@@ -23,6 +25,7 @@ export function IssueLinks({
   projectKey: string;
 }) {
   const actions = useActions(view.projectId);
+  const statusList = useStatusList();
   const [type, setType] = useState<LinkType | 'depends'>('blocks');
   const [toId, setToId] = useState('');
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -31,7 +34,7 @@ export function IssueLinks({
   const blockers = links
     .filter((l) => l.type === 'blocks' && l.toId === issue.id)
     .map((l) => byId.get(l.fromId))
-    .filter((i): i is Issue => i !== undefined && i.status !== 'Done');
+    .filter((i): i is Issue => i !== undefined && !isDoneStatus(statusList, i.status));
 
   const add = async () => {
     // «зависит от» — та же «блокирует», только от выбранной задачи к этой (D-10)
@@ -46,7 +49,7 @@ export function IssueLinks({
   return (
     <section aria-labelledby="links-title">
       <h2 id="links-title">Связи</h2>
-      {issue.status !== 'Done' && blockers.length > 0 && (
+      {!isDoneStatus(statusList, issue.status) && blockers.length > 0 && (
         <p className="warn" role="status">
           Блокируется незавершённой задачей:{' '}
           {blockers.map((b) => `${projectKey}-${b.number}`).join(', ')}.

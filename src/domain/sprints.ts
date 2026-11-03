@@ -1,4 +1,5 @@
 import type { Ctx, FieldErrors, Result, View } from './actions';
+import { isDoneStatus, statusesOf } from './statuses';
 import type { Changes } from './changes';
 import type { History, Issue, Sprint } from './schema';
 import { nextSprintDefaults, projectAfterSprint } from './settings';
@@ -181,14 +182,20 @@ function sprintIssues(view: View, sprintId: string): Issue[] {
 export function closeSummary(view: View, sprintId: string): CloseSummary {
   const inSprint = sprintIssues(view, sprintId);
   const topLevel = inSprint.filter((i) => i.type !== 'Sub-task');
-  const unfinishedParents = new Set(topLevel.filter((i) => i.status !== 'Done').map((i) => i.id));
+  const st = statusesOf(view);
+  const unfinishedParents = new Set(
+    topLevel.filter((i) => !isDoneStatus(st, i.status)).map((i) => i.id),
+  );
   const carried = inSprint.filter((i) =>
     i.type === 'Sub-task' ? unfinishedParents.has(i.parentId ?? '') : unfinishedParents.has(i.id),
   );
   const staying = inSprint.filter(
-    (i) => i.type === 'Sub-task' && i.status !== 'Done' && !unfinishedParents.has(i.parentId ?? ''),
+    (i) =>
+      i.type === 'Sub-task' &&
+      !isDoneStatus(st, i.status) &&
+      !unfinishedParents.has(i.parentId ?? ''),
   );
-  const done = inSprint.filter((i) => i.status === 'Done');
+  const done = inSprint.filter((i) => isDoneStatus(st, i.status));
   return {
     doneCount: done.length,
     velocity: done.reduce((sum, i) => sum + (i.points ?? 0), 0),

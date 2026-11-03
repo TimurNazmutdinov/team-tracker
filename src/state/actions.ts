@@ -6,6 +6,7 @@ import {
   addLink,
   createIssueWithLinks,
   createProject,
+  moveIssuesToStatus,
   moveIssue,
   removeLink,
   updateIssue,
@@ -35,7 +36,16 @@ import {
   type ProjectEdit,
 } from '../domain/projects';
 import { rolesChanges, type RolesResult } from '../domain/roles';
-import type { LinkType, Project, ProjectRole, RoleDef } from '../domain/schema';
+import type { LinkType, Project, ProjectRole, RoleDef, StatusDef } from '../domain/schema';
+import {
+  addStatus,
+  archiveStatus,
+  moveStatus,
+  renameStatus,
+  setStatusCategory,
+  type StatusCategory,
+  type StatusResult,
+} from '../domain/statuses';
 import { updateSprintSettings, type SprintSettings } from '../domain/settings';
 import {
   closeSprint,
@@ -74,18 +84,29 @@ function errorResult(e: unknown): Result {
 }
 
 async function loadView(storage: TrackerStorage, projectId: string): Promise<View> {
-  const [project, people, members, templates, absences, retroItems, sprints, issues, links] =
-    await Promise.all([
-      storage.getProjects().then((list) => list.find((p) => p.id === projectId)),
-      storage.getPeople(),
-      storage.getMembers(),
-      storage.getTemplates(),
-      storage.getAbsences(),
-      storage.getRetroItems(projectId),
-      storage.getSprints(projectId),
-      storage.getIssues(projectId),
-      storage.getLinks(projectId),
-    ]);
+  const [
+    project,
+    people,
+    members,
+    templates,
+    absences,
+    statuses,
+    retroItems,
+    sprints,
+    issues,
+    links,
+  ] = await Promise.all([
+    storage.getProjects().then((list) => list.find((p) => p.id === projectId)),
+    storage.getPeople(),
+    storage.getMembers(),
+    storage.getTemplates(),
+    storage.getAbsences(),
+    storage.getStatuses(),
+    storage.getRetroItems(projectId),
+    storage.getSprints(projectId),
+    storage.getIssues(projectId),
+    storage.getLinks(projectId),
+  ]);
   if (!project) throw new Error('Проект не найден');
   return {
     projectId,
@@ -94,6 +115,7 @@ async function loadView(storage: TrackerStorage, projectId: string): Promise<Vie
     members,
     templates,
     absences,
+    statuses,
     retroItems,
     sprints,
     issues,
@@ -187,6 +209,62 @@ export function useActionsFor() {
     () => (projectId: string) => makeActions(storage, queryClient, userId, projectId),
     [storage, queryClient, userId],
   );
+}
+
+/**
+ * Колонки досок (D-1, ADR-024): общие для всех проектов. Правка — одним набором изменений; удаление
+ * колонки переносит её задачи во всех проектах в выбранную колонку.
+ */
+export function useStatusActions() {
+  const storage = useStorage();
+  const queryClient = useQueryClient();
+  const userId = useUserStore((s) => s.userId);
+  return useMemo(() => {
+    const save = async (build: (list: StatusDef[]) => StatusResult): Promise<StatusResult> => {
+      try {
+        const result = build(await storage.getStatuses());
+        if (result.ok && result.statuses.length > 0) {
+          await storage.commit({ statuses: result.statuses });
+          await queryClient.invalidateQueries();
+        }
+        return result;
+      } catch (e) {
+        const message = errorResult(e);
+        return { ok: false, errors: message.ok ? {} : message.errors };
+      }
+    };
+    return {
+      add: (input: { name: string; category?: StatusCategory; position?: number }) =>
+        save((list) => addStatus(list, input, () => browserCtx.newId())),
+      rename: (id: string, name: string) => save((list) => renameStatus(list, id, name)),
+      move: (id: string, target: { delta: number } | { to: number }) =>
+        save((list) => moveStatus(list, id, target)),
+      setCategory: (id: string, category: StatusCategory) =>
+        save((list) => setStatusCategory(list, id, category)),
+      remove: async (id: string, targetId: string): Promise<StatusResult> => {
+        try {
+          const list = await storage.getStatuses();
+          const result = archiveStatus(list, id, targetId);
+          if (!result.ok) return result;
+          const [projects, people] = await Promise.all([
+            storage.getProjects(),
+            storage.getPeople(),
+          ]);
+          const issues = (await Promise.all(projects.map((p) => storage.getIssues(p.id)))).flat();
+          const author = resolveAuthor(people, useSession.getState().account?.id ?? null, userId);
+          if (!author)
+            return { ok: false, errors: { form: 'Не найден пользователь для записи действий' } };
+          const moved = moveIssuesToStatus(issues, id, targetId, author.id, browserCtx);
+          await storage.commit({ statuses: result.statuses, ...moved });
+          await queryClient.invalidateQueries();
+          return result;
+        } catch (e) {
+          const message = errorResult(e);
+          return { ok: false, errors: message.ok ? {} : message.errors };
+        }
+      },
+    };
+  }, [storage, queryClient, userId]);
 }
 
 /** Роли и права (ADR-021): сохранение таблицы ролей одним набором изменений. */

@@ -8,18 +8,18 @@ import {
   type Sprint,
   type Status,
 } from './schema';
+import { DEFAULT_STATUSES, boardStatuses, isBacklogStatus, type Statuses } from './statuses';
 
 // Доска спринта (F-10, F-11): чистые функции отбора карточек, группировки и подсчёта.
 // Решения: ADR-004 (нет колонки Backlog, Sub-task — отдельные карточки), ADR-007.
 
-/** Колонки доски: Backlog на доске не показывается (ADR-004, п. 1). */
-export const BOARD_COLUMNS = [
-  'To Do',
-  'In Progress',
-  'Review',
-  'Done',
-] as const satisfies readonly Status[];
-export type BoardColumn = (typeof BOARD_COLUMNS)[number];
+/**
+ * Колонки доски по умолчанию: Backlog на доске не показывается (ADR-004, п. 1). Настоящие колонки —
+ * данные (ADR-024): `boardStatuses(statuses)`.
+ */
+export const BOARD_COLUMNS: readonly Status[] = boardStatuses(DEFAULT_STATUSES).map((s) => s.id);
+/** Идентификатор колонки доски. */
+export type BoardColumn = Status;
 
 export const GROUP_FIELDS = ['assignee', 'type', 'priority', 'parent'] as const;
 export type GroupField = (typeof GROUP_FIELDS)[number];
@@ -53,14 +53,26 @@ function byOrder(a: Issue, b: Issue): number {
   return a.order - b.order;
 }
 
-/** Задачи спринта, которые показываются на доске (статус не Backlog), по порядку. */
-export function boardCards(issues: Issue[], sprintId: string): Issue[] {
-  return issues.filter((i) => i.sprintId === sprintId && i.status !== 'Backlog').sort(byOrder);
+/** Задачи спринта, которые показываются на доске (колонка не «бэклог»), по порядку. */
+export function boardCards(
+  issues: Issue[],
+  sprintId: string,
+  statuses: Statuses = DEFAULT_STATUSES,
+): Issue[] {
+  return issues
+    .filter((i) => i.sprintId === sprintId && !isBacklogStatus(statuses, i.status))
+    .sort(byOrder);
 }
 
-/** Задачи спринта в статусе Backlog: на доске их нет, их нужно перевести в To Do. */
-export function hiddenBacklogCards(issues: Issue[], sprintId: string): Issue[] {
-  return issues.filter((i) => i.sprintId === sprintId && i.status === 'Backlog').sort(byOrder);
+/** Задачи спринта в колонке «бэклог»: на доске их нет, их нужно перевести в первую колонку. */
+export function hiddenBacklogCards(
+  issues: Issue[],
+  sprintId: string,
+  statuses: Statuses = DEFAULT_STATUSES,
+): Issue[] {
+  return issues
+    .filter((i) => i.sprintId === sprintId && isBacklogStatus(statuses, i.status))
+    .sort(byOrder);
 }
 
 export function filterCards(cards: Issue[], filters: BoardFilters): Issue[] {
@@ -132,10 +144,14 @@ export function statsOf(cards: Issue[]): Stats {
   return { count: cards.length, points: cards.reduce((sum, i) => sum + (i.points ?? 0), 0) };
 }
 
-/** Число задач и points по колонкам. */
-export function columnStats(cards: Issue[]): Record<BoardColumn, Stats> {
+/** Число задач и points по колонкам; задачи в неизвестной колонке не теряются — для них своя запись. */
+export function columnStats(
+  cards: Issue[],
+  columns: readonly Status[] = BOARD_COLUMNS,
+): Record<BoardColumn, Stats> {
+  const ids = [...new Set([...columns, ...cards.map((i) => i.status)])];
   return Object.fromEntries(
-    BOARD_COLUMNS.map((c) => [c, statsOf(cards.filter((i) => i.status === c))]),
+    ids.map((c) => [c, statsOf(cards.filter((i) => i.status === c))]),
   ) as Record<BoardColumn, Stats>;
 }
 

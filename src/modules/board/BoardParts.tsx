@@ -2,8 +2,10 @@
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router';
-import { BOARD_COLUMNS, statsOf, type BoardColumn, type Lane } from '../../domain/board';
-import { STATUSES, type Issue, type Person, type Status } from '../../domain/schema';
+import { statsOf, type BoardColumn, type Lane } from '../../domain/board';
+import type { Issue, Person, Status, StatusDef } from '../../domain/schema';
+import { activeStatuses } from '../../domain/statuses';
+import { useStatusList } from '../../state/queries';
 import { Avatar, PointsBadge, PriorityChip, TypeIcon } from '../tasks/IssueBits';
 
 // Части доски, общие для доски одного проекта и доски нескольких проектов (ADR-016).
@@ -37,6 +39,7 @@ export function BoardCard({
   onSelect,
 }: CardProps) {
   const drag = useDraggable({ id: issue.id, disabled: readOnly });
+  const statuses = useStatusList();
   const key = `${projectKey}-${issue.number}`;
   return (
     <article
@@ -101,9 +104,9 @@ export function BoardCard({
           disabled={readOnly}
           onChange={(e) => onStatus(issue.id, e.target.value as Status)}
         >
-          {STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {s}
+          {activeStatuses(statuses).map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.name}
             </option>
           ))}
         </select>
@@ -148,7 +151,10 @@ export function LaneView({
   person,
   heading,
   meta,
+  columns,
 }: {
+  /** Колонки доски по порядку (ADR-024). */
+  columns: readonly StatusDef[];
   lane: Lane;
   first: boolean;
   collapsed: boolean;
@@ -182,14 +188,15 @@ export function LaneView({
       </header>
       {!collapsed && (
         <div className="board-columns">
-          {BOARD_COLUMNS.map((c) => {
+          {columns.map((col, index) => {
+            const c = col.id;
             const items = lane.issues.filter((i) => i.status === c);
             return (
               <Cell
                 key={c}
                 laneKey={lane.key}
                 column={c}
-                hint={first && c === 'Done' && items.length === 0}
+                hint={first && index === columns.length - 1 && items.length === 0}
               >
                 {items.map(renderCard)}
               </Cell>

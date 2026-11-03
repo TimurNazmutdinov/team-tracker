@@ -76,6 +76,7 @@ import {
   StatusChip,
   TypeIcon,
 } from '../tasks/IssueBits';
+import { statusesOf } from '../../domain/statuses';
 
 const BACKLOG = 'backlog';
 const containerId = (sprintId: string | null) => `container:${sprintId ?? BACKLOG}`;
@@ -468,7 +469,9 @@ function Section({
                     people={view.people}
                     epic={depth >= 1 || !issue.parentId ? undefined : epics.get(issue.parentId)}
                     progress={
-                      isContainer(issue.type) ? epicProgress(view.issues, issue.id) : undefined
+                      isContainer(issue.type)
+                        ? epicProgress(view.issues, issue.id, statusesOf(view))
+                        : undefined
                     }
                     subtasks={view.issues
                       .filter((s) => s.type === 'Sub-task' && s.parentId === issue.id)
@@ -768,7 +771,9 @@ function ProjectPlanning({
     );
   const activeIssue = view?.issues.find((i) => i.id === activeId);
   const capacity =
-    view && history.data ? sprintCapacity(view.sprints, view.issues, history.data) : null;
+    view && history.data
+      ? sprintCapacity(view.sprints, view.issues, history.data, statusesOf(view))
+      : null;
   const filtered = filtersActive(filters);
   const listOf = (sprintId: string | null) => {
     if (!view) return { all: [] as Issue[], items: [] as Issue[] };

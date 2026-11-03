@@ -5,6 +5,7 @@ import { burndown, type BurndownDay } from './reports';
 import { RETRO_LABELS, retroOf } from './retro';
 import type { History, RetroItem, Sprint, Status } from './schema';
 import { sprintSnapshots, summarize, type PersonRow, type SprintSummary } from './totals';
+import { isDoneStatus, statusesOf } from './statuses';
 
 // Отчёт спринта (ADR-018): цель, выполнено и перенесено, velocity, burndown, итоги по людям,
 // ретроспектива. Ничего не хранится — считается из задач, истории и записей ретроспективы.
@@ -40,7 +41,8 @@ export function sprintReport(
   today: string,
 ): SprintReport {
   const snaps = sprintSnapshots(sprint, view.issues, history);
-  const summary = summarize(snaps, view.people);
+  const st = statusesOf(view);
+  const summary = summarize(snaps, view.people, st);
   const nameOf = (id: string | null) =>
     view.people.find((p) => p.id === id)?.name ?? 'Не назначено';
   const row = (s: (typeof snaps)[number]): ReportIssue => ({
@@ -50,8 +52,8 @@ export function sprintReport(
     assignee: nameOf(s.assigneeId),
     points: s.points,
   });
-  const done = snaps.filter((s) => s.status === 'Done').map(row);
-  const carried = snaps.filter((s) => s.status !== 'Done').map(row);
+  const done = snaps.filter((s) => isDoneStatus(st, s.status)).map(row);
+  const carried = snaps.filter((s) => !isDoneStatus(st, s.status)).map(row);
   // ёмкость — по спринтам, закончившимся до начала этого, как её видел планирующий
   const earlier = view.sprints.filter((s) => s.end < sprint.start);
   const capacity = adjustedCapacity(

@@ -2,6 +2,7 @@ import { useCallback, useRef, useState, type ReactNode } from 'react';
 import { dodItems, dodRequired } from '../../domain/dod';
 import type { Issue, Project, Status } from '../../domain/schema';
 import { Dialog } from '../../ui/Dialog';
+import { useStatusList } from '../../state/queries';
 
 interface Pending {
   title: string;
@@ -24,6 +25,7 @@ export function useDodGate(): {
 } {
   const [pending, setPending] = useState<Pending | null>(null);
   const resolver = useRef<((ok: boolean) => void) | null>(null);
+  const statusList = useStatusList();
 
   const ask = useCallback(
     (
@@ -32,7 +34,8 @@ export function useDodGate(): {
       to: Status,
       key = '',
     ) => {
-      if (!issues.some((i) => dodRequired(project, i, to))) return Promise.resolve(true);
+      if (!issues.some((i) => dodRequired(project, i, to, statusList)))
+        return Promise.resolve(true);
       const title =
         issues.length === 1 && issues[0]
           ? `${key ? `${key}-` : ''}${issues[0].number} ${issues[0].title}`
@@ -42,7 +45,7 @@ export function useDodGate(): {
         setPending({ title, items: dodItems(project) });
       });
     },
-    [],
+    [statusList],
   );
 
   const finish = (ok: boolean) => {

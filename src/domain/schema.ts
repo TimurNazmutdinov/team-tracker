@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { DEFAULT_ROLES, roleSchema, type RoleDef } from './roles';
+import { DEFAULT_STATUSES, statusSchema, type StatusDef } from './statuses';
 
 // Типы и схемы сущностей: docs/data-model.md. Типы выводятся из схем, чтобы не расходиться.
 
@@ -12,13 +13,10 @@ z.config(z.locales.ru());
 export const ISSUE_TYPES = ['Epic', 'Sub-epic', 'Task', 'Bug', 'Sub-task'] as const;
 /** Типы, которые раньше были и теперь читаются как другой тип. */
 export const LEGACY_TYPES: Record<string, (typeof ISSUE_TYPES)[number]> = { Story: 'Task' };
-export const STATUSES = ['Backlog', 'To Do', 'In Progress', 'Review', 'Done'] as const;
 export const PRIORITIES = ['Highest', 'High', 'Medium', 'Low'] as const;
 export const SPRINT_STATES = ['planned', 'active', 'closed'] as const;
 /** Роли в проекте: продакт, тимлид, разработчик (ADR-016). */
 export const PROJECT_ROLES = ['product', 'lead', 'developer'] as const;
-/** Колонки доски, для которых задаётся WIP-лимит (ADR-017). */
-export const WIP_COLUMNS = ['To Do', 'In Progress', 'Review', 'Done'] as const;
 /** Виды отсутствия человека (ADR-018). */
 export const ABSENCE_KINDS = ['vacation', 'sick', 'other'] as const;
 /** Списки ретроспективы: что хорошо, что улучшить, действия (ADR-018). */
@@ -60,8 +58,8 @@ export const projectSchema = z.object({
   ownerId: nullableId.default(null),
   /** WIP-лимиты колонок доски (ADR-017): по умолчанию выключены. */
   wipEnabled: z.boolean().default(false),
-  /** Лимит задач на колонку; нет записи — без лимита. */
-  wipLimits: z.partialRecord(z.enum(WIP_COLUMNS), z.number().int().min(1).max(999)).default({}),
+  /** Лимит задач на колонку (ключ — идентификатор колонки, ADR-024); нет записи — без лимита. */
+  wipLimits: z.record(z.string(), z.number().int().min(1).max(999)).default({}),
   /** Definition of Done проекта (ADR-018): чек-лист Markdown, строки «- [ ] …»; пусто — без подтверждения. */
   dod: z.string().max(5000).default(''),
   /** Когда проект отправлен в архив (ADR-023); null — проект действует. */
@@ -132,7 +130,8 @@ export const issueSchema = z.object({
   title: z.string().min(1).max(200),
   description: z.string(),
   acceptance: z.string(),
-  status: z.enum(STATUSES),
+  /** Идентификатор колонки (ADR-024); колонки — `Dataset.statuses`. */
+  status: z.string().min(1),
   priority: z.enum(PRIORITIES),
   points: z.number().int().min(0).nullable(),
   assigneeId: nullableId,
@@ -182,6 +181,8 @@ export const datasetSchema = z.object({
   templates: z.array(templateSchema).default([]),
   /** Роли и права (ADR-021); в старых наборах данных — четыре роли по умолчанию. */
   roles: z.array(roleSchema).default(() => structuredClone(DEFAULT_ROLES)),
+  /** Колонки досок, общие для всех проектов (ADR-024); в старых наборах — пять по умолчанию. */
+  statuses: z.array(statusSchema).default(() => structuredClone(DEFAULT_STATUSES)),
   /** Отсутствия и записи ретроспектив; в старых наборах данных полей нет. */
   absences: z.array(absenceSchema).default([]),
   retroItems: z.array(retroItemSchema).default([]),
@@ -193,7 +194,8 @@ export const datasetSchema = z.object({
 });
 
 export type IssueType = (typeof ISSUE_TYPES)[number];
-export type Status = (typeof STATUSES)[number];
+/** Идентификатор колонки (статуса) задачи. */
+export type Status = string;
 export type Priority = (typeof PRIORITIES)[number];
 export type SprintState = (typeof SPRINT_STATES)[number];
 export type LinkType = (typeof LINK_TYPES)[number];
@@ -203,13 +205,12 @@ export type Project = z.infer<typeof projectSchema>;
 export type ProjectRole = (typeof PROJECT_ROLES)[number];
 export type Person = z.infer<typeof personSchema>;
 export type ProjectMember = z.infer<typeof memberSchema>;
-export type { RoleDef };
+export type { RoleDef, StatusDef };
 export type Absence = z.infer<typeof absenceSchema>;
 export type RetroItem = z.infer<typeof retroItemSchema>;
 export type AbsenceKind = (typeof ABSENCE_KINDS)[number];
 export type RetroKind = (typeof RETRO_KINDS)[number];
 export type IssueTemplate = z.infer<typeof templateSchema>;
-export type WipColumn = (typeof WIP_COLUMNS)[number];
 export type Sprint = z.infer<typeof sprintSchema>;
 export type Issue = z.infer<typeof issueSchema>;
 export type Link = z.infer<typeof linkSchema>;

@@ -14,6 +14,7 @@ export const ACTIONS = [
   'sprint.items', // добавлять и убирать задачи в спринте
   'sprint.manage', // создавать, запускать, закрывать спринты, настройки проекта
   'project.templates', // шаблоны задач проекта (ADR-017)
+  'board.columns', // колонки досок, общие для всех проектов (ADR-024)
   'people.availability', // отсутствия людей (ADR-018)
   'project.create', // создавать проекты и управлять людьми
   'project.members', // владелец и участники проекта (ADR-016)
@@ -73,6 +74,7 @@ export const DEFAULT_ROLES: RoleDef[] = [
       'sprint.items',
       'sprint.manage',
       'project.templates',
+      'board.columns',
       'people.availability',
     ],
     system: false,
@@ -91,6 +93,7 @@ export const ACTION_LABELS: Record<Action, string> = {
   'sprint.items': 'Добавлять и убирать задачи в спринте',
   'sprint.manage': 'Создавать, запускать и закрывать спринты, настройки проекта',
   'project.templates': 'Шаблоны задач, WIP и Definition of Done',
+  'board.columns': 'Колонки досок: добавлять, переименовывать, двигать, удалять',
   'people.availability': 'Отпуска и больничные людей',
   'project.create': 'Создавать проекты и управлять людьми',
   'project.members': 'Владелец и участники проекта',
@@ -111,6 +114,7 @@ export const ACTION_GROUPS: { title: string; actions: Action[] }[] = [
       'sprint.items',
       'sprint.manage',
       'project.templates',
+      'board.columns',
       'people.availability',
     ],
   },

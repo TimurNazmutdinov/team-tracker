@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { checkIntegrity } from '../../../src/domain/integrity';
 import { DEFAULT_PALETTE, PALETTES, type Palette } from '../../../src/domain/palettes';
 import { DEFAULT_ROLES, roleSchema } from '../../../src/domain/roles';
+import { DEFAULT_STATUSES, statusSchema } from '../../../src/domain/statuses';
 import type { Role } from '../../../src/domain/permissions';
 import {
   commentSchema,
@@ -93,6 +94,8 @@ export const backupJsonSchema = z.object({
     templates: z.array(templateSchema).default([]),
     // в копиях до ADR-021 ролей нет — тогда четыре роли по умолчанию
     roles: z.array(roleSchema).default(() => structuredClone(DEFAULT_ROLES)),
+    // в копиях до ADR-024 колонок нет — тогда пять колонок по умолчанию
+    statuses: z.array(statusSchema).default(() => structuredClone(DEFAULT_STATUSES)),
     // в копиях до ADR-018 отсутствий и записей ретроспектив нет
     absences: z.array(absenceSchema).default([]),
     retroItems: z.array(retroItemSchema).default([]),
@@ -128,6 +131,7 @@ export function snapshotProblems(snapshot: Snapshot): string[] {
     'members',
     'templates',
     'roles',
+    'statuses',
     'absences',
     'retroItems',
     'sprints',

@@ -4,7 +4,8 @@ import { LabelsInput } from '../../ui/LabelsInput';
 import { parentCandidates, type FieldErrors, type View } from '../../domain/actions';
 import { canHavePoints } from '../../domain/hierarchy';
 import type { Issue, Priority, Status } from '../../domain/schema';
-import { STATUSES } from '../../domain/schema';
+import { activeStatuses } from '../../domain/statuses';
+import { useStatusList } from '../../state/queries';
 import { useActions } from '../../state/actions';
 import { usePermissions } from '../../state/current-user';
 import { SelectField, TextField } from '../../ui/fields';
@@ -29,6 +30,7 @@ export function IssueSidebar({
   const actions = useActions(view.projectId);
   const perms = usePermissions();
   const dod = useDodGate();
+  const statusList = useStatusList();
   const [errors, setErrors] = useState<FieldErrors>({});
   const [points, setPoints] = useState(issue.points === null ? '' : String(issue.points));
   const [dueDate, setDueDate] = useState(issue.dueDate ?? '');
@@ -51,7 +53,7 @@ export function IssueSidebar({
         label="Статус"
         value={issue.status}
         disabled={readOnly || !perms.canChangeStatus(issue)}
-        options={STATUSES.map((s) => ({ value: s, label: s }))}
+        options={activeStatuses(statusList).map((s) => ({ value: s.id, label: s.name }))}
         onChange={(v) =>
           void (async () => {
             if (await dod.ask(view.project, [issue], v as Status, projectKey)) {

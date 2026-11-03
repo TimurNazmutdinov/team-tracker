@@ -1,4 +1,5 @@
 import { isContainer } from './hierarchy';
+import { DEFAULT_STATUSES } from './statuses';
 import { DEFAULT_ROLES } from './roles';
 import type {
   Comment,
@@ -276,6 +277,7 @@ export function generateLoadData(options: Partial<LoadOptions> = {}): Dataset {
     members,
     templates,
     roles: structuredClone(DEFAULT_ROLES),
+    statuses: structuredClone(DEFAULT_STATUSES),
     absences: [],
     retroItems: [],
     sprints,

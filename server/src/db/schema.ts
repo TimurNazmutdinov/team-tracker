@@ -45,6 +45,15 @@ export const roles = pgTable('roles', {
   system: boolean('system').notNull().default(false),
 });
 
+/** Колонки досок, общие для всех проектов (ADR-024); задача хранит id колонки в `issues.status`. */
+export const statuses = pgTable('statuses', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  category: text('category').notNull(),
+  order: integer('order').notNull(),
+  archived: boolean('archived').notNull().default(false),
+});
+
 /** Отсутствия людей (ADR-018); без внешнего ключа на человека, как owner_id. */
 export const absences = pgTable(
   'absences',

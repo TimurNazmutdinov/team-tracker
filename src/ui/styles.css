@@ -851,9 +851,10 @@ textarea[aria-invalid='true'] {
   gap: 0.5rem;
 }
 
+/* Число колонок задаётся данными (ADR-024): --cols на доске; --extra — место под «+ колонка» */
 .board-columns {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--cols, 4), minmax(9.5rem, 1fr)) var(--extra, 0px);
   gap: 0.6rem;
 }
 
@@ -955,8 +956,8 @@ textarea[aria-invalid='true'] {
 }
 
 @media (max-width: 52rem) {
-  .board-columns {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .board {
+    overflow-x: auto;
   }
 }
 
@@ -2711,4 +2712,179 @@ a.button {
 }
 .series-preview li {
   padding: 0.1rem 0;
+}
+
+/* Колонки по типу (ADR-024): новые колонки окрашиваются по типу; у прежних — свой цвет (правила выше
+   с двумя классами сильнее этих) */
+.cat-backlog {
+  background: var(--st-backlog);
+}
+.cat-todo {
+  background: var(--st-todo);
+}
+.cat-progress {
+  background: var(--st-progress);
+}
+.cat-done {
+  background: var(--st-done);
+}
+/* новые колонки на CFD — цвет по типу (ADR-024) */
+.cfd-cat-backlog {
+  fill: var(--st-backlog);
+  background: var(--st-backlog);
+}
+.cfd-cat-todo {
+  fill: var(--st-todo);
+  background: var(--st-todo);
+}
+.cfd-cat-progress {
+  fill: var(--st-progress);
+  background: var(--st-progress);
+}
+.cfd-cat-done {
+  fill: var(--st-done);
+  background: var(--st-done);
+}
+
+/* Редактор колонок на доске (D-1, wireframes.md 27.2) */
+.col-head {
+  position: relative;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.4rem;
+}
+.col-head {
+  flex-wrap: wrap;
+}
+.col-head > strong {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* число задач и sp — второй строкой, чтобы название и «⋯» не теснились */
+.col-head > .muted {
+  order: 10;
+  flex-basis: 100%;
+  white-space: nowrap;
+  font-size: 0.85rem;
+}
+.col-head > .wip-over {
+  order: 11;
+}
+.col-head[draggable='true'] {
+  cursor: grab;
+}
+.col-head.drop-left {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.col-head.drop-right {
+  box-shadow: inset -3px 0 0 var(--accent);
+}
+.col-name-input {
+  min-width: 0;
+  width: 100%;
+  font-weight: 700;
+}
+.cat-mark {
+  display: inline-block;
+  flex: none;
+  width: 0.7rem;
+  height: 0.7rem;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+}
+.cat-mark-progress {
+  background: linear-gradient(90deg, var(--ink) 50%, transparent 50%);
+}
+.cat-mark-done {
+  background: var(--ink);
+}
+.cat-mark-backlog {
+  border-style: dashed;
+}
+.col-menu-wrap {
+  flex: none;
+}
+.col-menu-button {
+  font-weight: 700;
+}
+.col-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  min-width: 15rem;
+  padding: 0.3rem;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px var(--shadow);
+}
+.col-menu > button,
+.col-menu > a {
+  text-align: left;
+  border: 0;
+  background: none;
+  padding: 0.4rem 0.5rem;
+  color: var(--ink);
+}
+.col-menu > button:hover,
+.col-menu > a:hover,
+.col-menu-types button:hover {
+  background: var(--accent-bg);
+}
+.col-menu > button:disabled {
+  color: var(--muted);
+}
+.col-menu-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.3rem 0.4rem;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.col-menu-types button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: none;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.85rem;
+}
+.col-menu-types button.selected {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  font-weight: 700;
+}
+.danger-text {
+  color: var(--danger) !important;
+}
+.add-column {
+  align-self: stretch;
+  min-height: 2.2rem;
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+  background: none;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+.add-column.open {
+  position: relative;
+  border-style: solid;
+  padding: 0.2rem;
+}
+.add-column.open input {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 12rem;
+  z-index: 5;
 }

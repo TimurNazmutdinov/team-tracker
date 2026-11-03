@@ -19,7 +19,7 @@ LINK_TYPES = {"blocks", "relates", "duplicates"}
 PROJECT_ROLES = {"product", "lead", "developer"}
 ACTIONS = {
     "issue.create", "issue.edit", "issue.comment", "status.own", "status.other", "backlog.rank",
-    "sprint.items", "sprint.manage", "project.templates", "people.availability", "project.create",
+    "sprint.items", "sprint.manage", "project.templates", "board.columns", "people.availability", "project.create",
     "project.members", "users.manage", "backups.manage", "system.diagnose",
 }
 ABSENCE_KINDS = {"vacation", "sick", "other"}

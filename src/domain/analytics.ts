@@ -1,7 +1,15 @@
 import { isContainer } from './hierarchy';
 import type { View } from './actions';
 import { epicProgress } from './progress';
-import { STATUSES, type History, type Issue, type IssueType, type Status } from './schema';
+import type { History, Issue, IssueType, Status } from './schema';
+import {
+  DEFAULT_STATUSES,
+  activeStatuses,
+  categoryOf,
+  isDoneStatus,
+  statusesOf,
+  type Statuses,
+} from './statuses';
 import { addDays } from './settings';
 
 // Аналитика (ADR-019): CFD, время цикла и выполнения, нагрузка, дорожная карта эпиков. Ничего не
@@ -56,13 +64,23 @@ export interface CfdDay {
   total: number;
 }
 
-const emptyCounts = () => Object.fromEntries(STATUSES.map((s) => [s, 0])) as Record<Status, number>;
+const emptyCounts = (statuses: Statuses) =>
+  Object.fromEntries(activeStatuses(statuses).map((s) => [s.id, 0])) as Record<Status, number>;
 
-/** Накопленная диаграмма потока: число задач в каждом статусе на конец каждого дня периода. */
-export function cfd(issues: Issue[], history: History[], from: string, to: string): CfdDay[] {
+/**
+ * Накопленная диаграмма потока: число задач в каждой колонке на конец каждого дня периода. Колонки —
+ * общие (ADR-024); задачи удалённой колонки считаются в ней, пока были там.
+ */
+export function cfd(
+  issues: Issue[],
+  history: History[],
+  from: string,
+  to: string,
+  statuses: Statuses = DEFAULT_STATUSES,
+): CfdDay[] {
   const days = dayList(from, to);
   const timelines = statusTimelines(issues, history);
-  const rows: CfdDay[] = days.map((date) => ({ date, counts: emptyCounts(), total: 0 }));
+  const rows: CfdDay[] = days.map((date) => ({ date, counts: emptyCounts(statuses), total: 0 }));
   for (const issue of issues) {
     const events = timelines.get(issue.id) ?? [];
     let pointer = -1;
@@ -72,7 +90,8 @@ export function cfd(issues: Issue[], history: History[], from: string, to: strin
         pointer += 1;
       if (pointer < 0 || issue.createdAt > end) continue;
       const row = rows[i] as CfdDay;
-      row.counts[(events[pointer] as StatusEvent).status] += 1;
+      const status = (events[pointer] as StatusEvent).status;
+      row.counts[status] = (row.counts[status] ?? 0) + 1;
       row.total += 1;
     }
   }
@@ -84,7 +103,7 @@ export function cfd(issues: Issue[], history: History[], from: string, to: strin
 export interface TimedIssue {
   issueId: string;
   type: IssueType;
-  /** От последнего входа в In Progress до Done, дни; null, если задача в работу не входила. */
+  /** От последнего входа в колонку «в работе» до «готово», дни; null, если в работу не входила. */
   cycle: number | null;
   /** От создания до Done, дни. */
   lead: number;
@@ -101,30 +120,33 @@ export function timedIssues(
   history: History[],
   from: string,
   to: string,
+  statuses: Statuses = DEFAULT_STATUSES,
 ): TimedIssue[] {
+  const done = (id: string) => isDoneStatus(statuses, id);
+  const working = (id: string) => categoryOf(statuses, id) === 'progress';
   const timelines = statusTimelines(issues, history);
   const start = `${from}T00:00:00Z`;
   const end = `${to}T23:59:59Z`;
   const out: TimedIssue[] = [];
   for (const issue of issues) {
-    if (isContainer(issue.type) || issue.status !== 'Done') continue;
+    if (isContainer(issue.type) || !done(issue.status)) continue;
     const events = timelines.get(issue.id) ?? [];
     let doneIndex = -1;
     events.forEach((e, i) => {
-      if (e.status === 'Done') doneIndex = i;
+      if (done(e.status)) doneIndex = i;
     });
-    const done = events[doneIndex];
-    if (!done || done.at < start || done.at > end) continue;
+    const finished = events[doneIndex];
+    if (!finished || finished.at < start || finished.at > end) continue;
     // последний вход в Done: событие, после которого задача уже не покидала Done
     let enter = doneIndex;
-    while (enter > 0 && (events[enter - 1] as StatusEvent).status === 'Done') enter -= 1;
+    while (enter > 0 && done((events[enter - 1] as StatusEvent).status)) enter -= 1;
     const doneAt = (events[enter] as StatusEvent).at;
     let progress: StatusEvent | undefined;
     for (let i = enter - 1; i >= 0; i -= 1) {
-      if ((events[i] as StatusEvent).status === 'In Progress') {
+      if (working((events[i] as StatusEvent).status)) {
         progress = events[i];
         // ищем начало последнего непрерывного пребывания в работе
-        while (i > 0 && (events[i - 1] as StatusEvent).status === 'In Progress') {
+        while (i > 0 && working((events[i - 1] as StatusEvent).status)) {
           i -= 1;
           progress = events[i];
         }
@@ -238,7 +260,7 @@ export function workload(views: View[]): Workload {
   for (const view of views) {
     const active = new Set(view.sprints.filter((s) => s.state === 'active').map((s) => s.id));
     for (const issue of view.issues) {
-      if (isContainer(issue.type) || issue.status === 'Done') continue;
+      if (isContainer(issue.type) || isDoneStatus(statusesOf(view), issue.status)) continue;
       if (issue.sprintId === null || !active.has(issue.sprintId)) continue;
       const person = view.people.find((p) => p.id === issue.assigneeId);
       const key = person ? person.id : null;
@@ -324,7 +346,7 @@ export function roadmap(views: View[]): RoadmapEpic[] {
         title: epic.title,
         start,
         end,
-        percent: epicProgress(view.issues, epic.id).percent,
+        percent: epicProgress(view.issues, epic.id, statusesOf(view)).percent,
         status: epic.status,
         tasks: children
           .filter((c) => c.type !== 'Sub-task')

@@ -75,7 +75,7 @@ test('планирование: задача переносится в идущ�
 test('доска: смена статуса карточки', async () => {
   await page.goto('/projects/DEMO/board');
   // задача в спринте со статусом Backlog на доске скрыта: предупреждение предлагает перевести её в To Do
-  await page.getByRole('button', { name: 'Перевести в To Do' }).click();
+  await page.getByRole('button', { name: /Перевести в/ }).click();
   const card = page.locator('.board-card', { hasText: TITLE });
   await expect(card).toBeVisible();
   await card.getByLabel(/^Статус/).selectOption('Done');

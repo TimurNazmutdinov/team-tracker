@@ -395,6 +395,7 @@ export function buildApp(options: AppOptions): FastifyInstance {
   app.get('/api/people', async (req) => (await requireUser(req), readers.people(db)));
   app.get('/api/templates', async (req) => (await requireUser(req), readers.templates(db)));
   app.get('/api/roles', async (req) => (await requireUser(req), readers.roles(db)));
+  app.get('/api/statuses', async (req) => (await requireUser(req), readers.statuses(db)));
   app.get('/api/absences', async (req) => (await requireUser(req), readers.absences(db)));
   app.get('/api/members', async (req) => (await requireUser(req), readers.members(db)));
 

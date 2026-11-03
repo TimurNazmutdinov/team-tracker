@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import type { FieldErrors, View } from '../../domain/actions';
-import { ISSUE_TYPES, WIP_COLUMNS, type IssueTemplate, type IssueType } from '../../domain/schema';
+import { ISSUE_TYPES, type IssueTemplate, type IssueType } from '../../domain/schema';
+import { boardStatuses, statusesOf } from '../../domain/statuses';
 import { templatesOf, type TemplateInput } from '../../domain/templates';
 import { WIP_MAX } from '../../domain/wip';
 import { useActions } from '../../state/actions';
@@ -18,8 +19,9 @@ export function WipSettingsForm({ view }: { view: View }) {
   const canEdit = usePermissions().can('sprint.manage');
   const push = useNotices((s) => s.push);
   const [enabled, setEnabled] = useState(view.project.wipEnabled);
+  const columns = boardStatuses(statusesOf(view));
   const [limits, setLimits] = useState<Record<string, string>>(
-    Object.fromEntries(WIP_COLUMNS.map((c) => [c, String(view.project.wipLimits[c] ?? '')])),
+    Object.fromEntries(columns.map((c) => [c.id, String(view.project.wipLimits[c.id] ?? '')])),
   );
   const [errors, setErrors] = useState<FieldErrors>({});
 
@@ -54,11 +56,11 @@ export function WipSettingsForm({ view }: { view: View }) {
         Включить WIP-лимиты
       </label>
       <div className="form-row">
-        {WIP_COLUMNS.map((c) => (
+        {columns.map(({ id: c, name }) => (
           <TextField
             key={c}
             name={`wip-${c}`}
-            label={`Лимит: ${c}`}
+            label={`Лимит: ${name}`}
             type="number"
             min="1"
             disabled={!canEdit || !enabled}

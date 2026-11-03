@@ -1,6 +1,7 @@
 import { isContainer } from './hierarchy';
 import { velocity } from './reports';
 import type { History, Issue, Sprint } from './schema';
+import { DEFAULT_STATUSES, isDoneStatus, type Statuses } from './statuses';
 
 // Планирование спринтов и история (ADR-014): ёмкость и заполнение спринта, фильтры
 // бэклога, закрытые спринты для вкладки «Прошлые спринты».
@@ -19,8 +20,15 @@ export interface Capacity {
   velocities: number[];
 }
 
-export function sprintCapacity(sprints: Sprint[], issues: Issue[], history: History[]): Capacity {
-  const closed = velocity(sprints, issues, history).bars.filter((b) => b.state === 'closed');
+export function sprintCapacity(
+  sprints: Sprint[],
+  issues: Issue[],
+  history: History[],
+  statuses: Statuses = DEFAULT_STATUSES,
+): Capacity {
+  const closed = velocity(sprints, issues, history, statuses).bars.filter(
+    (b) => b.state === 'closed',
+  );
   const used = closed.slice(-CAPACITY_SPRINTS).map((b) => b.velocity);
   if (used.length === 0) return { value: null, sprints: 0, velocities: [] };
   const value = Math.round((used.reduce((a, b) => a + b, 0) / used.length) * 10) / 10;
@@ -140,15 +148,18 @@ export function closedSprints(
   sprints: Sprint[],
   issues: Issue[],
   history: History[],
+  statuses: Statuses = DEFAULT_STATUSES,
 ): ClosedSprint[] {
-  const bars = new Map(velocity(sprints, issues, history).bars.map((b) => [b.sprintId, b]));
+  const bars = new Map(
+    velocity(sprints, issues, history, statuses).bars.map((b) => [b.sprintId, b]),
+  );
   return sprints
     .filter((s) => s.state === 'closed')
     .sort((a, b) => b.end.localeCompare(a.end))
     .map((sprint) => ({
       sprint,
       done: issues
-        .filter((i) => i.sprintId === sprint.id && i.status === 'Done')
+        .filter((i) => i.sprintId === sprint.id && isDoneStatus(statuses, i.status))
         .sort((a, b) => a.number - b.number),
       velocity: bars.get(sprint.id)?.velocity ?? 0,
     }));

@@ -11,7 +11,6 @@ import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import type { View } from '../../domain/actions';
 import {
-  BOARD_COLUMNS,
   NO_BOARD_FILTERS,
   boardCards,
   columnStats,
@@ -22,6 +21,7 @@ import {
   type BoardFilters,
   type Lane,
 } from '../../domain/board';
+import { boardStatuses, startStatusId, statusName } from '../../domain/statuses';
 import {
   ISSUE_TYPES,
   PRIORITIES,
@@ -37,13 +37,14 @@ import { wipOverflows } from '../../domain/wip';
 import { useActionsFor } from '../../state/actions';
 import { usePermissions } from '../../state/current-user';
 import { useNotices } from '../../state/notices';
-import { useProjectViews } from '../../state/queries';
+import { useProjectViews, useStatusList } from '../../state/queries';
 import { dateRange, num } from '../../ui/format';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
 import { useDodGate } from '../tasks/DodGate';
 import { BoardNav } from './BoardNav';
 import { BoardCard, LaneView, plural } from './BoardParts';
+import { AddColumn, ColumnHead, useCanEditColumns } from './Columns';
 
 interface ProjectLane {
   view: View;
@@ -74,6 +75,8 @@ export function MultiBoard({
   const perms = usePermissions();
   const push = useNotices((s) => s.push);
   const dod = useDodGate();
+  const statusList = useStatusList();
+  const canEditColumns = useCanEditColumns();
   const [filters, setFilters] = useState<BoardFilters>(NO_BOARD_FILTERS);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -91,18 +94,21 @@ export function MultiBoard({
     );
   }
 
+  const columns = boardStatuses(statusList);
+  const columnIds = columns.map((c) => c.id);
+  const start = startStatusId(statusList);
   const lanes: ProjectLane[] = views.map((view) => {
     const sprint = activeSprint(view.sprints);
-    const all = sprint ? boardCards(view.issues, sprint.id) : [];
+    const all = sprint ? boardCards(view.issues, sprint.id, statusList) : [];
     return {
       view,
       sprint,
       lane: { key: view.projectId, title: view.project.key, issues: filterCards(all, filters) },
-      hidden: sprint ? hiddenBacklogCards(view.issues, sprint.id) : [],
+      hidden: sprint ? hiddenBacklogCards(view.issues, sprint.id, statusList) : [],
     };
   });
   const allCards = lanes.flatMap((l) => l.lane.issues);
-  const stats = columnStats(allCards);
+  const stats = columnStats(allCards, columnIds);
   const issueOf = (id: string) => lanes.flatMap((l) => l.lane.issues).find((i) => i.id === id);
   const keyOf = (view: View, issue: Issue | undefined) =>
     issue ? `${view.project.key}-${issue.number}` : null;
@@ -217,24 +223,35 @@ export function MultiBoard({
         onDragEnd={onDragEnd}
         onDragCancel={() => setActiveId(null)}
       >
-        <div className="board" role="group" aria-label="Доска нескольких проектов">
+        <div
+          className="board"
+          role="group"
+          aria-label="Доска нескольких проектов"
+          style={
+            {
+              '--cols': columns.length,
+              '--extra': canEditColumns ? '2.6rem' : '0px',
+            } as React.CSSProperties
+          }
+        >
           <div className="board-columns">
-            {BOARD_COLUMNS.map((c) => (
-              <div key={c} className={`col-head status-${c.toLowerCase().replace(' ', '-')}`}>
-                <strong>{c}</strong>
-                <span className="muted">
-                  {stats[c].count} · {stats[c].points} sp
-                </span>
-              </div>
+            {columns.map((col) => (
+              <ColumnHead
+                key={col.id}
+                status={col}
+                summary={`${stats[col.id]?.count ?? 0} · ${stats[col.id]?.points ?? 0} sp`}
+              />
             ))}
+            {canEditColumns && <AddColumn />}
           </div>
           {lanes.map(({ view, sprint, lane, hidden }, index) => {
             const total = statsOf(lane.issues);
             const over = wipOverflows(
               view.project,
               Object.fromEntries(
-                BOARD_COLUMNS.map((c) => [c, lane.issues.filter((i) => i.status === c).length]),
+                columnIds.map((c) => [c, lane.issues.filter((i) => i.status === c).length]),
               ),
+              statusList,
             );
             return (
               <div key={lane.key}>
@@ -257,7 +274,8 @@ export function MultiBoard({
                       </span>
                     </>
                   }
-                  meta={`${total.count} ${plural(total.count)} · ${num(total.points)} sp${over.map((o) => ` · ⚠ WIP ${o.column}: ${o.count} из ${o.limit}`).join('')}`}
+                  meta={`${total.count} ${plural(total.count)} · ${num(total.points)} sp${over.map((o) => ` · ⚠ WIP ${statusName(statusList, o.column)}: ${o.count} из ${o.limit}`).join('')}`}
+                  columns={columns}
                   renderCard={(issue) => (
                     <BoardCard
                       key={issue.id}
@@ -278,17 +296,17 @@ export function MultiBoard({
                 />
                 {hidden.length > 0 && (
                   <p className="warn" role="status">
-                    {view.project.key}: {hidden.length} {plural(hidden.length)} в статусе Backlog на
-                    доске не показываются.{' '}
+                    {view.project.key}: {hidden.length} {plural(hidden.length)} в колонке «бэклог»
+                    на доске не показываются.{' '}
                     <button
                       type="button"
                       onClick={() =>
                         void Promise.all(
-                          hidden.map((i) => changeStatus(view.projectId, i.id, 'To Do')),
+                          hidden.map((i) => changeStatus(view.projectId, i.id, start)),
                         )
                       }
                     >
-                      Перевести в To Do
+                      Перевести в «{statusName(statusList, start)}»
                     </button>
                   </p>
                 )}

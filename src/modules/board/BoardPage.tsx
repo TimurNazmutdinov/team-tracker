@@ -10,7 +10,6 @@ import {
 import { useState, type ReactNode } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 import {
-  BOARD_COLUMNS,
   GROUP_FIELDS,
   GROUP_LABELS,
   NO_BOARD_FILTERS,
@@ -25,6 +24,7 @@ import {
   type BoardColumn,
   type BoardFilters,
 } from '../../domain/board';
+import { boardStatuses, startStatusId, statusName } from '../../domain/statuses';
 import {
   ISSUE_TYPES,
   PRIORITIES,
@@ -44,13 +44,14 @@ import { usePermissions } from '../../state/current-user';
 import { useBoardPrefs } from '../../state/board-prefs';
 import { useNotices } from '../../state/notices';
 import { useProjectScope } from '../../state/project-scope';
-import { useView } from '../../state/queries';
+import { useStatusList, useView } from '../../state/queries';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
 import { useDodGate } from '../tasks/DodGate';
 import { BulkBar } from '../tasks/BulkBar';
 import { BoardNav } from './BoardNav';
 import { BoardCard, LaneView, plural } from './BoardParts';
+import { AddColumn, ColumnHead, useCanEditColumns } from './Columns';
 import { MultiBoard } from './MultiBoard';
 
 /** Доска одного проекта (wireframes.md, раздел 5): колонки статусов, группировка по полю, перенос карточек. */
@@ -67,6 +68,8 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
   const dod = useDodGate();
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const perms = usePermissions();
+  const statusList = useStatusList();
+  const canEditColumns = useCanEditColumns();
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor),
@@ -94,15 +97,18 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
   }
 
   const readOnly = sprint.state === 'closed';
-  const all = boardCards(view.issues, sprint.id);
+  const columns = boardStatuses(statusList);
+  const columnIds = columns.map((c) => c.id);
+  const all = boardCards(view.issues, sprint.id, statusList);
   const cards = filterCards(all, filters);
-  const hidden = hiddenBacklogCards(view.issues, sprint.id);
+  const hidden = hiddenBacklogCards(view.issues, sprint.id, statusList);
+  const start = startStatusId(statusList);
   const lanes = groupLanes(cards, groupBy, {
     people: view.people,
     issues: view.issues,
     projectKey: project.key,
   });
-  const stats = columnStats(cards);
+  const stats = columnStats(cards, columnIds);
   const issueKey = (id: string | null) => {
     const found = view.issues.find((i) => i.id === id);
     return found ? `${project.key}-${found.number}` : null;
@@ -114,11 +120,11 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
       .join(' › ');
   const activeIssue = view.issues.find((i) => i.id === activeId);
 
-  const unfiltered = columnStats(all);
-  const counts = Object.fromEntries(BOARD_COLUMNS.map((c) => [c, unfiltered[c].count]));
+  const unfiltered = columnStats(all, columnIds);
+  const counts = Object.fromEntries(columnIds.map((c) => [c, unfiltered[c]?.count ?? 0]));
   const warnWip = (status: string, adding: number) => {
     const over = wipAfterMove(project, counts, status, adding);
-    if (over) push(wipMessage(over), 'warn');
+    if (over) push(wipMessage(over, statusList), 'warn');
   };
 
   const changeStatus = async (issueId: string, status: Status) => {
@@ -170,7 +176,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
   };
 
   const moveHiddenToTodo = async () => {
-    for (const issue of hidden) await changeStatus(issue.id, 'To Do');
+    for (const issue of hidden) await changeStatus(issue.id, start);
   };
 
   const toggleLane = (key: string) =>
@@ -286,7 +292,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
       )}
       {hidden.length > 0 && !readOnly && (
         <p className="warn" role="status">
-          В спринте {hidden.length} {plural(hidden.length)} в статусе Backlog — на доске такие
+          В спринте {hidden.length} {plural(hidden.length)} в колонке «бэклог» — на доске такие
           задачи не показываются:{' '}
           {hidden.map((i, n) => (
             <span key={i.id}>
@@ -298,7 +304,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
           ))}
           .{' '}
           <button type="button" onClick={() => void moveHiddenToTodo()}>
-            Перевести в To Do
+            Перевести в «{statusName(statusList, start)}»
           </button>
         </p>
       )}
@@ -316,22 +322,39 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
           onDragEnd={onDragEnd}
           onDragCancel={() => setActiveId(null)}
         >
-          <div className="board" role="group" aria-label={`Доска ${sprint.name}`}>
+          <div
+            className="board"
+            role="group"
+            aria-label={`Доска ${sprint.name}`}
+            style={
+              {
+                '--cols': columns.length,
+                '--extra': canEditColumns ? '2.6rem' : '0px',
+              } as React.CSSProperties
+            }
+          >
             <div className="board-columns">
-              {BOARD_COLUMNS.map((c) => (
-                <div key={c} className={`col-head status-${c.toLowerCase().replace(' ', '-')}`}>
-                  <strong>{c}</strong>
-                  <span className="muted">
-                    {stats[c].count} · {stats[c].points} sp
-                  </span>
-                  {wipLimit(project, c) !== undefined &&
-                    (counts[c] ?? 0) > (wipLimit(project, c) ?? 0) && (
-                      <span className="wip-over" role="status">
-                        ⚠ WIP {counts[c]} из {wipLimit(project, c)}
-                      </span>
-                    )}
-                </div>
-              ))}
+              {columns.map((col) => {
+                const c = col.id;
+                const limit = wipLimit(project, c);
+                return (
+                  <ColumnHead
+                    key={c}
+                    status={col}
+                    summary={`${stats[c]?.count ?? 0} · ${stats[c]?.points ?? 0} sp`}
+                    wipHref={`/projects/${project.key}/settings`}
+                    warning={
+                      limit !== undefined &&
+                      (counts[c] ?? 0) > limit && (
+                        <span className="wip-over" role="status">
+                          ⚠ WIP {counts[c]} из {limit}
+                        </span>
+                      )
+                    }
+                  />
+                );
+              })}
+              {canEditColumns && <AddColumn />}
             </div>
             {lanes.map((lane, index) => (
               <LaneView
@@ -340,6 +363,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
                 first={index === 0}
                 collapsed={collapsed.has(lane.key)}
                 onToggle={() => toggleLane(lane.key)}
+                columns={columns}
                 renderCard={(issue) => (
                   <BoardCard
                     key={issue.id}
@@ -369,8 +393,9 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
         </DndContext>
       )}
       <p className="muted small">
-        Колонка Backlog на доске не показывается. Карточки переносятся за ручку ⋮⋮ или выбором
+        Колонка «бэклог» на доске не показывается. Карточки переносятся за ручку ⋮⋮ или выбором
         статуса; допустим любой переход, смена пишется в историю.
+        {canEditColumns && ' Колонки: двойной клик — переименовать, «⋯» — меню, «+» — новая.'}
       </p>
     </>
   );

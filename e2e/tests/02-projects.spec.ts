@@ -57,7 +57,10 @@ test('фильтр по проектам: «Все» открывает доск
   await expect(page.locator('.lane')).toHaveCount(2);
   await expect(page.locator('.board-nav')).toContainText('Текущие спринты проектов: 2');
   // задача нового проекта в статусе Backlog скрыта: переводим её в To Do, и появляется карточка с меткой проекта
-  await page.getByRole('button', { name: 'Перевести в To Do' }).click();
+  await page
+    .getByRole('button', { name: /Перевести в/ })
+    .first()
+    .click();
   await expect(page.locator('.board-card .project-tag').first()).toBeVisible();
 });
 

@@ -10,6 +10,7 @@ import type {
   IssueTemplate,
   Absence,
   RoleDef,
+  StatusDef,
   RetroItem,
   Sprint,
 } from '../../domain/schema';
@@ -84,6 +85,10 @@ export class ApiStorage implements TrackerStorage {
 
   getRoles() {
     return this.request<RoleDef[]>('GET', '/roles');
+  }
+
+  getStatuses() {
+    return this.request<StatusDef[]>('GET', '/statuses');
   }
 
   getAbsences() {

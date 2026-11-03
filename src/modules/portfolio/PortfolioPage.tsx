@@ -7,12 +7,13 @@ import {
   type PortfolioSort,
   type ProjectOverview,
 } from '../../domain/portfolio';
-import { STATUSES, type Issue } from '../../domain/schema';
+import type { Issue } from '../../domain/schema';
+import { activeStatuses, statusClass } from '../../domain/statuses';
 import { descendants, treeRows } from '../../domain/tree';
 import { StatusChip } from '../tasks/IssueBits';
 import { usePermissions } from '../../state/current-user';
 import { useProjectScope } from '../../state/project-scope';
-import { useProjectHistories, useProjectViews } from '../../state/queries';
+import { useProjectHistories, useProjectViews, useStatusList } from '../../state/queries';
 import { dateRange, num, projectWord } from '../../ui/format';
 import { Loading } from '../../ui/Loading';
 import { ProjectFilter } from '../../ui/ProjectFilter';
@@ -79,7 +80,9 @@ function OverviewCard({
       return next;
     });
   const key = o.project.key;
-  const total = STATUSES.reduce((n, s) => n + o.byStatus[s], 0);
+  const statusList = useStatusList();
+  const columns = activeStatuses(statusList).filter((s) => (o.byStatus[s.id] ?? 0) > 0);
+  const total = Object.values(o.byStatus).reduce((n, v) => n + v, 0);
   const risky = o.risks.length > 0;
   const link = (page: string) => `/projects/${key}/${page}?projects=${key}`;
   return (
@@ -129,20 +132,16 @@ function OverviewCard({
           {total > 0 && (
             <>
               <div className="status-bar" role="img" aria-label="Задачи спринта по статусам">
-                {STATUSES.map((s) =>
-                  o.byStatus[s] > 0 ? (
-                    <span
-                      key={s}
-                      className={`status-${s.toLowerCase().replace(' ', '-')}`}
-                      style={{ flexGrow: o.byStatus[s] }}
-                    />
-                  ) : null,
-                )}
+                {columns.map((s) => (
+                  <span
+                    key={s.id}
+                    className={statusClass(statusList, s.id)}
+                    style={{ flexGrow: o.byStatus[s.id] ?? 0 }}
+                  />
+                ))}
               </div>
               <p className="muted small">
-                {STATUSES.filter((s) => o.byStatus[s] > 0)
-                  .map((s) => `${s} ${o.byStatus[s]}`)
-                  .join(' · ')}
+                {columns.map((s) => `${s.name} ${o.byStatus[s.id] ?? 0}`).join(' · ')}
               </p>
             </>
           )}
@@ -258,6 +257,7 @@ export function PortfolioPage() {
   const projects = scope.projects.length === 0 && scope.source === 'default' ? all : scope.projects;
   const views = useProjectViews(projects);
   const histories = useProjectHistories(projects);
+  const statusList = useStatusList();
   const [sort, setSort] = useState<PortfolioSort>('risk');
   const [onlyRisk, setOnlyRisk] = useState(false);
 
@@ -299,6 +299,7 @@ export function PortfolioPage() {
       links: view.links,
       history: histories.get(view.projectId) ?? [],
       today: now,
+      statuses: statusList,
     }),
   );
   const shown = sortOverviews(

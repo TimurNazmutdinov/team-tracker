@@ -20,6 +20,7 @@ import { Avatar, EpicProgressView, StatusChip, TypeIcon } from './IssueBits';
 import { IssueActivity } from './IssueActivity';
 import { IssueLinks } from './IssueLinks';
 import { IssueSidebar } from './IssueSidebar';
+import { statusesOf } from '../../domain/statuses';
 
 /** Карточка задачи: /projects/:key/issues/:number (wireframes.md, раздел 8). */
 export function IssuePage() {
@@ -84,7 +85,7 @@ function IssueView({ issue, view, projectKey }: { issue: Issue; view: View; proj
           {isEpic && (
             <section aria-labelledby="progress-title">
               <h2 id="progress-title">Прогресс</h2>
-              <EpicProgressView progress={epicProgress(view.issues, issue.id)} />
+              <EpicProgressView progress={epicProgress(view.issues, issue.id, statusesOf(view))} />
               <p className="muted small">
                 Считается по story points вложенных Task и Bug, не хранится и не входит в velocity и
                 burndown.

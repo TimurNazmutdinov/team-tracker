@@ -1,6 +1,7 @@
 import type { FieldErrors, Result, View } from './actions';
 import { checklistItems } from './checklist';
 import type { Issue, Project, Status } from './schema';
+import { DEFAULT_STATUSES, isDoneStatus, type Statuses } from './statuses';
 
 // Definition of Done проекта (ADR-018): чек-лист в Markdown («- [ ] …»). При переводе задачи
 // в Done пользователь подтверждает все пункты; пустой список — подтверждения нет.
@@ -19,9 +20,13 @@ export function dodRequired(
   project: Pick<Project, 'dod'>,
   from: Pick<Issue, 'status'> | Status,
   to: Status,
+  statuses: Statuses = DEFAULT_STATUSES,
 ): boolean {
   const status = typeof from === 'string' ? from : from.status;
-  return to === 'Done' && status !== 'Done' && dodItems(project).length > 0;
+  // DoD спрашивается при переходе в любую колонку типа «готово» (ADR-024)
+  return (
+    isDoneStatus(statuses, to) && !isDoneStatus(statuses, status) && dodItems(project).length > 0
+  );
 }
 
 /** Сохраняет Definition of Done проекта. */

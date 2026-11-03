@@ -3,7 +3,6 @@ import { epicProgress, type EpicProgress } from './progress';
 import { fillOf, sprintCapacity, type Capacity, type Fill } from './planning';
 import { burndown } from './reports';
 import {
-  STATUSES,
   type History,
   type Issue,
   type Link,
@@ -13,6 +12,7 @@ import {
   type Status,
 } from './schema';
 import { sprintSnapshots, summarize } from './totals';
+import { DEFAULT_STATUSES, activeStatuses, isDoneStatus, type Statuses } from './statuses';
 
 // «Портфель» (ADR-016): сводка по проекту — активный спринт, выполнение, заполнение, просрочки,
 // блокировки, прогресс эпиков и признаки риска. Ничего не хранится: всё считается из данных проекта.
@@ -71,26 +71,34 @@ export interface OverviewInput {
   history: History[];
   /** Сегодня, ГГГГ-ММ-ДД. */
   today: string;
+  /** Колонки досок (ADR-024); нет — колонки по умолчанию. */
+  statuses?: Statuses | undefined;
 }
 
 const dayNumber = (date: string) => Math.round(Date.parse(`${date}T00:00:00Z`) / 86_400_000);
 
 export function projectOverview(input: OverviewInput): ProjectOverview {
   const { project, owner, sprints, issues, links, history, today } = input;
+  const st = input.statuses ?? DEFAULT_STATUSES;
+  const done_ = (id: string) => isDoneStatus(st, id);
   const sprint = sprints.find((s) => s.state === 'active') ?? null;
-  const capacity = sprintCapacity(sprints, issues, history);
+  const capacity = sprintCapacity(sprints, issues, history, st);
 
-  const byStatus = Object.fromEntries(STATUSES.map((s) => [s, 0])) as Record<Status, number>;
+  const byStatus = Object.fromEntries(activeStatuses(st).map((s) => [s.id, 0])) as Record<
+    Status,
+    number
+  >;
   let scope = 0;
   let done = 0;
   let chart: ProjectOverview['burndown'] = null;
   if (sprint) {
     const snaps = sprintSnapshots(sprint, issues, history);
-    const total = summarize(snaps, []).total;
+    const total = summarize(snaps, [], st).total;
     scope = total.points;
     done = total.done;
-    for (const s of snaps) if (!isContainer(s.issue.type)) byStatus[s.status] += 1;
-    const days = burndown(sprint, issues, history, today).filter((d) => d.remaining !== null);
+    for (const s of snaps)
+      if (!isContainer(s.issue.type)) byStatus[s.status] = (byStatus[s.status] ?? 0) + 1;
+    const days = burndown(sprint, issues, history, today, st).filter((d) => d.remaining !== null);
     if (days.length > 1) {
       chart = {
         remaining: days.map((d) => d.remaining ?? 0),
@@ -101,7 +109,7 @@ export function projectOverview(input: OverviewInput): ProjectOverview {
 
   const overdue = issues
     .filter(
-      (i) => !isContainer(i.type) && i.status !== 'Done' && i.dueDate !== null && i.dueDate < today,
+      (i) => !isContainer(i.type) && !done_(i.status) && i.dueDate !== null && i.dueDate < today,
     )
     .sort((a, b) => (a.dueDate ?? '').localeCompare(b.dueDate ?? '') || a.number - b.number);
 
@@ -111,7 +119,7 @@ export function projectOverview(input: OverviewInput): ProjectOverview {
     if (l.type !== 'blocks') continue;
     const from = byId.get(l.fromId);
     const to = byId.get(l.toId);
-    if (!from || !to || from.status === 'Done' || to.status === 'Done') continue;
+    if (!from || !to || done_(from.status) || done_(to.status)) continue;
     blockers.set(to.id, [...(blockers.get(to.id) ?? []), from]);
   }
   const blocked: BlockedIssue[] = [...blockers.entries()]
@@ -119,8 +127,8 @@ export function projectOverview(input: OverviewInput): ProjectOverview {
     .sort((a, b) => a.issue.number - b.issue.number);
 
   const epics = issues
-    .filter((i) => i.type === 'Epic' && i.status !== 'Done')
-    .map((epic) => ({ epic, progress: epicProgress(issues, epic.id) }))
+    .filter((i) => i.type === 'Epic' && !done_(i.status))
+    .map((epic) => ({ epic, progress: epicProgress(issues, epic.id, st) }))
     .filter((e) => e.progress.count > 0 && e.progress.percent < 100)
     .sort((a, b) => b.progress.total - a.progress.total || a.epic.number - b.epic.number);
 

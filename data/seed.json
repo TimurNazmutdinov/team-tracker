@@ -124,6 +124,7 @@
         "sprint.items",
         "sprint.manage",
         "project.templates",
+        "board.columns",
         "people.availability"
       ],
       "system": false
@@ -141,6 +142,7 @@
         "sprint.items",
         "sprint.manage",
         "project.templates",
+        "board.columns",
         "people.availability",
         "project.create",
         "project.members",

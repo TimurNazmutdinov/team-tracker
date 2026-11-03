@@ -3,13 +3,14 @@ import type { Result } from '../../domain/actions';
 import type { BulkPatch } from '../../domain/bulk';
 import {
   PRIORITIES,
-  STATUSES,
   type Person,
   type Priority,
   type Sprint,
   type Status,
 } from '../../domain/schema';
+import { activeStatuses } from '../../domain/statuses';
 import { usePermissions } from '../../state/current-user';
+import { useStatusList } from '../../state/queries';
 
 const KEEP = '';
 const NONE = '__none__';
@@ -39,6 +40,7 @@ export function BulkBar({
   onApply: (patch: BulkPatch) => Promise<Result>;
   onClear: () => void;
 }) {
+  const statusList = useStatusList();
   const perms = usePermissions();
   const [status, setStatus] = useState(KEEP);
   const [assignee, setAssignee] = useState(KEEP);
@@ -79,9 +81,9 @@ export function BulkBar({
           Статус
           <select value={status} onChange={(e) => setStatus(e.target.value)}>
             <option value={KEEP}>— не менять —</option>
-            {STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {s}
+            {activeStatuses(statusList).map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
               </option>
             ))}
           </select>

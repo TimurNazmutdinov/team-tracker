@@ -1,5 +1,6 @@
 import { canHavePoints } from './hierarchy';
 import type { Issue } from './schema';
+import { DEFAULT_STATUSES, isDoneStatus, type Statuses } from './statuses';
 
 export interface EpicProgress {
   /** Сколько задач учтено (Task и Bug эпика и его под-эпиков). */
@@ -16,7 +17,11 @@ export interface EpicProgress {
  * Прогресс эпика или под-эпика: у них points нет, поэтому он вычисляется по Task и Bug внутри —
  * прямым и вложенным в под-эпики (ADR-024). Нигде не хранится и не входит в velocity и burndown.
  */
-export function epicProgress(issues: Issue[], epicId: string): EpicProgress {
+export function epicProgress(
+  issues: Issue[],
+  epicId: string,
+  statuses: Statuses = DEFAULT_STATUSES,
+): EpicProgress {
   const containers = new Set([epicId]);
   for (const i of issues) if (i.parentId === epicId && i.type === 'Sub-epic') containers.add(i.id);
   const children = issues.filter(
@@ -24,7 +29,7 @@ export function epicProgress(issues: Issue[], epicId: string): EpicProgress {
   );
   const total = children.reduce((sum, i) => sum + (i.points ?? 0), 0);
   const done = children
-    .filter((i) => i.status === 'Done')
+    .filter((i) => isDoneStatus(statuses, i.status))
     .reduce((sum, i) => sum + (i.points ?? 0), 0);
   return {
     count: children.length,

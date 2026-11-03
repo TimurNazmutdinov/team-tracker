@@ -12,6 +12,7 @@ import { PageHeader } from '../../ui/PageHeader';
 import { treeRows } from '../../domain/tree';
 import { RetroSection } from '../sprints/RetroSection';
 import { Avatar, PointsBadge, PriorityChip, TypeIcon } from '../tasks/IssueBits';
+import { statusesOf } from '../../domain/statuses';
 
 interface Filters {
   search: string;
@@ -134,11 +135,13 @@ export function HistoryPage() {
   // Закрытые спринты всех выбранных проектов одним списком, новые первыми
   const all = views
     .flatMap((v) =>
-      closedSprints(v.sprints, v.issues, histories.get(v.projectId) ?? []).map((item) => ({
-        item,
-        projectKey: v.project.key,
-        allIssues: v.issues,
-      })),
+      closedSprints(v.sprints, v.issues, histories.get(v.projectId) ?? [], statusesOf(v)).map(
+        (item) => ({
+          item,
+          projectKey: v.project.key,
+          allIssues: v.issues,
+        }),
+      ),
     )
     .sort((a, b) => b.item.sprint.end.localeCompare(a.item.sprint.end));
   // По умолчанию раскрыт самый свежий закрытый спринт

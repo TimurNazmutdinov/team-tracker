@@ -1,4 +1,6 @@
 import type { EpicProgress } from '../../domain/progress';
+import { CATEGORY_LABELS, categoryOf, statusClass, statusName } from '../../domain/statuses';
+import { useStatusList } from '../../state/queries';
 import type { IssueType, Person, Priority, Status } from '../../domain/schema';
 
 const TYPE_LETTER: Record<IssueType, string> = {
@@ -37,12 +39,13 @@ export function PriorityChip({ priority }: { priority: Priority }) {
 }
 
 export function StatusChip({ status }: { status: Status }) {
+  const statuses = useStatusList();
   return (
     <span
-      className={`chip status-${status.toLowerCase().replace(' ', '-')}`}
-      title={`Статус: ${status}`}
+      className={`chip ${statusClass(statuses, status)}`}
+      title={`Статус: ${statusName(statuses, status)} (${CATEGORY_LABELS[categoryOf(statuses, status)]})`}
     >
-      {status}
+      {statusName(statuses, status)}
     </span>
   );
 }

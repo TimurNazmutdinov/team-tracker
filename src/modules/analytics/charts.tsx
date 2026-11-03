@@ -1,12 +1,18 @@
 import { useState } from 'react';
 import type { CfdDay, HistogramBucket, RoadmapEpic, Workload } from '../../domain/analytics';
-import { STATUSES, type Status } from '../../domain/schema';
+import type { Status, StatusDef } from '../../domain/schema';
+import { categoryOf } from '../../domain/statuses';
 
 // Графики аналитики рисуются вручную (SVG и HTML), как и отчёты: цвета — из стилей темы, у каждого
 // графика есть описание для чтецов экрана и таблица данных.
 
 const fmt = (d: string) => `${d.slice(8, 10)}.${d.slice(5, 7)}`;
-const statusClass = (s: Status) => `cfd-${s.toLowerCase().replace(' ', '-')}`;
+/** Цвет полосы: у прежних колонок — свой, у новых — по типу колонки (ADR-024). */
+const LEGACY_CFD = new Set(['Backlog', 'To Do', 'In Progress', 'Review', 'Done']);
+const cfdClass = (statuses: readonly StatusDef[], s: Status) =>
+  LEGACY_CFD.has(s)
+    ? `cfd-${s.toLowerCase().replace(' ', '-')}`
+    : `cfd-cat-${categoryOf(statuses, s)}`;
 
 const W = 720;
 const H = 320;
@@ -17,9 +23,15 @@ function niceMax(value: number): number {
   return Math.max(step, Math.ceil(value / step) * step);
 }
 
-/** CFD: накопленные полосы по статусам; порядок снизу вверх — от завершённого к Backlog. */
-export function CfdChart({ days }: { days: CfdDay[] }) {
-  const order = [...STATUSES].reverse();
+/** CFD: накопленные полосы по колонкам; порядок снизу вверх — от завершённого к бэклогу. */
+export function CfdChart({ days, statuses }: { days: CfdDay[]; statuses: readonly StatusDef[] }) {
+  // колонки по порядку: действующие и удалённые, в которых в периоде были задачи
+  const series = [...statuses]
+    .filter((s) => !s.archived || days.some((d) => (d.counts[s.id] ?? 0) > 0))
+    .sort((a, b) => a.order - b.order);
+  const order = [...series].reverse().map((s) => s.id);
+  const sumOf = (d: CfdDay, category: string) =>
+    series.filter((s) => s.category === category).reduce((n, s) => n + (d.counts[s.id] ?? 0), 0);
   const max = niceMax(Math.max(1, ...days.map((d) => d.total)));
   const iw = W - M.left - M.right;
   const ih = H - M.top - M.bottom;
@@ -29,13 +41,13 @@ export function CfdChart({ days }: { days: CfdDay[] }) {
   const labelEvery = Math.max(1, Math.ceil(days.length / 8));
   const last = days.at(-1);
   const summary = last
-    ? `На ${fmt(last.date)}: всего ${last.total}, в работе ${last.counts['In Progress']}, готово ${last.counts.Done}.`
+    ? `На ${fmt(last.date)}: всего ${last.total}, в работе ${sumOf(last, 'progress')}, готово ${sumOf(last, 'done')}.`
     : 'Данных нет.';
   const cum = days.map(() => 0);
   const bands = order.map((status) => {
     const lower = [...cum];
     days.forEach((d, i) => {
-      cum[i] = (cum[i] ?? 0) + d.counts[status];
+      cum[i] = (cum[i] ?? 0) + (d.counts[status] ?? 0);
     });
     const top = days.map((_, i) => `${x(i)},${y(cum[i] ?? 0)}`);
     const bottom = days.map((_, i) => `${x(i)},${y(lower[i] ?? 0)}`).reverse();
@@ -55,7 +67,7 @@ export function CfdChart({ days }: { days: CfdDay[] }) {
         {bands.map((b) => (
           <polygon
             key={b.status}
-            className={`cfd-band ${statusClass(b.status)}`}
+            className={`cfd-band ${cfdClass(statuses, b.status)}`}
             points={b.points}
           />
         ))}
@@ -70,9 +82,9 @@ export function CfdChart({ days }: { days: CfdDay[] }) {
         )}
       </svg>
       <figcaption className="legend">
-        {STATUSES.map((s) => (
-          <span key={s} className="legend-item">
-            <span className={`swatch ${statusClass(s)}`} /> {s}
+        {series.map((s) => (
+          <span key={s.id} className="legend-item">
+            <span className={`swatch ${cfdClass(statuses, s.id)}`} /> {s.name}
           </span>
         ))}
       </figcaption>
@@ -82,8 +94,8 @@ export function CfdChart({ days }: { days: CfdDay[] }) {
           <thead>
             <tr>
               <th>Дата</th>
-              {STATUSES.map((s) => (
-                <th key={s}>{s}</th>
+              {series.map((s) => (
+                <th key={s.id}>{s.name}</th>
               ))}
               <th>Всего</th>
             </tr>
@@ -92,8 +104,8 @@ export function CfdChart({ days }: { days: CfdDay[] }) {
             {days.map((d) => (
               <tr key={d.date}>
                 <td>{fmt(d.date)}</td>
-                {STATUSES.map((s) => (
-                  <td key={s}>{d.counts[s]}</td>
+                {series.map((s) => (
+                  <td key={s.id}>{d.counts[s.id] ?? 0}</td>
                 ))}
                 <td>{d.total}</td>
               </tr>

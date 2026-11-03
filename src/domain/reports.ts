@@ -1,6 +1,7 @@
 import type { History, Issue, Sprint } from './schema';
 import { addDays } from './settings';
 import { sprintIdAt, sprintIdBefore, sprintSnapshots, summarize, valuesAt } from './totals';
+import { DEFAULT_STATUSES, isDoneStatus, type Statuses } from './statuses';
 
 // Отчёты (F-14, F-15): burndown и velocity. Ничего не хранится: всё считается из задач и истории
 // (ADR-003, ADR-009). Дни — календарные.
@@ -35,6 +36,7 @@ export function burndown(
   issues: Issue[],
   history: History[],
   today: string,
+  statuses: Statuses = DEFAULT_STATUSES,
 ): BurndownDay[] {
   const days = dates(sprint.start, sprint.end);
   const rows = days.map((date) => {
@@ -53,7 +55,7 @@ export function burndown(
       if (!member) continue;
       const values = valuesAt(issue, history, at);
       scope += values.points ?? 0;
-      if (values.status === 'Done') done += values.points ?? 0;
+      if (isDoneStatus(statuses, values.status)) done += values.points ?? 0;
     }
     return { date, scope, done, remaining: scope - done };
   });
@@ -79,9 +81,14 @@ export interface VelocityReport {
 }
 
 /** Velocity по закрытым спринтам (по дате окончания) и идущему спринту как «в процессе». */
-export function velocity(sprints: Sprint[], issues: Issue[], history: History[]): VelocityReport {
+export function velocity(
+  sprints: Sprint[],
+  issues: Issue[],
+  history: History[],
+  statuses: Statuses = DEFAULT_STATUSES,
+): VelocityReport {
   const bar = (s: Sprint): VelocityBar => {
-    const total = summarize(sprintSnapshots(s, issues, history), []).total;
+    const total = summarize(sprintSnapshots(s, issues, history), [], statuses).total;
     return {
       sprintId: s.id,
       name: s.name,
