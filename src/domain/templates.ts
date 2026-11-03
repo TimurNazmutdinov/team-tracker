@@ -13,20 +13,21 @@ export interface TemplateInput {
   acceptance: string;
 }
 
-/** Шаблоны, которые получает каждый проект: «Баг», «Story», «Задача». */
+/** Шаблоны, которые получает каждый проект: «Эпик», «Баг», «Задача» (ADR-024). */
 export const DEFAULT_TEMPLATE_INPUTS: TemplateInput[] = [
+  {
+    name: 'Эпик',
+    type: 'Epic',
+    description:
+      '## Цель\nКакой результат получит бизнес или пользователь\n\n## Границы\nЧто входит и что не входит\n\n## Сроки\nОриентир: …',
+    acceptance: '- [ ] Цель достигнута\n- [ ] Все задачи эпика выполнены',
+  },
   {
     name: 'Баг',
     type: 'Bug',
     description:
       '## Шаги воспроизведения\n1. Шаг первый\n\n## Ожидалось\nОпишите, что должно было произойти\n\n## Получилось\nОпишите, что произошло на самом деле\n\n## Окружение\nБраузер и версия: …\nРоль пользователя: …',
     acceptance: '- [ ] Ошибка не воспроизводится по шагам\n- [ ] Добавлен тест на этот случай',
-  },
-  {
-    name: 'Story',
-    type: 'Story',
-    description: '## Контекст\nПочему это нужно\n\n## Цель\nКак … я хочу …, чтобы …',
-    acceptance: '- [ ] Первый критерий приёмки\n- [ ] Второй критерий приёмки',
   },
   {
     name: 'Задача',
@@ -54,8 +55,8 @@ function validate(view: View, input: TemplateInput, exceptId?: string): FieldErr
     templatesOf(view).some((t) => t.id !== exceptId && t.name.toLowerCase() === name.toLowerCase())
   )
     errors.name = 'Шаблон с таким названием уже есть';
-  if (!ISSUE_TYPES.includes(input.type) || input.type === 'Epic')
-    errors.type = 'Выберите тип: Story, Task, Bug или Sub-task';
+  if (!ISSUE_TYPES.includes(input.type))
+    errors.type = 'Выберите тип: Epic, Sub-epic, Task, Bug или Sub-task';
   if (input.description.length > TEXT_MAX) errors.description = `Не больше ${TEXT_MAX} символов`;
   if (input.acceptance.length > TEXT_MAX) errors.acceptance = `Не больше ${TEXT_MAX} символов`;
   return errors;

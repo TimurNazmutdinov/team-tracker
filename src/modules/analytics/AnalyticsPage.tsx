@@ -11,10 +11,11 @@ import {
   type TimeStats,
 } from '../../domain/analytics';
 import { useProjectScope } from '../../state/project-scope';
-import { useProjectHistories, useProjectViews } from '../../state/queries';
+import { useProjectHistories, useProjectViews, useStatusList } from '../../state/queries';
 import { Loading } from '../../ui/Loading';
 import { ProjectFilter } from '../../ui/ProjectFilter';
 import { PageHeader } from '../../ui/PageHeader';
+import { ReportsTabs } from '../../ui/SectionTabs';
 import { CfdChart, Histogram, RoadmapChart, WorkloadChart } from './charts';
 
 const TABS = [
@@ -76,22 +77,23 @@ export function AnalyticsPage() {
       return next;
     });
 
+  const statusList = useStatusList();
   const data = useMemo(() => {
     if (!views || !histories) return null;
     const issues = views.flatMap((v) => v.issues);
     const history = [...histories.values()].flat();
     const { from, to } = periodRange(days, now);
     return {
-      flow: cfd(issues, history, from, to),
-      timed: timedIssues(issues, history, from, to),
+      flow: cfd(issues, history, from, to, statusList),
+      timed: timedIssues(issues, history, from, to, statusList),
       load: workload(views),
       road: roadmap(views),
     };
-  }, [views, histories, days, now]);
+  }, [views, histories, days, now, statusList]);
 
-  const header = <PageHeader title="Аналитика" />;
+  const header = <PageHeader title="Отчёты" />;
   // без данных строки с вкладками нет: фильтр проектов стоит под заголовком
-  const bareHeader = <PageHeader title="Аналитика" scope />;
+  const bareHeader = <PageHeader title="Отчёты" scope />;
   if (!ready || !views || !data) {
     return (
       <>
@@ -122,22 +124,10 @@ export function AnalyticsPage() {
   return (
     <>
       {header}
+      <ReportsTabs />
       <div className="board-toolbar">
         <ProjectFilter />
-        <nav className="tabs" aria-label="Вид аналитики">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              className={t.id === tab ? 'on' : undefined}
-              aria-pressed={t.id === tab}
-              title={t.tip}
-              onClick={() => setParam('tab', t.id)}
-            >
-              {t.label}
-            </button>
-          ))}
-        </nav>
+
         {tab === 'roadmap' ? (
           <label>
             Период
@@ -172,7 +162,7 @@ export function AnalyticsPage() {
             Число задач в каждом статусе на конец дня. Расширяющаяся полоса «In Progress» — затор:
             задачи начинают, но не заканчивают.
           </p>
-          <CfdChart days={data.flow} />
+          <CfdChart days={data.flow} statuses={statusList} />
         </section>
       )}
 

@@ -14,6 +14,7 @@ import { fillOf } from '../../domain/planning';
 import { useCurrentProject } from '../projects/ProjectRoute';
 import { BurndownChart } from '../reports/charts';
 import { TotalsTable } from '../reports/TotalsTable';
+import { isDoneStatus, statusesOf } from '../../domain/statuses';
 
 const STATE_LABEL = { planned: 'запланирован', active: 'идёт', closed: 'закрыт' } as const;
 const today = () => new Date().toISOString().slice(0, 10);
@@ -48,7 +49,7 @@ export function SprintReportPage() {
       const blob = await buildReportXlsx(reportSheets(report, { authors, issueKeys: keys }));
       saveBlob(blob, `report-${project.key}-${sprint.start}.xlsx`);
     } catch {
-      push('Не удалось создать Excel-файл');
+      push('Не удалось создать Excel-файл', 'error');
     } finally {
       setBusy(false);
     }
@@ -162,7 +163,7 @@ export function SprintReportPage() {
                 <td>{i.assignee}</td>
                 <td>{i.points ?? '—'}</td>
                 <td>
-                  {i.status === 'Done'
+                  {isDoneStatus(statusesOf(view), i.status)
                     ? 'выполнена'
                     : sprint.state === 'closed'
                       ? 'перенесена'

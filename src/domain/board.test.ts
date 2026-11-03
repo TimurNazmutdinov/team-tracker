@@ -3,6 +3,9 @@ import seed from '../../data/seed.json';
 import {
   BOARD_COLUMNS,
   NO_BOARD_FILTERS,
+  filtersFromParams,
+  filtersToParams,
+  openBlockers,
   UNSET,
   boardCards,
   boardSprints,
@@ -41,9 +44,9 @@ describe('filterCards', () => {
   const cards = boardCards(ds.issues, 's2');
   it('по типу и приоритету, по «и»', () => {
     expect(nums(filterCards(cards, NO_BOARD_FILTERS))).toEqual(nums(cards));
-    expect(nums(filterCards(cards, { type: 'Sub-task', priority: null }))).toEqual([14, 15]);
-    expect(nums(filterCards(cards, { type: null, priority: 'Highest' }))).toEqual([13]);
-    expect(filterCards(cards, { type: 'Bug', priority: 'Low' })).toEqual([]);
+    expect(nums(filterCards(cards, { ...NO_BOARD_FILTERS, type: 'Sub-task' }))).toEqual([14, 15]);
+    expect(nums(filterCards(cards, { ...NO_BOARD_FILTERS, priority: 'Highest' }))).toEqual([13]);
+    expect(filterCards(cards, { ...NO_BOARD_FILTERS, type: 'Bug', priority: 'Low' })).toEqual([]);
   });
 });
 
@@ -63,8 +66,7 @@ describe('groupLanes', () => {
 
   it('по типу и приоритету: порядок по справочнику', () => {
     expect(lanes('type')).toEqual([
-      ['Story', [4, 5]],
-      ['Task', [8, 9, 10]],
+      ['Task', [4, 5, 8, 9, 10]],
       ['Bug', [13]],
       ['Sub-task', [14, 15]],
     ]);
@@ -122,5 +124,58 @@ describe('подсчёт и выбор спринта', () => {
     expect(isGroupField('parent')).toBe(true);
     expect(isGroupField('label')).toBe(false);
     expect(isGroupField(null)).toBe(false);
+  });
+});
+
+describe('быстрые фильтры и дорожки (D-2, D-5)', () => {
+  const cards = boardCards(ds.issues, 's2');
+  const base = NO_BOARD_FILTERS;
+  it('метки: любая (ИЛИ) или все (И)', () => {
+    const any = filterCards(cards, { ...base, labels: ['безопасность', 'бэкенд'] });
+    const all = filterCards(cards, {
+      ...base,
+      labels: ['безопасность', 'фронтенд'],
+      labelMode: 'all',
+    });
+    expect(nums(any)).toEqual([4, 9, 10, 14]);
+    expect(nums(all)).toEqual([9]);
+  });
+  it('«Только мои», «Без исполнителя», «Заблокированные»', () => {
+    expect(nums(filterCards(cards, { ...base, mine: true }, { meId: 'u3' }))).toEqual([
+      5, 8, 10, 13,
+    ]);
+    expect(filterCards(cards, { ...base, mine: true }, {})).toEqual([]);
+    expect(filterCards(cards, { ...base, unassigned: true })).toEqual([]);
+    const blocked = new Set(openBlockers(ds.issues, ds.links).keys());
+    expect(nums(filterCards(cards, { ...base, blocked: true }, { blockedIds: blocked }))).toEqual([
+      4, 10,
+    ]);
+  });
+  it('фильтры в адресе: туда и обратно', () => {
+    const f = {
+      ...base,
+      mine: true,
+      labels: ['a b', 'система: Fabric'],
+      labelMode: 'all' as const,
+    };
+    const params = filtersToParams(f, new URLSearchParams('sprint=s2'));
+    expect(params.get('sprint')).toBe('s2');
+    expect(filtersFromParams(params)).toEqual(f);
+    expect(filtersFromParams(new URLSearchParams())).toEqual(base);
+  });
+  it('дорожки по эпикам: эпик верхнего уровня, «Без эпика» в конце', () => {
+    const lanes = groupLanes(cards, 'epic', {
+      people: ds.people,
+      issues: ds.issues,
+      projectKey: 'DEMO',
+    });
+    expect(lanes.map((l) => l.title)).toEqual(['DEMO-1 Личный кабинет клиента']);
+    expect(lanes[0]?.epic?.id).toBe('i1');
+    const single = groupLanes(cards, 'none', {
+      people: ds.people,
+      issues: ds.issues,
+      projectKey: 'DEMO',
+    });
+    expect(single.map((l) => l.issues.length)).toEqual([cards.length]);
   });
 });

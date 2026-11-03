@@ -5,6 +5,7 @@ import { DEFAULT_PALETTE, PALETTE_LABELS, isPalette } from '../../../src/domain/
 import { PROJECT_ROLE_LABELS } from '../../../src/domain/members';
 import { roleName } from '../../../src/domain/permissions';
 import { ACTIONS, DEFAULT_ROLES, type Action } from '../../../src/domain/roles';
+import { DEFAULT_STATUSES, type StatusDef } from '../../../src/domain/statuses';
 import { velocity } from '../../../src/domain/reports';
 import type {
   Absence,
@@ -55,6 +56,7 @@ export const SHEETS = {
   members: 'Участники проектов',
   templates: 'Шаблоны задач',
   roles: 'Роли',
+  statuses: 'Колонки',
   absences: 'Отсутствия',
   retro: 'Ретроспективы',
   sprints: 'Спринты',
@@ -249,6 +251,14 @@ function specs(snapshot: Snapshot, meta: XlsxMeta): SheetSpec[] {
         r.system ? 'true' : 'false',
       ]),
       widths: [26, 80, 14, 10],
+    },
+    {
+      name: SHEETS.statuses,
+      headers: ['Название', 'Тип', 'Порядок', 'Удалена', '~id'],
+      rows: [...data.statuses]
+        .sort((a, b) => a.order - b.order)
+        .map((s) => [s.name, s.category, s.order, s.archived ? 'да' : 'нет', s.id]),
+      widths: [26, 12, 10, 10, 30],
     },
     {
       name: SHEETS.absences,
@@ -646,6 +656,17 @@ export async function readXlsx(buffer: Uint8Array): Promise<ReadXlsx> {
       }))
     : structuredClone(DEFAULT_ROLES);
 
+  // листа колонок в файлах до ADR-024 нет — тогда колонки по умолчанию
+  const statuses = sheets.some((sheet) => sheet.sheet === S.statuses)
+    ? sheetRows(sheets, S.statuses).map((r) => ({
+        id: str(need(r, 'id', S.statuses)),
+        name: str(need(r, 'Название', S.statuses)),
+        category: str(need(r, 'Тип', S.statuses)) as StatusDef['category'],
+        order: Number(need(r, 'Порядок', S.statuses)),
+        archived: str(r['Удалена']) === 'да',
+      }))
+    : structuredClone(DEFAULT_STATUSES);
+
   // листов отсутствий и ретроспектив в файлах до ADR-018 нет
   const absences = sheets.some((sheet) => sheet.sheet === S.absences)
     ? sheetRows(sheets, S.absences).map((r) => ({
@@ -770,6 +791,7 @@ export async function readXlsx(buffer: Uint8Array): Promise<ReadXlsx> {
         members,
         templates,
         roles,
+        statuses,
         absences,
         retroItems,
         sprints,

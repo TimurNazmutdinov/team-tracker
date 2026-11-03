@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { labelStats } from '../../domain/labels';
+import { LabelsInput } from '../../ui/LabelsInput';
 import { parentCandidates, type FieldErrors, type View } from '../../domain/actions';
 import { canHavePoints } from '../../domain/hierarchy';
 import type { Issue, Priority, Status } from '../../domain/schema';
-import { STATUSES } from '../../domain/schema';
+import { activeStatuses } from '../../domain/statuses';
+import { useStatusList } from '../../state/queries';
 import { useActions } from '../../state/actions';
 import { usePermissions } from '../../state/current-user';
 import { SelectField, TextField } from '../../ui/fields';
@@ -27,9 +30,9 @@ export function IssueSidebar({
   const actions = useActions(view.projectId);
   const perms = usePermissions();
   const dod = useDodGate();
+  const statusList = useStatusList();
   const [errors, setErrors] = useState<FieldErrors>({});
   const [points, setPoints] = useState(issue.points === null ? '' : String(issue.points));
-  const [labels, setLabels] = useState(issue.labels.join(', '));
   const [dueDate, setDueDate] = useState(issue.dueDate ?? '');
 
   const apply = async (patch: Parameters<typeof actions.updateIssue>[1]) => {
@@ -50,7 +53,7 @@ export function IssueSidebar({
         label="Статус"
         value={issue.status}
         disabled={readOnly || !perms.canChangeStatus(issue)}
-        options={STATUSES.map((s) => ({ value: s, label: s }))}
+        options={activeStatuses(statusList).map((s) => ({ value: s.id, label: s.name }))}
         onChange={(v) =>
           void (async () => {
             if (await dod.ask(view.project, [issue], v as Status, projectKey)) {
@@ -130,7 +133,13 @@ export function IssueSidebar({
       {issue.type !== 'Epic' && (
         <SelectField
           name="parentId"
-          label={isSub ? 'Родитель' : 'Родитель (Epic)'}
+          label={
+            isSub
+              ? 'Родитель'
+              : issue.type === 'Sub-epic'
+                ? 'Родитель (эпик)'
+                : 'Родитель (эпик или под-эпик)'
+          }
           value={issue.parentId ?? ''}
           disabled={readOnly || !perms.can('issue.edit')}
           options={[
@@ -141,16 +150,13 @@ export function IssueSidebar({
           error={errors.parentId}
         />
       )}
-      <TextField
-        name="labels"
+      <LabelsInput
         label="Метки"
-        hint="Через запятую"
-        value={labels}
+        hint="Enter или запятая — добавить"
+        value={issue.labels}
         disabled={readOnly || !perms.can('issue.edit')}
-        onChange={setLabels}
-        onBlur={() => {
-          if (labels !== issue.labels.join(', ')) void apply({ labels: labels.split(',') });
-        }}
+        stats={labelStats(view.issues)}
+        onChange={(next) => void apply({ labels: next })}
       />
       <TextField
         name="dueDate"

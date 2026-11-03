@@ -13,7 +13,7 @@ test.beforeAll(async ({ browser }) => {
   await page.getByLabel('Почта').fill('admin@example.com');
   await page.getByLabel('Пароль').fill('password-1');
   await page.locator('form button[type=submit]').click();
-  await expect(page.locator('.board-nav')).toBeVisible();
+  await expect(page.locator('.board-page')).toBeVisible();
 });
 test.afterAll(async () => {
   await page.close();
@@ -55,9 +55,11 @@ test('фильтр по проектам: «Все» открывает доск
   await page.getByRole('dialog', { name: 'Выбор проектов' }).getByLabel('Все проекты').click();
   await expect(page).toHaveURL(/projects=all/);
   await expect(page.locator('.lane')).toHaveCount(2);
-  await expect(page.locator('.board-nav')).toContainText('Текущие спринты проектов: 2');
   // задача нового проекта в статусе Backlog скрыта: переводим её в To Do, и появляется карточка с меткой проекта
-  await page.getByRole('button', { name: 'Перевести в To Do' }).click();
+  await page
+    .getByRole('button', { name: /Перевести в/ })
+    .first()
+    .click();
   await expect(page.locator('.board-card .project-tag').first()).toBeVisible();
 });
 

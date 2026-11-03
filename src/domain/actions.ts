@@ -1,4 +1,12 @@
 import { type Changes } from './changes';
+import {
+  activeStatuses,
+  backlogStatusId,
+  isBacklogStatus,
+  startStatusId,
+  statusesOf,
+  type StatusDef,
+} from './statuses';
 import { canHavePoints, isValidParent } from './hierarchy';
 import { DEFAULT_SPRINT_SETTINGS } from './settings';
 import { defaultTemplates } from './templates';
@@ -6,7 +14,6 @@ import {
   ISSUE_TYPES,
   LINK_TYPES,
   PRIORITIES,
-  STATUSES,
   type Comment,
   type History,
   type HistoryField,
@@ -48,6 +55,8 @@ export interface View {
   sprints: Sprint[];
   issues: Issue[];
   links: Link[];
+  /** Колонки досок, общие для всех проектов (ADR-024); нет — колонки по умолчанию. */
+  statuses?: StatusDef[] | undefined;
 }
 
 /** Ошибки по полям формы; ключ `form` — ошибка всего действия. */
@@ -140,9 +149,10 @@ function validParent(view: View, type: IssueType, parentId: string | null): stri
   const parent = parentId === null ? undefined : findIssue(view, parentId);
   if (parentId !== null && !parent) return 'Такой родительской задачи нет';
   if (!isValidParent(type, parent?.type ?? null)) {
-    if (type === 'Sub-task') return 'Sub-task создаётся внутри Story, Task или Bug';
+    if (type === 'Sub-task') return 'Sub-task создаётся внутри Task или Bug';
     if (type === 'Epic') return 'У Epic не может быть родителя';
-    return 'Родитель — только Epic (Task в Story не вкладывается)';
+    if (type === 'Sub-epic') return 'Под-эпик (Sub-epic) создаётся внутри эпика';
+    return 'Родитель — эпик или под-эпик';
   }
   return null;
 }
@@ -210,7 +220,7 @@ export function createIssue(view: View, input: NewIssueInput, authorId: string, 
     title,
     description: input.description.trim(),
     acceptance: input.acceptance.trim(),
-    status: 'Backlog',
+    status: backlogStatusId(statusesOf(view)),
     priority: input.priority,
     points: input.points,
     assigneeId: input.assigneeId,
@@ -223,7 +233,7 @@ export function createIssue(view: View, input: NewIssueInput, authorId: string, 
     createdAt: now,
     updatedAt: now,
   };
-  const history = [historyEntry(ctx, issue.id, authorId, 'created', null, 'Backlog')];
+  const history = [historyEntry(ctx, issue.id, authorId, 'created', null, issue.status)];
   if (sprintId !== null)
     history.push(historyEntry(ctx, issue.id, authorId, 'sprintId', null, sprintId));
   return ok({ issues: [issue], history });
@@ -273,7 +283,8 @@ export function updateIssue(
     else next.dueDate = patch.dueDate;
   }
   if (patch.status !== undefined && patch.status !== issue.status) {
-    if (!STATUSES.includes(patch.status)) errors.status = 'Выберите статус';
+    if (!activeStatuses(statusesOf(view)).some((s) => s.id === patch.status))
+      errors.status = 'Выберите статус';
     else {
       history.push(historyEntry(ctx, issue.id, authorId, 'status', issue.status, patch.status));
       next.status = patch.status;
@@ -349,16 +360,19 @@ export function updateIssue(
   if (newSprintId !== issue.sprintId) {
     history.push(historyEntry(ctx, issue.id, authorId, 'sprintId', issue.sprintId, newSprintId));
     next.sprintId = newSprintId;
-    // Возврат из идущего спринта в бэклог сбрасывает рабочий статус в To Do (ADR-014)
+    // Возврат из идущего спринта в бэклог сбрасывает рабочий статус в первую колонку
+    // «не начато» (ADR-014, ADR-024)
+    const st = statusesOf(view);
+    const start = startStatusId(st);
     if (
       newSprintId === null &&
       sprintById(view, issue.sprintId)?.state === 'active' &&
       patch.status === undefined &&
-      next.status !== 'Backlog' &&
-      next.status !== 'To Do'
+      !isBacklogStatus(st, next.status) &&
+      next.status !== start
     ) {
-      history.push(historyEntry(ctx, issue.id, authorId, 'status', next.status, 'To Do'));
-      next.status = 'To Do';
+      history.push(historyEntry(ctx, issue.id, authorId, 'status', next.status, start));
+      next.status = start;
     }
     if (issue.type !== 'Sub-task') {
       for (const sub of subtasksOf(view, issue.id)) {
@@ -454,6 +468,67 @@ export function addLink(
   }
   if (Object.keys(errors).length > 0) return fail(errors);
   return ok({ links: [{ id: ctx.newId(), fromId, toId, type }] });
+}
+
+/** Связь в окне «Создать»: «зависит от» — та же «блокирует», только в обратную сторону (D-10). */
+export type NewLinkKind = LinkType | 'depends';
+
+export interface NewLink {
+  kind: NewLinkKind;
+  /** Другая задача того же проекта. */
+  issueId: string;
+}
+
+/**
+ * Создание задачи сразу со связями одним набором изменений (D-3): либо задача и все её связи, либо
+ * ничего. Ошибки связей возвращаются в поле `links`.
+ */
+export function createIssueWithLinks(
+  view: View,
+  input: NewIssueInput,
+  links: NewLink[],
+  authorId: string,
+  ctx: Ctx,
+): Result {
+  const created = createIssue(view, input, authorId, ctx);
+  if (!created.ok || links.length === 0) return created;
+  const issue = created.changes.issues?.[0];
+  if (!issue) return created;
+  let next: View = { ...view, issues: [...view.issues, issue] };
+  const added: Link[] = [];
+  for (const link of links) {
+    const [fromId, toId, type]: [string, string, LinkType] =
+      link.kind === 'depends'
+        ? [link.issueId, issue.id, 'blocks']
+        : [issue.id, link.issueId, link.kind];
+    const r = addLink(next, fromId, toId, type, ctx);
+    if (!r.ok) return fail({ links: Object.values(r.errors).join('. ') });
+    const made = r.changes.links ?? [];
+    added.push(...made);
+    next = { ...next, links: [...next.links, ...made] };
+  }
+  return ok({ ...created.changes, links: added });
+}
+
+/**
+ * Перенос всех задач из удаляемой колонки в другую (ADR-024): задачи любых проектов, у каждой — запись
+ * истории «статус».
+ */
+export function moveIssuesToStatus(
+  issues: readonly Issue[],
+  fromId: string,
+  toId: string,
+  authorId: string,
+  ctx: Ctx,
+): Changes {
+  const now = ctx.now();
+  const moved = issues
+    .filter((i) => i.status === fromId)
+    .map((i) => ({ ...i, status: toId, updatedAt: now }));
+  return {
+    issues: moved,
+    history: moved.map((i) => historyEntry(ctx, i.id, authorId, 'status', fromId, toId)),
+  };
 }
 
 export function removeLink(view: View, linkId: string): Result {

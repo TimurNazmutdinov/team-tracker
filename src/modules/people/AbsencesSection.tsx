@@ -50,7 +50,7 @@ export function AbsencesSection({ view }: { view: View }) {
   const remove = async (id: string) => {
     const result = await actions.deleteAbsence(id);
     if (result.ok) push('Отсутствие удалено');
-    else push(Object.values(result.errors).join('. '));
+    else push(Object.values(result.errors).join('. '), 'error');
   };
 
   return (

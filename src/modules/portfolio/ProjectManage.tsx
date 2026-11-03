@@ -182,13 +182,19 @@ export function ProjectMenu({ project }: { project: Project }) {
     if (!window.confirm(`Отправить проект ${project.key} в архив? Задачи и история сохранятся.`))
       return;
     const result = await actions.archiveProject(project.id);
-    push(result.ok ? `Проект ${project.key} в архиве` : Object.values(result.errors).join('. '));
+    push(
+      result.ok ? `Проект ${project.key} в архиве` : Object.values(result.errors).join('. '),
+      result.ok ? 'success' : 'error',
+    );
   };
   const remove = async () => {
     setOpen(false);
     if (!window.confirm(`Удалить пустой проект ${project.key}? Это нельзя отменить.`)) return;
     const result = await actions.deleteProject(project.id);
-    push(result.ok ? `Проект ${project.key} удалён` : Object.values(result.errors).join('. '));
+    push(
+      result.ok ? `Проект ${project.key} удалён` : Object.values(result.errors).join('. '),
+      result.ok ? 'success' : 'error',
+    );
   };
 
   return (
@@ -279,7 +285,10 @@ function ArchivedRow({ project }: { project: Project }) {
         title="Вернуть проект в списки, фильтр, портфель и аналитику"
         onClick={() =>
           void actions.restoreProject(project.id).then((r) => {
-            push(r.ok ? `Проект ${project.key} возвращён` : Object.values(r.errors).join('. '));
+            push(
+              r.ok ? `Проект ${project.key} возвращён` : Object.values(r.errors).join('. '),
+              r.ok ? 'success' : 'error',
+            );
           })
         }
       >
@@ -293,7 +302,10 @@ function ArchivedRow({ project }: { project: Project }) {
             if (!window.confirm(`Удалить пустой проект ${project.key}? Это нельзя отменить.`))
               return;
             void actions.deleteProject(project.id).then((r) => {
-              push(r.ok ? `Проект ${project.key} удалён` : Object.values(r.errors).join('. '));
+              push(
+                r.ok ? `Проект ${project.key} удалён` : Object.values(r.errors).join('. '),
+                r.ok ? 'success' : 'error',
+              );
             });
           }}
         >

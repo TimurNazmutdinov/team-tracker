@@ -26,7 +26,7 @@ export function App({ storage }: { storage: TrackerStorage }) {
   // Если при запуске сохранённые данные были сброшены (другая версия seed), говорим об этом.
   useEffect(() => {
     const notice = storage.takeStartupNotice?.();
-    if (notice) useNotices.getState().push(notice);
+    if (notice) useNotices.getState().push(notice, 'info');
   }, [storage]);
 
   return (

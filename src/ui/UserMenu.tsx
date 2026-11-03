@@ -29,7 +29,7 @@ export function PaletteField() {
       setAccount(await authClient.setPalette(next));
     } catch {
       apply(previous);
-      push('Не удалось сохранить цветовую гамму: проверьте связь с сервером');
+      push('Не удалось сохранить цветовую гамму: проверьте связь с сервером', 'error');
     }
   };
 
@@ -106,7 +106,7 @@ export function UserMenu() {
       await queryClient.invalidateQueries();
       push('Данные сброшены к исходным (seed.json).');
     } catch (e) {
-      push(`Не удалось сбросить данные: ${e instanceof Error ? e.message : String(e)}`);
+      push(`Не удалось сбросить данные: ${e instanceof Error ? e.message : String(e)}`, 'error');
     }
   };
 

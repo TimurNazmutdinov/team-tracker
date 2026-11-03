@@ -1,6 +1,6 @@
 import type { Issue } from './schema';
 
-// Иерархия артефактов (ADR-003, п. 6): Epic → Story, Task, Bug → Sub-task. Общие правила показа
+// Иерархия артефактов (ADR-003, п. 6; ADR-024): Epic → Sub-epic → Task, Bug → Sub-task. Общие правила показа
 // вложенности для всех списков продукта (wireframes.md, 25.2).
 
 export interface TreeRow {

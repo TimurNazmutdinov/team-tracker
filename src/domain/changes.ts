@@ -1,6 +1,7 @@
 import type {
   Absence,
   RoleDef,
+  StatusDef,
   RetroItem,
   Comment,
   History,
@@ -24,6 +25,8 @@ export interface Changes {
   deleteMemberIds?: string[];
   deleteProjectIds?: string[];
   roles?: RoleDef[];
+  /** Колонки досок (ADR-024): добавляются и меняются по id; удаление — отметкой archived. */
+  statuses?: StatusDef[];
   deleteRoleIds?: string[];
   absences?: Absence[];
   deleteAbsenceIds?: string[];

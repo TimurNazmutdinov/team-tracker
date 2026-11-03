@@ -2,17 +2,19 @@ import { useState } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router';
 import { boardSprints, defaultSprint } from '../../domain/board';
 import type { View } from '../../domain/actions';
-import { STATUSES, type Sprint, type Status } from '../../domain/schema';
+import type { Sprint } from '../../domain/schema';
+import { activeStatuses, statusClass } from '../../domain/statuses';
 import { sprintSnapshots, summarize } from '../../domain/totals';
 import { treeRows } from '../../domain/tree';
 import { useActions } from '../../state/actions';
 import { usePermissions } from '../../state/current-user';
 import { useNotices } from '../../state/notices';
-import { useProjectHistory, useView } from '../../state/queries';
+import { useProjectHistory, useStatusList, useView } from '../../state/queries';
 import { ErrorMessage } from '../../ui/ErrorMessage';
 import { Loading } from '../../ui/Loading';
 import { NotFound } from '../../ui/NotFound';
 import { PageHeader } from '../../ui/PageHeader';
+import { SprintsTabs } from '../../ui/SectionTabs';
 import { TextArea } from '../../ui/fields';
 import { useCurrentProject } from '../projects/ProjectRoute';
 import { TotalsTable } from '../reports/TotalsTable';
@@ -41,6 +43,7 @@ export function SprintsPage() {
     return (
       <>
         <PageHeader title="Спринты" scope />
+        <SprintsTabs />
         <Loading />
       </>
     );
@@ -57,6 +60,7 @@ export function SprintsPage() {
   return (
     <>
       <PageHeader title="Спринты" scope />
+      <SprintsTabs />
       <div className="sprints-layout">
         <nav className="sprint-list" aria-label="Спринты проекта">
           {sprints.map((s) => (
@@ -140,12 +144,13 @@ function SprintDetail({
   const actions = useActions(view.projectId);
   const canManage = usePermissions().can('sprint.manage');
   const push = useNotices((s) => s.push);
+  const statusList = useStatusList();
   const [error, setError] = useState<string | null>(null);
   const [editingGoal, setEditingGoal] = useState(false);
   const [goal, setGoal] = useState(sprint.goal);
   const [goalError, setGoalError] = useState<string | undefined>();
   const snaps = sprintSnapshots(sprint, view.issues, history);
-  const summary = summarize(snaps, view.people);
+  const summary = summarize(snaps, view.people, statusList);
   const readOnly = sprint.state === 'closed';
   const total = summary.total.points;
   const snapOf = new Map(snaps.map((x) => [x.issue.id, x]));
@@ -294,20 +299,26 @@ function SprintDetail({
         <div
           className="progress-bar"
           role="img"
-          aria-label={`Story points по статусам: ${STATUSES.map((s) => `${s} ${summary.byStatus[s]}`).join(', ')}`}
+          aria-label={`Story points по колонкам: ${activeStatuses(statusList)
+            .map((s) => `${s.name} ${summary.byStatus[s.id] ?? 0}`)
+            .join(', ')}`}
         >
-          {(['Done', 'Review', 'In Progress', 'To Do', 'Backlog'] as Status[])
-            .filter((s) => summary.byStatus[s] > 0)
-            .map((s) => (
-              <span
-                key={s}
-                className={`seg status-${s.toLowerCase().replace(' ', '-')}`}
-                style={{ width: `${(summary.byStatus[s] / total) * 100}%` }}
-                title={`${s}: ${summary.byStatus[s]} sp`}
-              >
-                {(summary.byStatus[s] / total) * 100 > 12 ? `${s} ${summary.byStatus[s]}` : ''}
-              </span>
-            ))}
+          {[...activeStatuses(statusList)]
+            .reverse()
+            .filter((s) => (summary.byStatus[s.id] ?? 0) > 0)
+            .map((s) => {
+              const sp = summary.byStatus[s.id] ?? 0;
+              return (
+                <span
+                  key={s.id}
+                  className={`seg ${statusClass(statusList, s.id)}`}
+                  style={{ width: `${(sp / total) * 100}%` }}
+                  title={`${s.name}: ${sp} sp`}
+                >
+                  {(sp / total) * 100 > 12 ? `${s.name} ${sp}` : ''}
+                </span>
+              );
+            })}
         </div>
       )}
 

@@ -1,12 +1,16 @@
 import type { FieldErrors, Result, View } from './actions';
-import { WIP_COLUMNS, type Project, type WipColumn } from './schema';
+import type { Project } from './schema';
+import { DEFAULT_STATUSES, boardStatuses, statusName, statusesOf, type Statuses } from './statuses';
+
+/** Идентификатор колонки доски. */
+type WipColumn = string;
 
 // WIP-лимиты колонок доски (ADR-017): настройка проекта, по умолчанию выключена. Превышение —
 // предупреждение, а не запрет.
 
 export const WIP_MAX = 999;
 
-export type WipLimits = Partial<Record<WipColumn, number>>;
+export type WipLimits = Record<WipColumn, number>;
 
 export interface WipInput {
   enabled: boolean;
@@ -23,16 +27,17 @@ export interface WipOverflow {
 /** Лимит колонки; undefined — лимита нет или WIP выключен. */
 export function wipLimit(project: Pick<Project, 'wipEnabled' | 'wipLimits'>, column: string) {
   if (!project.wipEnabled) return undefined;
-  return (project.wipLimits as WipLimits)[column as WipColumn];
+  return (project.wipLimits as WipLimits)[column];
 }
 
 /** Колонки, в которых задач больше лимита. */
 export function wipOverflows(
   project: Pick<Project, 'wipEnabled' | 'wipLimits'>,
   counts: Partial<Record<string, number>>,
+  statuses: Statuses = DEFAULT_STATUSES,
 ): WipOverflow[] {
   const out: WipOverflow[] = [];
-  for (const column of WIP_COLUMNS) {
+  for (const column of boardStatuses(statuses).map((s) => s.id)) {
     const limit = wipLimit(project, column);
     const count = counts[column] ?? 0;
     if (limit !== undefined && count > limit) out.push({ column, count, limit });
@@ -50,18 +55,18 @@ export function wipAfterMove(
   const limit = wipLimit(project, column);
   if (limit === undefined) return null;
   const count = (counts[column] ?? 0) + adding;
-  return count > limit ? { column: column as WipColumn, count, limit } : null;
+  return count > limit ? { column, count, limit } : null;
 }
 
-export function wipMessage(o: WipOverflow): string {
-  return `WIP-лимит колонки «${o.column}»: ${o.count} из ${o.limit}`;
+export function wipMessage(o: WipOverflow, statuses: Statuses = DEFAULT_STATUSES): string {
+  return `WIP-лимит колонки «${statusName(statuses, o.column)}»: ${o.count} из ${o.limit}`;
 }
 
 /** Сохраняет настройки WIP проекта; пустое поле лимита — колонка без лимита. */
 export function updateWipSettings(view: View, input: WipInput): Result {
   const errors: FieldErrors = {};
   const limits: WipLimits = {};
-  for (const column of WIP_COLUMNS) {
+  for (const column of boardStatuses(statusesOf(view)).map((s) => s.id)) {
     const raw = (input.limits[column] ?? '').trim();
     if (raw === '') continue;
     const n = Number(raw);

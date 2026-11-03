@@ -1,6 +1,8 @@
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { useStorage } from '../app/storage-context';
 import type { View } from '../domain/actions';
+import type { StatusDef } from '../domain/schema';
+import { DEFAULT_STATUSES } from '../domain/statuses';
 import type { History, Project } from '../domain/schema';
 
 // Чтение данных: TanStack Query поверх модуля хранения. Ключи начинаются с имени сущности,
@@ -52,6 +54,21 @@ export function useTemplates() {
   return useQuery({ queryKey: ['templates'], queryFn: () => storage.getTemplates() });
 }
 
+/** Колонки досок, общие для всех проектов, по порядку; удалённые — тоже (для истории). */
+export function useStatuses() {
+  const storage = useStorage();
+  return useQuery({
+    queryKey: ['statuses'],
+    queryFn: () => storage.getStatuses(),
+    select: (list: StatusDef[]) => [...list].sort((a, b) => a.order - b.order),
+  });
+}
+
+/** Колонки досок без ожидания загрузки: пока данных нет — колонки по умолчанию (ADR-024). */
+export function useStatusList(): StatusDef[] {
+  return useStatuses().data ?? DEFAULT_STATUSES;
+}
+
 export function useRoles() {
   const storage = useStorage();
   return useQuery({ queryKey: ['roles'], queryFn: () => storage.getRoles() });
@@ -100,6 +117,7 @@ export function useView(projectId: string): View | undefined {
   const members = useMembers();
   const templates = useTemplates();
   const absences = useAbsences();
+  const statuses = useStatuses();
   const retro = useRetroItems(projectId);
   const sprints = useSprints(projectId);
   const issues = useIssues(projectId);
@@ -111,6 +129,7 @@ export function useView(projectId: string): View | undefined {
     !members.data ||
     !templates.data ||
     !absences.data ||
+    !statuses.data ||
     !retro.data ||
     !sprints.data ||
     !issues.data ||
@@ -124,6 +143,7 @@ export function useView(projectId: string): View | undefined {
     members: members.data,
     templates: templates.data,
     absences: absences.data,
+    statuses: statuses.data,
     retroItems: retro.data,
     sprints: sprints.data,
     issues: issues.data,
@@ -141,6 +161,7 @@ export function useProjectViews(projects: Project[]): View[] | undefined {
   const members = useMembers();
   const templates = useTemplates();
   const absences = useAbsences();
+  const statuses = useStatuses();
   const results = useQueries({
     queries: projects.flatMap((p) => [
       { queryKey: ['sprints', p.id], queryFn: () => storage.getSprints(p.id) },
@@ -148,7 +169,8 @@ export function useProjectViews(projects: Project[]): View[] | undefined {
       { queryKey: ['links', p.id], queryFn: () => storage.getLinks(p.id) },
     ]),
   });
-  if (!people.data || !members.data || !templates.data || !absences.data) return undefined;
+  if (!people.data || !members.data || !templates.data || !absences.data || !statuses.data)
+    return undefined;
   const views: View[] = [];
   for (const [n, project] of projects.entries()) {
     const sprints = results[n * 3]?.data;
@@ -162,6 +184,7 @@ export function useProjectViews(projects: Project[]): View[] | undefined {
       members: members.data,
       templates: templates.data,
       absences: absences.data,
+      statuses: statuses.data,
       // ретроспективы нужны только экранам одного проекта (useView)
       retroItems: [],
       sprints: sprints as View['sprints'],

@@ -22,6 +22,8 @@ export async function importDataset(db: Db, ds: Dataset): Promise<void> {
     // миграция уже создала роли по умолчанию: набор данных заменяет их своими
     await tx.delete(t.roles);
     await insertChunks((r) => tx.insert(t.roles).values(r), ds.roles);
+    await tx.delete(t.statuses);
+    await insertChunks((r) => tx.insert(t.statuses).values(r), ds.statuses);
     await insertChunks((r) => tx.insert(t.absences).values(r), ds.absences);
     await insertChunks((r) => tx.insert(t.sprints).values(r), ds.sprints);
     await insertChunks((r) => tx.insert(t.issues).values(r), ds.issues);

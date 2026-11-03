@@ -10,6 +10,7 @@ import type {
   IssueTemplate,
   Absence,
   RoleDef,
+  StatusDef,
   RetroItem,
   Link,
   Person,
@@ -35,6 +36,7 @@ export const readers = {
   members: (db: Db) => db.select().from(t.projectMembers) as Promise<ProjectMember[]>,
   templates: (db: Db) => db.select().from(t.issueTemplates) as Promise<IssueTemplate[]>,
   roles: (db: Db) => db.select().from(t.roles) as Promise<RoleDef[]>,
+  statuses: (db: Db) => db.select().from(t.statuses) as Promise<StatusDef[]>,
   absences: (db: Db) => db.select().from(t.absences) as Promise<Absence[]>,
   retroItems: (db: Db, projectId: string) =>
     db.select().from(t.retroItems).where(eq(t.retroItems.projectId, projectId)) as Promise<
@@ -83,6 +85,7 @@ async function loadDataset(db: Db | Tx, projectIds?: string[]): Promise<Dataset>
     members,
     templates,
     roles,
+    statuses,
     absences,
     retroItems,
     sprints,
@@ -102,6 +105,7 @@ async function loadDataset(db: Db | Tx, projectIds?: string[]): Promise<Dataset>
       ? db.select().from(t.issueTemplates).where(inArray(t.issueTemplates.projectId, ids))
       : db.select().from(t.issueTemplates),
     db.select().from(t.roles),
+    db.select().from(t.statuses),
     db.select().from(t.absences),
     scoped
       ? db.select().from(t.retroItems).where(inArray(t.retroItems.projectId, ids))
@@ -129,6 +133,7 @@ async function loadDataset(db: Db | Tx, projectIds?: string[]): Promise<Dataset>
     members,
     templates,
     roles,
+    statuses,
     absences,
     retroItems,
     sprints,
@@ -235,6 +240,7 @@ function applied(current: Dataset, changes: Changes): Dataset {
     next.retroItems = next.retroItems.filter((x) => !removedProjects.has(x.projectId));
   }
   upsert(next.roles, changes.roles);
+  upsert(next.statuses, changes.statuses);
   upsert(next.absences, changes.absences);
   upsert(next.retroItems, changes.retroItems);
   upsert(next.sprints, changes.sprints);
@@ -360,6 +366,9 @@ export async function commit(
       }
       if ((changes.deleteRoleIds ?? []).length > 0) {
         await tx.delete(t.roles).where(inArray(t.roles.id, changes.deleteRoleIds ?? []));
+      }
+      for (const x of changes.statuses ?? []) {
+        await tx.insert(t.statuses).values(x).onConflictDoUpdate({ target: t.statuses.id, set: x });
       }
       for (const x of changes.absences ?? []) {
         await tx.insert(t.absences).values(x).onConflictDoUpdate({ target: t.absences.id, set: x });

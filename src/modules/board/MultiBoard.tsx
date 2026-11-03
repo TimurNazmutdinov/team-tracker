@@ -8,20 +8,23 @@ import {
   type DragEndEvent,
 } from '@dnd-kit/core';
 import { useState, type ReactNode } from 'react';
-import { Link } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import type { View } from '../../domain/actions';
 import {
-  BOARD_COLUMNS,
-  NO_BOARD_FILTERS,
   boardCards,
   columnStats,
+  epicOf,
   filterCards,
+  filtersFromParams,
+  filtersToParams,
   hiddenBacklogCards,
+  openBlockers,
   statsOf,
   type BoardColumn,
   type BoardFilters,
   type Lane,
 } from '../../domain/board';
+import { boardStatuses, startStatusId, statusName } from '../../domain/statuses';
 import {
   ISSUE_TYPES,
   PRIORITIES,
@@ -35,19 +38,25 @@ import {
 import { ancestors } from '../../domain/tree';
 import { wipOverflows } from '../../domain/wip';
 import { useActionsFor } from '../../state/actions';
-import { usePermissions } from '../../state/current-user';
+import { useCurrentUser, usePermissions } from '../../state/current-user';
 import { useNotices } from '../../state/notices';
-import { useProjectViews } from '../../state/queries';
+import { useProjectViews, useStatusList } from '../../state/queries';
 import { dateRange, num } from '../../ui/format';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
 import { useDodGate } from '../tasks/DodGate';
-import { BoardNav } from './BoardNav';
 import { BoardCard, LaneView, plural } from './BoardParts';
+import { AddColumn, ColumnHead, useCanEditColumns } from './Columns';
+import { QuickFilters } from './QuickFilters';
+import { labelStats } from '../../domain/labels';
 
 interface ProjectLane {
   view: View;
   sprint: Sprint | null;
+  /** Все задачи активного спринта проекта на доске (без фильтров). */
+  all: Issue[];
+  blockers: Map<string, Issue[]>;
+  byId: Map<string, Issue>;
   lane: Lane;
   hidden: Issue[];
 }
@@ -60,21 +69,20 @@ const activeSprint = (sprints: Sprint[]) => sprints.find((s) => s.state === 'act
  * дорожка с его активным спринтом, на карточке — метка проекта. Карточка переносится только по
  * колонкам своего проекта.
  */
-export function MultiBoard({
-  projects,
-  routeKey,
-  filter,
-}: {
-  projects: Project[];
-  routeKey: string;
-  filter: ReactNode;
-}) {
+export function MultiBoard({ projects, filter }: { projects: Project[]; filter: ReactNode }) {
   const views = useProjectViews(projects);
   const actionsFor = useActionsFor();
   const perms = usePermissions();
   const push = useNotices((s) => s.push);
   const dod = useDodGate();
-  const [filters, setFilters] = useState<BoardFilters>(NO_BOARD_FILTERS);
+  const statusList = useStatusList();
+  const canEditColumns = useCanEditColumns();
+  const [params, setParams] = useSearchParams();
+  // фильтры — в адресе, как на доске одного проекта (D-2)
+  const filters = filtersFromParams(params);
+  const setFilters = (next: BoardFilters) =>
+    setParams((prev) => filtersToParams(next, prev), { replace: true });
+  const me = useCurrentUser();
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [activeId, setActiveId] = useState<string | null>(null);
   const sensors = useSensors(
@@ -91,18 +99,33 @@ export function MultiBoard({
     );
   }
 
+  const columns = boardStatuses(statusList);
+  const columnIds = columns.map((c) => c.id);
+  const start = startStatusId(statusList);
   const lanes: ProjectLane[] = views.map((view) => {
     const sprint = activeSprint(view.sprints);
-    const all = sprint ? boardCards(view.issues, sprint.id) : [];
+    const all = sprint ? boardCards(view.issues, sprint.id, statusList) : [];
+    const blockers = openBlockers(view.issues, view.links, statusList);
     return {
       view,
       sprint,
-      lane: { key: view.projectId, title: view.project.key, issues: filterCards(all, filters) },
-      hidden: sprint ? hiddenBacklogCards(view.issues, sprint.id) : [],
+      all,
+      blockers,
+      byId: new Map(view.issues.map((i) => [i.id, i])),
+      lane: {
+        key: view.projectId,
+        title: view.project.key,
+        issues: filterCards(all, filters, {
+          meId: me?.id ?? null,
+          blockedIds: new Set(blockers.keys()),
+        }),
+      },
+      hidden: sprint ? hiddenBacklogCards(view.issues, sprint.id, statusList) : [],
     };
   });
   const allCards = lanes.flatMap((l) => l.lane.issues);
-  const stats = columnStats(allCards);
+  const sprintCards = lanes.flatMap((l) => l.all);
+  const stats = columnStats(allCards, columnIds);
   const issueOf = (id: string) => lanes.flatMap((l) => l.lane.issues).find((i) => i.id === id);
   const keyOf = (view: View, issue: Issue | undefined) =>
     issue ? `${view.project.key}-${issue.number}` : null;
@@ -118,7 +141,7 @@ export function MultiBoard({
     )
       return;
     const result = await actionsFor(projectId).updateIssue(issueId, { status });
-    if (!result.ok) push(Object.values(result.errors).join('. '));
+    if (!result.ok) push(Object.values(result.errors).join('. '), 'error');
   };
 
   const onDragEnd = (e: DragEndEvent) => {
@@ -129,7 +152,7 @@ export function MultiBoard({
     const own = lanes.find((l) => l.lane.issues.some((i) => i.id === issueId));
     if (!own) return;
     if (own.view.projectId !== projectId) {
-      push('Карточку можно переносить только по колонкам своего проекта.');
+      push('Карточку можно переносить только по колонкам своего проекта.', 'warn');
       return;
     }
     const issue = own.lane.issues.find((i) => i.id === issueId);
@@ -145,10 +168,9 @@ export function MultiBoard({
     });
 
   return (
-    <>
+    <div className="board-page">
       {dod.dialog}
       <PageHeader title="Доска" />
-      <BoardNav projectKey={routeKey} projectCount={projects.length} />
       <div className="board-toolbar">
         {filter}
         <label>
@@ -210,6 +232,14 @@ export function MultiBoard({
       <p id="multi-group-hint" className="muted small">
         При нескольких проектах доска сгруппирована по проектам: у каждого свой активный спринт.
       </p>
+      <QuickFilters
+        filters={filters}
+        onChange={setFilters}
+        stats={labelStats(sprintCards)}
+        shown={allCards.length}
+        total={sprintCards.length}
+        canMine={me !== undefined}
+      />
 
       <DndContext
         sensors={sensors}
@@ -217,24 +247,35 @@ export function MultiBoard({
         onDragEnd={onDragEnd}
         onDragCancel={() => setActiveId(null)}
       >
-        <div className="board" role="group" aria-label="Доска нескольких проектов">
+        <div
+          className="board"
+          role="group"
+          aria-label="Доска нескольких проектов"
+          style={
+            {
+              '--cols': columns.length,
+              '--extra': canEditColumns ? '2.6rem' : '0px',
+            } as React.CSSProperties
+          }
+        >
           <div className="board-columns">
-            {BOARD_COLUMNS.map((c) => (
-              <div key={c} className={`col-head status-${c.toLowerCase().replace(' ', '-')}`}>
-                <strong>{c}</strong>
-                <span className="muted">
-                  {stats[c].count} · {stats[c].points} sp
-                </span>
-              </div>
+            {columns.map((col) => (
+              <ColumnHead
+                key={col.id}
+                status={col}
+                summary={`${stats[col.id]?.count ?? 0} · ${stats[col.id]?.points ?? 0} sp`}
+              />
             ))}
+            {canEditColumns && <AddColumn />}
           </div>
-          {lanes.map(({ view, sprint, lane, hidden }, index) => {
+          {lanes.map(({ view, sprint, lane, hidden, blockers, byId }, index) => {
             const total = statsOf(lane.issues);
             const over = wipOverflows(
               view.project,
               Object.fromEntries(
-                BOARD_COLUMNS.map((c) => [c, lane.issues.filter((i) => i.status === c).length]),
+                columnIds.map((c) => [c, lane.issues.filter((i) => i.status === c).length]),
               ),
+              statusList,
             );
             return (
               <div key={lane.key}>
@@ -257,7 +298,8 @@ export function MultiBoard({
                       </span>
                     </>
                   }
-                  meta={`${total.count} ${plural(total.count)} · ${num(total.points)} sp${over.map((o) => ` · ⚠ WIP ${o.column}: ${o.count} из ${o.limit}`).join('')}`}
+                  meta={`${total.count} ${plural(total.count)} · ${num(total.points)} sp${over.map((o) => ` · ⚠ WIP ${statusName(statusList, o.column)}: ${o.count} из ${o.limit}`).join('')}`}
+                  columns={columns}
                   renderCard={(issue) => (
                     <BoardCard
                       key={issue.id}
@@ -271,6 +313,11 @@ export function MultiBoard({
                         view.issues.find((i) => i.id === issue.parentId),
                       )}
                       readOnly={!perms.canChangeStatus(issue)}
+                      epic={epicOf(issue, byId)}
+                      assignee={view.people.find((p) => p.id === issue.assigneeId)}
+                      blockedBy={blockers
+                        .get(issue.id)
+                        ?.map((b) => `${view.project.key}-${b.number}`)}
                       showProject
                       onStatus={(id, status) => void changeStatus(view.projectId, id, status)}
                     />
@@ -278,17 +325,17 @@ export function MultiBoard({
                 />
                 {hidden.length > 0 && (
                   <p className="warn" role="status">
-                    {view.project.key}: {hidden.length} {plural(hidden.length)} в статусе Backlog на
-                    доске не показываются.{' '}
+                    {view.project.key}: {hidden.length} {plural(hidden.length)} в колонке «бэклог»
+                    на доске не показываются.{' '}
                     <button
                       type="button"
                       onClick={() =>
                         void Promise.all(
-                          hidden.map((i) => changeStatus(view.projectId, i.id, 'To Do')),
+                          hidden.map((i) => changeStatus(view.projectId, i.id, start)),
                         )
                       }
                     >
-                      Перевести в To Do
+                      Перевести в «{statusName(statusList, start)}»
                     </button>
                   </p>
                 )}
@@ -307,6 +354,6 @@ export function MultiBoard({
       {allCards.length === 0 && (
         <p className="empty">В активных спринтах выбранных проектов нет задач на доске.</p>
       )}
-    </>
+    </div>
   );
 }

@@ -113,12 +113,17 @@ function Palette({ onClose }: { onClose: () => void }) {
     const projectKey = routeKey ?? scope.scope.projects[0]?.key;
     const screens: Item[] = [
       { id: 'portfolio', group: 'Экраны', label: 'Портфель', run: go('/portfolio') },
-      { id: 'analytics', group: 'Экраны', label: 'Аналитика', run: go('/analytics') },
+      {
+        id: 'analytics',
+        group: 'Экраны',
+        label: 'Отчёты: поток, время цикла, нагрузка',
+        run: go('/analytics'),
+      },
       { id: 'projects', group: 'Экраны', label: 'Проекты', run: go('/projects') },
       ...(projectKey
         ? [
             ['board', 'Доска', 'G D'],
-            ['backlog', 'Планирование спринтов', 'G B'],
+            ['backlog', 'Планирование', 'G B'],
             ['history', 'Прошлые спринты', 'G H'],
             ['sprints', 'Спринты', 'G S'],
             ['reports', 'Отчёты', 'G R'],

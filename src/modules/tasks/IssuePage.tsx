@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import type { FieldErrors, View } from '../../domain/actions';
-import { canHavePoints } from '../../domain/hierarchy';
+import { canHavePoints, isContainer } from '../../domain/hierarchy';
 import { checklistProgress, toggleChecklistItem } from '../../domain/checklist';
 import { ancestors, descendants, treeRows } from '../../domain/tree';
 import { epicProgress } from '../../domain/progress';
@@ -20,6 +20,7 @@ import { Avatar, EpicProgressView, StatusChip, TypeIcon } from './IssueBits';
 import { IssueActivity } from './IssueActivity';
 import { IssueLinks } from './IssueLinks';
 import { IssueSidebar } from './IssueSidebar';
+import { statusesOf } from '../../domain/statuses';
 
 /** Карточка задачи: /projects/:key/issues/:number (wireframes.md, раздел 8). */
 export function IssuePage() {
@@ -41,7 +42,8 @@ function IssueView({ issue, view, projectKey }: { issue: Issue; view: View; proj
   const readOnly = sprint?.state === 'closed';
   // без права «Редактировать» поля, описание и критерии только читаются
   const canEdit = !readOnly && perms.can('issue.edit');
-  const isEpic = issue.type === 'Epic';
+  const isEpic = isContainer(issue.type);
+  const kind = issue.type === 'Epic' ? 'эпика' : 'под-эпика';
   const path = ancestors(issue, view.issues);
   const family = descendants(issue, view.issues);
 
@@ -83,18 +85,20 @@ function IssueView({ issue, view, projectKey }: { issue: Issue; view: View; proj
           {isEpic && (
             <section aria-labelledby="progress-title">
               <h2 id="progress-title">Прогресс</h2>
-              <EpicProgressView progress={epicProgress(view.issues, issue.id)} />
+              <EpicProgressView progress={epicProgress(view.issues, issue.id, statusesOf(view))} />
               <p className="muted small">
-                Считается по story points дочерних Story, Task и Bug, не хранится и не входит в
-                velocity и burndown.
+                Считается по story points вложенных Task и Bug, не хранится и не входит в velocity и
+                burndown.
               </p>
             </section>
           )}
 
           <section aria-labelledby="children-title">
-            <h2 id="children-title">{isEpic ? 'Задачи эпика' : `Подзадачи (${family.length})`}</h2>
+            <h2 id="children-title">
+              {isEpic ? `Задачи ${kind}` : `Подзадачи (${family.length})`}
+            </h2>
             {family.length === 0 && (
-              <p className="muted">{isEpic ? 'Задач в эпике нет' : 'Подзадач нет'}</p>
+              <p className="muted">{isEpic ? `Задач у ${kind} нет` : 'Подзадач нет'}</p>
             )}
             <ul className="plain-list">
               {treeRows(family, { all: view.issues })
@@ -127,7 +131,9 @@ function IssueView({ issue, view, projectKey }: { issue: Issue; view: View; proj
                   )
                 }
               >
-                {isEpic ? '+ Добавить задачу в эпик' : '+ Добавить подзадачу'}
+                {isEpic
+                  ? `+ Добавить задачу в ${issue.type === 'Epic' ? 'эпик' : 'под-эпик'}`
+                  : '+ Добавить подзадачу'}
               </button>
             )}
           </section>

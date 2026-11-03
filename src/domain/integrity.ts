@@ -1,5 +1,6 @@
 import { canHavePoints, isValidParent } from './hierarchy';
 import type { Dataset } from './schema';
+import { statusRuleErrors } from './statuses';
 
 function duplicates(ids: string[]): string[] {
   const seen = new Set<string>();
@@ -25,6 +26,7 @@ export function checkIntegrity(ds: Dataset): string[] {
     ['members', ds.members.map((x) => x.id)],
     ['templates', ds.templates.map((x) => x.id)],
     ['roles', ds.roles.map((x) => x.id)],
+    ['statuses', ds.statuses.map((x) => x.id)],
     ['absences', ds.absences.map((x) => x.id)],
     ['retroItems', ds.retroItems.map((x) => x.id)],
     ['sprints', ds.sprints.map((x) => x.id)],
@@ -38,6 +40,13 @@ export function checkIntegrity(ds: Dataset): string[] {
   }
   for (const key of duplicates(ds.issues.map((i) => `${i.projectId}#${i.number}`))) {
     errors.push(`issues: повторяющийся номер ${key}`);
+  }
+
+  // колонки (ADR-024): статус задачи — существующая колонка; набор колонок по правилам
+  const statusIds = new Set(ds.statuses.map((x) => x.id));
+  for (const message of statusRuleErrors(ds.statuses)) errors.push(`statuses: ${message}`);
+  for (const i of ds.issues) {
+    if (!statusIds.has(i.status)) errors.push(`issue ${i.id}: нет колонки ${i.status}`);
   }
 
   for (const p of ds.projects) {

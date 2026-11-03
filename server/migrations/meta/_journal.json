@@ -64,6 +64,20 @@
       "when": 1793601284018,
       "tag": "0008_project-archive",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793690398349,
+      "tag": "0009_types",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793692644163,
+      "tag": "0010_statuses",
+      "breakpoints": true
     }
   ]
 }

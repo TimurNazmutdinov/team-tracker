@@ -22,7 +22,7 @@ test.beforeAll(async ({ browser }) => {
   await page.getByLabel('Почта').fill('admin@example.com');
   await page.getByLabel('Пароль').fill('password-1');
   await page.locator('form button[type=submit]').click();
-  await expect(page.locator('.board-nav')).toBeVisible();
+  await expect(page.locator('.board-page')).toBeVisible();
 });
 test.afterAll(async () => {
   await page.close();
@@ -32,7 +32,7 @@ test('на «Портфеле» и «Аналитике» видны вклад�
   for (const url of ['/portfolio', '/analytics?projects=all']) {
     await page.goto(url);
     const tabs = page.getByRole('navigation', { name: 'Разделы проекта' });
-    await expect(tabs.getByRole('link', { name: 'Бэклог' })).toBeVisible();
+    await expect(tabs.getByRole('link', { name: 'Планирование' })).toBeVisible();
     await expect(tabs.getByRole('link', { name: 'Настройки' })).toBeVisible();
   }
 });
@@ -90,7 +90,10 @@ test('планирование: спринт и его задачи в обще�
 
 test('у вкладок, чипов и полей есть подсказки при наведении', async () => {
   await page.goto('/projects/DEMO/backlog?projects=DEMO');
-  await expect(page.getByRole('link', { name: 'Аналитика' })).toHaveAttribute('title', /Поток/);
+  await expect(page.getByRole('link', { name: 'Отчёты', exact: true })).toHaveAttribute(
+    'title',
+    /Поток/,
+  );
   await expect(page.getByRole('link', { name: 'Доска' }).first()).toHaveAttribute('title', /Доска/);
   await expect(page.getByRole('button', { name: 'Справка' })).toHaveAttribute('title', /Справка/);
   await expect(page.locator('.planning-row select[title]').first()).toBeVisible();
@@ -144,8 +147,8 @@ test('настройки: каждая настройка в своей рамк
   }
   const templates = page.getByRole('navigation', { name: 'Шаблоны' });
   await expect(templates.getByRole('button', { name: /Баг/ })).toBeVisible();
-  await templates.getByRole('button', { name: /Story/ }).click();
-  await expect(page.getByLabel('Название шаблона')).toHaveValue('Story');
+  await templates.getByRole('button', { name: /Эпик/ }).click();
+  await expect(page.getByLabel('Название шаблона')).toHaveValue('Эпик');
   await audit('настройки в рамках');
 });
 
@@ -166,11 +169,17 @@ test('иерархия: состав спринта и карточка зада
 
 test('иерархия: эпик в портфеле раскрывается до задач, в поиске виден путь', async () => {
   await page.goto('/portfolio?projects=DEMO');
-  await page
+  // блок «Структура» свёрнут по умолчанию: высота карточки не зависит от числа задач
+  const structure = page.getByRole('region', { name: 'Структура проекта DEMO' });
+  await expect(structure).toContainText('эпиков');
+  await expect(structure.locator('.structure-list')).toHaveCount(0);
+  await structure.getByRole('button', { name: /Структура/ }).click();
+  await structure
     .getByRole('button', { name: /Развернуть эпик/ })
     .first()
     .click();
-  await expect(page.locator('.epic-family li').first()).toBeVisible();
+  await expect(structure.locator('.structure-children li').first()).toBeVisible();
+  await audit('структура проекта на портфеле');
 
   await page.keyboard.press('Control+k');
   await page.getByRole('combobox', { name: /Поиск задач/ }).fill('Форма смены');

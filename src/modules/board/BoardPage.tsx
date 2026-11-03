@@ -8,23 +8,26 @@ import {
   type DragEndEvent,
 } from '@dnd-kit/core';
 import { useState, type ReactNode } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import {
-  BOARD_COLUMNS,
   GROUP_FIELDS,
   GROUP_LABELS,
-  NO_BOARD_FILTERS,
   boardCards,
   boardSprints,
   columnStats,
   defaultSprint,
+  epicOf,
   filterCards,
+  filtersFromParams,
+  filtersToParams,
+  openBlockers,
   groupLanes,
   hiddenBacklogCards,
   isGroupField,
   type BoardColumn,
   type BoardFilters,
 } from '../../domain/board';
+import { boardStatuses, startStatusId, statusName } from '../../domain/statuses';
 import {
   ISSUE_TYPES,
   PRIORITIES,
@@ -40,17 +43,21 @@ import { wipAfterMove, wipLimit, wipMessage } from '../../domain/wip';
 import { ancestors } from '../../domain/tree';
 import { ProjectFilter } from '../../ui/ProjectFilter';
 import { useActions } from '../../state/actions';
-import { usePermissions } from '../../state/current-user';
+import { useCurrentUser, usePermissions } from '../../state/current-user';
 import { useBoardPrefs } from '../../state/board-prefs';
 import { useNotices } from '../../state/notices';
 import { useProjectScope } from '../../state/project-scope';
-import { useView } from '../../state/queries';
+import { useStatusList, useView } from '../../state/queries';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
 import { useDodGate } from '../tasks/DodGate';
 import { BulkBar } from '../tasks/BulkBar';
-import { BoardNav } from './BoardNav';
 import { BoardCard, LaneView, plural } from './BoardParts';
+import { AddColumn, ColumnHead, useCanEditColumns } from './Columns';
+import { QuickFilters } from './QuickFilters';
+import { SprintHeader } from './SprintHeader';
+import { labelStats } from '../../domain/labels';
+import { epicProgress } from '../../domain/progress';
 import { MultiBoard } from './MultiBoard';
 
 /** Доска одного проекта (wireframes.md, раздел 5): колонки статусов, группировка по полю, перенос карточек. */
@@ -61,12 +68,18 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
   const groupBy = useBoardPrefs((s) => s.groupBy);
   const setGroupBy = useBoardPrefs((s) => s.setGroupBy);
   const [params, setParams] = useSearchParams();
-  const [filters, setFilters] = useState<BoardFilters>(NO_BOARD_FILTERS);
+  // фильтры — в адресе: ссылку с выбранными чипами можно отправить коллеге (D-2)
+  const filters = filtersFromParams(params);
+  const setFilters = (next: BoardFilters) =>
+    setParams((prev) => filtersToParams(next, prev), { replace: true });
+  const me = useCurrentUser();
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [activeId, setActiveId] = useState<string | null>(null);
   const dod = useDodGate();
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const perms = usePermissions();
+  const statusList = useStatusList();
+  const canEditColumns = useCanEditColumns();
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor),
@@ -94,15 +107,23 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
   }
 
   const readOnly = sprint.state === 'closed';
-  const all = boardCards(view.issues, sprint.id);
-  const cards = filterCards(all, filters);
-  const hidden = hiddenBacklogCards(view.issues, sprint.id);
+  const columns = boardStatuses(statusList);
+  const columnIds = columns.map((c) => c.id);
+  const all = boardCards(view.issues, sprint.id, statusList);
+  const blockers = openBlockers(view.issues, view.links, statusList);
+  const cards = filterCards(all, filters, {
+    meId: me?.id ?? null,
+    blockedIds: new Set(blockers.keys()),
+  });
+  const byId = new Map(view.issues.map((i) => [i.id, i]));
+  const hidden = hiddenBacklogCards(view.issues, sprint.id, statusList);
+  const start = startStatusId(statusList);
   const lanes = groupLanes(cards, groupBy, {
     people: view.people,
     issues: view.issues,
     projectKey: project.key,
   });
-  const stats = columnStats(cards);
+  const stats = columnStats(cards, columnIds);
   const issueKey = (id: string | null) => {
     const found = view.issues.find((i) => i.id === id);
     return found ? `${project.key}-${found.number}` : null;
@@ -114,18 +135,18 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
       .join(' › ');
   const activeIssue = view.issues.find((i) => i.id === activeId);
 
-  const unfiltered = columnStats(all);
-  const counts = Object.fromEntries(BOARD_COLUMNS.map((c) => [c, unfiltered[c].count]));
+  const unfiltered = columnStats(all, columnIds);
+  const counts = Object.fromEntries(columnIds.map((c) => [c, unfiltered[c]?.count ?? 0]));
   const warnWip = (status: string, adding: number) => {
     const over = wipAfterMove(project, counts, status, adding);
-    if (over) push(wipMessage(over));
+    if (over) push(wipMessage(over, statusList), 'warn');
   };
 
   const changeStatus = async (issueId: string, status: Status) => {
     const before = view.issues.find((i) => i.id === issueId);
     if (before && !(await dod.ask(project, [before], status, project.key))) return;
     const result = await actions.updateIssue(issueId, { status });
-    if (!result.ok) push(Object.values(result.errors).join('. '));
+    if (!result.ok) push(Object.values(result.errors).join('. '), 'error');
     else if (before && before.status !== status) warnWip(status, 1);
   };
 
@@ -162,7 +183,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
     const own = lanes.find((l) => l.issues.some((i) => i.id === issueId));
     if (!own) return;
     if (own.key !== laneKey) {
-      push('Карточку можно переносить только по колонкам своей группы.');
+      push('Карточку можно переносить только по колонкам своей группы.', 'warn');
       return;
     }
     const issue = view.issues.find((i) => i.id === issueId);
@@ -170,7 +191,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
   };
 
   const moveHiddenToTodo = async () => {
-    for (const issue of hidden) await changeStatus(issue.id, 'To Do');
+    for (const issue of hidden) await changeStatus(issue.id, start);
   };
 
   const toggleLane = (key: string) =>
@@ -183,34 +204,27 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
   const allCollapsed = lanes.length > 0 && lanes.every((l) => collapsed.has(l.key));
 
   return (
-    <>
+    <div className="board-page">
       {dod.dialog}
       <PageHeader title="Доска" />
-      <BoardNav projectKey={project.key} sprint={sprint} />
+      <SprintHeader
+        sprint={sprint}
+        sprints={sprints}
+        cards={all}
+        statuses={statusList}
+        onSelect={(id) =>
+          setParams((prev) => {
+            const next = new URLSearchParams(prev);
+            if (id === defaultSprint(view.sprints)?.id) next.delete('sprint');
+            else next.set('sprint', id);
+            return next;
+          })
+        }
+      />
       <div className="board-toolbar">
         {filter}
-        <label title="Какой спринт показать на доске">
-          Спринт
-          <select
-            value={sprint.id}
-            onChange={(e) =>
-              setParams((prev) => {
-                const next = new URLSearchParams(prev);
-                if (e.target.value === defaultSprint(view.sprints)?.id) next.delete('sprint');
-                else next.set('sprint', e.target.value);
-                return next;
-              })
-            }
-          >
-            {sprints.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label title="Разбить доску на дорожки по полю">
-          Группировать по
+        <label title="Разбить доску на дорожки: по эпикам, исполнителям и др.">
+          Дорожки
           <select
             value={groupBy}
             onChange={(e) => isGroupField(e.target.value) && setGroupBy(e.target.value)}
@@ -265,9 +279,17 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
           type="button"
           onClick={() => setCollapsed(allCollapsed ? new Set() : new Set(lanes.map((l) => l.key)))}
         >
-          {allCollapsed ? 'Развернуть группы' : 'Свернуть группы'}
+          {allCollapsed ? 'Развернуть дорожки' : 'Свернуть дорожки'}
         </button>
       </div>
+      <QuickFilters
+        filters={filters}
+        onChange={setFilters}
+        stats={labelStats(all)}
+        shown={cards.length}
+        total={all.length}
+        canMine={me !== undefined}
+      />
 
       {!readOnly && pickedIssues.length > 0 && (
         <BulkBar
@@ -286,7 +308,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
       )}
       {hidden.length > 0 && !readOnly && (
         <p className="warn" role="status">
-          В спринте {hidden.length} {plural(hidden.length)} в статусе Backlog — на доске такие
+          В спринте {hidden.length} {plural(hidden.length)} в колонке «бэклог» — на доске такие
           задачи не показываются:{' '}
           {hidden.map((i, n) => (
             <span key={i.id}>
@@ -298,7 +320,7 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
           ))}
           .{' '}
           <button type="button" onClick={() => void moveHiddenToTodo()}>
-            Перевести в To Do
+            Перевести в «{statusName(statusList, start)}»
           </button>
         </p>
       )}
@@ -316,22 +338,39 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
           onDragEnd={onDragEnd}
           onDragCancel={() => setActiveId(null)}
         >
-          <div className="board" role="group" aria-label={`Доска ${sprint.name}`}>
+          <div
+            className="board"
+            role="group"
+            aria-label={`Доска ${sprint.name}`}
+            style={
+              {
+                '--cols': columns.length,
+                '--extra': canEditColumns ? '2.6rem' : '0px',
+              } as React.CSSProperties
+            }
+          >
             <div className="board-columns">
-              {BOARD_COLUMNS.map((c) => (
-                <div key={c} className={`col-head status-${c.toLowerCase().replace(' ', '-')}`}>
-                  <strong>{c}</strong>
-                  <span className="muted">
-                    {stats[c].count} · {stats[c].points} sp
-                  </span>
-                  {wipLimit(project, c) !== undefined &&
-                    (counts[c] ?? 0) > (wipLimit(project, c) ?? 0) && (
-                      <span className="wip-over" role="status">
-                        ⚠ WIP {counts[c]} из {wipLimit(project, c)}
-                      </span>
-                    )}
-                </div>
-              ))}
+              {columns.map((col) => {
+                const c = col.id;
+                const limit = wipLimit(project, c);
+                return (
+                  <ColumnHead
+                    key={c}
+                    status={col}
+                    summary={`${stats[c]?.count ?? 0} · ${stats[c]?.points ?? 0} sp`}
+                    wipHref={`/projects/${project.key}/settings`}
+                    warning={
+                      limit !== undefined &&
+                      (counts[c] ?? 0) > limit && (
+                        <span className="wip-over" role="status">
+                          ⚠ WIP {counts[c]} из {limit}
+                        </span>
+                      )
+                    }
+                  />
+                );
+              })}
+              {canEditColumns && <AddColumn />}
             </div>
             {lanes.map((lane, index) => (
               <LaneView
@@ -340,6 +379,10 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
                 first={index === 0}
                 collapsed={collapsed.has(lane.key)}
                 onToggle={() => toggleLane(lane.key)}
+                columns={columns}
+                progress={
+                  lane.epic ? epicProgress(view.issues, lane.epic.id, statusList) : undefined
+                }
                 renderCard={(issue) => (
                   <BoardCard
                     key={issue.id}
@@ -347,6 +390,10 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
                     projectKey={project.key}
                     parentKey={issueKey(issue.parentId)}
                     trail={trailOf(issue)}
+                    epic={epicOf(issue, byId)}
+                    hideEpic={groupBy === 'epic'}
+                    assignee={people.get(issue.assigneeId ?? '')}
+                    blockedBy={blockers.get(issue.id)?.map((b) => `${project.key}-${b.number}`)}
                     readOnly={readOnly || !perms.canChangeStatus(issue)}
                     onStatus={(id, status) => void changeStatus(id, status)}
                     {...(readOnly ? {} : { selected: picked.has(issue.id), onSelect: togglePick })}
@@ -369,10 +416,11 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
         </DndContext>
       )}
       <p className="muted small">
-        Колонка Backlog на доске не показывается. Карточки переносятся за ручку ⋮⋮ или выбором
+        Колонка «бэклог» на доске не показывается. Карточки переносятся за ручку ⋮⋮ или выбором
         статуса; допустим любой переход, смена пишется в историю.
+        {canEditColumns && ' Колонки: двойной клик — переименовать, «⋯» — меню, «+» — новая.'}
       </p>
-    </>
+    </div>
   );
 }
 
@@ -382,7 +430,6 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
  */
 export function BoardPage() {
   const { ready, scope } = useProjectScope();
-  const { key = '' } = useParams();
   if (!ready) {
     return (
       <>
@@ -405,5 +452,5 @@ export function BoardPage() {
   }
   if (only && projects.length === 1)
     return <SingleBoard key={only.id} project={only} filter={filter} />;
-  return <MultiBoard projects={projects} routeKey={key || (only?.key ?? '')} filter={filter} />;
+  return <MultiBoard projects={projects} filter={filter} />;
 }

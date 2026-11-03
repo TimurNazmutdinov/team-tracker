@@ -85,14 +85,14 @@ function RetroColumn({
   };
   const remove = async (id: string) => {
     const result = await actions.deleteRetroItem(id);
-    if (!result.ok) push(Object.values(result.errors).join('. '));
+    if (!result.ok) push(Object.values(result.errors).join('. '), 'error');
   };
   const toIssue = async (id: string) => {
     const result = await actions.retroToIssue(id);
     if (result.ok) {
       const created = result.changes.issues?.[0];
       push(created ? `Создана задача ${projectKey}-${created.number}` : 'Задача создана');
-    } else push(Object.values(result.errors).join('. '));
+    } else push(Object.values(result.errors).join('. '), 'error');
   };
   const title = RETRO_LABELS[kind];
   const inputLabel = `${title}: новая запись`;

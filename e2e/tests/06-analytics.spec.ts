@@ -13,7 +13,7 @@ test.beforeAll(async ({ browser }) => {
   await page.getByLabel('Почта').fill('admin@example.com');
   await page.getByLabel('Пароль').fill('password-1');
   await page.locator('form button[type=submit]').click();
-  await expect(page.locator('.board-nav')).toBeVisible();
+  await expect(page.locator('.board-page')).toBeVisible();
 });
 test.afterAll(async () => {
   await page.close();
@@ -21,7 +21,9 @@ test.afterAll(async () => {
 
 test('аналитика открывается из шапки: поток показывает диаграмму и таблицу данных', async () => {
   await page.goto('/portfolio');
-  await page.getByRole('link', { name: 'Аналитика' }).click();
+  // бывшая «Аналитика» — вкладки раздела «Отчёты» (меню из 7 пунктов)
+  await page.getByRole('link', { name: 'Отчёты', exact: true }).click();
+  await page.getByRole('link', { name: 'Поток (CFD)' }).click();
   await page.waitForURL('**/analytics*');
   await page.goto('/analytics?projects=all');
   await expect(page.getByRole('heading', { name: 'Кумулятивная диаграмма потока' })).toBeVisible();
@@ -34,7 +36,7 @@ test('период и вкладка хранятся в адресе', async ()
   await page.goto('/analytics?projects=all');
   await page.getByLabel('Период').selectOption('90');
   await expect(page).toHaveURL(/days=90/);
-  await page.getByRole('button', { name: 'Время цикла' }).click();
+  await page.getByRole('link', { name: 'Время цикла' }).click();
   await expect(page).toHaveURL(/tab=time/);
   await expect(page.getByRole('heading', { name: 'Время цикла и время выполнения' })).toBeVisible();
 });

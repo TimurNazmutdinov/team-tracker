@@ -1,11 +1,5 @@
-import {
-  STATUSES,
-  type History,
-  type Issue,
-  type Person,
-  type Sprint,
-  type Status,
-} from './schema';
+import { type History, type Issue, type Person, type Sprint, type Status } from './schema';
+import { DEFAULT_STATUSES, activeStatuses, isDoneStatus, type Statuses } from './statuses';
 
 // Состояние задач и итоги спринта. Итоги не хранятся — считаются из задач и истории (ADR-003).
 // Состав закрытого спринта заморожен: он восстанавливается по истории на момент закрытия.
@@ -125,9 +119,16 @@ export interface SprintSummary {
 const NOBODY = 'Не назначено';
 
 /** Итоги по людям и по спринту: задач, story points, из них в Done. */
-export function summarize(snaps: Snapshot[], people: Person[]): SprintSummary {
+export function summarize(
+  snaps: Snapshot[],
+  people: Person[],
+  statuses: Statuses = DEFAULT_STATUSES,
+): SprintSummary {
   const rows = new Map<string | null, PersonRow>();
-  const byStatus = Object.fromEntries(STATUSES.map((s) => [s, 0])) as Record<Status, number>;
+  const byStatus = Object.fromEntries(activeStatuses(statuses).map((s) => [s.id, 0])) as Record<
+    Status,
+    number
+  >;
   const total = { count: 0, points: 0, done: 0 };
   for (const s of snaps) {
     const person = people.find((p) => p.id === s.assigneeId);
@@ -142,12 +143,13 @@ export function summarize(snaps: Snapshot[], people: Person[]): SprintSummary {
     const points = s.points ?? 0;
     row.count += 1;
     row.points += points;
-    if (s.status === 'Done') row.done += points;
+    const done = isDoneStatus(statuses, s.status);
+    if (done) row.done += points;
     rows.set(key, row);
-    byStatus[s.status] += points;
+    byStatus[s.status] = (byStatus[s.status] ?? 0) + points;
     total.count += 1;
     total.points += points;
-    if (s.status === 'Done') total.done += points;
+    if (done) total.done += points;
   }
   const sorted = [...rows.values()].sort(
     (a, b) =>

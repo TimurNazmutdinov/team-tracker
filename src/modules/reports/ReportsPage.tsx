@@ -12,8 +12,10 @@ import {
 } from '../../state/queries';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
+import { ReportsTabs } from '../../ui/SectionTabs';
 import { BurndownChart, VelocityChart } from './charts';
 import { TotalsTable } from './TotalsTable';
+import { statusesOf } from '../../domain/statuses';
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -27,6 +29,7 @@ function SingleReport({ project }: { project: Project }) {
     return (
       <>
         <PageHeader title="Отчёты" scope />
+        <ReportsTabs />
         <Loading />
       </>
     );
@@ -35,7 +38,7 @@ function SingleReport({ project }: { project: Project }) {
   const sprints = boardSprints(view.sprints).filter((s) => s.state !== 'planned');
   const requested = params.get('sprint');
   const sprint = sprints.find((s) => s.id === requested) ?? sprints[0];
-  const velocityReport = velocity(view.sprints, view.issues, history.data);
+  const velocityReport = velocity(view.sprints, view.issues, history.data, statusesOf(view));
 
   return (
     <>
@@ -63,6 +66,7 @@ function SingleReport({ project }: { project: Project }) {
           </label>
         )}
       </PageHeader>
+      <ReportsTabs />
       {!sprint ? (
         <p className="empty">Отчёты появятся, когда будет запущен первый спринт.</p>
       ) : (
@@ -88,8 +92,9 @@ function ReportBody({
   sprint: Parameters<typeof sprintSnapshots>[0];
   velocityReport: ReturnType<typeof velocity>;
 }) {
-  const days = burndown(sprint, view.issues, history, today());
-  const summary = summarize(sprintSnapshots(sprint, view.issues, history), view.people);
+  const st = statusesOf(view);
+  const days = burndown(sprint, view.issues, history, today(), st);
+  const summary = summarize(sprintSnapshots(sprint, view.issues, history), view.people, st);
   const hasPoints = days.some((d) => (d.scope ?? 0) > 0);
   return (
     <>
@@ -137,6 +142,7 @@ function MultiReports({ projects }: { projects: Project[] }) {
     return (
       <>
         <PageHeader title="Отчёты" scope></PageHeader>
+        <ReportsTabs />
         <Loading />
       </>
     );
@@ -144,12 +150,18 @@ function MultiReports({ projects }: { projects: Project[] }) {
   return (
     <>
       <PageHeader title="Отчёты" scope></PageHeader>
+      <ReportsTabs />
       <p className="muted">
         Выбрано проектов: {projects.length}. Burndown и итоги по людям строятся для одного проекта:
         откройте отчёт проекта по ссылке.
       </p>
       {views.map((view) => {
-        const report = velocity(view.sprints, view.issues, histories.get(view.projectId) ?? []);
+        const report = velocity(
+          view.sprints,
+          view.issues,
+          histories.get(view.projectId) ?? [],
+          statusesOf(view),
+        );
         return (
           <section
             key={view.projectId}
@@ -188,6 +200,7 @@ export function ReportsPage() {
     return (
       <>
         <PageHeader title="Отчёты" scope />
+        <ReportsTabs />
         <Loading />
       </>
     );
@@ -198,6 +211,7 @@ export function ReportsPage() {
     return (
       <>
         <PageHeader title="Отчёты" scope></PageHeader>
+        <ReportsTabs />
         <p className="empty">Не выбрано ни одного проекта: выберите проекты в фильтре.</p>
       </>
     );

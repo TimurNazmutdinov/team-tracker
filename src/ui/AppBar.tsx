@@ -10,16 +10,24 @@ import { useQuick } from '../state/quick';
 import { Logo } from './Logo';
 import { UserMenu } from './UserMenu';
 
-const TABS = [
-  { to: 'backlog', label: 'Бэклог', tip: 'Планирование спринтов: спринты и общий бэклог' },
-  { to: 'board', label: 'Доска', tip: 'Доска текущего спринта по статусам' },
-  { to: 'sprints', label: 'Спринты', tip: 'Список спринтов, цели, запуск и закрытие' },
-  { to: 'reports', label: 'Отчёты', tip: 'Burndown и velocity по спринтам' },
+/**
+ * Меню из 7 пунктов (rework.md, 4.2): у каждого одно значение. «Спринты» включают прошлые спринты,
+ * «Отчёты» — поток, время цикла и нагрузку (бывшая «Аналитика»).
+ */
+const TABS: { to: string; label: string; tip: string; also?: RegExp }[] = [
+  { to: 'backlog', label: 'Планирование', tip: 'Планирование: спринты, общий бэклог, эпики' },
+  { to: 'board', label: 'Доска', tip: 'Доска текущего спринта по колонкам' },
   {
-    to: '/analytics',
-    label: 'Аналитика',
-    tip: 'Поток, время цикла, нагрузка и дорожная карта эпиков',
-    absolute: true,
+    to: 'sprints',
+    label: 'Спринты',
+    tip: 'Спринты: текущий, будущие и прошлые; цели, запуск, закрытие, ретроспектива',
+    also: /^\/projects\/[^/]+\/history/,
+  },
+  {
+    to: 'reports',
+    label: 'Отчёты',
+    tip: 'Отчёты: burndown, velocity, люди; Поток (CFD), время цикла, нагрузка',
+    also: /^\/analytics/,
   },
   { to: 'people', label: 'Люди', tip: 'Нагрузка людей, отсутствия, учётки и роли' },
   {
@@ -87,8 +95,9 @@ export function AppBar() {
             {TABS.map((tab) => (
               <NavLink
                 key={tab.to}
-                to={'absolute' in tab ? tab.to : `/projects/${shown}/${tab.to}`}
+                to={`/projects/${shown}/${tab.to}`}
                 title={tab.tip}
+                className={({ isActive }) => (isActive || tab.also?.test(pathname) ? 'active' : '')}
               >
                 {tab.label}
               </NavLink>

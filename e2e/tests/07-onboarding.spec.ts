@@ -22,7 +22,7 @@ test.beforeAll(async ({ browser }) => {
   await page.getByLabel('Почта').fill('admin@example.com');
   await page.getByLabel('Пароль').fill('password-1');
   await page.locator('form button[type=submit]').click();
-  await expect(page.locator('.board-nav')).toBeVisible();
+  await expect(page.locator('.board-page')).toBeVisible();
 });
 test.afterAll(async () => {
   await page.close();
@@ -57,7 +57,7 @@ test('кнопка «?» в шапке открывает справку, мас
   await wizard.getByRole('button', { name: 'Пропустить мастер' }).click();
   await expect(wizard).toBeHidden();
   await page.reload();
-  await expect(page.locator('.board-nav')).toBeVisible();
+  await expect(page.locator('.board-page')).toBeVisible();
   await expect(page.getByRole('dialog')).toBeHidden();
 });
 

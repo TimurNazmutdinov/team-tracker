@@ -21,7 +21,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Fragment, useState, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router';
 import { containerItems, type View } from '../../domain/actions';
-import { canHavePoints } from '../../domain/hierarchy';
+import { canHavePoints, isContainer } from '../../domain/hierarchy';
 import {
   NO_PLANNING_FILTERS,
   allLabels,
@@ -66,6 +66,8 @@ import { dateRange, num, taskWord } from '../../ui/format';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
 import { FillIndicator } from '../planning/FillIndicator';
+import { SprintSeriesDialog } from '../planning/SprintSeriesDialog';
+import { SprintFormDialog } from '../sprints/SprintFormDialog';
 import {
   Avatar,
   EpicProgressView,
@@ -74,6 +76,7 @@ import {
   StatusChip,
   TypeIcon,
 } from '../tasks/IssueBits';
+import { statusesOf } from '../../domain/statuses';
 
 const BACKLOG = 'backlog';
 const containerId = (sprintId: string | null) => `container:${sprintId ?? BACKLOG}`;
@@ -100,6 +103,8 @@ interface RowProps {
   nested?: boolean;
   /** Вложена под эпик этого же списка (иерархия, wireframes.md, 24.2). */
   child?: boolean;
+  /** Глубина вложенности: 1 — под эпиком, 2 — под под-эпиком (ADR-024). */
+  depth?: number;
   /** У эпика: сколько у него задач и свёрнут ли он. */
   epicToggle?: { count: number; collapsed: boolean; onToggle: () => void };
   /** У строки эпика из другого списка: где она находится («в Спринте 1», «в бэклоге»). */
@@ -121,6 +126,7 @@ function IssueRow({
   showStatus,
   nested = false,
   child = false,
+  depth = 0,
   epicToggle,
   where,
 }: RowProps) {
@@ -129,6 +135,8 @@ function IssueRow({
   const style = {
     transform: CSS.Transform.toString(sortable.transform),
     transition: sortable.transition,
+    // под-эпик сдвигает свои задачи ещё на один уровень
+    ...(depth > 1 ? { marginLeft: `${(depth - 1) * 1.6}rem` } : {}),
   };
   const assignee = people.find((p) => p.id === issue.assigneeId);
   const key = `${projectKey}-${issue.number}`;
@@ -151,7 +159,7 @@ function IssueRow({
       <li
         ref={nested ? undefined : sortable.setNodeRef}
         style={nested ? undefined : style}
-        className={`issue-row planning-row${nested ? ' nested' : ''}${child ? ' child' : ''}${issue.type === 'Epic' ? ' epic-row' : ''}${sortable.isDragging ? ' dragging' : ''}`}
+        className={`issue-row planning-row${nested ? ' nested' : ''}${child ? ' child' : ''}${isContainer(issue.type) ? ' epic-row' : ''}${sortable.isDragging ? ' dragging' : ''}`}
       >
         {nested || !canMove ? (
           <span className="handle-space" />
@@ -334,6 +342,8 @@ interface SectionProps {
   selected: Set<string>;
   onSelect: (issueId: string, on: boolean) => void;
   onEdit: RowProps['onEdit'];
+  /** Правка названия, цели и дат спринта (✎ в шапке); нет — правка недоступна. */
+  onEditSprint?: ((sprint: Sprint) => void) | undefined;
 }
 
 function Section({
@@ -350,16 +360,26 @@ function Section({
   selected,
   onSelect,
   onEdit,
+  onEditSprint,
 }: SectionProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [collapsedEpics, setCollapsedEpics] = useState<Set<string>>(new Set());
+  // задачи эпика из других списков скрыты, пока их не раскроют (решение 4, rework.md)
+  const [shownOutside, setShownOutside] = useState<Set<string>>(new Set());
+  const toggleOutside = (id: string) =>
+    setShownOutside((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   const droppable = useDroppable({ id: containerId(sprint?.id ?? null) });
   const points = totalPoints(all);
   // ёмкость этого спринта: velocity с поправкой на доступность людей (ADR-018)
   const sprintCapacity =
     sprint && capacity ? adjustedCapacity(capacity, sprintAvailability(view, sprint)) : capacity;
   const sprintCapacityValue = sprintCapacity?.value ?? null;
-  const epics = new Map(view.issues.filter((i) => i.type === 'Epic').map((i) => [i.id, i]));
+  const epics = new Map(view.issues.filter((i) => isContainer(i.type)).map((i) => [i.id, i]));
   const rows = hierarchyRows(items, collapsedEpics);
   const inList = new Set(all.map((i) => i.id));
   // задачи эпика из других списков показываются под ним с пометкой, где они
@@ -370,6 +390,12 @@ function Section({
   const locationOf = (issue: Issue) => {
     const s = view.sprints.find((x) => x.id === issue.sprintId);
     return s ? `в ${s.name}` : 'в бэклоге';
+  };
+  /** «в Спринт 1 — 6, в бэклоге — 1» */
+  const outsideSummary = (kids: Issue[]) => {
+    const counts = new Map<string, number>();
+    for (const kid of kids) counts.set(locationOf(kid), (counts.get(locationOf(kid)) ?? 0) + 1);
+    return [...counts.entries()].map(([where, n]) => `${where} — ${n}`).join(', ');
   };
   const toggleEpic = (id: string) =>
     setCollapsedEpics((prev) => {
@@ -395,6 +421,17 @@ function Section({
             <>
               <span className={`chip state-${sprint.state}`}>{STATE_LABEL[sprint.state]}</span>
               <span className="muted">{dateRange(sprint.start, sprint.end)}</span>
+              {onEditSprint && (
+                <button
+                  type="button"
+                  className="plain"
+                  aria-label={`Изменить ${sprint.name}`}
+                  title="Изменить название, цель и даты"
+                  onClick={() => onEditSprint(sprint)}
+                >
+                  ✎
+                </button>
+              )}
             </>
           ) : (
             <span className="muted">
@@ -422,7 +459,7 @@ function Section({
         <SortableContext items={rows.map((r) => r.issue.id)} strategy={verticalListSortingStrategy}>
           <ul ref={droppable.setNodeRef} className={`issue-list${droppable.isOver ? ' over' : ''}`}>
             {rows.map(({ issue, depth, children }) => {
-              const outside = issue.type === 'Epic' ? externalKids(issue.id) : [];
+              const outside = isContainer(issue.type) ? externalKids(issue.id) : [];
               const folded = collapsedEpics.has(issue.id);
               return (
                 <Fragment key={issue.id}>
@@ -430,9 +467,11 @@ function Section({
                     issue={issue}
                     projectKey={projectKey}
                     people={view.people}
-                    epic={depth === 1 || !issue.parentId ? undefined : epics.get(issue.parentId)}
+                    epic={depth >= 1 || !issue.parentId ? undefined : epics.get(issue.parentId)}
                     progress={
-                      issue.type === 'Epic' ? epicProgress(view.issues, issue.id) : undefined
+                      isContainer(issue.type)
+                        ? epicProgress(view.issues, issue.id, statusesOf(view))
+                        : undefined
                     }
                     subtasks={view.issues
                       .filter((s) => s.type === 'Sub-task' && s.parentId === issue.id)
@@ -443,8 +482,9 @@ function Section({
                     onSelect={onSelect}
                     onEdit={onEdit}
                     showStatus={sprint?.state === 'active'}
-                    child={depth === 1}
-                    {...(issue.type === 'Epic'
+                    child={depth >= 1}
+                    depth={depth}
+                    {...(isContainer(issue.type)
                       ? {
                           epicToggle: {
                             count: children + outside.length,
@@ -454,7 +494,22 @@ function Section({
                         }
                       : {})}
                   />
+                  {!folded && outside.length > 0 && (
+                    <li className="outside-toggle">
+                      <button
+                        type="button"
+                        className="link"
+                        aria-expanded={shownOutside.has(issue.id)}
+                        onClick={() => toggleOutside(issue.id)}
+                      >
+                        {shownOutside.has(issue.id) ? '▾' : '▸'} ещё {outside.length}{' '}
+                        {taskWord(outside.length)} {issue.type === 'Epic' ? 'эпика' : 'под-эпика'}:{' '}
+                        {outsideSummary(outside)}
+                      </button>
+                    </li>
+                  )}
                   {!folded &&
+                    shownOutside.has(issue.id) &&
                     outside.map((kid) => (
                       <IssueRow
                         key={kid.id}
@@ -641,8 +696,14 @@ function ProjectPlanning({
   );
   const canEdit = perms.can('backlog.rank');
   const canMove = perms.can('sprint.items');
+  const canManageSprints = perms.can('sprint.manage');
+  // окна спринтов: новый, правка, несколько подряд (D-6)
+  const [sprintDialog, setSprintDialog] = useState<
+    { mode: 'new' } | { mode: 'edit'; sprint: Sprint } | { mode: 'series' } | null
+  >(null);
 
-  const report = (errors: Record<string, string>) => push(Object.values(errors).join('. '));
+  const report = (errors: Record<string, string>) =>
+    push(Object.values(errors).join('. '), 'error');
 
   const onDragEnd = async (e: DragEndEvent) => {
     setActiveId(null);
@@ -710,7 +771,9 @@ function ProjectPlanning({
     );
   const activeIssue = view?.issues.find((i) => i.id === activeId);
   const capacity =
-    view && history.data ? sprintCapacity(view.sprints, view.issues, history.data) : null;
+    view && history.data
+      ? sprintCapacity(view.sprints, view.issues, history.data, statusesOf(view))
+      : null;
   const filtered = filtersActive(filters);
   const listOf = (sprintId: string | null) => {
     if (!view) return { all: [] as Issue[], items: [] as Issue[] };
@@ -729,28 +792,90 @@ function ProjectPlanning({
       aria-label={multi ? `Проект ${project.key}` : 'Планирование'}
     >
       {dod.dialog}
-      {multi && (
-        <h2 className="project-heading">
-          <span className="chip project-tag">{project.key}</span>{' '}
-          <Link to={`/projects/${project.key}/board?projects=${project.key}`}>{project.name}</Link>
-        </h2>
+      <div className="planning-project-head">
+        {multi && (
+          <h2 className="project-heading">
+            <span className="chip project-tag">{project.key}</span>{' '}
+            <Link to={`/projects/${project.key}/board?projects=${project.key}`}>
+              {project.name}
+            </Link>
+          </h2>
+        )}
+        <span className="spacer" />
+        {view && canManageSprints && (
+          <>
+            <button
+              type="button"
+              title="Новый спринт: название и даты подставятся из настроек проекта"
+              onClick={() => setSprintDialog({ mode: 'new' })}
+            >
+              + Спринт
+            </button>
+            <button
+              type="button"
+              title="Создать сразу несколько будущих спринтов подряд"
+              onClick={() => setSprintDialog({ mode: 'series' })}
+            >
+              + Несколько спринтов…
+            </button>
+          </>
+        )}
+        {multi && perms.can('issue.create') && (
+          <button type="button" onClick={() => showCreate({ projectId: project.id })}>
+            + Создать в {project.key}
+          </button>
+        )}
+      </div>
+      {view && sprintDialog?.mode === 'new' && (
+        <SprintFormDialog view={view} onClose={() => setSprintDialog(null)} />
+      )}
+      {view && sprintDialog?.mode === 'edit' && (
+        <SprintFormDialog
+          view={view}
+          sprint={sprintDialog.sprint}
+          onClose={() => setSprintDialog(null)}
+        />
+      )}
+      {view && sprintDialog?.mode === 'series' && (
+        <SprintSeriesDialog view={view} onClose={() => setSprintDialog(null)} />
       )}
       {!view ? (
         <Loading />
-      ) : view.issues.length === 0 ? (
+      ) : view.issues.length === 0 && sprints.length === 0 ? (
         <div className="empty">
           <p>
             В проекте пока нет задач.
             {perms.can('issue.create') ? ' Создайте первый элемент: задачу, эпик и др.' : ''}
           </p>
           {perms.can('issue.create') && (
-            <button type="button" className="primary" onClick={() => showCreate()}>
+            <button
+              type="button"
+              className="primary"
+              onClick={() => showCreate({ projectId: project.id })}
+            >
               + Создать
             </button>
           )}
         </div>
       ) : (
         <>
+          {view.issues.length === 0 && (
+            <p className="muted">
+              В проекте пока нет задач.
+              {perms.can('issue.create') && (
+                <>
+                  {' '}
+                  <button
+                    type="button"
+                    className="link"
+                    onClick={() => showCreate({ projectId: project.id })}
+                  >
+                    + Создать первый элемент
+                  </button>
+                </>
+              )}
+            </p>
+          )}
           {selectedCount > 0 && view && (
             <BulkBar
               count={selectedCount}
@@ -786,6 +911,11 @@ function ProjectPlanning({
                 selected={selected}
                 onSelect={select}
                 onEdit={(id, patch) => void edit(id, patch)}
+                onEditSprint={
+                  canManageSprints
+                    ? (sprint) => setSprintDialog({ mode: 'edit', sprint })
+                    : undefined
+                }
               />
             ))}
             <Section
@@ -818,8 +948,10 @@ function ProjectPlanning({
       )}
       {view && view.issues.length > 0 && !view.sprints.some((s) => s.state !== 'closed') && (
         <p className="warn">
-          Нет спринтов для планирования. Создайте спринт на экране{' '}
-          <Link to={`/projects/${project.key}/sprints`}>«Спринты»</Link>.
+          Нет спринтов для планирования.{' '}
+          {canManageSprints
+            ? 'Нажмите «+ Спринт» или «+ Несколько спринтов…».'
+            : 'Спринты создаёт тимлид или администратор.'}
         </p>
       )}
     </section>
@@ -840,7 +972,7 @@ export function BacklogPage() {
   const projects = scope.projects;
   const [only] = projects;
   const header = (
-    <PageHeader title="Планирование спринтов">
+    <PageHeader title="Планирование">
       {canCreate && (
         <button type="button" className="primary" onClick={() => showCreate()}>
           + Создать

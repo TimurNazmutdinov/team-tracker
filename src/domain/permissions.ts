@@ -116,6 +116,10 @@ export function violations(
   )
     deny('Менять шаблоны задач, WIP-лимиты и Definition of Done ваша роль не позволяет');
 
+  // колонки досок общие для всех проектов (ADR-024)
+  if ((changes.statuses ?? []).length > 0 && !may('board.columns'))
+    deny('Менять колонки досок ваша роль не позволяет');
+
   if (
     ((changes.absences ?? []).length > 0 || (changes.deleteAbsenceIds ?? []).length > 0) &&
     !may('people.availability')

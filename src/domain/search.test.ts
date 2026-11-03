@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import seed from '../../data/seed.json';
-import { SEARCH_LIMIT, scoreIssue, searchIssues } from './search';
+import { SEARCH_LIMIT, scoreIssue, searchIssues, stem } from './search';
 import type { Dataset } from './schema';
 import { viewOf } from './testing';
 
@@ -58,5 +58,24 @@ describe('поиск задач', () => {
     };
     const hits = searchIssues([view, other], 'SHOP-1');
     expect(hits[0]?.project.key).toBe('SHOP');
+  });
+});
+
+describe('поиск по основе слова', () => {
+  it('«пароль» находит «пароля», «заказы» — «заказов»', () => {
+    expect(stem('пароль')).toBe('парол');
+    expect(stem('заказы')).toBe('заказ');
+    expect(stem('вход')).toBe('вход');
+  });
+});
+
+describe('основа слова — только в названии', () => {
+  const base = viewOf(seed as unknown as Dataset).issues[0];
+  it('«пароль» находит «пароля» в названии, но не перебивает экраны совпадением в описании', () => {
+    if (!base) throw new Error('нет задач');
+    const issue = { ...base, title: 'Форма смены пароля', description: 'за прошлых периодов' };
+    expect(scoreIssue(issue, 'DEMO-1', 'пароль')).toBeGreaterThan(0);
+    expect(scoreIssue(issue, 'DEMO-1', 'Прошлые')).toBe(0);
+    expect(scoreIssue(issue, 'DEMO-1', 'прошлых')).toBe(20);
   });
 });

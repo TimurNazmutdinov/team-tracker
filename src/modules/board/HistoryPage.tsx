@@ -9,9 +9,11 @@ import { dateRange, num, shortDate, taskWord } from '../../ui/format';
 import { Loading } from '../../ui/Loading';
 import { ProjectFilter } from '../../ui/ProjectFilter';
 import { PageHeader } from '../../ui/PageHeader';
+import { SprintsTabs } from '../../ui/SectionTabs';
 import { treeRows } from '../../domain/tree';
 import { RetroSection } from '../sprints/RetroSection';
 import { Avatar, PointsBadge, PriorityChip, TypeIcon } from '../tasks/IssueBits';
+import { statusesOf } from '../../domain/statuses';
 
 interface Filters {
   search: string;
@@ -124,6 +126,7 @@ export function HistoryPage() {
     return (
       <>
         <PageHeader title="Прошлые спринты" scope />
+        <SprintsTabs />
         <Loading />
       </>
     );
@@ -134,11 +137,13 @@ export function HistoryPage() {
   // Закрытые спринты всех выбранных проектов одним списком, новые первыми
   const all = views
     .flatMap((v) =>
-      closedSprints(v.sprints, v.issues, histories.get(v.projectId) ?? []).map((item) => ({
-        item,
-        projectKey: v.project.key,
-        allIssues: v.issues,
-      })),
+      closedSprints(v.sprints, v.issues, histories.get(v.projectId) ?? [], statusesOf(v)).map(
+        (item) => ({
+          item,
+          projectKey: v.project.key,
+          allIssues: v.issues,
+        }),
+      ),
     )
     .sort((a, b) => b.item.sprint.end.localeCompare(a.item.sprint.end));
   // По умолчанию раскрыт самый свежий закрытый спринт
@@ -165,6 +170,7 @@ export function HistoryPage() {
   return (
     <>
       <PageHeader title="Прошлые спринты" />
+      <SprintsTabs />
       <p className="muted">История закрытых спринтов: только чтение.</p>
       <div className="board-toolbar planning-filters" role="search" aria-label="Фильтры истории">
         <ProjectFilter />

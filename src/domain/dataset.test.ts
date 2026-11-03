@@ -38,10 +38,27 @@ describe('parseDataset', () => {
     expect(errorsOf(ds).join('\n')).toContain('u999');
   });
 
-  it('правило 6: Task не вкладывается в Story', () => {
+  it('правило 6: Task не вкладывается в Task', () => {
     const ds = fresh();
     must(ds.issues.find((i) => i.id === 'i9')).parentId = 'i4';
     expect(errorsOf(ds).join('\n')).toContain('недопустимый родитель');
+  });
+
+  it('ADR-024: старый тип Story читается как Task (данные и копии прежних версий)', () => {
+    const ds = fresh() as unknown as {
+      issues: { id: string; type: string }[];
+      templates: { id: string; type: string }[];
+    };
+    const story = ds.issues.find((i) => i.id === 'i4');
+    const tpl = ds.templates.find((t) => t.id === 'tpl1');
+    if (story) story.type = 'Story';
+    if (tpl) tpl.type = 'Story';
+    const r = parseDataset(ds);
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.data.issues.find((i) => i.id === 'i4')?.type).toBe('Task');
+      expect(r.data.templates.find((t) => t.id === 'tpl1')?.type).toBe('Task');
+    }
   });
 
   it('правило 6: у Sub-task points нет', () => {
@@ -68,13 +85,18 @@ describe('hierarchy', () => {
     expect(isValidParent('Epic', null)).toBe(true);
     expect(isValidParent('Epic', 'Epic')).toBe(false);
     expect(isValidParent('Task', 'Epic')).toBe(true);
-    expect(isValidParent('Task', 'Story')).toBe(false);
+    expect(isValidParent('Task', 'Task')).toBe(false);
+    expect(isValidParent('Task', 'Sub-epic')).toBe(true);
+    expect(isValidParent('Sub-epic', 'Epic')).toBe(true);
+    expect(isValidParent('Sub-epic', null)).toBe(false);
+    expect(isValidParent('Sub-task', 'Sub-epic')).toBe(false);
     expect(isValidParent('Sub-task', 'Task')).toBe(true);
     expect(isValidParent('Sub-task', null)).toBe(false);
   });
 
-  it('points только у Story, Task и Bug', () => {
-    expect(canHavePoints('Story')).toBe(true);
+  it('points только у Task и Bug', () => {
+    expect(canHavePoints('Task')).toBe(true);
+    expect(canHavePoints('Sub-epic')).toBe(false);
     expect(canHavePoints('Epic')).toBe(false);
     expect(canHavePoints('Sub-task')).toBe(false);
   });
