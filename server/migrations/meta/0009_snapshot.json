@@ -119,26 +119,18 @@
         "comments_issue_id_issues_id_fk": {
           "name": "comments_issue_id_issues_id_fk",
           "tableFrom": "comments",
-          "columnsFrom": [
-            "issue_id"
-          ],
+          "columnsFrom": ["issue_id"],
           "tableTo": "issues",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "comments_author_id_people_id_fk": {
           "name": "comments_author_id_people_id_fk",
           "tableFrom": "comments",
-          "columnsFrom": [
-            "author_id"
-          ],
+          "columnsFrom": ["author_id"],
           "tableTo": "people",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -217,26 +209,18 @@
         "history_issue_id_issues_id_fk": {
           "name": "history_issue_id_issues_id_fk",
           "tableFrom": "history",
-          "columnsFrom": [
-            "issue_id"
-          ],
+          "columnsFrom": ["issue_id"],
           "tableTo": "issues",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "history_author_id_people_id_fk": {
           "name": "history_author_id_people_id_fk",
           "tableFrom": "history",
-          "columnsFrom": [
-            "author_id"
-          ],
+          "columnsFrom": ["author_id"],
           "tableTo": "people",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -309,13 +293,9 @@
         "issue_templates_project_id_projects_id_fk": {
           "name": "issue_templates_project_id_projects_id_fk",
           "tableFrom": "issue_templates",
-          "columnsFrom": [
-            "project_id"
-          ],
+          "columnsFrom": ["project_id"],
           "tableTo": "projects",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -472,52 +452,36 @@
         "issues_project_id_projects_id_fk": {
           "name": "issues_project_id_projects_id_fk",
           "tableFrom": "issues",
-          "columnsFrom": [
-            "project_id"
-          ],
+          "columnsFrom": ["project_id"],
           "tableTo": "projects",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "issues_assignee_id_people_id_fk": {
           "name": "issues_assignee_id_people_id_fk",
           "tableFrom": "issues",
-          "columnsFrom": [
-            "assignee_id"
-          ],
+          "columnsFrom": ["assignee_id"],
           "tableTo": "people",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "issues_reporter_id_people_id_fk": {
           "name": "issues_reporter_id_people_id_fk",
           "tableFrom": "issues",
-          "columnsFrom": [
-            "reporter_id"
-          ],
+          "columnsFrom": ["reporter_id"],
           "tableTo": "people",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "issues_sprint_id_sprints_id_fk": {
           "name": "issues_sprint_id_sprints_id_fk",
           "tableFrom": "issues",
-          "columnsFrom": [
-            "sprint_id"
-          ],
+          "columnsFrom": ["sprint_id"],
           "tableTo": "sprints",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -562,26 +526,18 @@
         "links_from_id_issues_id_fk": {
           "name": "links_from_id_issues_id_fk",
           "tableFrom": "links",
-          "columnsFrom": [
-            "from_id"
-          ],
+          "columnsFrom": ["from_id"],
           "tableTo": "issues",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "links_to_id_issues_id_fk": {
           "name": "links_to_id_issues_id_fk",
           "tableFrom": "links",
-          "columnsFrom": [
-            "to_id"
-          ],
+          "columnsFrom": ["to_id"],
           "tableTo": "issues",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -679,26 +635,18 @@
         "project_members_project_id_projects_id_fk": {
           "name": "project_members_project_id_projects_id_fk",
           "tableFrom": "project_members",
-          "columnsFrom": [
-            "project_id"
-          ],
+          "columnsFrom": ["project_id"],
           "tableTo": "projects",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "project_members_person_id_people_id_fk": {
           "name": "project_members_person_id_people_id_fk",
           "tableFrom": "project_members",
-          "columnsFrom": [
-            "person_id"
-          ],
+          "columnsFrom": ["person_id"],
           "tableTo": "people",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -795,9 +743,7 @@
       "uniqueConstraints": {
         "projects_key_unique": {
           "name": "projects_key_unique",
-          "columns": [
-            "key"
-          ],
+          "columns": ["key"],
           "nullsNotDistinct": false
         }
       },
@@ -879,13 +825,9 @@
         "retro_items_project_id_projects_id_fk": {
           "name": "retro_items_project_id_projects_id_fk",
           "tableFrom": "retro_items",
-          "columnsFrom": [
-            "project_id"
-          ],
+          "columnsFrom": ["project_id"],
           "tableTo": "projects",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -963,13 +905,9 @@
         "sessions_user_id_users_id_fk": {
           "name": "sessions_user_id_users_id_fk",
           "tableFrom": "sessions",
-          "columnsFrom": [
-            "user_id"
-          ],
+          "columnsFrom": ["user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -1079,13 +1017,9 @@
         "sprints_project_id_projects_id_fk": {
           "name": "sprints_project_id_projects_id_fk",
           "tableFrom": "sprints",
-          "columnsFrom": [
-            "project_id"
-          ],
+          "columnsFrom": ["project_id"],
           "tableTo": "projects",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -1157,13 +1091,9 @@
         "users_id_people_id_fk": {
           "name": "users_id_people_id_fk",
           "tableFrom": "users",
-          "columnsFrom": [
-            "id"
-          ],
+          "columnsFrom": ["id"],
           "tableTo": "people",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -1172,9 +1102,7 @@
       "uniqueConstraints": {
         "users_email_unique": {
           "name": "users_email_unique",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "nullsNotDistinct": false
         }
       },
