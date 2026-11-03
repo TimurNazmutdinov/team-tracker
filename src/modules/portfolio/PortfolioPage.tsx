@@ -7,10 +7,8 @@ import {
   type PortfolioSort,
   type ProjectOverview,
 } from '../../domain/portfolio';
-import type { Issue } from '../../domain/schema';
+import type { Issue, Person } from '../../domain/schema';
 import { activeStatuses, statusClass } from '../../domain/statuses';
-import { descendants, treeRows } from '../../domain/tree';
-import { StatusChip } from '../tasks/IssueBits';
 import { usePermissions } from '../../state/current-user';
 import { useProjectScope } from '../../state/project-scope';
 import { useProjectHistories, useProjectViews, useStatusList } from '../../state/queries';
@@ -19,6 +17,7 @@ import { Loading } from '../../ui/Loading';
 import { ProjectFilter } from '../../ui/ProjectFilter';
 import { PageHeader } from '../../ui/PageHeader';
 import { ArchiveSection, NewProjectDialog, ProjectMenu } from './ProjectManage';
+import { ProjectStructure } from './ProjectStructure';
 import { Avatar } from '../tasks/IssueBits';
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -65,20 +64,14 @@ function daysText(o: ProjectOverview): string {
 function OverviewCard({
   o,
   issues,
+  people,
   issueKey,
 }: {
   o: ProjectOverview;
   issues: Issue[];
+  people: Person[];
   issueKey: (n: number) => string;
 }) {
-  const [openEpics, setOpenEpics] = useState<Set<string>>(new Set());
-  const toggleEpic = (id: string) =>
-    setOpenEpics((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
   const key = o.project.key;
   const statusList = useStatusList();
   const columns = activeStatuses(statusList).filter((s) => (o.byStatus[s.id] ?? 0) > 0);
@@ -190,56 +183,7 @@ function OverviewCard({
         </ul>
       )}
 
-      {o.epics.length > 0 && (
-        <ul className="overview-epics" aria-label="Прогресс эпиков">
-          {o.epics.slice(0, 3).map(({ epic, progress }) => {
-            const open = openEpics.has(epic.id);
-            const family = descendants(epic, issues);
-            return (
-              <li key={epic.id}>
-                {family.length > 0 && (
-                  <button
-                    type="button"
-                    className="plain tree-toggle"
-                    aria-expanded={open}
-                    aria-label={`${open ? 'Свернуть' : 'Развернуть'} эпик ${epic.title}: задач ${family.length}`}
-                    title={open ? 'Скрыть задачи эпика' : 'Показать задачи эпика'}
-                    onClick={() => toggleEpic(epic.id)}
-                  >
-                    {open ? '▾' : '▸'}
-                  </button>
-                )}
-                <Link to={`/projects/${key}/issues/${epic.number}`}>{epic.title}</Link>
-                <div
-                  className="meter"
-                  role="img"
-                  aria-label={`${epic.title}: ${progress.percent} %`}
-                >
-                  <span style={{ width: `${progress.percent}%` }} />
-                </div>
-                <span className="muted">{progress.percent} %</span>
-                {open && (
-                  <ul className="epic-family plain-list" aria-label={`Задачи эпика ${epic.title}`}>
-                    {treeRows(family, { all: issues }).map(({ issue, depth }) => (
-                      <li
-                        key={issue.id}
-                        className="tree-row"
-                        data-depth={depth}
-                        style={{ '--depth': depth } as React.CSSProperties}
-                      >
-                        <Link to={`/projects/${key}/issues/${issue.number}`}>
-                          {issueKey(issue.number)} {issue.title}
-                        </Link>
-                        <StatusChip status={issue.status} />
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      )}
+      <ProjectStructure issues={issues} people={people} projectKey={key} statuses={statusList} />
 
       <footer className="overview-links">
         <Link to={link('board')}>Доска →</Link>
@@ -351,6 +295,7 @@ export function PortfolioPage() {
               key={o.project.id}
               o={o}
               issues={views.find((v) => v.projectId === o.project.id)?.issues ?? []}
+              people={views.find((v) => v.projectId === o.project.id)?.people ?? []}
               issueKey={(n) => `${o.project.key}-${n}`}
             />
           ))}

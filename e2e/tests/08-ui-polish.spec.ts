@@ -169,11 +169,17 @@ test('иерархия: состав спринта и карточка зада
 
 test('иерархия: эпик в портфеле раскрывается до задач, в поиске виден путь', async () => {
   await page.goto('/portfolio?projects=DEMO');
-  await page
+  // блок «Структура» свёрнут по умолчанию: высота карточки не зависит от числа задач
+  const structure = page.getByRole('region', { name: 'Структура проекта DEMO' });
+  await expect(structure).toContainText('эпиков');
+  await expect(structure.locator('.structure-list')).toHaveCount(0);
+  await structure.getByRole('button', { name: /Структура/ }).click();
+  await structure
     .getByRole('button', { name: /Развернуть эпик/ })
     .first()
     .click();
-  await expect(page.locator('.epic-family li').first()).toBeVisible();
+  await expect(structure.locator('.structure-children li').first()).toBeVisible();
+  await audit('структура проекта на портфеле');
 
   await page.keyboard.press('Control+k');
   await page.getByRole('combobox', { name: /Поиск задач/ }).fill('Форма смены');
