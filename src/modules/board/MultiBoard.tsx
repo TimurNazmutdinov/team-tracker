@@ -45,7 +45,6 @@ import { dateRange, num } from '../../ui/format';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
 import { useDodGate } from '../tasks/DodGate';
-import { BoardNav } from './BoardNav';
 import { BoardCard, LaneView, plural } from './BoardParts';
 import { AddColumn, ColumnHead, useCanEditColumns } from './Columns';
 import { QuickFilters } from './QuickFilters';
@@ -70,15 +69,7 @@ const activeSprint = (sprints: Sprint[]) => sprints.find((s) => s.state === 'act
  * дорожка с его активным спринтом, на карточке — метка проекта. Карточка переносится только по
  * колонкам своего проекта.
  */
-export function MultiBoard({
-  projects,
-  routeKey,
-  filter,
-}: {
-  projects: Project[];
-  routeKey: string;
-  filter: ReactNode;
-}) {
+export function MultiBoard({ projects, filter }: { projects: Project[]; filter: ReactNode }) {
   const views = useProjectViews(projects);
   const actionsFor = useActionsFor();
   const perms = usePermissions();
@@ -180,7 +171,6 @@ export function MultiBoard({
     <div className="board-page">
       {dod.dialog}
       <PageHeader title="Доска" />
-      <BoardNav projectKey={routeKey} projectCount={projects.length} />
       <div className="board-toolbar">
         {filter}
         <label>

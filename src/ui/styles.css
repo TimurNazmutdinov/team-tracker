@@ -3060,3 +3060,30 @@ main:has(.board-page) {
   width: auto;
   margin: 0;
 }
+
+/* Меню из 7 пунктов: раздел подсвечен и на своих подвкладках (rework.md, 4.2) */
+.app-bar nav a.active {
+  color: var(--accent);
+  font-weight: 700;
+  border-bottom-color: var(--accent);
+}
+.section-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  margin: -0.25rem 0 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+.section-tabs a {
+  padding: 0.35rem 0;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+}
+.section-tabs a.active,
+.section-tabs a[aria-current='page'] {
+  color: var(--accent);
+  font-weight: 700;
+  border-bottom-color: var(--accent);
+}

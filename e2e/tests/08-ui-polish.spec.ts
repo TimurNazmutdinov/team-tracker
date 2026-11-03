@@ -22,7 +22,7 @@ test.beforeAll(async ({ browser }) => {
   await page.getByLabel('Почта').fill('admin@example.com');
   await page.getByLabel('Пароль').fill('password-1');
   await page.locator('form button[type=submit]').click();
-  await expect(page.locator('.board-nav')).toBeVisible();
+  await expect(page.locator('.board-page')).toBeVisible();
 });
 test.afterAll(async () => {
   await page.close();
@@ -32,7 +32,7 @@ test('на «Портфеле» и «Аналитике» видны вклад�
   for (const url of ['/portfolio', '/analytics?projects=all']) {
     await page.goto(url);
     const tabs = page.getByRole('navigation', { name: 'Разделы проекта' });
-    await expect(tabs.getByRole('link', { name: 'Бэклог' })).toBeVisible();
+    await expect(tabs.getByRole('link', { name: 'Планирование' })).toBeVisible();
     await expect(tabs.getByRole('link', { name: 'Настройки' })).toBeVisible();
   }
 });
@@ -90,7 +90,10 @@ test('планирование: спринт и его задачи в обще�
 
 test('у вкладок, чипов и полей есть подсказки при наведении', async () => {
   await page.goto('/projects/DEMO/backlog?projects=DEMO');
-  await expect(page.getByRole('link', { name: 'Аналитика' })).toHaveAttribute('title', /Поток/);
+  await expect(page.getByRole('link', { name: 'Отчёты', exact: true })).toHaveAttribute(
+    'title',
+    /Поток/,
+  );
   await expect(page.getByRole('link', { name: 'Доска' }).first()).toHaveAttribute('title', /Доска/);
   await expect(page.getByRole('button', { name: 'Справка' })).toHaveAttribute('title', /Справка/);
   await expect(page.locator('.planning-row select[title]').first()).toBeVisible();

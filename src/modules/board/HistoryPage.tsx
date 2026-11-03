@@ -9,6 +9,7 @@ import { dateRange, num, shortDate, taskWord } from '../../ui/format';
 import { Loading } from '../../ui/Loading';
 import { ProjectFilter } from '../../ui/ProjectFilter';
 import { PageHeader } from '../../ui/PageHeader';
+import { SprintsTabs } from '../../ui/SectionTabs';
 import { treeRows } from '../../domain/tree';
 import { RetroSection } from '../sprints/RetroSection';
 import { Avatar, PointsBadge, PriorityChip, TypeIcon } from '../tasks/IssueBits';
@@ -125,6 +126,7 @@ export function HistoryPage() {
     return (
       <>
         <PageHeader title="Прошлые спринты" scope />
+        <SprintsTabs />
         <Loading />
       </>
     );
@@ -168,6 +170,7 @@ export function HistoryPage() {
   return (
     <>
       <PageHeader title="Прошлые спринты" />
+      <SprintsTabs />
       <p className="muted">История закрытых спринтов: только чтение.</p>
       <div className="board-toolbar planning-filters" role="search" aria-label="Фильтры истории">
         <ProjectFilter />

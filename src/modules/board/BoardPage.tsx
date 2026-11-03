@@ -8,7 +8,7 @@ import {
   type DragEndEvent,
 } from '@dnd-kit/core';
 import { useState, type ReactNode } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import {
   GROUP_FIELDS,
   GROUP_LABELS,
@@ -52,7 +52,6 @@ import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
 import { useDodGate } from '../tasks/DodGate';
 import { BulkBar } from '../tasks/BulkBar';
-import { BoardNav } from './BoardNav';
 import { BoardCard, LaneView, plural } from './BoardParts';
 import { AddColumn, ColumnHead, useCanEditColumns } from './Columns';
 import { QuickFilters } from './QuickFilters';
@@ -208,7 +207,6 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
     <div className="board-page">
       {dod.dialog}
       <PageHeader title="Доска" />
-      <BoardNav projectKey={project.key} sprint={sprint} />
       <SprintHeader
         sprint={sprint}
         sprints={sprints}
@@ -432,7 +430,6 @@ function SingleBoard({ project, filter }: { project: Project; filter: ReactNode 
  */
 export function BoardPage() {
   const { ready, scope } = useProjectScope();
-  const { key = '' } = useParams();
   if (!ready) {
     return (
       <>
@@ -455,5 +452,5 @@ export function BoardPage() {
   }
   if (only && projects.length === 1)
     return <SingleBoard key={only.id} project={only} filter={filter} />;
-  return <MultiBoard projects={projects} routeKey={key || (only?.key ?? '')} filter={filter} />;
+  return <MultiBoard projects={projects} filter={filter} />;
 }

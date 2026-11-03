@@ -56,7 +56,7 @@ for (const scheme of ['light', 'dark'] as const) {
       await page.getByLabel('Почта').fill('admin@example.com');
       await page.getByLabel('Пароль').fill('password-1');
       await page.locator('form button[type=submit]').click();
-      await expect(page.locator('.board-nav')).toBeVisible();
+      await expect(page.locator('.board-page')).toBeVisible();
     });
 
     for (const [name, url] of SCREENS) {

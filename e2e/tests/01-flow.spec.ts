@@ -23,7 +23,7 @@ test('вход: первая зарегистрированная учётка �
   await page.getByLabel('Почта').fill('admin@example.com');
   await page.getByLabel('Пароль').fill('password-1');
   await page.locator('form button[type=submit]').click();
-  await expect(page.locator('.board-nav')).toBeVisible();
+  await expect(page.locator('.board-page')).toBeVisible();
 
   // мастер первого запуска открывается администратору сразу после входа (ADR-020)
   const wizard = page.getByRole('dialog', { name: /Добро пожаловать/ });
@@ -50,7 +50,7 @@ test('вход: первая зарегистрированная учётка �
 
 test('создание задачи попадает в общий бэклог', async () => {
   await page.goto('/projects/DEMO/backlog');
-  await expect(page.getByRole('heading', { name: 'Планирование спринтов' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Планирование', exact: true })).toBeVisible();
   await page.getByRole('button', { name: '+ Создать', exact: true }).first().click();
   const dialog = page.getByRole('dialog');
   await dialog.getByLabel('Название').fill(TITLE);

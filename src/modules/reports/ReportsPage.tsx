@@ -12,6 +12,7 @@ import {
 } from '../../state/queries';
 import { Loading } from '../../ui/Loading';
 import { PageHeader } from '../../ui/PageHeader';
+import { ReportsTabs } from '../../ui/SectionTabs';
 import { BurndownChart, VelocityChart } from './charts';
 import { TotalsTable } from './TotalsTable';
 import { statusesOf } from '../../domain/statuses';
@@ -28,6 +29,7 @@ function SingleReport({ project }: { project: Project }) {
     return (
       <>
         <PageHeader title="Отчёты" scope />
+        <ReportsTabs />
         <Loading />
       </>
     );
@@ -64,6 +66,7 @@ function SingleReport({ project }: { project: Project }) {
           </label>
         )}
       </PageHeader>
+      <ReportsTabs />
       {!sprint ? (
         <p className="empty">Отчёты появятся, когда будет запущен первый спринт.</p>
       ) : (
@@ -139,6 +142,7 @@ function MultiReports({ projects }: { projects: Project[] }) {
     return (
       <>
         <PageHeader title="Отчёты" scope></PageHeader>
+        <ReportsTabs />
         <Loading />
       </>
     );
@@ -146,6 +150,7 @@ function MultiReports({ projects }: { projects: Project[] }) {
   return (
     <>
       <PageHeader title="Отчёты" scope></PageHeader>
+      <ReportsTabs />
       <p className="muted">
         Выбрано проектов: {projects.length}. Burndown и итоги по людям строятся для одного проекта:
         откройте отчёт проекта по ссылке.
@@ -195,6 +200,7 @@ export function ReportsPage() {
     return (
       <>
         <PageHeader title="Отчёты" scope />
+        <ReportsTabs />
         <Loading />
       </>
     );
@@ -205,6 +211,7 @@ export function ReportsPage() {
     return (
       <>
         <PageHeader title="Отчёты" scope></PageHeader>
+        <ReportsTabs />
         <p className="empty">Не выбрано ни одного проекта: выберите проекты в фильтре.</p>
       </>
     );

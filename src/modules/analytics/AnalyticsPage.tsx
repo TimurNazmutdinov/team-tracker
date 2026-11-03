@@ -15,6 +15,7 @@ import { useProjectHistories, useProjectViews, useStatusList } from '../../state
 import { Loading } from '../../ui/Loading';
 import { ProjectFilter } from '../../ui/ProjectFilter';
 import { PageHeader } from '../../ui/PageHeader';
+import { ReportsTabs } from '../../ui/SectionTabs';
 import { CfdChart, Histogram, RoadmapChart, WorkloadChart } from './charts';
 
 const TABS = [
@@ -90,9 +91,9 @@ export function AnalyticsPage() {
     };
   }, [views, histories, days, now, statusList]);
 
-  const header = <PageHeader title="Аналитика" />;
+  const header = <PageHeader title="Отчёты" />;
   // без данных строки с вкладками нет: фильтр проектов стоит под заголовком
-  const bareHeader = <PageHeader title="Аналитика" scope />;
+  const bareHeader = <PageHeader title="Отчёты" scope />;
   if (!ready || !views || !data) {
     return (
       <>
@@ -123,22 +124,10 @@ export function AnalyticsPage() {
   return (
     <>
       {header}
+      <ReportsTabs />
       <div className="board-toolbar">
         <ProjectFilter />
-        <nav className="tabs" aria-label="Вид аналитики">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              className={t.id === tab ? 'on' : undefined}
-              aria-pressed={t.id === tab}
-              title={t.tip}
-              onClick={() => setParam('tab', t.id)}
-            >
-              {t.label}
-            </button>
-          ))}
-        </nav>
+
         {tab === 'roadmap' ? (
           <label>
             Период

@@ -14,6 +14,7 @@ import { ErrorMessage } from '../../ui/ErrorMessage';
 import { Loading } from '../../ui/Loading';
 import { NotFound } from '../../ui/NotFound';
 import { PageHeader } from '../../ui/PageHeader';
+import { SprintsTabs } from '../../ui/SectionTabs';
 import { TextArea } from '../../ui/fields';
 import { useCurrentProject } from '../projects/ProjectRoute';
 import { TotalsTable } from '../reports/TotalsTable';
@@ -42,6 +43,7 @@ export function SprintsPage() {
     return (
       <>
         <PageHeader title="Спринты" scope />
+        <SprintsTabs />
         <Loading />
       </>
     );
@@ -58,6 +60,7 @@ export function SprintsPage() {
   return (
     <>
       <PageHeader title="Спринты" scope />
+      <SprintsTabs />
       <div className="sprints-layout">
         <nav className="sprint-list" aria-label="Спринты проекта">
           {sprints.map((s) => (

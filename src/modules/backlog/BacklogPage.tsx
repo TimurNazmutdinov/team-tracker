@@ -972,7 +972,7 @@ export function BacklogPage() {
   const projects = scope.projects;
   const [only] = projects;
   const header = (
-    <PageHeader title="Планирование спринтов">
+    <PageHeader title="Планирование">
       {canCreate && (
         <button type="button" className="primary" onClick={() => showCreate()}>
           + Создать
