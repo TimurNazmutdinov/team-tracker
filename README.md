@@ -131,7 +131,7 @@ npm run restore backups\2026-10-29_18-00
 
 ### Перенос на другой компьютер
 
-Что взять со старого компьютера (база `local-data`, файл `.env`, резервные копии) и как запустить трекер на новом — в [docs/handover.md](docs/handover.md).
+Всё, чего нет в GitHub (база, `.env`, резервные копии, обратная связь), собирает в один архив команда `npm run transfer:pack` (трекер должен быть остановлен). Как распаковать и запустить на новом компьютере — в [docs/handover.md](docs/handover.md) и [PDF](docs/pdf/handover.pdf).
 
 ## Docker и PostgreSQL
 
@@ -166,6 +166,7 @@ docker compose run --rm app npm run admin:create
 - [docs/pdf/architecture.pdf](docs/pdf/architecture.pdf) — архитектура
 - [docs/pdf/capabilities.pdf](docs/pdf/capabilities.pdf) — возможности
 - [docs/pdf/wireframes.pdf](docs/pdf/wireframes.pdf) — макеты экранов
+- [docs/pdf/handover.pdf](docs/pdf/handover.pdf) — перенос на другой компьютер и работа с трекером на Windows
 
 Пересборка логотипа: `python3 scripts/build_logo.py`, `node scripts/build_logo_png.cjs`.
 

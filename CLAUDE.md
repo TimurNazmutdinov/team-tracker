@@ -54,6 +54,8 @@ Node.js 22 (`.nvmrc`). Зависимости — только `npm ci` (`npm in
 | Первый администратор | `npm run admin:create` |
 | Демо-данные в пустую базу | `npm run db:seed` |
 | Копия и восстановление (трекер остановлен) | `npm run backup`, `npm run restore backups\<папка>` |
+| Архив для переноса на другой компьютер (трекер остановлен) | `npm run transfer:pack` |
+| PDF документов (одного — с именем: `handover`) | `python3 scripts/build_pdf.py [имя]` |
 
 `npm run start` сам ставит зависимости, если изменился `package-lock.json`, и пересобирает
 интерфейс в режиме API (`VITE_STORAGE=api`), если исходники новее сборки. E2E поднимают свой

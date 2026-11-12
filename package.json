@@ -21,7 +21,8 @@
     "start": "node scripts/start.mjs",
     "admin:create": "tsx server/src/admin-cli.ts",
     "backup": "tsx server/src/backup-cli.ts",
-    "restore": "tsx server/src/restore-cli.ts"
+    "restore": "tsx server/src/restore-cli.ts",
+    "transfer:pack": "node scripts/pack-transfer.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
