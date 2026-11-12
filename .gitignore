@@ -9,6 +9,11 @@ Thumbs.db
 local-data
 local-data.lock
 local-data.before-restore-*
+# архив базы перед обновлением схемы (server/src/db/index.ts)
+local-data-before-update-*
+# видео и расшифровки встреч — только локально (копия в ветке docs/feedback-bibigul)
+/Обратная связь/
+*.tsbuildinfo
 
 e2e/test-results
 e2e/playwright-report
