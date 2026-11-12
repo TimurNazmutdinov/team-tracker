@@ -129,6 +129,10 @@ npm run restore backups\2026-10-29_18-00
 - **Порт 3000 занят** — измените `PORT` в `.env` и открывайте новый адрес.
 - **Забыли пароль администратора** — другой администратор нажимает «Сбросить»; если администратор один, создайте второго: `npm run admin:create` с другой почтой.
 
+### Перенос на другой компьютер
+
+Что взять со старого компьютера (база `local-data`, файл `.env`, резервные копии) и как запустить трекер на новом — в [docs/handover.md](docs/handover.md).
+
 ## Docker и PostgreSQL
 
 Режим с PostgreSQL остаётся для сервера и команд побольше. В файле `.env` задайте **обязательный** `POSTGRES_PASSWORD` (буквы и цифры), затем:
@@ -144,6 +148,10 @@ docker compose run --rm app npm run admin:create
 
 ## Документы
 
+- [CLAUDE.md](CLAUDE.md) — правила работы, команды и карта кода для Claude Code
+- [docs/handover.md](docs/handover.md) — перенос на другой компьютер и в другой Claude Code, где остановились
+- [docs/rework.md](docs/rework.md) — переработка по обратной связи: аудит, решения, ход работ
+- [docs/feedback-bibigul.md](docs/feedback-bibigul.md) — разбор обратной связи после демо 03.11 (D-1…D-12)
 - [docs/features.md](docs/features.md) — возможности для пользователей
 - [docs/vision.md](docs/vision.md) — видение, функции MVP и этапы
 - [docs/quality.md](docs/quality.md) — нефункциональные требования
