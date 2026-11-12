@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Собирает docs/pdf/architecture.pdf и docs/pdf/capabilities.pdf из Markdown.
+"""Собирает PDF из Markdown: архитектура, возможности, макеты и инструкция по переносу (handover).
 
 Зависимость: reportlab (и Pillow, он ставится вместе с ним). Шрифт — DejaVu Sans.
 Схемы берутся из docs/diagrams/*.png (см. build_diagrams.py и svg_to_png.cjs):
 - блок ```mermaid, за которым идёт `<!-- pdf: diagrams/имя.png -->`, заменяется картинкой;
 - `![...](x.svg)` заменяется docs/diagrams/x.png.
 
-Запуск: python3 scripts/build_pdf.py
+Запуск: python3 scripts/build_pdf.py — все; python3 scripts/build_pdf.py handover — только одна.
 """
 import datetime
 import pathlib
@@ -61,6 +61,7 @@ BOOKS = [
     ("architecture.md", "architecture.pdf"),
     ("capabilities.md", "capabilities.pdf"),
     ("wireframes.md", "wireframes.pdf"),
+    ("handover.md", "handover.pdf"),
 ]
 
 INK = colors.HexColor("#1f2937")
@@ -310,8 +311,23 @@ class Doc(BaseDocTemplate):
             self.notify("TOCEntry", (level, text, self.page, key))
 
 
+def readme_appendix():
+    """Раздел README о работе на Windows — приложением к инструкции по переносу."""
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    start = readme.index("## Запуск на своём компьютере (Windows)")
+    end = readme.index("### Перенос на другой компьютер")
+    part = readme[start:end].replace(
+        "## Запуск на своём компьютере (Windows)",
+        "## Приложение. Работа с трекером на Windows (из README)",
+        1,
+    )
+    return "\n\n" + part
+
+
 def build(src, dst, st):
     md = (DOCS / src).read_text(encoding="utf-8")
+    if src == "handover.md":
+        md += readme_appendix()
     probe = Doc(str(dst), "")
     title, body = markdown_to_flowables(md, st, probe.fw, probe.fh)
     doc = Doc(str(dst), title)
@@ -342,7 +358,10 @@ def main():
     register_fonts()
     OUT.mkdir(parents=True, exist_ok=True)
     st = styles()
+    only = set(sys.argv[1:])  # например: python3 scripts/build_pdf.py handover
     for src, dst in BOOKS:
+        if only and src.removesuffix(".md") not in only:
+            continue
         pages = build(src, OUT / dst, st)
         print(f"{dst}: {pages} стр.")
 
